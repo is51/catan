@@ -5,9 +5,9 @@
     <artifactId>it</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>it Jersey Webapp</name>
+    <name>IT-nizator</name>
     <build>
-        <finalName>it</finalName>
+        <finalName>IT-nizator</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
