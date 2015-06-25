@@ -16,8 +16,14 @@ To run the application you should install the following tools:
 
 ####  Instructions 
 
-To start server use the following command:
+To start Server use the following command:
 
 ```
-mvn package tomcat7:run
+mvn clean tomcat7:run -P server
+```
+
+To start Web client use the following command:
+
+```
+mvn clean tomcat7:run -P client
 ```
