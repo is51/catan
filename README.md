@@ -2,7 +2,13 @@
 
 ## Description
 It-catan
- 
+
+## API Documentation
+List of methods available via http with real examples can be found under the following link:
+```
+http://localhost:8091/api
+```
+
 ## How to run localy 
 
 #### Required soft
