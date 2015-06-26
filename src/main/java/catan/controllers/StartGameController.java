@@ -9,6 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,18 +21,21 @@ public class StartGameController {
     @GET
     @Path("levelDetails")
     @Produces({MediaType.APPLICATION_JSON})
-    public LevelDetails getLevelDetails() {
+    public Response getLevelDetails() {
         LevelDetails levelDetails = new LevelDetails();
         levelDetails.setId(currentLevelId++);
         levelDetails.setSize(19);
 
-        return levelDetails;
+        return Response
+                .status(Response.Status.OK)
+                .entity(levelDetails)
+                .build();
     }
 
     @GET
     @Path("playerDetails")
     @Produces({MediaType.APPLICATION_JSON})
-    public PlayerDetails getPlayerDetails() {
+    public Response getPlayerDetails() {
         List<PlayerBean> players = new ArrayList<PlayerBean>();
         players.add(new PlayerBean("Andrey", "blue"));
         players.add(new PlayerBean("Syrovets", "yellow"));
@@ -41,7 +45,20 @@ public class StartGameController {
         PlayerDetails playerDetails = new PlayerDetails();
         playerDetails.setPlayerList(players);
 
-        return playerDetails;
+        return Response
+                .status(Response.Status.OK)
+                .entity(playerDetails)
+                .build();
+    }
+
+    @GET
+    @Path("error")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getError() {
+
+        return Response
+                .status(Response.Status.BAD_REQUEST)
+                .build();
     }
 
 }
