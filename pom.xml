@@ -88,8 +88,13 @@
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey.version}</version>
-            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.wink</groupId>
+            <artifactId>wink-common</artifactId>
+            <version>1.4</version>
+        </dependency>
+
     </dependencies>
     <properties>
         <jersey.version>1.19</jersey.version>
