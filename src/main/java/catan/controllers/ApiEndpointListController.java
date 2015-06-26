@@ -28,7 +28,6 @@ import java.util.List;
  * indicating REST endpoints. These are written to an HTML table, documenting
  * basic information about all the known endpoints.
  *
- * @author Dale Lane (dale.lane@gmail.com)
  */
 @Path("/")
 public class ApiEndpointListController {
