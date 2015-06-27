@@ -28,7 +28,7 @@ public class UserController {
         } catch (UserException e) {
             throw new WebApplicationException(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity("{errorCode: " + e.getErrorCode() + "}")
+                    .entity("{\"errorCode\": \"" + e.getErrorCode() + "\"}")
                     .build());
         }
     }
@@ -51,7 +51,7 @@ public class UserController {
         } catch (UserException e) {
             throw new WebApplicationException(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity("{errorCode: " + e.getErrorCode() + "}")
+                    .entity("{\"errorCode\": \"" + e.getErrorCode() + "\"}")
                     .build());
         }
     }
