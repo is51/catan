@@ -24,7 +24,7 @@ public class UserController {
         try {
             String token = userService.login(username, password);
 
-            return "{token:" + token + "}";
+            return "{\"token\": \"" + token + "\"}";
         } catch (UserException e) {
             throw new WebApplicationException(Response
                     .status(Response.Status.BAD_REQUEST)
