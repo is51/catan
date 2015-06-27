@@ -19,7 +19,7 @@ angular.module('catan')
                 var deferred = $q.defer();
 
                 $http.post('/api/user/login', {
-                    login: username,
+                    username: username,
                     password: password
                 }).success(function (response, status, headers, config) {
                     if (response.token) {

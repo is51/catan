@@ -11,7 +11,7 @@ angular.module('catan')
                 scope.data = {};
 
                 scope.submit = function() {
-                    Auth.register(scope.data.login, scope.data.password)
+                    Auth.register(scope.data.username, scope.data.password)
                         .then(function(response) {
                             alert('success');
                             console.log(response);
