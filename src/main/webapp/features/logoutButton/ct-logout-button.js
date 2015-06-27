@@ -4,7 +4,6 @@ angular.module('catan')
     .directive('ctLogoutButton', ['Auth', function(Auth) {
         return {
             restrict: 'A',
-            scope: {},
             link: function(scope, element, attrs) {
 
                 element.on('click', function() {
