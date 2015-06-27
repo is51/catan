@@ -6,7 +6,7 @@ angular.module('catan')
             restrict: 'E',
             scope: {},
             templateUrl: "/features/loginForm/ct-login-form.html",
-            link: function(scope, element, attrs) {
+            link: function(scope) {
 
                 scope.data = {};
 

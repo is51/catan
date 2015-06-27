@@ -3,6 +3,22 @@
 <div class="row">
     <div class="col-md-4 col-md-offset-1">
 
+        Current token: {{AuthToken.get()}}
+        <i ng-hide="AuthToken.get()">empty</i>
+
+    </div>
+    <div class="col-md-4">
+
+
+
+    </div>
+</div>
+
+<br><br>
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-1">
+
         <ct-login-form></ct-login-form>
 
     </div>

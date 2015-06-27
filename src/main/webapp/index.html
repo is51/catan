@@ -1,35 +1,37 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="catan">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=640">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=640">
 
-  <title>IT Catan</title>
-  <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="features/loginForm/ct-login-form.css"/>
-  <link rel="stylesheet" href="features/registerForm/ct-register-form.css"/>
+    <title>IT Catan</title>
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="features/loginForm/ct-login-form.css"/>
+    <link rel="stylesheet" href="features/registerForm/ct-register-form.css"/>
 
-  <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 </head>
 <body>
 
-  <ng-view></ng-view>
+    <ng-view></ng-view>
 
-  <script src="vendor/jquery/jquery-2.1.0.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-  <script src="vendor/angular/angular.min.js"></script>
-  <script src="vendor/angular/angular-route.min.js"></script>
-  <script src="vendor/angular/angular-cookies.min.js"></script>
+    <script src="vendor/jquery/jquery-2.1.0.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/angular/angular.min.js"></script>
+    <script src="vendor/angular/angular-route.min.js"></script>
+    <script src="vendor/angular/angular-cookies.min.js"></script>
 
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 
-  <script src="features/startPage/startPage.controller.js"></script>
-  <script src="features/auth/auth.service.js"></script>
-  <script src="features/auth/authInterceptor.service.js"></script>
-  <script src="features/loginForm/ct-login-form.js"></script>
-  <script src="features/registerForm/ct-register-form.js"></script>
-  <script src="features/logoutButton/ct-logout-button.js"></script>
-  
+    <script src="features/startPage/StartPage.controller.js"></script>
+    <script src="features/auth/Auth.service.js"></script>
+    <script src="features/auth/AuthInterceptor.service.js"></script>
+    <script src="features/auth/AuthToken.service.js"></script>
+    <script src="features/remote/Remote.service.js"></script>
+    <script src="features/loginForm/ct-login-form.js"></script>
+    <script src="features/registerForm/ct-register-form.js"></script>
+    <script src="features/logoutButton/ct-logout-button.js"></script>
+
 </body>
 </html>
