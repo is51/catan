@@ -1,9 +1,9 @@
 
 package catan.controllers;
 
-import catan.domain.LevelDetails;
-import catan.domain.PlayerBean;
-import catan.domain.PlayerDetails;
+import catan.domain.transfer.LevelDetails;
+import catan.domain.UserBean;
+import catan.domain.transfer.PlayerDetails;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,11 +34,11 @@ public class GameController {
     @Path("playerDetails")
     @Produces({MediaType.APPLICATION_JSON})
     public PlayerDetails getPlayerDetails() {
-        List<PlayerBean> players = new ArrayList<PlayerBean>();
-        players.add(new PlayerBean("Andrey1", "blue"));
-        players.add(new PlayerBean("Syrovets", "yellow"));
-        players.add(new PlayerBean("Bork", "green"));
-        players.add(new PlayerBean("Yuriiii", "red"));
+        List<UserBean> players = new ArrayList<UserBean>();
+        players.add(new UserBean("Andrey1", "blue", "", ""));
+        players.add(new UserBean("Syrovets", "yellow", "", ""));
+        players.add(new UserBean("Bork", "green", "", ""));
+        players.add(new UserBean("Yuriiii", "red", "", ""));
 
         PlayerDetails playerDetails = new PlayerDetails();
         playerDetails.setPlayerList(players);

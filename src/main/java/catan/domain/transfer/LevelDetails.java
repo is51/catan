@@ -1,5 +1,7 @@
-package catan.domain;
+package catan.domain.transfer;
 
+
+import catan.domain.HexBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
