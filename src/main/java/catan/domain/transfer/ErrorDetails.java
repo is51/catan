@@ -1,14 +1,16 @@
-package catan.exception;
+package catan.domain.transfer;
 
-public class UserException extends Exception {
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+public class ErrorDetails{
     private String errorCode;
 
-    public UserException() {
+    public ErrorDetails() {
         super();
     }
 
-    public UserException(String errorCode) {
-        super(errorCode);
+    public ErrorDetails(String errorCode) {
         this.errorCode = errorCode;
     }
 
@@ -19,4 +21,5 @@ public class UserException extends Exception {
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
+
 }

@@ -1,9 +1,11 @@
 
 package catan.controllers;
 
+import catan.domain.transfer.ErrorDetails;
 import catan.domain.transfer.LevelDetails;
 import catan.domain.UserBean;
 import catan.domain.transfer.PlayerDetails;
+import catan.exception.UserException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,7 +52,18 @@ public class GameController {
     @Path("error")
     @Produces({MediaType.APPLICATION_JSON})
     public String getError() {
-        throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        UserException userException = new UserException("UNKNOWN_ERROR");
+        throw webApplicationException(userException);
+    }
+
+
+    private WebApplicationException webApplicationException(UserException e) {
+        ErrorDetails details = new ErrorDetails(e.getErrorCode());
+
+        return new WebApplicationException(Response
+                .status(Response.Status.BAD_REQUEST)
+                .entity(details)
+                .build());
     }
 
 }

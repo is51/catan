@@ -2,11 +2,11 @@ package catan.domain;
 
 public class Session {
     private String token;
-    private UserBean player;
+    private UserBean user;
 
     public Session(String token, UserBean player) {
         this.token = token;
-        this.player = player;
+        this.user = player;
     }
 
     public String getToken() {
@@ -17,11 +17,11 @@ public class Session {
         this.token = token;
     }
 
-    public UserBean getPlayer() {
-        return player;
+    public UserBean getUser() {
+        return user;
     }
 
-    public void setPlayer(UserBean player) {
-        this.player = player;
+    public void setUser(UserBean user) {
+        this.user = user;
     }
 }

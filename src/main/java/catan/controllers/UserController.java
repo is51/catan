@@ -1,5 +1,7 @@
 package catan.controllers;
 
+import catan.domain.transfer.ErrorDetails;
+import catan.domain.transfer.SessionToken;
 import catan.exception.UserException;
 import catan.services.UserService;
 import catan.services.UserServiceImpl;
@@ -19,26 +21,29 @@ public class UserController {
     @POST
     @Path("login")
     @Produces({MediaType.APPLICATION_JSON})
-    public String login(@FormParam("username") String username,
-                        @FormParam("password") String password) {
+    public SessionToken login(@FormParam("username") String username,
+                              @FormParam("password") String password) {
         try {
             String token = userService.login(username, password);
 
-            return "{\"token\": \"" + token + "\"}";
+            SessionToken sessionToken = new SessionToken();
+            sessionToken.setToken(token);
+
+            return sessionToken;
         } catch (UserException e) {
-            throw new WebApplicationException(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity("{\"errorCode\": \"" + e.getErrorCode() + "\"}")
-                    .build());
+            throw webApplicationException(e);
         }
     }
 
     @POST
     @Path("logout")
     @Produces({MediaType.APPLICATION_JSON})
-    public void logout(@FormParam("username") String username,
-                       @FormParam("token") String token) {
-        userService.logout(username, token);
+    public void logout(@FormParam("token") String token) {
+        try {
+            userService.logout(token);
+        } catch (UserException e) {
+            throw webApplicationException(e);
+        }
     }
 
     @POST
@@ -49,10 +54,17 @@ public class UserController {
         try {
             userService.register(username, password);
         } catch (UserException e) {
-            throw new WebApplicationException(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity("{\"errorCode\": \"" + e.getErrorCode() + "\"}")
-                    .build());
+            throw webApplicationException(e);
         }
+    }
+
+
+    private WebApplicationException webApplicationException(UserException e) {
+        ErrorDetails details = new ErrorDetails(e.getErrorCode());
+
+        return new WebApplicationException(Response
+                .status(Response.Status.BAD_REQUEST)
+                .entity(details)
+                .build());
     }
 }
