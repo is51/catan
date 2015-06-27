@@ -1,9 +1,8 @@
 'use strict';
 
 angular.module('catan')
+    .controller('StartPageController', ['$scope', function($scope) {
 
-  .controller('StartPageController', ['$scope', function($scope) {
-            
-    $scope.test = "lalalal test";
-    
-  }]);
+        $scope.test = "lalalal test";
+
+    }]);

@@ -1,17 +1,17 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctLoginForm', ['Auth', function(Auth) {
+    .directive('ctRegisterForm', ['Auth', function(Auth) {
         return {
             restrict: 'E',
             scope: {},
-            templateUrl: "/features/loginForm/ct-login-form.html",
+            templateUrl: "/features/registerForm/ct-register-form.html",
             link: function(scope, element, attrs) {
 
                 scope.data = {};
 
                 scope.submit = function() {
-                    Auth.login(scope.data.login, scope.data.password)
+                    Auth.register(scope.data.login, scope.data.password)
                         .then(function(response) {
                             alert('success');
                             console.log(response);

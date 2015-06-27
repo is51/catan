@@ -1,62 +1,67 @@
 'use strict';
 
 angular.module('catan')
-  .service('Auth', ["$http", "$location", "$q", "$window", function ($http, $location, $q, $window) {
-    var Auth = {
-      getToken: function () {
-        return $window.localStorage.getItem('token');
-      },
+    .service('Auth', ["$http", "$q", "$window", function ($http, $q, $window) {
+        var Auth = {
+            getToken: function () {
+                return $window.localStorage.getItem('token');
+            },
 
-      setToken: function (token) {
-        $window.localStorage.setItem('token', token);
-      },
+            setToken: function (token) {
+                $window.localStorage.setItem('token', token);
+            },
 
-      deleteToken: function () {
-        $window.localStorage.removeItem('token');
-      },
+            deleteToken: function () {
+                $window.localStorage.removeItem('token');
+            },
 
-      login: function (username, password) {
-        var deferred = $q.defer();
+            login: function (username, password) {
+                var deferred = $q.defer();
 
-        $http.post('/dummy-response.json', {
-          username: username, password: password
-        }).success(function (response, status, headers, config) {
-          if (response.token) {
-            Auth.setToken(response.token);
-          }
+                $http.post('/api/user/login', {
+                    login: username,
+                    password: password
+                }).success(function (response, status, headers, config) {
+                    if (response.token) {
+                        Auth.setToken(response.token);
+                    }
 
-          deferred.resolve(response, status, headers, config);
-        }).error(function (response, status, headers, config) {
-          deferred.reject(response, status, headers, config);
-        });
+                    deferred.resolve(response, status, headers, config);
+                }).error(function (response, status, headers, config) {
+                    deferred.reject(response, status, headers, config);
+                });
 
-        return deferred.promise;
-      },
+                return deferred.promise;
+            },
 
-      logout: function () {
-        Auth.deleteToken();
-        $window.location = '/';
-      },
+            logout: function () {
+                var deferred = $q.defer();
 
-      register: function (user) {
-        var deferred = $q.defer();
+                $http.post('/api/user/logout').success(function (response, status, headers, config) {
+                    Auth.deleteToken();
+                    deferred.resolve(response, status, headers, config);
+                }).error(function (response, status, headers, config) {
+                    deferred.reject(response, status, headers, config);
+                });
 
-        $http.post('/api/v1/auth/register/', {
-          user: user
-        }).success(function (response, status, headers, config) {
-          Auth.login(user.username, user.password).
-            then(function (response, status, headers, config) {
-              $window.location = '/';
-            });
+                return deferred.promise;
+            },
 
-          deferred.resolve(response, status, headers, config);
-        }).error(function (response, status, headers, config) {
-          deferred.reject(response, status, headers, config);
-        });
+            register: function (username, password) {
+                var deferred = $q.defer();
 
-        return deferred.promise;
-      }
-    };
+                $http.post('/api/user/register', {
+                    username: username,
+                    password: password
+                }).success(function (response, status, headers, config) {
+                    deferred.resolve(response, status, headers, config);
+                }).error(function (response, status, headers, config) {
+                    deferred.reject(response, status, headers, config);
+                });
 
-    return Auth;
-  }]);
+                return deferred.promise;
+            }
+        };
+
+        return Auth;
+    }]);

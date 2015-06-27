@@ -6,7 +6,7 @@ angular.module('catan', [
   ])
 
   .config(['$routeProvider', function($routeProvider) {   
-    $routeProvider.when('/', {templateUrl: 'features/startPage/start-page.html', controller: 'StartPageController'});
+    $routeProvider.when('/', {templateUrl: 'features/startPage/startPage.html', controller: 'StartPageController'});
     $routeProvider.otherwise({redirectTo: '/'});
   }])
 

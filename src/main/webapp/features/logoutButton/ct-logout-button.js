@@ -1,17 +1,14 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctLoginForm', ['Auth', function(Auth) {
+    .directive('ctLogoutButton', ['Auth', function(Auth) {
         return {
-            restrict: 'E',
+            restrict: 'A',
             scope: {},
-            templateUrl: "/features/loginForm/ct-login-form.html",
             link: function(scope, element, attrs) {
 
-                scope.data = {};
-
-                scope.submit = function() {
-                    Auth.login(scope.data.login, scope.data.password)
+                element.on('click', function() {
+                    Auth.logout()
                         .then(function(response) {
                             alert('success');
                             console.log(response);
@@ -19,7 +16,9 @@ angular.module('catan')
                             alert('error');
                             console.log(response);
                         });
-                };
+
+                    return false;
+                });
 
             }
         };
