@@ -6,6 +6,7 @@ import catan.exception.UserException;
 import catan.services.UserService;
 import catan.services.UserServiceImpl;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,6 +21,7 @@ public class UserController {
 
     @POST
     @Path("login")
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public SessionToken login(@FormParam("username") String username,
                               @FormParam("password") String password) {
@@ -37,6 +39,7 @@ public class UserController {
 
     @POST
     @Path("logout")
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public void logout(@FormParam("token") String token) {
         try {
@@ -48,6 +51,7 @@ public class UserController {
 
     @POST
     @Path("register")
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public void register(@FormParam("username") String username,
                          @FormParam("password") String password) {

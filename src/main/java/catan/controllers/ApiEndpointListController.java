@@ -147,12 +147,24 @@ public class ApiEndpointListController {
                 "}\n" +
                 ".rwd-table th, .rwd-table td:before {\n" +
                 "  color: #dd5;\n" +
+                "}" +
+                "input {\n" +
+                "    display:inline-block;\n" +
+                "    *display: inline;     /* for IE7*/\n" +
+                "    zoom:1;              /* for IE7*/\n" +
+                "    vertical-align:middle;\n" +
+                "}\n" +
+                "\n" +
+                "label {\n" +
+                "    display:inline-block;\n" +
+                "    *display: inline;     /* for IE7*/\n" +
+                "    zoom:1;              /* for IE7*/\n" +
+                "    float: left;\n" +
+                "    text-align: left;\n" +
+                "    width: 120px;\n" +
                 "}");
         out.append("</style>" + NEWLINE);
-        out.append("<script type=\"text/javascript\" charset=\"utf-8\" src=\"jquery.js\"></script>" + NEWLINE);
-        out.append("<script type=\"text/javascript\" charset=\"utf-8\" src=\"jquery.dataTables.js\"></script>" + NEWLINE);
-        out.append("<script type=\"text/javascript\" charset=\"utf-8\" src=\"FixedColumns.js\"></script>" + NEWLINE);
-        out.append("<script type=\"text/javascript\" charset=\"utf-8\" src=\"RowGroupingWithFixedColumn.js\"></script>" + NEWLINE);
+        out.append("<script src=“http://code.jquery.com/jquery-2.1.4.min.js”></script>" + NEWLINE);
         out.append("</head>" + NEWLINE);
         out.append("<body id=\"dt_example\">" + NEWLINE);
         out.append("<table class=\"rwd-table\" cellpadding=\"0\" cellspacing=\"0\" border=\"1\" class=\"display\" id=\"endpoints\">" + NEWLINE);
@@ -182,7 +194,7 @@ public class ApiEndpointListController {
                     out.append("<tr>");
             }
 
-            out.append("<form method=\"" + endpoint.method + "\" action=\"" + endpoint.uri + "\">");
+            out.append("<form enctype=\"application/json\" method=\"" + endpoint.method + "\" action=\"" + endpoint.uri + "\">");
             out.append("<td>" + endpoint.uri + "</td>");
             out.append("<td>" + endpoint.method + "</td>");
             out.append("<td>" + endpoint.javaMethodName + "</td>");
@@ -198,13 +210,14 @@ public class ApiEndpointListController {
                 }
                 out.append("<br/>");
             }
+            out.append("<br/>");
 
             out.append("<td>");
             for (EndpointParameter parameter : endpoint.pathParameters) {
-                out.append(parameter.name + ":<input type=\"text\" name=\"" + parameter.name + "\"><br/>");
+                out.append("<label>" + parameter.name + ":</label><input type=\"text\" name=\"" + parameter.name + "\"><br/>");
             }
             for (EndpointParameter parameter : endpoint.queryParameters) {
-                out.append(parameter.name + ":<input type=\"text\" name=\"" + parameter.name + "\"><br/>");
+                out.append("<label>" + parameter.name + ":</label><input type=\"text\" name=\"" + parameter.name + "\"><br/>");
             }
 
             out.append("<input type=\"submit\" value=\"Submit\">");
