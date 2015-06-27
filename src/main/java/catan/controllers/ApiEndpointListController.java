@@ -1,5 +1,6 @@
 package catan.controllers;
 
+import com.sun.jersey.api.core.HttpContext;
 import org.apache.wink.common.annotations.Parent;
 
 import javax.ws.rs.DELETE;
@@ -12,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import java.io.File;
@@ -33,9 +35,11 @@ import java.util.List;
 public class ApiEndpointListController {
 
     @GET
-    @Path("/api")
+    @Path("/")
     @Produces({MediaType.TEXT_HTML})
-    public String getApiDetails() {
+    public String getApiDetails(@Context HttpContext context) {
+        String url = context.getRequest().getAbsolutePath().getPath();
+        //String query = context.getRequest().getRequestUri().toASCIIString();
 
 
         ApiEndpointListController apiEndpointListController = new ApiEndpointListController();
@@ -44,7 +48,7 @@ public class ApiEndpointListController {
             //  endpoints can be found - the place to start the search from
             String packagename = "catan.controllers";
 
-            List<Endpoint> endpoints = apiEndpointListController.findRESTEndpoints(packagename);
+            List<Endpoint> endpoints = apiEndpointListController.findRESTEndpoints(packagename, url);
             return apiEndpointListController.outputEndpointsTable(endpoints);
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,9 +70,84 @@ public class ApiEndpointListController {
         out.append("<html>");
         out.append("<head>");
         out.append("<style type=\"text/css\">" + NEWLINE);
-        out.append("@import \"demo_page.css\";" + NEWLINE);
-        out.append("@import \"header.ccss\";" + NEWLINE);
-        out.append("@import \"demo_table.css\";" + NEWLINE);
+        out.append("@import \"http://fonts.googleapis.com/css?family=Montserrat:300,400,700\";\n" +
+                ".rwd-table {\n" +
+                "  margin: 1em 0;\n" +
+                "  min-width: 300px;\n" +
+                "}\n" +
+                ".rwd-table tr {\n" +
+                "  border-top: 1px solid #ddd;\n" +
+                "  border-bottom: 1px solid #ddd;\n" +
+                "}\n" +
+                ".rwd-table th {\n" +
+                "  display: none;\n" +
+                "}\n" +
+                ".rwd-table td {\n" +
+                "  display: block;\n" +
+                "}\n" +
+                ".rwd-table td:last-child {\n" +
+                "  padding-bottom: .5em;\n" +
+                "}\n" +
+                ".rwd-table td:before {\n" +
+                "  content: attr(data-th) \": \";\n" +
+                "  font-weight: bold;\n" +
+                "  width: 6.5em;\n" +
+                "  display: inline-block;\n" +
+                "}\n" +
+                "@media (min-width: 480px) {\n" +
+                "  .rwd-table td:before {\n" +
+                "    display: none;\n" +
+                "  }\n" +
+                "}\n" +
+                ".rwd-table th, .rwd-table td {\n" +
+                "  text-align: left;\n" +
+                "}\n" +
+                "@media (min-width: 480px) {\n" +
+                "  .rwd-table th, .rwd-table td {\n" +
+                "    display: table-cell;\n" +
+                "    padding: .25em .5em;\n" +
+                "  }\n" +
+                "  .rwd-table th:last-child, .rwd-table td:last-child {\n" +
+                "    padding-right: 0;\n" +
+                "  }\n" +
+                "}\n" +
+                "\n" +
+                "body {\n" +
+                "  padding: 0 2em;\n" +
+                "  font-family: Montserrat, sans-serif;\n" +
+                "  -webkit-font-smoothing: antialiased;\n" +
+                "  text-rendering: optimizeLegibility;\n" +
+                "  color: #444;\n" +
+                "  background: #eee;\n" +
+                "}\n" +
+                "\n" +
+                "h1 {\n" +
+                "  font-weight: normal;\n" +
+                "  letter-spacing: -1px;\n" +
+                "  color: #34495E;\n" +
+                "}\n" +
+                "\n" +
+                ".rwd-table {\n" +
+                "  background: #34495E;\n" +
+                "  color: #fff;\n" +
+                "  border-radius: .4em;\n" +
+                "  overflow: hidden;\n" +
+                "}\n" +
+                ".rwd-table tr {\n" +
+                "  border-color: #46627f;\n" +
+                "}\n" +
+                ".rwd-table th, .rwd-table td {\n" +
+                "  margin: .5em 1em;\n" +
+                "}\n" +
+                "@media (min-width: 480px) {\n" +
+                "  .rwd-table th, .rwd-table td {\n" +
+                "    padding-left: 0.5em;\n" +
+                "    padding-rigth: 0.5em;\n" +
+                "  }\n" +
+                "}\n" +
+                ".rwd-table th, .rwd-table td:before {\n" +
+                "  color: #dd5;\n" +
+                "}");
         out.append("</style>" + NEWLINE);
         out.append("<script type=\"text/javascript\" charset=\"utf-8\" src=\"jquery.js\"></script>" + NEWLINE);
         out.append("<script type=\"text/javascript\" charset=\"utf-8\" src=\"jquery.dataTables.js\"></script>" + NEWLINE);
@@ -76,14 +155,14 @@ public class ApiEndpointListController {
         out.append("<script type=\"text/javascript\" charset=\"utf-8\" src=\"RowGroupingWithFixedColumn.js\"></script>" + NEWLINE);
         out.append("</head>" + NEWLINE);
         out.append("<body id=\"dt_example\">" + NEWLINE);
-        out.append("<table cellpadding=\"0\" cellspacing=\"0\" border=\"1\" class=\"display\" id=\"endpoints\">" + NEWLINE);
+        out.append("<table class=\"rwd-table\" cellpadding=\"0\" cellspacing=\"0\" border=\"1\" class=\"display\" id=\"endpoints\">" + NEWLINE);
         out.append("<thead><tr><th>URI</th><th>REST</th><th>method</th><th>parameters</th><th>Try it here</th></tr></thead>" + NEWLINE);
         out.append("<tbody>" + NEWLINE);
         String currentJavaClass = "";
         for (Endpoint endpoint : endpoints) {
             if (!currentJavaClass.equals(endpoint.javaClass)) {
                 currentJavaClass = endpoint.javaClass;
-                out.append("<tr><td colspan=\"5\">" + currentJavaClass + " : </td></tr>");
+                out.append("<tr><td colspan=\"5\" style=\"padding: 1em\">" + currentJavaClass + " : </td></tr>");
             }
 
             switch (endpoint.method) {
@@ -104,7 +183,6 @@ public class ApiEndpointListController {
             }
 
             out.append("<form method=\"" + endpoint.method + "\" action=\"" + endpoint.uri + "\">");
-           // out.append("<td style=\"padding-left:5em\"> </td>");
             out.append("<td>" + endpoint.uri + "</td>");
             out.append("<td>" + endpoint.method + "</td>");
             out.append("<td>" + endpoint.javaMethodName + "</td>");
@@ -120,9 +198,6 @@ public class ApiEndpointListController {
                 }
                 out.append("<br/>");
             }
-            for (EndpointParameter parameter : endpoint.payloadParameters) {
-                out.append("payload : " + parameter.javaType + "<br/>");
-            }
 
             out.append("<td>");
             for (EndpointParameter parameter : endpoint.pathParameters) {
@@ -131,9 +206,7 @@ public class ApiEndpointListController {
             for (EndpointParameter parameter : endpoint.queryParameters) {
                 out.append(parameter.name + ":<input type=\"text\" name=\"" + parameter.name + "\"><br/>");
             }
-            for (EndpointParameter parameter : endpoint.payloadParameters) {
-                out.append(parameter.name + ":<input type=\"text\" name=\"" + parameter.name + "\"><br/>");
-            }
+
             out.append("<input type=\"submit\" value=\"Submit\">");
             out.append("</td>");
             out.append("</form>");
@@ -151,7 +224,7 @@ public class ApiEndpointListController {
      * Returns REST endpoints defined in Java classes in the specified package.
      */
     @SuppressWarnings("rawtypes")
-    public List<Endpoint> findRESTEndpoints(String basepackage) throws IOException, ClassNotFoundException {
+    public List<Endpoint> findRESTEndpoints(String basepackage, String url) throws IOException, ClassNotFoundException {
         List<Endpoint> endpoints = new ArrayList<Endpoint>();
 
         List<Class> classes = getClasses(basepackage);
@@ -161,7 +234,7 @@ public class ApiEndpointListController {
             if (annotation != null) {
 
                 String basePath = getRESTEndpointPath(clazz);
-                basePath = basePath.equals("/") ? "" : basePath;
+                basePath = basePath.equals("/") ? url.substring(0, url.length() - 1) : url.substring(0, url.length() - 1) + basePath;
                 Method[] methods = clazz.getMethods();
                 for (Method method : methods) {
                     if (method.isAnnotationPresent(GET.class)) {
@@ -250,9 +323,6 @@ public class ApiEndpointListController {
                     break;
                 case QUERY:
                     endpoint.queryParameters.add(nextParameter);
-                    break;
-                case PAYLOAD:
-                    endpoint.payloadParameters.add(nextParameter);
                     break;
             }
         }
@@ -347,7 +417,6 @@ public class ApiEndpointListController {
 
         List<EndpointParameter> queryParameters = new ArrayList<ApiEndpointListController.EndpointParameter>();
         List<EndpointParameter> pathParameters = new ArrayList<ApiEndpointListController.EndpointParameter>();
-        List<EndpointParameter> payloadParameters = new ArrayList<ApiEndpointListController.EndpointParameter>();
     }
 
     public class EndpointParameter {
