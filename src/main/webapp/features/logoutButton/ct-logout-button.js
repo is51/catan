@@ -8,12 +8,10 @@ angular.module('catan')
 
                 element.on('click', function() {
                     Auth.logout()
-                        .then(function(response) {
-                            alert('success');
-                            console.log(response);
+                        .then(function() {
+                            alert('Success logout');
                         }, function(response) {
-                            alert('error');
-                            console.log(response);
+                            alert('Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });
 
                     return false;

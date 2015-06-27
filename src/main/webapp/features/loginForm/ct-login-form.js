@@ -12,12 +12,10 @@ angular.module('catan')
 
                 scope.submit = function() {
                     Auth.login(scope.data.username, scope.data.password)
-                        .then(function(response) {
-                            alert('success');
-                            console.log(response);
+                        .then(function() {
+                            alert('Success login');
                         }, function(response) {
-                            alert('error');
-                            console.log(response);
+                            alert('Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });
                 };
 
