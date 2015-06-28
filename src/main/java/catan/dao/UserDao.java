@@ -9,10 +9,10 @@ public class UserDao {
 
     public UserBean getUserByUsername(String username) {
         List<UserBean> users = datasource.getUsers();
-        for(UserBean user : users){
-           if(user.getUsername().equals(username)){
+        for (UserBean user : users) {
+            if (user.getUsername().equals(username)) {
                 return user;
-           }
+            }
         }
 
         return null;

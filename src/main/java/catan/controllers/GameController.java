@@ -1,10 +1,9 @@
-
 package catan.controllers;
 
-import catan.domain.transfer.ErrorDetails;
-import catan.domain.transfer.LevelDetails;
 import catan.domain.UserBean;
-import catan.domain.transfer.PlayerDetails;
+import catan.domain.transfer.output.ErrorDetails;
+import catan.domain.transfer.output.LevelDetails;
+import catan.domain.transfer.output.PlayerDetails;
 import catan.exception.UserException;
 
 import javax.ws.rs.GET;

@@ -1,4 +1,4 @@
-package catan.domain.transfer;
+package catan.domain.transfer.output;
 
 import catan.domain.UserBean;
 

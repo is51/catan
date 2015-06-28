@@ -29,7 +29,6 @@ import java.util.List;
  * Explores the Java classes in a given package, looking for annotations
  * indicating REST endpoints. These are written to an HTML table, documenting
  * basic information about all the known endpoints.
- *
  */
 @Path("/")
 public class ApiEndpointListController {
@@ -164,7 +163,21 @@ public class ApiEndpointListController {
                 "    width: 120px;\n" +
                 "}");
         out.append("</style>" + NEWLINE);
-        out.append("<script src=“http://code.jquery.com/jquery-2.1.4.min.js”></script>" + NEWLINE);
+        out.append("<script src=\"http://code.jquery.com/jquery-2.1.4.min.js\"></script>" + NEWLINE);
+        /*out.append("<script>\n" +
+                "$(function() {\n" +
+                "  $('form').on('submit', function(event) {\n" +
+                "      $.ajax({\n" +
+                "        url: $(event.target).attr('action'),\n" +
+                "        data: JSON.stringify($(event.target).serializeArray()),\n" +
+                "        dataType: \"json\",\n" +
+                "        contentType : \"application/json\"\n" +
+                "      });\n" +
+                "    return false;\n" +
+                "  });\n" +
+                "});\n" +
+                "</script>" + NEWLINE);
+                                           */
         out.append("</head>" + NEWLINE);
         out.append("<body id=\"dt_example\">" + NEWLINE);
         out.append("<table class=\"rwd-table\" cellpadding=\"0\" cellspacing=\"0\" border=\"1\" class=\"display\" id=\"endpoints\">" + NEWLINE);
@@ -194,7 +207,7 @@ public class ApiEndpointListController {
                     out.append("<tr>");
             }
 
-            out.append("<form enctype=\"application/json\" method=\"" + endpoint.method + "\" action=\"" + endpoint.uri + "\">");
+            out.append("<form method=\"" + endpoint.method + "\" action=\"" + endpoint.uri + "\">");
             out.append("<td>" + endpoint.uri + "</td>");
             out.append("<td>" + endpoint.method + "</td>");
             out.append("<td>" + endpoint.javaMethodName + "</td>");
@@ -210,6 +223,10 @@ public class ApiEndpointListController {
                 }
                 out.append("<br/>");
             }
+            for (EndpointParameter parameter : endpoint.payloadParameters) {
+                out.append("payload : " + parameter.javaType + "<br/>");
+            }
+
             out.append("<br/>");
 
             out.append("<td>");
@@ -218,6 +235,10 @@ public class ApiEndpointListController {
             }
             for (EndpointParameter parameter : endpoint.queryParameters) {
                 out.append("<label>" + parameter.name + ":</label><input type=\"text\" name=\"" + parameter.name + "\"><br/>");
+            }
+            for (EndpointParameter parameter : endpoint.payloadParameters) {
+                out.append("<label>" + parameter.javaType + ":</label><input type=\"text\" name=\"" + parameter.javaType + "\"><br/>");
+
             }
 
             out.append("<input type=\"submit\" value=\"Submit\">");
@@ -301,6 +322,7 @@ public class ApiEndpointListController {
 
             // ignore parameters used to access context
             if ((parameter == Request.class)
+                    || (parameter == com.sun.jersey.api.core.HttpContext.class)
                 //        || (parameter == javax.servlet.http.HttpServletResponse.class)
                 //        || (parameter == javax.servlet.http.HttpServletRequest.class)
                     ) {
@@ -327,8 +349,11 @@ public class ApiEndpointListController {
                 } else if (annotation instanceof DefaultValue) {
                     DefaultValue defaultvalue = (DefaultValue) annotation;
                     nextParameter.defaultValue = defaultvalue.value();
+                } else {
+                    //TODO: parse class to parameters
                 }
             }
+
 
             switch (nextParameter.parameterType) {
                 case PATH:
@@ -336,6 +361,9 @@ public class ApiEndpointListController {
                     break;
                 case QUERY:
                     endpoint.queryParameters.add(nextParameter);
+                    break;
+                case PAYLOAD:
+                    endpoint.payloadParameters.add(nextParameter);
                     break;
             }
         }
@@ -430,6 +458,7 @@ public class ApiEndpointListController {
 
         List<EndpointParameter> queryParameters = new ArrayList<ApiEndpointListController.EndpointParameter>();
         List<EndpointParameter> pathParameters = new ArrayList<ApiEndpointListController.EndpointParameter>();
+        List<EndpointParameter> payloadParameters = new ArrayList<ApiEndpointListController.EndpointParameter>();
     }
 
     public class EndpointParameter {

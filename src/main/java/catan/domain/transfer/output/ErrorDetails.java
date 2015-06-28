@@ -1,9 +1,9 @@
-package catan.domain.transfer;
+package catan.domain.transfer.output;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class ErrorDetails{
+public class ErrorDetails {
     private String errorCode;
 
     public ErrorDetails() {

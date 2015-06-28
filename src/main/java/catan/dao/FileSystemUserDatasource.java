@@ -2,7 +2,6 @@ package catan.dao;
 
 import catan.domain.UserBean;
 
-import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -21,7 +20,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileSystemUserDatasource implements UserDatasource{
+public class FileSystemUserDatasource implements UserDatasource {
 
     private List<UserBean> users;
 

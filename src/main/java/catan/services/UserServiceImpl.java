@@ -32,14 +32,14 @@ public class UserServiceImpl implements UserService {
         String uuid = UUID.randomUUID().toString();
         Session session = new Session(uuid, user);
 
-        log.debug("<< User " + username + " successfully logged in, session " + session.getToken() + " assigned for user " + session.getUser());
+        log.debug("<< User " + username + " successfully logged in, session " + session.getToken() + " assigned for user " + session.getUser().getUsername());
 
         return session.getToken();
     }
 
     @Override
     public void logout(String token) {
-        log.debug(">> Logout user with token '" + token +"' ...");
+        log.debug(">> Logout user with token '" + token + "' ...");
 
         log.debug("<< User with token " + token + " successfully logged out");
     }
