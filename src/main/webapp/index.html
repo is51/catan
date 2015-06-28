@@ -1,4 +1,15 @@
 <!DOCTYPE html>
+
+<!--
+    1
+    Think about moving logic from interceptor to Remote
+    (because interceptor is applied even for .html loading... or not... needs to be checked)
+    Or apply somehow this interceptor to Remote requests
+
+    2
+    Get ng-route and ng-cookie for angular 1.3
+-->
+
 <html lang="en" ng-app="catan">
 <head>
     <meta charset="utf-8">
@@ -28,6 +39,7 @@
     <script src="features/auth/Auth.service.js"></script>
     <script src="features/auth/AuthInterceptor.service.js"></script>
     <script src="features/auth/AuthToken.service.js"></script>
+    <script src="features/user/User.service.js"></script>
     <script src="features/remote/Remote.service.js"></script>
     <script src="features/loginForm/ct-login-form.js"></script>
     <script src="features/registerForm/ct-register-form.js"></script>

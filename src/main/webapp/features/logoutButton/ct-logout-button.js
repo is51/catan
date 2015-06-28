@@ -9,7 +9,7 @@ angular.module('catan')
                 element.on('click', function() {
                     Auth.logout()
                         .then(function() {
-                            alert('Success logout');
+                            // do nothing
                         }, function(response) {
                             alert('Error: ' + ((response.data && response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });

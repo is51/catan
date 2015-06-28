@@ -1,35 +1,56 @@
 <br><br>
 
-<div class="row">
-    <div class="col-md-4 col-md-offset-1">
-
-        Current token: {{AuthToken.get()}}
-        <i ng-hide="AuthToken.get()">empty</i>
-
-    </div>
-    <div class="col-md-4">
+<div>
 
 
+    <div class="col-xs-6 col-xs-offset-1" style="background: #f6f6f6; height: 300px; padding: 40px; font-size: 3rem; color: #ddd; border-radius: 3px;">
 
-    </div>
-</div>
+        <div ng-if="User.isAuthorized()">
+            Something for authorized users
+        </div>
 
-<br><br>
-
-<div class="row">
-    <div class="col-md-4 col-md-offset-1">
-
-        <ct-login-form></ct-login-form>
+        <div ng-if="!User.isAuthorized()">
+            Something for guests
+        </div>
 
     </div>
-    <div class="col-md-4">
 
-        <ct-register-form></ct-register-form>
 
-    </div>
-    <div class="col-md-2">
+    <div class="col-xs-4 col-xs-offset-1">
 
-        <a href="" ct-logout-button class="btn btn-primary">Log Out</a>
+        <div style="font-size: 2rem;">
+
+            <div ng-if="User.isAuthorized()">
+                <i class="glyphicon glyphicon-user"></i>
+                &nbsp;
+                {{User.get().username}}
+
+                <br>
+                <a href="" ct-logout-button class="btn btn-xs btn-default">Log Out</a>
+            </div>
+
+            <div ng-if="!User.isAuthorized()">
+                <i class="glyphicon glyphicon-user" style="color: lightgrey;"></i>
+                &nbsp;
+                <span ng-if="User.isGuest()" style="color: grey;">not authorized</span>
+                <span ng-if="User.isPending()" style="color: lightgrey;">loading...</span>
+
+                <br>
+
+            <span ng-if="!User.isPending()">
+                <a href="" ng-click="display.loginForm=!display.loginForm;display.signUpForm=false" class="btn btn-xs btn-default">Log In</a>
+                <a href="" ng-click="display.signUpForm=!display.signUpForm;display.loginForm=false" class="btn btn-xs btn-default">Sign up</a>
+            </span>
+            </div>
+
+        </div>
+
+        <div><br></div>
+
+        <div ng-if="User.isGuest()" class="col-xs-8">
+            <ct-login-form ng-show="display.loginForm"></ct-login-form>
+            <ct-register-form ng-show="display.signUpForm"></ct-register-form>
+        </>
 
     </div>
 </div>

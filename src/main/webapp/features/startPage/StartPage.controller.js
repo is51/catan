@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('catan')
-    .controller('StartPageController', ['$scope', 'AuthToken', function($scope, AuthToken) {
+    .controller('StartPageController', ['$scope', function($scope) {
 
-        $scope.AuthToken = AuthToken; //
+        $scope.display = {};
 
     }]);

@@ -13,7 +13,7 @@ angular.module('catan')
                 scope.submit = function() {
                     Auth.register(scope.data.username, scope.data.password)
                         .then(function() {
-                            alert('Success register');
+                            alert('Successful registration');
                         }, function(response) {
                             alert('Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });
