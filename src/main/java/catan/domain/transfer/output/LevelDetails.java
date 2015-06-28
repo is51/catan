@@ -1,8 +1,6 @@
 package catan.domain.transfer.output;
 
 
-import catan.domain.HexBean;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 

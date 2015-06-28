@@ -3,7 +3,7 @@ package catan.domain.transfer.output;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class SessionToken {
+public class SessionTokenDetails {
     private String token;
 
     public String getToken() {

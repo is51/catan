@@ -1,4 +1,4 @@
-package catan.domain;
+package catan.domain.transfer.output;
 
 public class HexBean {
     String type;

@@ -1,7 +1,6 @@
 package catan.services;
 
 import catan.dao.UserDao;
-import catan.domain.Session;
 import catan.domain.UserBean;
 import catan.exception.UserException;
 import org.apache.log4j.Logger;
@@ -20,28 +19,28 @@ public class UserServiceImpl implements UserService {
         UserBean user = userDao.getUserByUsername(username);
 
         if (user == null) {
-            log.debug("<< No user found with username " + username);
+            log.debug("<< No user found with username '" + username + "'");
             throw new UserException("INCORRECT_LOGIN_PASSWORD");
         }
 
         if (!user.getPassword().equals(password)) {
-            log.debug("<< Password '" + password + "' doesn't match to original password of user " + username);
+            log.debug("<< Password '" + password + "' doesn't match to original password of user '" + username + "'");
             throw new UserException("INCORRECT_LOGIN_PASSWORD");
         }
 
-        String uuid = UUID.randomUUID().toString();
-        Session session = new Session(uuid, user);
+        String token = UUID.randomUUID().toString();
+        userDao.allocateNewTokenToUser(token, user);
 
-        log.debug("<< User " + username + " successfully logged in, session " + session.getToken() + " assigned for user " + session.getUser().getUsername());
+        log.debug("<< User '" + username + "' successfully logged in and session '" + token + "' assigned to him");
 
-        return session.getToken();
+        return token;
     }
 
     @Override
     public void logout(String token) {
         log.debug(">> Logout user with token '" + token + "' ...");
-
-        log.debug("<< User with token " + token + " successfully logged out");
+        userDao.removeSession(token);
+        log.debug("<< User with token '" + token + "' successfully logged out");
     }
 
     @Override
@@ -60,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
         UserBean user = userDao.getUserByUsername(username);
         if (user != null) {
-            log.debug("<< User " + username + " with such username already exists");
+            log.debug("<< User '" + username + "' with such username already exists");
             throw new UserException("USERNAME_ALREADY_EXISTS");
         }
 
@@ -69,6 +68,20 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(password);
 
         userDao.addNewUser(newUser);
-        log.debug("<< User " + username + " successfully registered");
+        log.debug("<< User '" + username + "' successfully registered");
+    }
+
+    @Override
+    public UserBean getUserDetailsByToken(String token) throws UserException {
+        log.debug(">> Search user details with allocated token '" + token + "' ...");
+
+        UserBean user = userDao.getUserByToken(token);
+        if(user == null){
+            log.debug("<< User with allocated token '" + token + "' not found in system");
+            throw new UserException("TOKEN_INVALID");
+        }
+
+        log.debug("<< User '" + user.getUsername() + "' found with allocated token '" + token + "'");
+        return user;
     }
 }

@@ -1,8 +1,14 @@
 package catan.domain;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Session {
     private String token;
     private UserBean user;
+
+    public Session() {
+    }
 
     public Session(String token, UserBean player) {
         this.token = token;

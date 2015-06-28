@@ -1,5 +1,6 @@
 package catan.services;
 
+import catan.domain.UserBean;
 import catan.exception.UserException;
 
 public interface UserService {
@@ -8,4 +9,6 @@ public interface UserService {
     void logout(String token) throws UserException;
 
     void register(String username, String password) throws UserException;
+
+    UserBean getUserDetailsByToken(String token) throws UserException;
 }
