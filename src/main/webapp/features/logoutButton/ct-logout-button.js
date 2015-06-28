@@ -11,7 +11,7 @@ angular.module('catan')
                         .then(function() {
                             alert('Success logout');
                         }, function(response) {
-                            alert('Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
+                            alert('Error: ' + ((response.data && response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });
 
                     return false;

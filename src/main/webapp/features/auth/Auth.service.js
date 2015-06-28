@@ -11,8 +11,8 @@ angular.module('catan')
                     password: password
                 }).then(function (response, status, headers, config) {
 
-                    if (response.token) {
-                        AuthToken.set(response.token);
+                    if (response.data && response.data.token) {
+                        AuthToken.set(response.data.token);
                         deferred.resolve(response, status, headers, config);
                     } else {
                         deferred.reject(response, 400, headers, config);

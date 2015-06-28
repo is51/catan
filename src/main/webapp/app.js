@@ -21,7 +21,7 @@ angular.module('catan', [
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             transformRequest: function(data) {
-                return angular.element.param(data);
+                return (data) ? angular.element.param(data) : data;
             }
         });
         RemoteProvider.setRequest('auth', 'register', { url: '/api/user/register'});
