@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public class UserServiceImpl implements UserService {
     final static Logger log = Logger.getLogger(UserServiceImpl.class);
+    public static final String TOKEN_INVALID = "TOKEN_INVALID";
 
     UserDao userDao = new UserDao();
 
@@ -16,6 +17,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public String login(String username, String password) throws UserException {
         log.debug(">> Login user with username '" + username + "' ...");
+
+        if (username == null || username.trim().length() == 0) {
+            log.debug("<< Username is empty");
+            throw new UserException("ERROR");
+        }
+
+        if (password == null || password.trim().length() == 0) {
+            log.debug("<< Password is empty");
+            throw new UserException("ERROR");
+        }
+
         UserBean user = userDao.getUserByUsername(username);
 
         if (user == null) {
@@ -73,15 +85,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserBean getUserDetailsByToken(String token) throws UserException {
-        log.debug(">> Search user details with allocated token '" + token + "' ...");
+        log.debug(">> Search user with allocated token '" + token + "' ...");
 
         UserBean user = userDao.getUserByToken(token);
         if(user == null){
             log.debug("<< User with allocated token '" + token + "' not found in system");
-            throw new UserException("TOKEN_INVALID");
+            throw new UserException(TOKEN_INVALID);
         }
 
-        log.debug("<< User '" + user.getUsername() + "' found with allocated token '" + token + "'");
+        log.debug("<< User '" + user.getUsername() + "' found with allocated token '" + token + "' , return details of this user");
         return user;
     }
 }

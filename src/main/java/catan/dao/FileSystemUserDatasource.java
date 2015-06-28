@@ -68,6 +68,7 @@ public class FileSystemUserDatasource implements UserDatasource {
         for(Session session : sessions){
            if(session.getUser().getUsername().equals(username)){
                sessions.remove(session);
+               updateSessionsToFile();
                break;
            }
         }
@@ -78,6 +79,7 @@ public class FileSystemUserDatasource implements UserDatasource {
         for(Session session : sessions){
             if(session.getToken().equals(token)){
                 sessions.remove(session);
+                updateSessionsToFile();
                 break;
             }
         }

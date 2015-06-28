@@ -89,9 +89,15 @@ public class UserController {
 
     private WebApplicationException webApplicationException(UserException e) {
         ErrorDetails details = new ErrorDetails(e.getErrorCode());
+        Response.Status status = Response.Status.BAD_REQUEST;
+
+        if(UserServiceImpl.TOKEN_INVALID.equals(e.getErrorCode())){
+            details = null;
+            status =  Response.Status.FORBIDDEN;
+        }
 
         return new WebApplicationException(Response
-                .status(Response.Status.BAD_REQUEST)
+                .status(status)
                 .entity(details)
                 .build());
     }
