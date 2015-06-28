@@ -8,13 +8,16 @@ angular.module('catan')
                 var token = AuthToken.get();
 
                 if (token) {
-                  config.headers['Authorization'] = token;
+                    //config.headers['Authorization'] = token;
+                    config.data = config.data || {};
+                    config.data.token = token;
                 }
                 return config;
             },
 
             responseError: function (rejection) {
                 if (rejection.status === 403) {
+                    alert('Error 403: Access denied'); // temp
                     $location.path('/'); // needs showing of login form
                 }
                 return $q.reject(rejection);
