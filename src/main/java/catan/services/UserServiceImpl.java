@@ -96,4 +96,12 @@ public class UserServiceImpl implements UserService {
         log.debug("<< User '" + user.getUsername() + "' found with allocated token '" + token + "' , return details of this user");
         return user;
     }
+
+    public UserDao getUserDao() {
+        return userDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 }
