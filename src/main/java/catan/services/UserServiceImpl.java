@@ -9,7 +9,10 @@ import java.util.UUID;
 
 public class UserServiceImpl implements UserService {
     final static Logger log = Logger.getLogger(UserServiceImpl.class);
-    public static final String TOKEN_INVALID = "TOKEN_INVALID";
+    public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String ERROR_CODE_TOKEN_INVALID = "TOKEN_INVALID";
+    public static final String ERROR_CODE_INCORRECT_LOGIN_PASSWORD = "INCORRECT_LOGIN_PASSWORD";
+    public static final String ERROR_CODE_USERNAME_ALREADY_EXISTS = "USERNAME_ALREADY_EXISTS";
 
     UserDao userDao = new UserDao();
 
@@ -20,24 +23,24 @@ public class UserServiceImpl implements UserService {
 
         if (username == null || username.trim().length() == 0) {
             log.debug("<< Username is empty");
-            throw new UserException("ERROR");
+            throw new UserException(ERROR_CODE_ERROR);
         }
 
         if (password == null || password.trim().length() == 0) {
             log.debug("<< Password is empty");
-            throw new UserException("ERROR");
+            throw new UserException(ERROR_CODE_ERROR);
         }
 
         UserBean user = userDao.getUserByUsername(username);
 
         if (user == null) {
             log.debug("<< No user found with username '" + username + "'");
-            throw new UserException("INCORRECT_LOGIN_PASSWORD");
+            throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
         }
 
         if (!user.getPassword().equals(password)) {
             log.debug("<< Password '" + password + "' doesn't match to original password of user '" + username + "'");
-            throw new UserException("INCORRECT_LOGIN_PASSWORD");
+            throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
         }
 
         String token = UUID.randomUUID().toString();
@@ -61,18 +64,18 @@ public class UserServiceImpl implements UserService {
 
         if (username == null || username.trim().length() == 0) {
             log.debug("<< Username is empty");
-            throw new UserException("ERROR");
+            throw new UserException(ERROR_CODE_ERROR);
         }
 
         if (password == null || password.trim().length() == 0) {
             log.debug("<< Password is empty");
-            throw new UserException("ERROR");
+            throw new UserException(ERROR_CODE_ERROR);
         }
 
         UserBean user = userDao.getUserByUsername(username);
         if (user != null) {
             log.debug("<< User '" + username + "' with such username already exists");
-            throw new UserException("USERNAME_ALREADY_EXISTS");
+            throw new UserException(ERROR_CODE_USERNAME_ALREADY_EXISTS);
         }
 
         UserBean newUser = new UserBean();
@@ -90,7 +93,7 @@ public class UserServiceImpl implements UserService {
         UserBean user = userDao.getUserByToken(token);
         if(user == null){
             log.debug("<< User with allocated token '" + token + "' not found in system");
-            throw new UserException(TOKEN_INVALID);
+            throw new UserException(ERROR_CODE_TOKEN_INVALID);
         }
 
         log.debug("<< User '" + user.getUsername() + "' found with allocated token '" + token + "' , return details of this user");

@@ -91,7 +91,7 @@ public class UserController {
         ErrorDetails details = new ErrorDetails(e.getErrorCode());
         Response.Status status = Response.Status.BAD_REQUEST;
 
-        if(UserServiceImpl.TOKEN_INVALID.equals(e.getErrorCode())){
+        if(UserServiceImpl.ERROR_CODE_TOKEN_INVALID.equals(e.getErrorCode())){
             details = null;
             status =  Response.Status.FORBIDDEN;
         }

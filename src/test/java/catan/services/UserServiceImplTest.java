@@ -63,10 +63,10 @@ public class UserServiceImplTest {
         try {
             // WHEN
             userService.login(USER_NAME1, null);
-            fail("UserException with error code 'ERROR' should be thrown");
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
-            assertEquals("ERROR", e.getErrorCode());
+            assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e){
             fail("No other exceptions should be thrown");
         }
@@ -77,10 +77,10 @@ public class UserServiceImplTest {
         try {
             // WHEN
             userService.login(null, PASSWORD1);
-            fail("UserException with error code 'ERROR' should be thrown");
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
-            assertEquals("ERROR", e.getErrorCode());
+            assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e){
             fail("No other exceptions should be thrown");
         }
@@ -91,14 +91,14 @@ public class UserServiceImplTest {
         try {
             // GIVEN
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
-            //replay(userDao);
+            replay(userDao);
 
             // WHEN
             userService.login(USER_NAME1, PASSWORD1);
-            fail("UserException with error code 'INCORRECT_LOGIN_PASSWORD' should be thrown");
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
         } catch (UserException e) {
             // THEN
-            assertEquals("INCORRECT_LOGIN_PASSWORD", e.getErrorCode());
+            assertEquals(UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD, e.getErrorCode());
         } catch (Exception e){
             fail("No other exceptions should be thrown");
         }
@@ -111,14 +111,14 @@ public class UserServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
 
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-            //replay(userDao);
+            replay(userDao);
 
             // WHEN
             userService.login(USER_NAME1, PASSWORD2);
-            fail("UserException with error code 'INCORRECT_LOGIN_PASSWORD' should be thrown");
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
         } catch (UserException e) {
             // THEN
-            assertEquals("INCORRECT_LOGIN_PASSWORD", e.getErrorCode());
+            assertEquals(UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD, e.getErrorCode());
         } catch (Exception e){
             fail("No other exceptions should be thrown");
         }
@@ -138,12 +138,106 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void register() {
+    public void registerSuccessful() {
+        try {
+            // GIVEN
+            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
+            userDao.addNewUser(anyObject(UserBean.class));
+            expectLastCall();
+            replay(userDao);
 
+            // WHEN
+            userService.register(USER_NAME1, PASSWORD1);
+        } catch (Exception e){
+            fail("No exceptions should be thrown");
+        }
     }
 
     @Test
-    public void getUserDetailsByToken() {
+    public void registerErrorWhenPasswordIncorrect() throws UserException {
+        try {
+            // WHEN
+            userService.register(USER_NAME1, null);
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (UserException e) {
+            // THEN
+            assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e){
+            fail("No other exceptions should be thrown");
+        }
+    }
 
+    @Test
+    public void registerErrorWhenUsernameIncorrect() throws UserException {
+        try {
+            // WHEN
+            userService.register(null, PASSWORD1);
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (UserException e) {
+            // THEN
+            assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e){
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void registerErrorWhenUserWithSuchUsernameAlreadyExists() throws UserException {
+        try {
+            // GIVEN
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+
+            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
+            replay(userDao);
+
+            // WHEN
+            userService.register(USER_NAME1, PASSWORD1);
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_USERNAME_ALREADY_EXISTS + "' should be thrown");
+        } catch (UserException e) {
+            // THEN
+            assertEquals(UserServiceImpl.ERROR_CODE_USERNAME_ALREADY_EXISTS, e.getErrorCode());
+        } catch (Exception e){
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void getUserDetailsByTokenReturnPlayer() {
+        try {
+            // GIVEN
+            String token = "token1";
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+
+            expect(userDao.getUserByToken(token)).andStubReturn(user);
+            replay(userDao);
+
+            // WHEN
+            UserBean resultUser = userService.getUserDetailsByToken(token);
+
+            // THEN
+            assertEquals(user, resultUser);
+        } catch (Exception e){
+            fail("No exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void getUserDetailsByTokenErrorWhenTokenInvalid() {
+        try {
+            // GIVEN
+            String token = "token1";
+
+            expect(userDao.getUserByToken(token)).andStubReturn(null);
+            replay(userDao);
+
+            // WHEN
+            userService.getUserDetailsByToken(token);
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_TOKEN_INVALID + "' should be thrown");
+        } catch (UserException e) {
+            // THEN
+            assertEquals(UserServiceImpl.ERROR_CODE_TOKEN_INVALID, e.getErrorCode());
+        } catch (Exception e){
+            fail("No other exceptions should be thrown");
+        }
     }
 }
