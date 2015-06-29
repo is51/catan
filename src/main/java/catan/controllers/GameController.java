@@ -36,10 +36,10 @@ public class GameController {
     @Produces({MediaType.APPLICATION_JSON})
     public PlayerDetails getPlayerDetails() {
         List<UserBean> players = new ArrayList<UserBean>();
-        players.add(new UserBean("Andrey1", "blue", "", ""));
-        players.add(new UserBean("Syrovets", "yellow", "", ""));
-        players.add(new UserBean("Bork", "green", "", ""));
-        players.add(new UserBean("Yuriiii", "red", "", ""));
+        players.add(new UserBean(1, "Andrey1", "blue", "", ""));
+        players.add(new UserBean(2, "Syrovets", "yellow", "", ""));
+        players.add(new UserBean(3, "Bork", "green", "", ""));
+        players.add(new UserBean(4, "Yuriiii", "red", "", ""));
 
         PlayerDetails playerDetails = new PlayerDetails();
         playerDetails.setPlayerList(players);

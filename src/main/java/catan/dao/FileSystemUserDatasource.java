@@ -43,6 +43,7 @@ public class FileSystemUserDatasource implements UserDatasource {
 
     @Override
     public void addUser(UserBean newUser) {
+        newUser.setId(System.currentTimeMillis());
         users.add(newUser);
         updateUsersToFile();
     }

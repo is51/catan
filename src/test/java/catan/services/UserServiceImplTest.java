@@ -15,6 +15,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
 
 
@@ -43,7 +44,7 @@ public class UserServiceImplTest {
     @Test
     public void loginSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+        UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
 
         expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
         userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
@@ -56,6 +57,26 @@ public class UserServiceImplTest {
         // THEN
         assertNotNull(session);
         assertEquals(36, session.length());
+    }
+
+    @Test
+    public void loginGeneratesNewTokenSuccessful() throws UserException {
+        // GIVEN
+        UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+
+        expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
+        userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
+        expectLastCall().atLeastOnce();
+        replay(userDao);
+
+        // WHEN
+        String firstSession = userService.login(USER_NAME1, PASSWORD1);
+        String secondSession = userService.login(USER_NAME1, PASSWORD1);
+
+        // THEN
+        assertNotNull(firstSession);
+        assertNotNull(secondSession);
+        assertNotSame(firstSession, secondSession);
     }
 
     @Test
@@ -108,7 +129,7 @@ public class UserServiceImplTest {
     public void loginErrorWhenPasswordDoesNotMatch() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+            UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
 
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
             replay(userDao);
@@ -185,7 +206,7 @@ public class UserServiceImplTest {
     public void registerErrorWhenUserWithSuchUsernameAlreadyExists() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+            UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
 
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
             replay(userDao);
@@ -206,7 +227,7 @@ public class UserServiceImplTest {
         try {
             // GIVEN
             String token = "token1";
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+            UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
 
             expect(userDao.getUserByToken(token)).andStubReturn(user);
             replay(userDao);

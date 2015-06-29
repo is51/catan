@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class UserBean {
+    private long id;
     private String username;
     private String password;
     private String firstName;
@@ -12,11 +13,20 @@ public class UserBean {
     public UserBean() {
     }
 
-    public UserBean(String username, String password, String firstName, String lastName) {
+    public UserBean(long id, String username, String password, String firstName, String lastName) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getUsername() {
