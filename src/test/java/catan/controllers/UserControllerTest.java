@@ -1,5 +1,12 @@
 package catan.controllers;
 
+import com.jayway.restassured.http.ContentType;
+import org.junit.Test;
+
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+
 public class UserControllerTest {
     /*
 private static Tomcat t;
@@ -33,4 +40,18 @@ public static void shutDownTomcat() throws LifecycleException {
         assertEquals("Tim", json.get("firstName"));
     }
        */
+
+    @Test
+    public void shouldReturnWeatherDataForWarsaw() {
+        given().
+                port(8091).
+                header("Accept-Encoding", "application/json").
+                parameters("username", "user1", "password", "123").
+        when().
+                post("/user/login").
+        then().
+                statusCode(200).
+                contentType(ContentType.JSON).
+                body("token", equalTo(""));
+    }
 }
