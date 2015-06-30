@@ -132,7 +132,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldSuccessLogoutWithHttpCode400WhenAnyTokenIsPassed() {
+    public void shouldLogoutSuccessfullyWithHttpCode200WhenAnyTokenIsPassed() {
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
