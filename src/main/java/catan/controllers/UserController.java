@@ -24,7 +24,7 @@ public class UserController {
     @Path("login")
     @Produces({MediaType.APPLICATION_JSON})
     public SessionTokenDetails login(@FormParam("username") String username,
-                              @FormParam("password") String password) {
+                                     @FormParam("password") String password) {
         try {
             String token = userService.login(username, password);
 
@@ -80,7 +80,7 @@ public class UserController {
             userDetails.setFirstName(user.getFirstName());
             userDetails.setLastName(user.getLastName());
 
-            return  userDetails;
+            return userDetails;
         } catch (UserException e) {
             throw webApplicationException(e);
         }
@@ -91,9 +91,9 @@ public class UserController {
         ErrorDetails details = new ErrorDetails(e.getErrorCode());
         Response.Status status = Response.Status.BAD_REQUEST;
 
-        if(UserServiceImpl.ERROR_CODE_TOKEN_INVALID.equals(e.getErrorCode())){
+        if (UserServiceImpl.ERROR_CODE_TOKEN_INVALID.equals(e.getErrorCode())) {
             details = null;
-            status =  Response.Status.FORBIDDEN;
+            status = Response.Status.FORBIDDEN;
         }
 
         return new WebApplicationException(Response

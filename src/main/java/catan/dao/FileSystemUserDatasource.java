@@ -33,10 +33,10 @@ public class FileSystemUserDatasource implements UserDatasource {
             populateUsersFromFile();
             populateSessionsFromFile();
         } catch (JAXBException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             //log.error(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             //log.error(e);
         }
     }
@@ -141,7 +141,7 @@ public class FileSystemUserDatasource implements UserDatasource {
 
             bw.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -173,7 +173,7 @@ public class FileSystemUserDatasource implements UserDatasource {
 
             bw.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 }

@@ -1,57 +1,146 @@
 package catan.controllers;
 
-import com.jayway.restassured.http.ContentType;
+import catan.controllers.util.EmbeddedServer;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isEmptyString;
 
 
 public class UserControllerTest {
-    /*
-private static Tomcat t;
-private static final int TOMCAT_PORT = 8091;
+    public static final int SERVER_PORT = 8091;
+    private static EmbeddedServer embeddedServer;
 
-@BeforeClass
-public static void setUp() throws LifecycleException, ServletException, IOException {
-   String currentDir = new File(".").getCanonicalPath();
-   //String tomcatDir = currentDir + File.separatorChar + "tomcat";
-
-   t = new Tomcat();
-   t.setBaseDir(".");
-   t.setPort(TOMCAT_PORT);
-///There needs to be a symlink to the current dir named 'webapps'
-t.addWebapp("/","src/main/webapp");
-t.init();
-t.start();
-}
-
-@AfterClass
-public static void shutDownTomcat() throws LifecycleException {
-   t.stop();
-}
-
-//@Test
-    public void testUserFetchesSuccess() throws JSONException,
-            URISyntaxException {
-        Client client = new Client();
-        WebResource webResource = client.resource("http://localhost:8091/");
-        JSONObject json = webResource.path("/api/game/playerDetails").get(JSONObject.class);
-        assertEquals("Tim", json.get("firstName"));
+    @BeforeClass
+    public static void startTomcat() throws Exception {
+        embeddedServer = new EmbeddedServer(SERVER_PORT, "/");
+        embeddedServer.start();
     }
-       */
+
+    @AfterClass
+    public static void stopServer() {
+        embeddedServer.stop();
+    }
 
     @Test
-    public void shouldReturnWeatherDataForWarsaw() {
+    public void shouldSuccessfullyRegisterNewUserAndFailRegistrationWithHttpCode400WhenSuchUserAlreadyExists(){
+        //Registering new User
         given().
-                port(8091).
+                port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("username", "user1", "password", "123").
         when().
-                post("/user/login").
+                post("/api/user/register").
         then().
                 statusCode(200).
-                contentType(ContentType.JSON).
-                body("token", equalTo(""));
+                body(isEmptyString());
+
+        //Registering user with existing username
+        given().
+                port(SERVER_PORT).
+                header("Accept-Encoding", "application/json").
+                parameters("username", "user1", "password", "123").
+        when().
+                post("/api/user/register").
+        then().
+                statusCode(400).
+                contentType("application/json").
+                body("errorCode", equalTo("USERNAME_ALREADY_EXISTS"));
+    }
+
+    @Test
+    public void shouldFailWithUserNotFoundErrorWithHttpCode400WhenLoginWithWrongPassword() {
+        given().
+                port(SERVER_PORT).
+                header("Accept-Encoding", "application/json").
+                parameters("username", "user1", "password", "00000").
+        when().
+                post("/api/user/login").
+        then().
+                statusCode(400).
+                contentType("application/json").
+                body("errorCode", equalTo("INCORRECT_LOGIN_PASSWORD"));
+    }
+
+    @Test
+    public void shouldFailWithCommonErrorWithHttpCode400WhenLoginWithIncorrectParameters() {
+        given().
+                port(SERVER_PORT).
+                header("Accept-Encoding", "application/json").
+                parameters("username", "", "password", "").
+        when().
+                post("/api/user/login").
+        then().
+                statusCode(400).
+                contentType("application/json").
+                body("errorCode", equalTo("ERROR"));
+    }
+
+    @Test
+    public void shouldReturnSessionTokenWithHttpCode200AndReturnUserDetailsWithHttpCode200WhenRegisterLoginAndGetDetails() {
+        //Registering new User
+        given().
+                port(SERVER_PORT).
+                header("Accept-Encoding", "application/json").
+                parameters("username", "user2", "password", "123").
+        when().
+                post("/api/user/register").
+        then().
+                statusCode(200).
+                body(isEmptyString());
+
+        //Login user and extract token from response
+        String token =
+        given().
+                port(8091).
+                header("Accept-Encoding", "application/json").
+                parameters("username", "user2", "password", "123").
+        when().
+                post("/api/user/login").
+        then().
+                statusCode(200).
+                contentType("application/json").
+        extract()
+                .path("token");
+
+        //Get details by extracted token
+        given().
+                port(SERVER_PORT).
+                header("Accept-Encoding", "application/json").
+                parameters("token", token).
+        when().
+                post("/api/user/details").
+        then().
+                statusCode(200).
+                contentType("application/json").
+                body("username", equalTo("user2"));
+    }
+
+    @Test
+    public void shouldFailWithForbiddenResponseBodyWithHttpCode403WhenTryingToGetDetailsForInvalidToken() {
+        given().
+                port(SERVER_PORT).
+                header("Accept-Encoding", "application/json").
+                parameters("token", "12345").
+        when().
+                post("/api/user/details").
+        then().
+                statusCode(403);
+    }
+
+    @Test
+    public void shouldSuccessLogoutWithHttpCode400WhenAnyTokenIsPassed() {
+        given().
+                port(SERVER_PORT).
+                header("Accept-Encoding", "application/json").
+                parameters("token", "12345").
+        when().
+                post("/api/user/logout").
+        then().
+                statusCode(200).
+                body(isEmptyString());
     }
 }
