@@ -38,6 +38,7 @@ angular.module('catan')
                         status = STATUS_AUTHORIZED;
                         deferred.resolve();
                     }, function() {
+                        AuthToken.delete();
                         status = STATUS_NOT_AUTHORIZED;
                         deferred.reject();
                     });
