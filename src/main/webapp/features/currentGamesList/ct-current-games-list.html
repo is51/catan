@@ -1,0 +1,21 @@
+<div>
+    My games:<br>
+
+    <div ng-hide="items">- no games -</div>
+
+    <table ng-if="items" class="table table-condensed table-striped">
+        <tr>
+            <th>Game ID</th>
+            <th>Creator ID</th>
+            <th>Is Private</th>
+            <th>Date Created</th>
+        </tr>
+        <tr ng-repeat="item in items">
+            <td>{{item.gameId}}</td>
+            <td>{{item.creatorId}}</td>
+            <td>{{item.isPrivate}}</td>
+            <td>{{item.dateCreated | date : 'short'}}</td>
+        </tr>
+    </table>
+
+</div>

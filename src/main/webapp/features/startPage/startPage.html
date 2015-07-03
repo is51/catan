@@ -3,15 +3,14 @@
 <div>
 
 
-    <div class="col-xs-6 col-xs-offset-1" style="background: #f6f6f6; height: 300px; padding: 40px; font-size: 3rem; color: #ddd; border-radius: 3px;">
+    <div class="col-xs-6 col-xs-offset-1" style="background: #f6f6f6; min-height: 300px; padding: 40px; font-size: 3rem; color: #ddd; border-radius: 3px;">
 
-        <div ng-if="User.isAuthorized()">
-            Something for authorized users
-        </div>
 
-        <div ng-if="!User.isAuthorized()">
-            Something for guests
-        </div>
+        <ct-create-game-form ng-if="User.isAuthorized()"></ct-create-game-form>
+
+        <ct-current-games-list ng-if="User.isAuthorized()"></ct-current-games-list>
+
+        <ct-public-games-list></ct-public-games-list>
 
     </div>
 

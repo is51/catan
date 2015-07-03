@@ -29,8 +29,13 @@ angular.module('catan', [
                 return (data) ? angular.element.param(data) : data;
             }
         });
+
         RemoteProvider.setRequest('auth', 'register', { url: '/api/user/register'});
         RemoteProvider.setRequest('auth', 'login', { url: '/api/user/login'});
         RemoteProvider.setRequest('auth', 'logout', { url: '/api/user/logout'});
         RemoteProvider.setRequest('auth', 'details', { url: '/api/user/details'});
+
+        RemoteProvider.setRequest('game', 'create', { url: '/api/game/create'});
+        RemoteProvider.setRequest('game', 'listCurrent', { url: '/api/game/list/current'});
+        RemoteProvider.setRequest('game', 'listPublic', { url: '/api/game/list/public'});
     }]);
