@@ -1,104 +1,79 @@
 package catan.controllers;
 
-import catan.domain.UserBean;
+import catan.domain.model.UserBean;
 import catan.domain.transfer.output.ErrorDetails;
 import catan.domain.transfer.output.SessionTokenDetails;
 import catan.domain.transfer.output.UserDetails;
 import catan.exception.UserException;
 import catan.services.UserService;
 import catan.services.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-@Path("/user")
+@RestController
+@ControllerAdvice
+
+@RequestMapping("/api/user")
 public class UserController {
+
     UserService userService = new UserServiceImpl();
 
-    @POST
-    @Path("login")
-    @Produces({MediaType.APPLICATION_JSON})
-    public SessionTokenDetails login(@FormParam("username") String username,
-                                     @FormParam("password") String password) {
-        try {
-            String token = userService.login(username, password);
+    @RequestMapping(value = "login",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public SessionTokenDetails login(@RequestParam("username") String username,
+                                     @RequestParam("password") String password) throws UserException {
+        String token = userService.login(username, password);
 
-            SessionTokenDetails sessionTokenDetails = new SessionTokenDetails();
-            sessionTokenDetails.setToken(token);
+        SessionTokenDetails sessionTokenDetails = new SessionTokenDetails();
+        sessionTokenDetails.setToken(token);
 
-            return sessionTokenDetails;
-        } catch (UserException e) {
-            throw webApplicationException(e);
-        }
+        return sessionTokenDetails;
     }
 
-    @POST
-    @Path("logout")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response logout(@FormParam("token") String token) {
-        try {
-            userService.logout(token);
-            return Response
-                    .status(Response.Status.OK)
-                    .entity("")
-                    .build();
-        } catch (UserException e) {
-            throw webApplicationException(e);
-        }
+    @RequestMapping(value = "logout",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void logout(@RequestParam("token") String token) throws UserException {
+        userService.logout(token);
     }
 
-    @POST
-    @Path("register")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response register(@FormParam("username") String username,
-                             @FormParam("password") String password) {
-        try {
-            userService.register(username, password);
-            return Response
-                    .status(Response.Status.OK)
-                    .entity("")
-                    .build();
-        } catch (UserException e) {
-            throw webApplicationException(e);
-        }
+    @RequestMapping(value = "register",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void register(@RequestParam("username") String username,
+                         @RequestParam("password") String password) throws UserException {
+        userService.register(username, password);
     }
 
-    @POST
-    @Path("details")
-    @Produces({MediaType.APPLICATION_JSON})
-    public UserDetails getUserDetailsByToken(@FormParam("token") String token) {
-        try {
-            UserBean user = userService.getUserDetailsByToken(token);
+    @RequestMapping(value = "details",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDetails getUserDetailsByToken(@RequestParam("token") String token) throws UserException {
+        UserBean user = userService.getUserDetailsByToken(token);
 
-            UserDetails userDetails = new UserDetails();
-            userDetails.setUsername(user.getUsername());
-            userDetails.setFirstName(user.getFirstName());
-            userDetails.setLastName(user.getLastName());
+        UserDetails userDetails = new UserDetails();
+        userDetails.setUsername(user.getUsername());
 
-            return userDetails;
-        } catch (UserException e) {
-            throw webApplicationException(e);
-        }
+        return userDetails;
     }
 
+    public UserService getUserService() {
+        return userService;
+    }
 
-    private WebApplicationException webApplicationException(UserException e) {
-        ErrorDetails details = new ErrorDetails(e.getErrorCode());
-        Response.Status status = Response.Status.BAD_REQUEST;
-
-        if (UserServiceImpl.ERROR_CODE_TOKEN_INVALID.equals(e.getErrorCode())) {
-            details = null;
-            status = Response.Status.FORBIDDEN;
-        }
-
-        return new WebApplicationException(Response
-                .status(status)
-                .entity(details)
-                .build());
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

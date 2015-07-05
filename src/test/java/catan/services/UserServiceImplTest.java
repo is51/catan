@@ -1,7 +1,7 @@
 package catan.services;
 
 import catan.dao.UserDao;
-import catan.domain.UserBean;
+import catan.domain.model.UserBean;
 import catan.exception.UserException;
 import org.junit.After;
 import org.junit.Before;
@@ -23,8 +23,7 @@ public class UserServiceImplTest {
     public static final String USER_NAME1 = "userName1";
     public static final String PASSWORD1 = "12345";
     public static final String PASSWORD2 = "67890";
-    public static final String FIRST_NAME = "andrey";
-    public static final String LAST_NAME = "lastName";
+
     UserDao userDao;
     UserServiceImpl userService;
 
@@ -44,7 +43,10 @@ public class UserServiceImplTest {
     @Test
     public void loginSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+        UserBean user = new UserBean();
+        user.setId((int) System.currentTimeMillis());
+        user.setUsername(USER_NAME1);
+        user.setPassword(PASSWORD1);
 
         expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
         userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
@@ -62,7 +64,10 @@ public class UserServiceImplTest {
     @Test
     public void loginGeneratesNewTokenSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+        UserBean user = new UserBean();
+        user.setId((int) System.currentTimeMillis());
+        user.setUsername(USER_NAME1);
+        user.setPassword(PASSWORD1);
 
         expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
         userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
@@ -88,7 +93,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }
@@ -102,7 +107,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }
@@ -120,7 +125,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }
@@ -129,7 +134,10 @@ public class UserServiceImplTest {
     public void loginErrorWhenPasswordDoesNotMatch() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+            UserBean user = new UserBean();
+            user.setId((int) System.currentTimeMillis());
+            user.setUsername(USER_NAME1);
+            user.setPassword(PASSWORD1);
 
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
             replay(userDao);
@@ -140,7 +148,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }
@@ -153,7 +161,7 @@ public class UserServiceImplTest {
 
             // WHEN
             userService.logout(token);
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
     }
@@ -169,7 +177,7 @@ public class UserServiceImplTest {
 
             // WHEN
             userService.register(USER_NAME1, PASSWORD1);
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
     }
@@ -183,7 +191,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }
@@ -197,7 +205,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }
@@ -206,7 +214,10 @@ public class UserServiceImplTest {
     public void registerErrorWhenUserWithSuchUsernameAlreadyExists() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+            UserBean user = new UserBean();
+            user.setId((int) System.currentTimeMillis());
+            user.setUsername(USER_NAME1);
+            user.setPassword(PASSWORD1);
 
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
             replay(userDao);
@@ -217,7 +228,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_USERNAME_ALREADY_EXISTS, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }
@@ -227,7 +238,10 @@ public class UserServiceImplTest {
         try {
             // GIVEN
             String token = "token1";
-            UserBean user = new UserBean(System.currentTimeMillis(), USER_NAME1, PASSWORD1, FIRST_NAME, LAST_NAME);
+            UserBean user = new UserBean();
+            user.setId((int) System.currentTimeMillis());
+            user.setUsername(USER_NAME1);
+            user.setPassword(PASSWORD1);
 
             expect(userDao.getUserByToken(token)).andStubReturn(user);
             replay(userDao);
@@ -237,7 +251,7 @@ public class UserServiceImplTest {
 
             // THEN
             assertEquals(user, resultUser);
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
     }
@@ -257,7 +271,7 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_TOKEN_INVALID, e.getErrorCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
     }

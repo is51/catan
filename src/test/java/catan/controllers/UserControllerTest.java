@@ -1,29 +1,22 @@
 package catan.controllers;
 
-import catan.controllers.util.EmbeddedServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import catan.config.ApplicationConfig;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isEmptyString;
 
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@WebIntegrationTest("server.port:8091")
 public class UserControllerTest {
     public static final int SERVER_PORT = 8091;
-    private static EmbeddedServer embeddedServer;
-
-    @BeforeClass
-    public static void startTomcat() throws Exception {
-        embeddedServer = new EmbeddedServer(SERVER_PORT, "/");
-        embeddedServer.start();
-    }
-
-    @AfterClass
-    public static void stopServer() {
-        embeddedServer.stop();
-    }
 
     @Test
     public void shouldSuccessfullyRegisterNewUserAndFailRegistrationWithHttpCode400WhenSuchUserAlreadyExists(){
