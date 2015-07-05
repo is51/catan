@@ -1,7 +1,7 @@
 package catan.dao;
 
-import catan.domain.model.UserBean;
-import catan.domain.model.UserSession;
+import catan.domain.model.user.UserBean;
+import catan.domain.model.user.UserSessionBean;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
@@ -25,10 +25,10 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
 
     @Override
     public UserBean getUserByToken(String token) {
-        Criteria criteria = getSession().createCriteria(UserSession.class);
+        Criteria criteria = getSession().createCriteria(UserSessionBean.class);
         criteria.add(Restrictions.eq("token", token));
 
-        UserSession userSession = (UserSession) criteria.uniqueResult();
+        UserSessionBean userSession = (UserSessionBean) criteria.uniqueResult();
 
         return userSession != null ? userSession.getUser() : null;
     }
@@ -41,7 +41,7 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
         query.setString("username", user.getUsername());
         query.executeUpdate();
 
-        UserSession userSession = new UserSession();
+        UserSessionBean userSession = new UserSessionBean();
         userSession.setToken(token);
         userSession.setUser(user);
 

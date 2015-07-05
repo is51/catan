@@ -1,4 +1,4 @@
-package catan.domain.model;
+package catan.domain.model.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

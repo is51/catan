@@ -1,7 +1,7 @@
 package catan.services;
 
 import catan.dao.UserDao;
-import catan.domain.model.UserBean;
+import catan.domain.model.user.UserBean;
 import catan.exception.UserException;
 import org.junit.After;
 import org.junit.Before;

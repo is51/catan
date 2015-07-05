@@ -1,6 +1,6 @@
 package catan.dao;
 
-import catan.domain.model.UserBean;
+import catan.domain.model.user.UserBean;
 
 public interface UserDao {
     void addNewUser(UserBean newUser);

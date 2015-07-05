@@ -1,6 +1,6 @@
 package catan.services;
 
-import catan.domain.model.UserBean;
+import catan.domain.model.user.UserBean;
 import catan.exception.UserException;
 
 public interface UserService {

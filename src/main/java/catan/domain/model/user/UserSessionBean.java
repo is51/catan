@@ -1,4 +1,4 @@
-package catan.domain.model;
+package catan.domain.model.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(name = "USER_SESSION", uniqueConstraints = {
         @UniqueConstraint(columnNames = "TOKEN")})
-public class UserSession {
+public class UserSessionBean {
 
     @Id
     @Column(name = "TOKEN", unique = true, nullable = false)
@@ -53,9 +53,9 @@ public class UserSession {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof UserSession))
+        if (!(obj instanceof UserSessionBean))
             return false;
-        UserSession other = (UserSession) obj;
+        UserSessionBean other = (UserSessionBean) obj;
         if (token == null) {
             if (other.token != null)
                 return false;

@@ -1,7 +1,7 @@
 package catan.services;
 
 import catan.dao.UserDao;
-import catan.domain.model.UserBean;
+import catan.domain.model.user.UserBean;
 import catan.exception.UserException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

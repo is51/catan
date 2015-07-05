@@ -1,22 +1,17 @@
 package catan.controllers;
 
-import catan.domain.model.UserBean;
-import catan.domain.transfer.output.ErrorDetails;
+import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.SessionTokenDetails;
 import catan.domain.transfer.output.UserDetails;
 import catan.exception.UserException;
 import catan.services.UserService;
 import catan.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
