@@ -3,7 +3,8 @@ package catan.services;
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.exception.UserException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Service("userService")
 @Transactional
 public class UserServiceImpl implements UserService {
-    final static Logger log = Logger.getLogger(UserServiceImpl.class);
+    private Logger log = LoggerFactory.getLogger(UserService.class);
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String ERROR_CODE_TOKEN_INVALID = "TOKEN_INVALID";
     public static final String ERROR_CODE_INCORRECT_LOGIN_PASSWORD = "INCORRECT_LOGIN_PASSWORD";
@@ -103,10 +104,6 @@ public class UserServiceImpl implements UserService {
 
         log.debug("<< User '" + user.getUsername() + "' found with allocated token '" + token + "' , return details of this user");
         return user;
-    }
-
-    public UserDao getUserDao() {
-        return userDao;
     }
 
     public void setUserDao(UserDao userDao) {
