@@ -25,6 +25,8 @@ public class UserControllerTest {
     public static final String USER_NAME = "test game";
     public static final String USER_PASSWORD = "test game";
 
+    public static final String URL_CREATE_NEW_GAME = "/api/game/create";
+
     private void registerUser(String username, String password) {
         given().
                 port(SERVER_PORT).
@@ -52,6 +54,18 @@ public class UserControllerTest {
                     .path("token");
     }
 
+    private void logoutUser(String token) {
+        given().
+                port(SERVER_PORT).
+                header("Content-Type", CONTENT_TYPE).
+                parameters("token", token).
+        when().
+                post("/api/user/logout").
+        then().
+                statusCode(200).
+                contentType(CONTENT_TYPE);
+    }
+
     private int getUserId(String token) {
         return
             given().
@@ -67,21 +81,27 @@ public class UserControllerTest {
                     .path("id");
     }
 
+    @BeforeClass
+    public void setup(){
+        registerUser(USER_NAME, USER_PASSWORD);
+    }
+
+    // ----------------
     // Create New Game
+    // ----------------
 
     @Test
     public void shouldSuccessfullyCreateNewGame(){
 
-        registerUser(USER_NAME, USER_PASSWORD);
         String userToken = loginUser(USER_NAME, USER_PASSWORD);
         int userId = getUserId(userToken);
 
         given().
                 port(SERVER_PORT).
                 header("Content-Type", CONTENT_TYPE).
-                parameters("privateGame", true).
+                parameters("token", userToken, "privateGame", true).
         when().
-                post("/api/game/create").
+                post(URL_CREATE_NEW_GAME).
         then().
                 statusCode(200).
                 contentType(CONTENT_TYPE).
@@ -93,7 +113,60 @@ public class UserControllerTest {
                 and().
                 body("dateCreated", lessThanOrEqualTo(System.currentTimeMillis()))
                 and().
-                body("dateCreated", greaterThanOrEqualTo(System.currentTimeMillis() - 1000 * 60 * 5)); // 5 minutes
+                body("dateCreated", greaterThanOrEqualTo(System.currentTimeMillis() - 1 * 60 * 1000)); // 1 minute
     }
+
+    @Test
+    public void shouldFailWithErrorWhenThereIsNoPrivateGameVariable(){
+
+        String userToken = loginUser(USER_NAME, USER_PASSWORD);
+
+        given().
+                port(SERVER_PORT).
+                header("Content-Type", CONTENT_TYPE).
+                parameters("token", userToken).
+        when().
+                post(URL_CREATE_NEW_GAME).
+        then().
+                statusCode(400);
+    }
+
+    @Test
+    public void shouldFailWith403ErrorWhenUserIsNotAuthorized(){
+
+        String userToken = loginUser(USER_NAME, USER_PASSWORD);
+
+        // without token
+
+        given().
+                port(SERVER_PORT).
+                header("Content-Type", CONTENT_TYPE).
+        when().
+                post(URL_CREATE_NEW_GAME).
+        then().
+                statusCode(403);
+
+        // with old token
+
+        logoutUser(userToken);
+
+        given().
+                port(SERVER_PORT).
+                header("Content-Type", CONTENT_TYPE).
+                parameters("token", userToken).
+        when().
+                post(URL_CREATE_NEW_GAME).
+        then().
+                statusCode(403);
+    }
+
+    // ----------------------
+    // List of Current Games
+    // ----------------------
+
+    // ..................
+    // ..............
+    // ..........
+
 
 }
