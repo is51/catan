@@ -1,5 +1,7 @@
-package catan.dao;
+package catan.dao.impl;
 
+import catan.dao.AbstractDao;
+import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.domain.model.user.UserSessionBean;
 import org.hibernate.Criteria;
@@ -35,9 +37,8 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
 
     @Override
     public void allocateNewTokenToUser(String token, UserBean user) {
-        //TODO: think about make it transactional via 'delete' method
-        Query query = getSession().createQuery("DELETE FROM UserSessionBean AS userSession WHERE userSession.id in " +
-                "(SELECT userSession2.id FROM UserSessionBean AS userSession2 WHERE userSession2.user.username = :username)");
+        Query query = getSession().createQuery("DELETE FROM " + UserSessionBean.class.getSimpleName() + " AS userSession WHERE userSession.id in " +
+                "(SELECT userSession2.id FROM " + UserSessionBean.class.getName() + " AS userSession2 WHERE userSession2.user.username = :username)");
         query.setString("username", user.getUsername());
         query.executeUpdate();
 
@@ -50,8 +51,7 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
 
     @Override
     public void removeSession(String token) {
-        //TODO: think about make it transactional via 'delete' method
-        Query query = getSession().createQuery("DELETE FROM UserSessionBean AS userSession WHERE userSession.token = :token");
+        Query query = getSession().createQuery("DELETE FROM " + UserSessionBean.class.getSimpleName() + " AS userSession WHERE userSession.token = :token");
         query.setString("token", token);
         query.executeUpdate();
     }

@@ -1,13 +1,14 @@
-package catan.domain.transfer.output;
+package catan.exception;
 
-public class ErrorDetails {
+public class GameException extends Exception {
     private String errorCode;
 
-    public ErrorDetails() {
+    public GameException() {
         super();
     }
 
-    public ErrorDetails(String errorCode) {
+    public GameException(String errorCode) {
+        super(errorCode);
         this.errorCode = errorCode;
     }
 
@@ -18,5 +19,4 @@ public class ErrorDetails {
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
-
 }

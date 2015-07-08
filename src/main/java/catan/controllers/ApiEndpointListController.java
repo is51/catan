@@ -2,6 +2,7 @@ package catan.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -130,8 +131,12 @@ public class ApiEndpointListController {
                 out.append("<td>");
 
                 for (MethodParameter parameter : method.getMethodParameters()) {
+                    if (parameter.getParameterAnnotation(PathVariable.class) != null) {
+                        out.append("path {" + parameter.getParameterAnnotation(PathVariable.class).value()
+                                + "}  (" + parameter.getParameterType().getName() + ")<br/>");
+                    }
                     if (parameter.getParameterAnnotation(RequestParam.class) != null) {
-                        out.append("path {" + parameter.getParameterAnnotation(RequestParam.class).value()
+                        out.append("parameter {" + parameter.getParameterAnnotation(RequestParam.class).value()
                                 + "}  (" + parameter.getParameterType().getName() + ")<br/>");
                     }
                 }
@@ -139,6 +144,12 @@ public class ApiEndpointListController {
                 out.append("<td>");
 
                 for (MethodParameter parameter : method.getMethodParameters()) {
+                    if (parameter.getParameterAnnotation(PathVariable.class) != null) {
+                        out.append("<label>_" + parameter.getParameterAnnotation(PathVariable.class).value()
+                                + "_:</label><input type=\"text\" name=\""
+                                + parameter.getParameterAnnotation(PathVariable.class).value() + "\"><br/>");
+                    }
+
                     if (parameter.getParameterAnnotation(RequestParam.class) != null) {
                         out.append("<label>" + parameter.getParameterAnnotation(RequestParam.class).value()
                                 + ":</label><input type=\"text\" name=\""

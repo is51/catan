@@ -1,4 +1,4 @@
-package catan.services;
+package catan.services.impl;
 
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
@@ -228,49 +228,6 @@ public class UserServiceImplTest {
         } catch (UserException e) {
             // THEN
             assertEquals(UserServiceImpl.ERROR_CODE_USERNAME_ALREADY_EXISTS, e.getErrorCode());
-        } catch (Exception e) {
-            fail("No other exceptions should be thrown");
-        }
-    }
-
-    @Test
-    public void getUserDetailsByTokenReturnPlayer() {
-        try {
-            // GIVEN
-            String token = "token1";
-            UserBean user = new UserBean();
-            user.setId((int) System.currentTimeMillis());
-            user.setUsername(USER_NAME1);
-            user.setPassword(PASSWORD1);
-
-            expect(userDao.getUserByToken(token)).andStubReturn(user);
-            replay(userDao);
-
-            // WHEN
-            UserBean resultUser = userService.getUserDetailsByToken(token);
-
-            // THEN
-            assertEquals(user, resultUser);
-        } catch (Exception e) {
-            fail("No exceptions should be thrown");
-        }
-    }
-
-    @Test
-    public void getUserDetailsByTokenErrorWhenTokenInvalid() {
-        try {
-            // GIVEN
-            String token = "token1";
-
-            expect(userDao.getUserByToken(token)).andStubReturn(null);
-            replay(userDao);
-
-            // WHEN
-            userService.getUserDetailsByToken(token);
-            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_TOKEN_INVALID + "' should be thrown");
-        } catch (UserException e) {
-            // THEN
-            assertEquals(UserServiceImpl.ERROR_CODE_TOKEN_INVALID, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }

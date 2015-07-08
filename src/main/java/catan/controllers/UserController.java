@@ -3,9 +3,10 @@ package catan.controllers;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.SessionTokenDetails;
 import catan.domain.transfer.output.UserDetails;
+import catan.exception.AuthenticationException;
 import catan.exception.UserException;
+import catan.services.AuthenticationService;
 import catan.services.UserService;
-import catan.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -21,7 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/user")
 public class UserController {
 
-    UserService userService = new UserServiceImpl();
+    UserService userService;
+    AuthenticationService authenticationService;
 
     @RequestMapping(value = "login",
             method = RequestMethod.POST,
@@ -54,8 +56,8 @@ public class UserController {
     @RequestMapping(value = "details",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDetails getUserDetailsByToken(@RequestParam("token") String token) throws UserException {
-        UserBean user = userService.getUserDetailsByToken(token);
+    public UserDetails getUserDetailsByToken(@RequestParam("token") String token) throws AuthenticationException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
 
         UserDetails userDetails = new UserDetails();
         userDetails.setUsername(user.getUsername());
@@ -70,5 +72,10 @@ public class UserController {
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @Autowired
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 }

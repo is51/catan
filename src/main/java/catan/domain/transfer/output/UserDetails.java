@@ -1,8 +1,5 @@
 package catan.domain.transfer.output;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class UserDetails {
     private String username;
     private String firstName;

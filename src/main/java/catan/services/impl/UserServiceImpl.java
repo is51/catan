@@ -1,8 +1,9 @@
-package catan.services;
+package catan.services.impl;
 
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.exception.UserException;
+import catan.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,9 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private Logger log = LoggerFactory.getLogger(UserService.class);
     public static final String ERROR_CODE_ERROR = "ERROR";
-    public static final String ERROR_CODE_TOKEN_INVALID = "TOKEN_INVALID";
     public static final String ERROR_CODE_INCORRECT_LOGIN_PASSWORD = "INCORRECT_LOGIN_PASSWORD";
     public static final String ERROR_CODE_USERNAME_ALREADY_EXISTS = "USERNAME_ALREADY_EXISTS";
 
-    @Autowired
     UserDao userDao;
 
     @Override
@@ -92,20 +91,7 @@ public class UserServiceImpl implements UserService {
         log.debug("<< User '" + username + "' successfully registered");
     }
 
-    @Override
-    public UserBean getUserDetailsByToken(String token) throws UserException {
-        log.debug(">> Search user with allocated token '" + token + "' ...");
-
-        UserBean user = userDao.getUserByToken(token);
-        if (user == null) {
-            log.debug("<< User with allocated token '" + token + "' not found in system");
-            throw new UserException(ERROR_CODE_TOKEN_INVALID);
-        }
-
-        log.debug("<< User '" + user.getUsername() + "' found with allocated token '" + token + "' , return details of this user");
-        return user;
-    }
-
+    @Autowired
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
