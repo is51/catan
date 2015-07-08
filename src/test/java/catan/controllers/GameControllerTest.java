@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.isA;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
-public class UserControllerTest {
+public class GameControllerTest {
     public static final int SERVER_PORT = 8091;
     public static final String CONTENT_TYPE = "application/json";
 
