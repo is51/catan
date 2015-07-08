@@ -1,6 +1,7 @@
 package catan.controllers;
 
 import catan.config.ApplicationConfig;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -9,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -92,7 +94,6 @@ public class GameControllerTest {
 
     @Test
     public void shouldSuccessfullyCreateNewGame(){
-
         String userToken = loginUser(USER_NAME, USER_PASSWORD);
         int userId = getUserId(userToken);
 
@@ -105,14 +106,14 @@ public class GameControllerTest {
         then().
                 statusCode(200).
                 contentType(CONTENT_TYPE).
-                body("gameId", isA(int)).
-                and().
+                body("gameId", greaterThan(0)).
+             and().
                 body("creatorId", equalTo(userId)).
-                and().
+             and().
                 body("privateGame", equalTo(true)).
-                and().
-                body("dateCreated", lessThanOrEqualTo(System.currentTimeMillis()))
-                and().
+             and().
+                body("dateCreated", lessThanOrEqualTo(System.currentTimeMillis())).
+             and().
                 body("dateCreated", greaterThanOrEqualTo(System.currentTimeMillis() - 1 * 60 * 1000)); // 1 minute
     }
 
