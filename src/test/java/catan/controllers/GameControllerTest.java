@@ -25,7 +25,7 @@ public class UserControllerTest {
     public static final String USER_NAME = "test game";
     public static final String USER_PASSWORD = "test game";
 
-    private void registerUser(username, password) {
+    private void registerUser(String username, String password) {
         given().
                 port(SERVER_PORT).
                 header("Content-Type", CONTENT_TYPE).
@@ -37,7 +37,7 @@ public class UserControllerTest {
                 contentType(CONTENT_TYPE);
     }
 
-    private void loginUser(username, password) {
+    private void loginUser(String username, String password) {
         return
             given().
                     port(SERVER_PORT).
@@ -52,7 +52,7 @@ public class UserControllerTest {
                     .path("token");
     }
 
-    private void getUserId(token) {
+    private void getUserId(String token) {
         return
             given().
                     port(SERVER_PORT).
