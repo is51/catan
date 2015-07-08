@@ -24,12 +24,12 @@ public class GameControllerTest {
     public static final int SERVER_PORT = 8091;
     public static final String CONTENT_TYPE = "application/json";
 
+    public static final String URL_CREATE_NEW_GAME = "/api/game/create";
+
     public static final String USER_NAME = "test game";
     public static final String USER_PASSWORD = "test game";
 
-    public static final String URL_CREATE_NEW_GAME = "/api/game/create";
-
-    private void registerUser(String username, String password) {
+    private static void registerUser(String username, String password) {
         given().
                 port(SERVER_PORT).
                 header("Content-Type", CONTENT_TYPE).
@@ -41,7 +41,7 @@ public class GameControllerTest {
                 contentType(CONTENT_TYPE);
     }
 
-    private String loginUser(String username, String password) {
+    private static String loginUser(String username, String password) {
         return
             given().
                     port(SERVER_PORT).
@@ -56,7 +56,7 @@ public class GameControllerTest {
                     .path("token");
     }
 
-    private void logoutUser(String token) {
+    private static void logoutUser(String token) {
         given().
                 port(SERVER_PORT).
                 header("Content-Type", CONTENT_TYPE).
@@ -68,7 +68,7 @@ public class GameControllerTest {
                 contentType(CONTENT_TYPE);
     }
 
-    private int getUserId(String token) {
+    private static int getUserId(String token) {
         return
             given().
                     port(SERVER_PORT).
@@ -84,7 +84,7 @@ public class GameControllerTest {
     }
 
     @BeforeClass
-    public void setup(){
+    public static void setup(){
         registerUser(USER_NAME, USER_PASSWORD);
     }
 

@@ -8,10 +8,12 @@ angular.module('catan')
             templateUrl: "/features/createGameForm/ct-create-game-form.html",
             link: function(scope) {
 
-                scope.data = {};
+                scope.data = {
+                    privateGame: false
+                };
 
                 scope.submit = function() {
-                    Remote.game.create({'isPrivate': scope.data.isPrivate})
+                    Remote.game.create({'privateGame': scope.data.privateGame})
                         .then(function(response) {
                             alert('Game has been created! Game ID = ' + response.data.gameId);
                         }, function(response) {
