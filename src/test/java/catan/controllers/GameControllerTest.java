@@ -37,7 +37,7 @@ public class UserControllerTest {
                 contentType(CONTENT_TYPE);
     }
 
-    private void loginUser(String username, String password) {
+    private String loginUser(String username, String password) {
         return
             given().
                     port(SERVER_PORT).
@@ -52,7 +52,7 @@ public class UserControllerTest {
                     .path("token");
     }
 
-    private void getUserId(String token) {
+    private int getUserId(String token) {
         return
             given().
                     port(SERVER_PORT).
@@ -73,7 +73,7 @@ public class UserControllerTest {
     public void shouldSuccessfullyCreateNewGame(){
 
         registerUser(USER_NAME, USER_PASSWORD);
-        int userToken = loginUser(USER_NAME, USER_PASSWORD);
+        String userToken = loginUser(USER_NAME, USER_PASSWORD);
         int userId = getUserId(userToken);
 
         given().
