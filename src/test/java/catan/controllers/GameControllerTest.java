@@ -1,6 +1,7 @@
 package catan.controllers;
 
 import catan.config.ApplicationConfig;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,46 +30,45 @@ public class GameControllerTest {
     public static final String USER_NAME = "test game";
     public static final String USER_PASSWORD = "test game";
 
-    private static void registerUser(String username, String password) {
+    private String userToken;
+
+    private void registerUser(String username, String password) {
         given().
                 port(SERVER_PORT).
-                header("Content-Type", CONTENT_TYPE).
+                header("Accept", CONTENT_TYPE).
                 parameters("username", username, "password", password).
         when().
                 post("/api/user/register").
         then().
-                statusCode(200).
-                contentType(CONTENT_TYPE);
+                statusCode(200);
     }
 
-    private static String loginUser(String username, String password) {
+    private String loginUser(String username, String password) {
         return
             given().
                     port(SERVER_PORT).
-                    header("Content-Type", CONTENT_TYPE).
+                    header("Accept", CONTENT_TYPE).
                     parameters("username", username, "password", password).
-            when().
+                    when().
                     post("/api/user/login").
             then().
                     statusCode(200).
-                    contentType(CONTENT_TYPE).
             extract()
                     .path("token");
     }
 
-    private static void logoutUser(String token) {
+    private void logoutUser(String token) {
         given().
                 port(SERVER_PORT).
-                header("Content-Type", CONTENT_TYPE).
-                parameters("token", token).
-        when().
+                header("Accept", CONTENT_TYPE).
+                parameters("token", token)
+        .when().
                 post("/api/user/logout").
         then().
-                statusCode(200).
-                contentType(CONTENT_TYPE);
+                statusCode(200);
     }
 
-    private static int getUserId(String token) {
+    private int getUserId(String token) {
         return
             given().
                     port(SERVER_PORT).
@@ -78,14 +78,16 @@ public class GameControllerTest {
                     post("/api/user/details").
             then().
                     statusCode(200).
-                    contentType(CONTENT_TYPE).
             extract()
                     .path("id");
     }
 
-    @BeforeClass
-    public static void setup(){
-        registerUser(USER_NAME, USER_PASSWORD);
+    @Before
+    public void setup(){
+        if(userToken == null){
+            registerUser(USER_NAME, USER_PASSWORD);
+            userToken = loginUser(USER_NAME, USER_PASSWORD);
+        }
     }
 
     // ----------------
@@ -94,7 +96,6 @@ public class GameControllerTest {
 
     @Test
     public void shouldSuccessfullyCreateNewGame(){
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
         int userId = getUserId(userToken);
 
         given().
@@ -119,9 +120,6 @@ public class GameControllerTest {
 
     @Test
     public void shouldFailWithErrorWhenThereIsNoPrivateGameVariable(){
-
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
-
         given().
                 port(SERVER_PORT).
                 header("Content-Type", CONTENT_TYPE).
@@ -134,8 +132,6 @@ public class GameControllerTest {
 
     @Test
     public void shouldFailWith403ErrorWhenUserIsNotAuthorized(){
-
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
 
         // without token
 
