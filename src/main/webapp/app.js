@@ -23,7 +23,8 @@ angular.module('catan', [
         RemoteProvider.setDefault({
             method: 'post',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
             },
             transformRequest: function(data) {
                 return (data) ? angular.element.param(data) : data;
