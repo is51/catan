@@ -27,9 +27,3 @@ To start Server use the following command:
 ```
 mvn clean tomcat7:run -P server
 ```
-
-To start Web client use the following command:
-
-```
-mvn clean tomcat7:run -P client
-```
