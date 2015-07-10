@@ -41,7 +41,7 @@ public class UserController {
     @RequestMapping(value = "logout",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void logout(@RequestParam("token") String token) throws UserException {
+    public void logout(@RequestParam(value = "token", required = false) String token) throws UserException {
         userService.logout(token);
     }
 
@@ -56,10 +56,11 @@ public class UserController {
     @RequestMapping(value = "details",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDetails getUserDetailsByToken(@RequestParam("token") String token) throws AuthenticationException {
+    public UserDetails getUserDetailsByToken(@RequestParam(value = "token", required = false) String token) throws AuthenticationException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         UserDetails userDetails = new UserDetails();
+        userDetails.setId(user.getId());
         userDetails.setUsername(user.getUsername());
 
         return userDetails;

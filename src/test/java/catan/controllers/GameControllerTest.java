@@ -9,9 +9,11 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,7 +25,7 @@ public class GameControllerTest {
 
     public static final String URL_CREATE_NEW_GAME = "/api/game/create";
     public static final String URL_CURRENT_GAMES_LIST = "/api/game/list/current";
-    public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/current";
+    public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/public";
 
     public static final String USER_NAME = "test game";
     public static final String USER_PASSWORD = "test game";
@@ -112,7 +114,11 @@ public class GameControllerTest {
                 .and()
             .body("privateGame", equalTo(true))
                 .and()
-            .body("dateCreated", closeTo(System.currentTimeMillis(), 60000)); // +-1 minute
+            .body("dateCreated", is(both(   //closeTo can be applied only to 'double' values, but dateCreated is 'long' value
+                    greaterThan(System.currentTimeMillis() - 60000))
+                .and(
+                    lessThanOrEqualTo(System.currentTimeMillis())))); // +-1 minute
+
     }
 
     @Test
@@ -138,6 +144,7 @@ public class GameControllerTest {
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
+            .parameters("privateGame", true) // 'privateGame' is mandatory, 'token' is not mandatory
         .when()
             .post(URL_CREATE_NEW_GAME)
         .then()
@@ -150,9 +157,9 @@ public class GameControllerTest {
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
-            .parameters("token", userToken)
-        .when()
-            .post(URL_CREATE_NEW_GAME)
+            .parameters("token", userToken,"privateGame", true)
+                .when()
+                .post(URL_CREATE_NEW_GAME)
         .then()
             .statusCode(403);
     }
@@ -160,7 +167,7 @@ public class GameControllerTest {
     // ----------------------
     // List of Current Games
     // ----------------------
-    
+
     @Test
     public void should_get_current_games_list_with_special_parameters(){
         //String userToken = loginUser(USER_NAME, USER_PASSWORD);

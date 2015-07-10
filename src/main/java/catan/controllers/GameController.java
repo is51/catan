@@ -34,7 +34,7 @@ public class GameController {
     @RequestMapping(value = "create",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public GameDetails createNewGame(@RequestParam("token") String token,
+    public GameDetails createNewGame(@RequestParam(value = "token", required = false) String token,
                                      @RequestParam("privateGame") boolean privateGame) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean createdGame = gameService.createNewGame(user, privateGame);
@@ -52,7 +52,7 @@ public class GameController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<GameDetails> getListOfGames(@PathVariable(value = "gameListType") String gameListType,
-                                            @RequestParam("token") String token) throws AuthenticationException, GameException {
+                                            @RequestParam(value = "token", required = false) String token) throws AuthenticationException, GameException {
 
         List<GameBean> games;
         switch (GameListType.fromValue(gameListType)) {

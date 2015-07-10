@@ -20,6 +20,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public UserBean authenticateUserByToken(String token) throws AuthenticationException {
         log.debug(">> Search user with allocated token '" + token + "' ...");
+        if (token == null || token.trim().length() == 0) {
+            log.debug("<< User with empty token cannot be found in system");
+            throw new AuthenticationException();
+        }
 
         UserBean user = userDao.getUserByToken(token);
         if (user == null) {
