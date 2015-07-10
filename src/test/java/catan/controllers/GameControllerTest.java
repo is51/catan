@@ -158,8 +158,8 @@ public class GameControllerTest {
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
             .parameters("token", userToken,"privateGame", true)
-                .when()
-                .post(URL_CREATE_NEW_GAME)
+        .when()
+            .post(URL_CREATE_NEW_GAME)
         .then()
             .statusCode(403);
     }
@@ -168,17 +168,17 @@ public class GameControllerTest {
     // List of Current Games
     // ----------------------
 
-    @Test
+
+    /*@Test
     public void should_get_current_games_list_with_special_parameters(){
         //String userToken = loginUser(USER_NAME, USER_PASSWORD);
         //int userId = getUserId(userToken);
 
         //TODO: check properties of all objects in array (gameId, creatorId, privateGame, dateCreated)
-    }
+    }*/
 
     @Test
     public void should_fail_with_403_error_when_getting_current_games_list_if_user_is_not_authorized(){
-
         String userToken = loginUser(USER_NAME, USER_PASSWORD);
 
         // without token
@@ -209,15 +209,14 @@ public class GameControllerTest {
     // List of Public Games
     // ----------------------
 
-    @Test
+    /*@Test
     public void should_get_public_games_list_with_special_parameters(){
 
         //TODO: check properties of all objects in array (gameId, creatorId, privateGame, dateCreated)
-    }
+    }*/
 
     @Test
     public void should_get_public_games_list_even_if_user_is_not_authorized(){
-
         String userToken = loginUser(USER_NAME, USER_PASSWORD);
 
         // without token
