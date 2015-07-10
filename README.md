@@ -4,7 +4,7 @@
 It-catan
 
 ## API Documentation
-List of methods available via http with real examples can be found under the following link:
+List of methods available via http with real examples can be found under the following link (you need to Start server before):
 ```
 http://localhost:8091/api
 ```
@@ -20,10 +20,22 @@ To run the application you should install the following tools:
 * Java 1.7
 * Maven 3.2.3
 
-####  Instructions 
+####  Instructions
 
-To start Server use the following command:
+Use the following commands:
 
+To build and compile the project with running test:
 ```
-mvn clean tomcat7:run -P server
+mvn clean install
 ```
+
+To start Server without running tests:
+```
+mvn clean install tomcat7:run -D skipTests
+```
+    Server is available under the following link:
+    ```
+    http://localhost:8091/
+    ```
+
+

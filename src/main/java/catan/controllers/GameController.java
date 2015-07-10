@@ -9,7 +9,6 @@ import catan.services.AuthenticationService;
 import catan.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,10 +20,7 @@ import java.util.List;
 
 import static catan.services.impl.GameServiceImpl.ERROR_CODE_ERROR;
 
-
 @RestController
-@ControllerAdvice
-
 @RequestMapping("/api/game")
 public class GameController {
 
