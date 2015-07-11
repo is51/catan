@@ -1,4 +1,4 @@
-package catan.controllers;
+package catan.controllers.user;
 
 import catan.config.ApplicationConfig;
 import org.junit.Test;
@@ -24,15 +24,15 @@ public class UserControllerTest {
     public static final String USER_PASSWORD_2 = "password2";
 
     @Test
-    public void shouldSuccessfullyRegisterNewUserAndFailRegistrationWithHttpCode400WhenSuchUserAlreadyExists(){
+    public void shouldSuccessfullyRegisterNewUserAndFailRegistrationWithHttpCode400WhenSuchUserAlreadyExists() {
         //Registering new User
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("username", USER_NAME_1, "password", USER_PASSWORD_1).
-        when().
+                when().
                 post("/api/user/register").
-        then().
+                then().
                 statusCode(200).
                 body(isEmptyString());
 
@@ -41,9 +41,9 @@ public class UserControllerTest {
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("username", USER_NAME_1, "password", USER_PASSWORD_1).
-        when().
+                when().
                 post("/api/user/register").
-        then().
+                then().
                 statusCode(400).
                 contentType("application/json").
                 body("errorCode", equalTo("USERNAME_ALREADY_EXISTS"));
@@ -55,9 +55,9 @@ public class UserControllerTest {
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("username", USER_NAME_1, "password", "00000").
-        when().
+                when().
                 post("/api/user/login").
-        then().
+                then().
                 statusCode(400).
                 contentType("application/json").
                 body("errorCode", equalTo("INCORRECT_LOGIN_PASSWORD"));
@@ -69,9 +69,9 @@ public class UserControllerTest {
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("username", "", "password", "").
-        when().
+                when().
                 post("/api/user/login").
-        then().
+                then().
                 statusCode(400).
                 contentType("application/json").
                 body("errorCode", equalTo("ERROR"));
@@ -84,34 +84,34 @@ public class UserControllerTest {
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("username", USER_NAME_2, "password", USER_PASSWORD_2).
-        when().
+                when().
                 post("/api/user/register").
-        then().
+                then().
                 statusCode(200).
                 body(isEmptyString());
 
         //Login user and extract token from response
         String token =
-        given().
-                port(8091).
-                header("Accept-Encoding", "application/json").
-                parameters("username", USER_NAME_2, "password", USER_PASSWORD_2).
-        when().
-                post("/api/user/login").
-        then().
-                statusCode(200).
-                contentType("application/json").
-        extract()
-                .path("token");
+                given().
+                        port(8091).
+                        header("Accept-Encoding", "application/json").
+                        parameters("username", USER_NAME_2, "password", USER_PASSWORD_2).
+                        when().
+                        post("/api/user/login").
+                        then().
+                        statusCode(200).
+                        contentType("application/json").
+                        extract()
+                        .path("token");
 
         //Get details by extracted token
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("token", token).
-        when().
+                when().
                 post("/api/user/details").
-        then().
+                then().
                 statusCode(200).
                 contentType("application/json").
                 body("username", equalTo(USER_NAME_2));
@@ -123,9 +123,9 @@ public class UserControllerTest {
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("token", "12345").
-        when().
+                when().
                 post("/api/user/details").
-        then().
+                then().
                 statusCode(403);
     }
 
@@ -135,9 +135,9 @@ public class UserControllerTest {
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
                 parameters("token", "12345").
-        when().
+                when().
                 post("/api/user/logout").
-        then().
+                then().
                 statusCode(200).
                 body(isEmptyString());
     }
