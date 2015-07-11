@@ -36,6 +36,12 @@ public class GameControllerTest {
     public static final String USER_PASSWORD_1 = "password1";
     public static final String USER_NAME_2 = "user2_GameTest";
     public static final String USER_PASSWORD_2 = "password2";
+    public static final String USER_NAME_3 = "user3_GameTest";
+    public static final String USER_PASSWORD_3 = "password3";
+    public static final String USER_NAME_4 = "user4_GameTest";
+    public static final String USER_PASSWORD_4 = "password4";
+    public static final String USER_NAME_5 = "user5_GameTest";
+    public static final String USER_PASSWORD_5 = "password5";
 
     private static boolean initialized = false;
 
@@ -99,10 +105,24 @@ public class GameControllerTest {
                 .post(URL_CREATE_NEW_GAME);
     }
 
+    private Response joinPublicGame(String token, int gameId) {
+        return
+            given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId)
+            .when()
+                .post(URL_JOIN_PUBLIC_GAME);
+    }
+
     @Before
     public void setup(){
         if(!initialized){
             registerUser(USER_NAME_1, USER_PASSWORD_1);
+            registerUser(USER_NAME_2, USER_PASSWORD_2);
+            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            registerUser(USER_NAME_4, USER_PASSWORD_4);
+            registerUser(USER_NAME_5, USER_PASSWORD_5);
             initialized = true;
         }
     }
@@ -216,7 +236,8 @@ public class GameControllerTest {
 
     @Test
     public void should_get_public_games_list_with_special_parameters(){
-        registerUser(USER_NAME_2, USER_PASSWORD_2);
+
+        //TODO: change test should_get_public_games_list_with_special_parameters
 
         String firstUserToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String secondUserToken = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -308,14 +329,9 @@ public class GameControllerTest {
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
-        given()
-            .port(SERVER_PORT)
-            .header("Accept", ACCEPT_CONTENT_TYPE)
-            .parameters("token", userToken2, "gameId", gameId)
-        .when()
-            .post(URL_JOIN_PUBLIC_GAME)
-        .then()
-            .statusCode(200);
+        joinPublicGame(userToken2, gameId)
+            .then()
+                .statusCode(200);
     }
 
     @Test
@@ -326,14 +342,10 @@ public class GameControllerTest {
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
-        given()
-            .port(SERVER_PORT)
-            .header("Accept", ACCEPT_CONTENT_TYPE)
-            .parameters("token", userToken2, "gameId", gameId)
-        .when()
-            .post(URL_JOIN_PUBLIC_GAME)
-        .then()
-            .statusCode(400);
+        joinPublicGame(userToken2, gameId)
+            .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
     }
 
     /*@Test
@@ -354,19 +366,41 @@ public class GameControllerTest {
         //needs to be written when game canceling is implemented
     }*/
 
-    /*@Test
+    @Test
     public void should_fails_when_user_joins_public_game_if_to_many_players_in() {
-        //TODO: should_fails_when_user_joins_public_game_if_to_many_players_in
-    }*/
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
 
-    /*@Test
+        joinPublicGame(loginUser(USER_NAME_2, USER_PASSWORD_2), gameId);
+        joinPublicGame(loginUser(USER_NAME_3, USER_PASSWORD_3), gameId);
+        joinPublicGame(loginUser(USER_NAME_4, USER_PASSWORD_4), gameId);
+
+        joinPublicGame(loginUser(USER_NAME_5, USER_PASSWORD_5), gameId)
+            .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("TO_MANY_PLAYERS"));
+    }
+
+    @Test
     public void should_fails_when_user_joins_public_game_if_there_is_no_game() {
-        //TODO: should_fails_when_user_joins_public_game_if_there_is_no_game
-    }*/
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        joinPublicGame(userToken, 999999999)
+            .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
 
-    /*@Test
+    @Test
     public void should_fails_when_user_joins_public_game_if_user_is_not_authorized() {
-        //TODO: should_fails_when_user_joins_public_game_if_user_is_not_authorized
-    }*/
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken, false)
+                .path("gameId");
+        logoutUser(userToken);
+
+        joinPublicGame("some invalid token", gameId)
+                .then()
+                .statusCode(403);
+    }
 
 }
