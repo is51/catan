@@ -3,6 +3,7 @@ package catan.controllers;
 import catan.config.ApplicationConfig;
 import catan.domain.model.game.GameStatus;
 import catan.domain.transfer.output.GameDetails;
+import com.jayway.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ public class GameControllerTest {
     public static final String URL_CREATE_NEW_GAME = "/api/game/create";
     public static final String URL_CURRENT_GAMES_LIST = "/api/game/list/current";
     public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/public";
+    public static final String URL_JOIN_PUBLIC_GAME = "/api/game/join/public";
 
     public static final String USER_NAME_1 = "user1_GameTest";
     public static final String USER_PASSWORD_1 = "password1";
@@ -87,6 +89,16 @@ public class GameControllerTest {
                 .path("id");
     }
 
+    private Response createNewGame(String token, boolean privateGame) {
+        return
+            given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "privateGame", privateGame)
+            .when()
+                .post(URL_CREATE_NEW_GAME);
+    }
+
     @Before
     public void setup(){
         if(!initialized){
@@ -104,12 +116,7 @@ public class GameControllerTest {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int userId = getUserId(userToken);
 
-        given()
-            .port(SERVER_PORT)
-            .header("Accept", ACCEPT_CONTENT_TYPE)
-            .parameters("token", userToken, "privateGame", true)
-        .when()
-            .post(URL_CREATE_NEW_GAME)
+        createNewGame(userToken, true)
         .then()
             .statusCode(200)
             .contentType(ACCEPT_CONTENT_TYPE)
@@ -289,5 +296,26 @@ public class GameControllerTest {
             .statusCode(200);
     }
 
+    // ----------------------
+    // Join Game
+    // ----------------------
+
+    @Test
+    public void should_successfully_join_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        given()
+            .port(SERVER_PORT)
+            .header("Accept", ACCEPT_CONTENT_TYPE)
+            .parameters("token", userToken2, "gameId", gameId)
+        .when()
+            .post(URL_JOIN_PUBLIC_GAME)
+        .then()
+            .statusCode(200);
+    }
 
 }
