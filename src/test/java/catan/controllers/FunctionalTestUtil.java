@@ -42,17 +42,16 @@ public abstract class FunctionalTestUtil {
     }
 
     protected int getUserId(String token) {
-        return
-                given()
-                        .port(SERVER_PORT)
-                        .header("Accept", ACCEPT_CONTENT_TYPE)
-                        .parameters("token", token)
-                        .when()
-                        .post("/api/user/details")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .path("id");
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token)
+                .when()
+                .post("/api/user/details")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("id");
     }
 
 }

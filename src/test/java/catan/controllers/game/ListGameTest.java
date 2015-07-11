@@ -1,7 +1,6 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
-import catan.controllers.FunctionalTestUtil;
 import catan.domain.model.game.GameStatus;
 import catan.domain.transfer.output.GameDetails;
 import org.junit.Before;
@@ -31,10 +30,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
-public class ListGameTest extends FunctionalTestUtil {
-    public static final String URL_CREATE_NEW_GAME = "/api/game/create";
-    public static final String URL_CURRENT_GAMES_LIST = "/api/game/list/current";
-    public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/public";
+public class ListGameTest extends GameTestUtil {
 
     public static final String USER_NAME_1 = "user1_ListGameTest";
     public static final String USER_PASSWORD_1 = "password1";
@@ -118,26 +114,8 @@ public class ListGameTest extends FunctionalTestUtil {
                 .statusCode(200)
                 .body("findall.size()", equalTo(3));
 
-        // Create 1st public game by user1
-        given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", firstUserToken, "privateGame", false)
-                .when()
-                .post(URL_CREATE_NEW_GAME)
-                .then()
-                .statusCode(200);
-
-        // Create 2nd public game by user2
-        given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", secondUserToken, "privateGame", false)
-                .when()
-                .post(URL_CREATE_NEW_GAME)
-                .then()
-                .statusCode(200);
-
+        createNewGame(firstUserToken, false);
+        createNewGame(secondUserToken, false);
 
         long now = System.currentTimeMillis();
 

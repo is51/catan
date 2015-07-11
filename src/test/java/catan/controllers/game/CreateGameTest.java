@@ -1,9 +1,7 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
-import catan.controllers.FunctionalTestUtil;
 import catan.domain.model.game.GameStatus;
-import com.jayway.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,24 +23,12 @@ import static org.hamcrest.Matchers.not;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
-public class CreateGameTest extends FunctionalTestUtil {
-    public static final String URL_CREATE_NEW_GAME = "/api/game/create";
+public class CreateGameTest extends GameTestUtil {
 
     public static final String USER_NAME_1 = "user1_CreateGameTest";
     public static final String USER_PASSWORD_1 = "password1";
 
     private static boolean initialized = false;
-
-
-    private Response createNewGame(String token, boolean privateGame) {
-        return given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "privateGame", privateGame)
-                .when()
-                .post(URL_CREATE_NEW_GAME);
-    }
-
 
     @Before
     public void setup() {
@@ -51,10 +37,6 @@ public class CreateGameTest extends FunctionalTestUtil {
             initialized = true;
         }
     }
-
-    // ----------------
-    // Create New Game
-    // ----------------
 
     @Test
     public void should_successfully_create_new_private_game() {

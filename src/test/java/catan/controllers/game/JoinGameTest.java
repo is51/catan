@@ -1,8 +1,6 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
-import catan.controllers.FunctionalTestUtil;
-import com.jayway.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,18 +8,13 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
-public class JoinGameTest extends FunctionalTestUtil {
-
-    public static final String URL_CREATE_NEW_GAME = "/api/game/create";
-    public static final String URL_JOIN_PUBLIC_GAME = "/api/game/join/public";
-    public static final String URL_JOIN_PRIVATE_GAME = "/api/game/join/private";
+public class JoinGameTest extends GameTestUtil {
 
     public static final String USER_NAME_1 = "user1_JoinGameTest";
     public static final String USER_PASSWORD_1 = "password1";
@@ -35,33 +28,6 @@ public class JoinGameTest extends FunctionalTestUtil {
     public static final String USER_PASSWORD_5 = "password5";
 
     private static boolean initialized = false;
-
-    private Response createNewGame(String token, boolean privateGame) {
-        return given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "privateGame", privateGame)
-                .when()
-                .post(URL_CREATE_NEW_GAME);
-    }
-
-    private Response joinPublicGame(String token, int gameId) {
-        return given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "gameId", gameId)
-                .when()
-                .post(URL_JOIN_PUBLIC_GAME);
-    }
-
-    private Response joinPrivateGame(String token, String privateCode) {
-        return given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "privateCode", privateCode)
-                .when()
-                .post(URL_JOIN_PRIVATE_GAME);
-    }
 
     @Before
     public void setup() {
