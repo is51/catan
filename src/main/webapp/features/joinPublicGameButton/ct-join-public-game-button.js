@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctJoinGameButton', ['Remote', function(Remote) {
+    .directive('ctJoinPublicGameButton', ['Remote', function(Remote) {
         return {
             restrict: 'A',
             scope: {

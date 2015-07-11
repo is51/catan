@@ -8,6 +8,8 @@
 
         <ct-create-game-form ng-if="User.isAuthorized()"></ct-create-game-form>
 
+        <ct-join-private-game-form ng-if="User.isAuthorized()"></ct-join-private-game-form>
+
         <ct-current-games-list ng-if="User.isAuthorized()"></ct-current-games-list>
 
         <ct-public-games-list></ct-public-games-list>

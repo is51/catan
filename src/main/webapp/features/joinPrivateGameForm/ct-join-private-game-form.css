@@ -1,0 +1,8 @@
+ct-join-private-game-form > form {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 50px;
+    border-radius: 3px;
+    font-size: 1.8rem;
+    color: #444;
+}
