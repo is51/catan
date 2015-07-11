@@ -12,6 +12,7 @@ angular.module('catan', [
 
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/', {templateUrl: 'features/startPage/startPage.html', controller: 'StartPageController'});
+        $routeProvider.when('/game/:gameId', {templateUrl: 'features/gamePage/gamePage.html', controller: 'GamePageController'});
         $routeProvider.otherwise({redirectTo: '/'});
     }])
 
@@ -41,4 +42,5 @@ angular.module('catan', [
         RemoteProvider.setRequest('game', 'listPublic', { url: '/api/game/list/public'});
         RemoteProvider.setRequest('game', 'joinPublic', { url: '/api/game/join/public'});
         RemoteProvider.setRequest('game', 'joinPrivate', { url: '/api/game/join/private'});
+        RemoteProvider.setRequest('game', 'details', { url: '/api/game/details'});
     }]);

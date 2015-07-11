@@ -1,0 +1,57 @@
+<br><br>
+
+<div>
+
+    <div class="col-xs-6 col-xs-offset-1" style="background: #f6f6f6; min-height: 300px; padding: 40px; font-size: 3rem; border-radius: 3px;">
+
+        <div ng-if="gameDetails">
+
+            <div class="col-xs-6">
+                <div>Game #{{gameDetails.gameId}}</div>
+                <div style="font-size: 2rem;">Created by User #{{gameDetails.creatorId}}</div>
+                <div style="font-size: 1.2rem; line-height: 2.4rem;">
+                    <span ng-show="gameDetails.privateGame"><span class="glyphicon glyphicon-eye-open"></span> Code: {{gameDetails.privateCode}}</span>
+                    <span ng-hide="gameDetails.privateGame"><span class="glyphicon glyphicon-globe"></span> Public</span>
+                </div>
+                <div style="font-size: 1.2rem; line-height: 2.4rem;">{{gameDetails.dateCreated | date : 'short'}}</div>
+                <div><span class="label label-warning">{{gameDetails.status}}</span></div>
+
+            </div>
+
+            <div class="col-xs-6">
+                <div>
+                    <div>Players:</div>
+                    <ct-players-list game="gameDetails"></ct-players-list>
+                </div>
+
+                <div><br></div>
+
+                <div>
+                    <a href="#/" class="btn btn-default btn-xs">Back to Home</a>
+                    <!-- <a href="" class="btn btn-danger btn-xs">Leave Game</a> -->
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xs-4 col-xs-offset-1">
+
+        <div style="font-size: 2rem;">
+
+            <div ng-if="User.isAuthorized()">
+                <i class="glyphicon glyphicon-user"></i>
+                &nbsp;
+                {{User.get().username}}
+
+                <br>
+                <a href="" ct-logout-button class="btn btn-xs btn-default">Log Out</a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
