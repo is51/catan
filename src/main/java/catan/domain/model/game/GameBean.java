@@ -2,15 +2,20 @@ package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "GAME")
@@ -31,6 +36,9 @@ public class GameBean {
 
     @Column(name = "GAME_STATUS", unique = false, nullable = false)
     private GameStatus status;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "gameUserId", cascade = CascadeType.ALL)
+    private List<GameUserBean> gameUsers = new ArrayList<GameUserBean>();
 
     public GameBean() {
     }
@@ -81,6 +89,14 @@ public class GameBean {
 
     public void setStatus(GameStatus status) {
         this.status = status;
+    }
+
+    public List<GameUserBean> getGameUsers() {
+        return gameUsers;
+    }
+
+    public void setGameUsers(List<GameUserBean> gameUsers) {
+        this.gameUsers = gameUsers;
     }
 
     @Override

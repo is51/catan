@@ -1,8 +1,11 @@
 package catan.controllers;
 
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.GameDetails;
+import catan.domain.transfer.output.GameUserDetails;
+import catan.domain.transfer.output.UserDetails;
 import catan.exception.AuthenticationException;
 import catan.exception.GameException;
 import catan.services.AuthenticationService;
@@ -35,12 +38,7 @@ public class GameController {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean createdGame = gameService.createNewGame(user, privateGame);
 
-        return new GameDetails(
-                createdGame.getGameId(),
-                createdGame.getCreator().getId(),
-                createdGame.isPrivateGame(),
-                createdGame.getDateCreated().getTime(),
-                createdGame.getStatus().toString());
+        return toGameDetails(createdGame);
     }
 
     @RequestMapping(value = "list/{gameListType}",
@@ -60,23 +58,39 @@ public class GameController {
                 break;
             case UNKNOWN:
             default:
-                //TODO: throw something like page not found exception
+                //TODO: throw something like page not found exception (as soon as BG-7 is fixed)
                 throw new GameException(ERROR_CODE_ERROR);
         }
 
         List<GameDetails> gamesToReturn = new ArrayList<GameDetails>();
-
         for (GameBean game : games) {
-            GameDetails gameDetails = new GameDetails(
-                    game.getGameId(),
-                    game.getCreator().getId(),
-                    game.isPrivateGame(),
-                    game.getDateCreated().getTime(),
-                    game.getStatus().toString());
+            GameDetails gameDetails = toGameDetails(game);
+
             gamesToReturn.add(gameDetails);
         }
 
         return gamesToReturn;
+    }
+
+    private GameDetails toGameDetails(GameBean game) {
+        List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
+
+        for(GameUserBean gameUser : game.getGameUsers()){
+            UserBean user = gameUser.getUser();
+
+            UserDetails userDetails = new UserDetails(user.getId(), user.getUsername());
+            GameUserDetails gameUserDetails = new GameUserDetails(userDetails, gameUser.getColorId());
+
+            gameUsers.add(gameUserDetails);
+        }
+
+        return new GameDetails(
+                game.getGameId(),
+                game.getCreator().getId(),
+                game.isPrivateGame(),
+                game.getDateCreated().getTime(),
+                game.getStatus().toString(),
+                gameUsers);
     }
 
     @Autowired

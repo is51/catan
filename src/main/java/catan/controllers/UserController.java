@@ -28,10 +28,7 @@ public class UserController {
                                      @RequestParam("password") String password) throws UserException {
         String token = userService.login(username, password);
 
-        SessionTokenDetails sessionTokenDetails = new SessionTokenDetails();
-        sessionTokenDetails.setToken(token);
-
-        return sessionTokenDetails;
+        return new SessionTokenDetails(token);
     }
 
     @RequestMapping(value = "logout",
@@ -55,11 +52,7 @@ public class UserController {
     public UserDetails getUserDetailsByToken(@RequestParam(value = "token", required = false) String token) throws AuthenticationException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        UserDetails userDetails = new UserDetails();
-        userDetails.setId(user.getId());
-        userDetails.setUsername(user.getUsername());
-
-        return userDetails;
+        return new UserDetails(user.getId(), user.getUsername());
     }
 
     public UserService getUserService() {

@@ -1,21 +1,25 @@
 package catan.domain.transfer.output;
 
+import java.util.List;
+
 public class GameDetails {
     private int gameId;
     private int creatorId;
     private boolean privateGame;
     private long dateCreated;
     private String status;
+    private List<GameUserDetails> gameUsers;
 
     public GameDetails() {
     }
 
-    public GameDetails(int gameId, int creatorId, boolean privateGame, long dateCreated, String status) {
+    public GameDetails(int gameId, int creatorId, boolean privateGame, long dateCreated, String status, List<GameUserDetails> gameUsers) {
         this.gameId = gameId;
         this.creatorId = creatorId;
         this.privateGame = privateGame;
         this.dateCreated = dateCreated;
         this.status = status;
+        this.gameUsers = gameUsers;
     }
 
     public int getGameId() {
@@ -56,5 +60,13 @@ public class GameDetails {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<GameUserDetails> getGameUsers() {
+        return gameUsers;
+    }
+
+    public void setGameUsers(List<GameUserDetails> gameUsers) {
+        this.gameUsers = gameUsers;
     }
 }

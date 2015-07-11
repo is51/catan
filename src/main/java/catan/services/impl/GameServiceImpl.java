@@ -3,6 +3,7 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameStatus;
+import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
 import catan.services.GameService;
@@ -34,6 +35,8 @@ public class GameServiceImpl implements GameService {
         GameBean game = new GameBean(creator, privateGame, new Date(), GameStatus.NEW);
         gameDao.addNewGame(game);
 
+        addUserToGame(game, creator);
+
         log.debug("<< Game with id '" + game.getGameId() + "' successfully created with creator " + creator);
 
         return game;
@@ -63,6 +66,15 @@ public class GameServiceImpl implements GameService {
         log.debug("<< " + games.size() + " games successfully retrieved");
 
         return games;
+    }
+
+    private void addUserToGame(GameBean game, UserBean userBean) {
+        int numberOfUsers = game.getGameUsers().size();
+        int colorId = numberOfUsers + 1;
+
+        GameUserBean gameUserBean = new GameUserBean(userBean, colorId);
+
+        game.getGameUsers().add(gameUserBean);
     }
 
     @Autowired

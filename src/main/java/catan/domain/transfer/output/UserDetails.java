@@ -6,6 +6,16 @@ public class UserDetails {
     private String firstName;
     private String lastName;
 
+    public UserDetails() {
+    }
+
+    public UserDetails(int id, String username) {
+        this.id = id;
+        this.username = username;
+        this.firstName = "vasya";
+        this.lastName = "pupkin";
+    }
+
     public int getId() {
         return id;
     }
