@@ -1,6 +1,8 @@
 package catan.controllers;
 
 import catan.config.ApplicationConfig;
+import catan.domain.model.game.GameStatus;
+import catan.domain.transfer.output.GameDetails;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +14,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
@@ -27,8 +30,10 @@ public class GameControllerTest {
     public static final String URL_CURRENT_GAMES_LIST = "/api/game/list/current";
     public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/public";
 
-    public static final String USER_NAME = "test game";
-    public static final String USER_PASSWORD = "test game";
+    public static final String USER_NAME_1 = "user1_GameTest";
+    public static final String USER_PASSWORD_1 = "password1";
+    public static final String USER_NAME_2 = "user2_GameTest";
+    public static final String USER_PASSWORD_2 = "password2";
 
     private static boolean initialized = false;
 
@@ -85,7 +90,7 @@ public class GameControllerTest {
     @Before
     public void setup(){
         if(!initialized){
-            registerUser(USER_NAME, USER_PASSWORD);
+            registerUser(USER_NAME_1, USER_PASSWORD_1);
             initialized = true;
         }
     }
@@ -96,7 +101,7 @@ public class GameControllerTest {
 
     @Test
     public void should_successfully_create_new_game(){
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int userId = getUserId(userToken);
 
         given()
@@ -109,21 +114,18 @@ public class GameControllerTest {
             .statusCode(200)
             .contentType(ACCEPT_CONTENT_TYPE)
             .body("gameId", greaterThan(0))
-                .and()
             .body("creatorId", equalTo(userId))
-                .and()
             .body("privateGame", equalTo(true))
-                .and()
+            .body("status", equalTo(GameStatus.NEW.toString()))
             .body("dateCreated", is(both(   //closeTo can be applied only to 'double' values, but dateCreated is 'long' value
                     greaterThan(System.currentTimeMillis() - 60000))
-                .and(
-                    lessThanOrEqualTo(System.currentTimeMillis())))); // +-1 minute
-
+                    .and(
+                            lessThanOrEqualTo(System.currentTimeMillis()))));
     }
 
     @Test
     public void should_fail_with_error_when_there_is_no_private_game_variable(){
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
         given()
             .port(SERVER_PORT)
@@ -137,10 +139,9 @@ public class GameControllerTest {
 
     @Test
     public void should_fail_with_403_error_when_user_is_not_authorized(){
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
         // without token
-
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -150,14 +151,13 @@ public class GameControllerTest {
         .then()
             .statusCode(403);
 
-        // with old token
-
         logoutUser(userToken);
 
+        // with old token
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
-            .parameters("token", userToken,"privateGame", true)
+            .parameters("token", userToken, "privateGame", true)
         .when()
             .post(URL_CREATE_NEW_GAME)
         .then()
@@ -171,7 +171,7 @@ public class GameControllerTest {
 
     /*@Test
     public void should_get_current_games_list_with_special_parameters(){
-        //String userToken = loginUser(USER_NAME, USER_PASSWORD);
+        //String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         //int userId = getUserId(userToken);
 
         //TODO: check properties of all objects in array (gameId, creatorId, privateGame, dateCreated)
@@ -179,10 +179,9 @@ public class GameControllerTest {
 
     @Test
     public void should_fail_with_403_error_when_getting_current_games_list_if_user_is_not_authorized(){
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
         // without token
-
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -192,7 +191,6 @@ public class GameControllerTest {
             .statusCode(403);
 
         // with old token
-
         logoutUser(userToken);
 
         given()
@@ -209,18 +207,67 @@ public class GameControllerTest {
     // List of Public Games
     // ----------------------
 
-    /*@Test
+    @Test
     public void should_get_public_games_list_with_special_parameters(){
+        registerUser(USER_NAME_2, USER_PASSWORD_2);
 
-        //TODO: check properties of all objects in array (gameId, creatorId, privateGame, dateCreated)
-    }*/
+        String firstUserToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String secondUserToken = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        int firstUserId = getUserId(firstUserToken);
+        int secondUserId = getUserId(secondUserToken);
+
+        // Create 1st public game by user1
+        given()
+            .port(SERVER_PORT)
+            .header("Accept", ACCEPT_CONTENT_TYPE)
+            .parameters("token", firstUserToken, "privateGame", false)
+        .when()
+            .post(URL_CREATE_NEW_GAME)
+        .then()
+            .statusCode(200);
+
+        // Create 2nd public game by user2
+        given()
+            .port(SERVER_PORT)
+            .header("Accept", ACCEPT_CONTENT_TYPE)
+            .parameters("token", secondUserToken, "privateGame", false)
+        .when()
+            .post(URL_CREATE_NEW_GAME)
+        .then()
+            .statusCode(200);
+
+        // Assert public games response
+        given()
+            .port(SERVER_PORT)
+            .header("Accept", ACCEPT_CONTENT_TYPE)
+            .parameters("token", firstUserToken)
+        .when()
+            .post(URL_PUBLIC_GAMES_LIST)
+        .then()
+            .statusCode(200)
+            .body("findall.size()", equalTo(2))
+            .body("creatorId", hasItems(firstUserId, secondUserId)) //Checks that items in the list have different creator id
+                .body("[0].gameId", greaterThan(0))
+            .body("[0].privateGame", equalTo(false))
+            .body("[0].status", equalTo(GameStatus.NEW.toString()))
+            .body("[0].dateCreated", is(both(
+                    greaterThan(System.currentTimeMillis() - 60000))
+                    .and(
+                            lessThanOrEqualTo(System.currentTimeMillis()))))
+            .body("[1].gameId", greaterThan(0))
+            .body("[1].privateGame", equalTo(false))
+            .body("[1].status", equalTo(GameStatus.NEW.toString()))
+            .body("[1].dateCreated", is(both(
+                    greaterThan(System.currentTimeMillis() - 60000))
+                    .and(
+                            lessThanOrEqualTo(System.currentTimeMillis()))));
+    }
 
     @Test
     public void should_get_public_games_list_even_if_user_is_not_authorized(){
-        String userToken = loginUser(USER_NAME, USER_PASSWORD);
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
         // without token
-
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -229,10 +276,9 @@ public class GameControllerTest {
         .then()
             .statusCode(200);
 
-        // with old token
-
         logoutUser(userToken);
 
+        // with old token
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)

@@ -43,10 +43,8 @@ public class UserServiceImplTest {
     @Test
     public void loginSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean();
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
-        user.setUsername(USER_NAME1);
-        user.setPassword(PASSWORD1);
 
         expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
         userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
@@ -64,10 +62,8 @@ public class UserServiceImplTest {
     @Test
     public void loginGeneratesNewTokenSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean();
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
-        user.setUsername(USER_NAME1);
-        user.setPassword(PASSWORD1);
 
         expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
         userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
@@ -134,10 +130,8 @@ public class UserServiceImplTest {
     public void loginErrorWhenPasswordDoesNotMatch() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean();
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1);
             user.setId((int) System.currentTimeMillis());
-            user.setUsername(USER_NAME1);
-            user.setPassword(PASSWORD1);
 
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
             replay(userDao);
@@ -214,10 +208,8 @@ public class UserServiceImplTest {
     public void registerErrorWhenUserWithSuchUsernameAlreadyExists() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean();
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1);
             user.setId((int) System.currentTimeMillis());
-            user.setUsername(USER_NAME1);
-            user.setPassword(PASSWORD1);
 
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
             replay(userDao);

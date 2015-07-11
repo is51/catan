@@ -2,6 +2,7 @@ package catan.services.impl;
 
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
 import catan.services.GameService;
@@ -30,11 +31,7 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = new GameBean();
-        game.setCreator(creator);
-        game.setPrivateGame(privateGame);
-        game.setDateCreated(new Date());
-
+        GameBean game = new GameBean(creator, privateGame, new Date(), GameStatus.NEW);
         gameDao.addNewGame(game);
 
         log.debug("<< Game with id '" + game.getGameId() + "' successfully created with creator " + creator);

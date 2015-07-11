@@ -35,13 +35,12 @@ public class GameController {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean createdGame = gameService.createNewGame(user, privateGame);
 
-        GameDetails gameDetails = new GameDetails();
-        gameDetails.setGameId(createdGame.getGameId());
-        gameDetails.setCreatorId(createdGame.getCreator().getId());
-        gameDetails.setPrivateGame(createdGame.isPrivateGame());
-        gameDetails.setDateCreated(createdGame.getDateCreated().getTime());
-
-        return gameDetails;
+        return new GameDetails(
+                createdGame.getGameId(),
+                createdGame.getCreator().getId(),
+                createdGame.isPrivateGame(),
+                createdGame.getDateCreated().getTime(),
+                createdGame.getStatus().toString());
     }
 
     @RequestMapping(value = "list/{gameListType}",
@@ -66,13 +65,14 @@ public class GameController {
         }
 
         List<GameDetails> gamesToReturn = new ArrayList<GameDetails>();
-        for (GameBean game : games) {
-            GameDetails gameDetails = new GameDetails();
-            gameDetails.setGameId(game.getGameId());
-            gameDetails.setCreatorId(game.getCreator().getId());
-            gameDetails.setPrivateGame(game.isPrivateGame());
-            gameDetails.setDateCreated(game.getDateCreated().getTime());
 
+        for (GameBean game : games) {
+            GameDetails gameDetails = new GameDetails(
+                    game.getGameId(),
+                    game.getCreator().getId(),
+                    game.isPrivateGame(),
+                    game.getDateCreated().getTime(),
+                    game.getStatus().toString());
             gamesToReturn.add(gameDetails);
         }
 

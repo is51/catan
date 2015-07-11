@@ -83,9 +83,7 @@ public class UserServiceImpl implements UserService {
             throw new UserException(ERROR_CODE_USERNAME_ALREADY_EXISTS);
         }
 
-        UserBean newUser = new UserBean();
-        newUser.setUsername(username);
-        newUser.setPassword(password);
+        UserBean newUser = new UserBean(username, password);
 
         userDao.addNewUser(newUser);
         log.debug("<< User '" + username + "' successfully registered");

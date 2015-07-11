@@ -21,6 +21,13 @@ public class UserSessionBean {
     @JoinColumn(name = "USER_ID")
     private UserBean user;
 
+    public UserSessionBean() {
+    }
+
+    public UserSessionBean(String token, UserBean user) {
+        this.token = token;
+        this.user = user;
+    }
 
     public String getToken() {
         return token;

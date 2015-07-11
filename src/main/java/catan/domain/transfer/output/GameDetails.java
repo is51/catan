@@ -5,6 +5,18 @@ public class GameDetails {
     private int creatorId;
     private boolean privateGame;
     private long dateCreated;
+    private String status;
+
+    public GameDetails() {
+    }
+
+    public GameDetails(int gameId, int creatorId, boolean privateGame, long dateCreated, String status) {
+        this.gameId = gameId;
+        this.creatorId = creatorId;
+        this.privateGame = privateGame;
+        this.dateCreated = dateCreated;
+        this.status = status;
+    }
 
     public int getGameId() {
         return gameId;
@@ -36,5 +48,13 @@ public class GameDetails {
 
     public void setDateCreated(long dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -29,6 +29,19 @@ public class GameBean {
     @Column(name = "DATE_CREATED", unique = false, nullable = false)
     private Date dateCreated;
 
+    @Column(name = "GAME_STATUS", unique = false, nullable = false)
+    private GameStatus status;
+
+    public GameBean() {
+    }
+
+    public GameBean(UserBean creator, boolean privateGame, Date dateCreated, GameStatus status) {
+        this.creator = creator;
+        this.privateGame = privateGame;
+        this.dateCreated = dateCreated;
+        this.status = status;
+    }
+
     public int getGameId() {
         return gameId;
     }
@@ -62,6 +75,14 @@ public class GameBean {
         this.dateCreated = dateCreated;
     }
 
+    public GameStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(GameStatus status) {
+        this.status = status;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -83,6 +104,8 @@ public class GameBean {
             return false;
         if (privateGame != other.privateGame)
             return false;
+        if (status != other.status)
+            return false;
         if (dateCreated == null) {
             if (other.dateCreated != null)
                 return false;
@@ -93,6 +116,7 @@ public class GameBean {
 
     @Override
     public String toString() {
-        return "UserBean [gameId=" + gameId + ", privateGame=" + privateGame + ", dateCreated=" + dateCreated + ", creator=" + creator + "]";
+        return "UserBean [gameId=" + gameId + ", privateGame=" + privateGame + ", dateCreated=" + dateCreated +
+                ", creator=" + creator + ", status=" + status + "]";
     }
 }

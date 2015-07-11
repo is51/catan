@@ -42,10 +42,7 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
         query.setString("username", user.getUsername());
         query.executeUpdate();
 
-        UserSessionBean userSession = new UserSessionBean();
-        userSession.setToken(token);
-        userSession.setUser(user);
-
+        UserSessionBean userSession = new UserSessionBean(token, user);
         persist(userSession);
     }
 

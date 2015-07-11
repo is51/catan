@@ -18,13 +18,18 @@ import static org.hamcrest.Matchers.isEmptyString;
 public class UserControllerTest {
     public static final int SERVER_PORT = 8091;
 
+    public static final String USER_NAME_1 = "user1_UserTest";
+    public static final String USER_PASSWORD_1 = "password1";
+    public static final String USER_NAME_2 = "user2_UserTest";
+    public static final String USER_PASSWORD_2 = "password2";
+
     @Test
     public void shouldSuccessfullyRegisterNewUserAndFailRegistrationWithHttpCode400WhenSuchUserAlreadyExists(){
         //Registering new User
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
-                parameters("username", "user1", "password", "123").
+                parameters("username", USER_NAME_1, "password", USER_PASSWORD_1).
         when().
                 post("/api/user/register").
         then().
@@ -35,7 +40,7 @@ public class UserControllerTest {
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
-                parameters("username", "user1", "password", "123").
+                parameters("username", USER_NAME_1, "password", USER_PASSWORD_1).
         when().
                 post("/api/user/register").
         then().
@@ -49,7 +54,7 @@ public class UserControllerTest {
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
-                parameters("username", "user1", "password", "00000").
+                parameters("username", USER_NAME_1, "password", "00000").
         when().
                 post("/api/user/login").
         then().
@@ -78,7 +83,7 @@ public class UserControllerTest {
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
-                parameters("username", "user2", "password", "123").
+                parameters("username", USER_NAME_2, "password", USER_PASSWORD_2).
         when().
                 post("/api/user/register").
         then().
@@ -90,7 +95,7 @@ public class UserControllerTest {
         given().
                 port(8091).
                 header("Accept-Encoding", "application/json").
-                parameters("username", "user2", "password", "123").
+                parameters("username", USER_NAME_2, "password", USER_PASSWORD_2).
         when().
                 post("/api/user/login").
         then().
@@ -109,7 +114,7 @@ public class UserControllerTest {
         then().
                 statusCode(200).
                 contentType("application/json").
-                body("username", equalTo("user2"));
+                body("username", equalTo(USER_NAME_2));
     }
 
     @Test

@@ -1,11 +1,10 @@
 package catan.services.impl;
 
 import catan.dao.GameDao;
-import catan.dao.UserDao;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
-import catan.exception.UserException;
 import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Before;
@@ -16,14 +15,15 @@ import java.util.Date;
 import java.util.List;
 
 import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class GameServiceImplTest {
     public static final String USER_NAME1 = "userName1";
@@ -49,14 +49,12 @@ public class GameServiceImplTest {
     @Test
     public void createNewGameSuccessful() throws GameException {
         // GIVEN
-        UserBean user = new UserBean();
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
-        user.setUsername(USER_NAME1);
-        user.setPassword(PASSWORD1);
 
         gameDao.addNewGame(anyObject(GameBean.class));
         expectLastCall().andAnswer(new IAnswer() {
-            public Object answer() {
+            public Object answer() { // mock inner behavior of addNewGame method
                 GameBean arg1 = (GameBean) getCurrentArguments()[0];
                 arg1.setGameId(1);
 
@@ -83,22 +81,15 @@ public class GameServiceImplTest {
     @Test
     public void getListOfGamesCreatedBySuccessful() throws GameException {
         // GIVEN
-        UserBean user = new UserBean();
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
-        user.setUsername(USER_NAME1);
-        user.setPassword(PASSWORD1);
 
-        GameBean game1 = new GameBean();
+        GameBean game1 = new GameBean(user, true, new Date(), GameStatus.NEW);
         game1.setGameId(1);
-        game1.setCreator(user);
-        game1.setDateCreated(new Date());
-        game1.setPrivateGame(true);
 
-        GameBean game2 = new GameBean();
-        game2.setGameId(1);
-        game2.setCreator(user);
-        game2.setDateCreated(new Date());
-        game2.setPrivateGame(false);
+        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW);
+        game2.setGameId(2);
+
 
         List<GameBean> expectedGames = new ArrayList<GameBean>();
         expectedGames.add(game1);
@@ -122,6 +113,8 @@ public class GameServiceImplTest {
         assertNotNull(games.get(0).getDateCreated());
         assertTrue(games.get(0).getDateCreated().getTime() > 0);
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
+        assertEquals(GameStatus.NEW, games.get(0).getStatus());
+
         assertNotNull(games.get(1));
         assertNotNull(games.get(1).getGameId());
         assertTrue(games.get(1).getGameId() > 0);
@@ -131,27 +124,22 @@ public class GameServiceImplTest {
         assertNotNull(games.get(1).getDateCreated());
         assertTrue(games.get(1).getDateCreated().getTime() > 0);
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
+        assertEquals(GameStatus.NEW, games.get(1).getStatus());
+
+        assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
     }
 
     @Test
     public void getListOfAllPublicGamesSuccessful() throws GameException {
         // GIVEN
-        UserBean user = new UserBean();
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
-        user.setUsername(USER_NAME1);
-        user.setPassword(PASSWORD1);
 
-        GameBean game1 = new GameBean();
+        GameBean game1 = new GameBean(user, false, new Date(), GameStatus.NEW);
         game1.setGameId(1);
-        game1.setCreator(user);
-        game1.setDateCreated(new Date());
-        game1.setPrivateGame(false);
 
-        GameBean game2 = new GameBean();
-        game2.setGameId(1);
-        game2.setCreator(user);
-        game2.setDateCreated(new Date());
-        game2.setPrivateGame(false);
+        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW);
+        game2.setGameId(2);
 
         List<GameBean> expectedGames = new ArrayList<GameBean>();
         expectedGames.add(game1);
@@ -175,6 +163,8 @@ public class GameServiceImplTest {
         assertNotNull(games.get(0).getDateCreated());
         assertTrue(games.get(0).getDateCreated().getTime() > 0);
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
+        assertEquals(GameStatus.NEW, games.get(0).getStatus());
+
         assertNotNull(games.get(1));
         assertNotNull(games.get(1).getGameId());
         assertTrue(games.get(1).getGameId() > 0);
@@ -184,5 +174,8 @@ public class GameServiceImplTest {
         assertNotNull(games.get(1).getDateCreated());
         assertTrue(games.get(1).getDateCreated().getTime() > 0);
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
+        assertEquals(GameStatus.NEW, games.get(1).getStatus());
+
+        assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
     }
 }
