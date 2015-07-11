@@ -301,7 +301,7 @@ public class GameControllerTest {
     // ----------------------
 
     @Test
-    public void should_successfully_join_game() {
+    public void should_successfully_join_public_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int gameId = createNewGame(userToken1, false)
                 .path("gameId");
@@ -317,5 +317,56 @@ public class GameControllerTest {
         .then()
             .statusCode(200);
     }
+
+    @Test
+    public void should_fails_when_user_joins_public_game_if_game_is_not_really_public() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, true)
+                .path("gameId");
+
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        given()
+            .port(SERVER_PORT)
+            .header("Accept", ACCEPT_CONTENT_TYPE)
+            .parameters("token", userToken2, "gameId", gameId)
+        .when()
+            .post(URL_JOIN_PUBLIC_GAME)
+        .then()
+            .statusCode(400);
+    }
+
+    /*@Test
+    public void should_fails_when_user_joins_public_game_if_game_has_already_started() {
+        //TODO: should_fails_when_user_joins_public_game_if_game_has_already_started
+        //needs to be written when game starting is implemented
+    }*/
+
+    /*@Test
+    public void should_fails_when_user_joins_public_game_if_game_is_finished() {
+        //TODO: should_fails_when_user_joins_public_game_if_game_is_finished
+        //needs to be written when game finishing is implemented
+    }*/
+
+    /*@Test
+    public void should_fails_when_user_joins_public_game_if_game_is_canceled() {
+        //TODO: should_fails_when_user_joins_public_game_if_game_is_canceled
+        //needs to be written when game canceling is implemented
+    }*/
+
+    /*@Test
+    public void should_fails_when_user_joins_public_game_if_to_many_players_in() {
+        //TODO: should_fails_when_user_joins_public_game_if_to_many_players_in
+    }*/
+
+    /*@Test
+    public void should_fails_when_user_joins_public_game_if_there_is_no_game() {
+        //TODO: should_fails_when_user_joins_public_game_if_there_is_no_game
+    }*/
+
+    /*@Test
+    public void should_fails_when_user_joins_public_game_if_user_is_not_authorized() {
+        //TODO: should_fails_when_user_joins_public_game_if_user_is_not_authorized
+    }*/
 
 }
