@@ -12,12 +12,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,6 +26,7 @@ public class GameControllerTest {
     public static final String URL_CURRENT_GAMES_LIST = "/api/game/list/current";
     public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/public";
     public static final String URL_JOIN_PUBLIC_GAME = "/api/game/join/public";
+    public static final String URL_JOIN_PRIVATE_GAME = "/api/game/join/private";
 
     public static final String USER_NAME_1 = "user1_GameTest";
     public static final String USER_PASSWORD_1 = "password1";
@@ -115,6 +111,16 @@ public class GameControllerTest {
                 .post(URL_JOIN_PUBLIC_GAME);
     }
 
+    private Response joinPrivateGame(String token, String privateCode) {
+        return
+            given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "privateCode", privateCode)
+            .when()
+                .post(URL_JOIN_PRIVATE_GAME);
+    }
+
     @Before
     public void setup(){
         if(!initialized){
@@ -132,22 +138,33 @@ public class GameControllerTest {
     // ----------------
 
     @Test
-    public void should_successfully_create_new_game(){
+    public void should_successfully_create_new_private_game(){
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int userId = getUserId(userToken);
 
         createNewGame(userToken, true)
-        .then()
-            .statusCode(200)
-            .contentType(ACCEPT_CONTENT_TYPE)
-            .body("gameId", greaterThan(0))
-            .body("creatorId", equalTo(userId))
-            .body("privateGame", equalTo(true))
-            .body("status", equalTo(GameStatus.NEW.toString()))
-            .body("dateCreated", is(both(   //closeTo can be applied only to 'double' values, but dateCreated is 'long' value
-                    greaterThan(System.currentTimeMillis() - 60000))
-                    .and(
-                            lessThanOrEqualTo(System.currentTimeMillis()))));
+            .then()
+                .statusCode(200)
+                .contentType(ACCEPT_CONTENT_TYPE)
+                .body("gameId", greaterThan(0))
+                .body("creatorId", equalTo(userId))
+                .body("privateGame", equalTo(true))
+                .body("status", equalTo(GameStatus.NEW.toString()))
+                .body("privateCode", not(equalTo(isEmptyString())))
+                .body("dateCreated", is(both(   //closeTo can be applied only to 'double' values, but dateCreated is 'long' value
+                        greaterThan(System.currentTimeMillis() - 60000))
+                        .and(
+                                lessThanOrEqualTo(System.currentTimeMillis()))));
+    }
+
+    @Test
+    public void should_successfully_create_new_public_game(){
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+
+        createNewGame(userToken, false)
+            .then()
+                .statusCode(200)
+                .body("privateCode", equalTo(isEmptyOrNullString()));
     }
 
     @Test
@@ -190,6 +207,11 @@ public class GameControllerTest {
         .then()
             .statusCode(403);
     }
+
+    /*@Test
+    public void should_creator_be_added_to_game_as_player() {
+        //TODO: should_creator_be_added_to_game_as_player
+    }*/
 
     // ----------------------
     // List of Current Games
@@ -238,6 +260,7 @@ public class GameControllerTest {
     public void should_get_public_games_list_with_special_parameters(){
 
         //TODO: change test should_get_public_games_list_with_special_parameters
+        // + need checking of info about players
 
         String firstUserToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String secondUserToken = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -318,7 +341,7 @@ public class GameControllerTest {
     }
 
     // ----------------------
-    // Join Game
+    // Join Public Game
     // ----------------------
 
     @Test
@@ -399,8 +422,34 @@ public class GameControllerTest {
         logoutUser(userToken);
 
         joinPublicGame("some invalid token", gameId)
-                .then()
+            .then()
                 .statusCode(403);
     }
 
+    // ----------------------
+    // Join Private Game
+    // ----------------------
+
+    @Test
+    public void should_successfully_join_private_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String privateCode = createNewGame(userToken1, true)
+                .path("privateCode");
+
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        joinPrivateGame(userToken2, privateCode)
+            .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void should_fails_when_join_private_game_with_wrong_code() {
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+
+        joinPrivateGame(userToken, "some_wrong_code")
+            .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("INVALID_CODE"));
+    }
 }
