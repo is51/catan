@@ -11,7 +11,21 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.Matchers.*;
 
 
@@ -267,6 +281,7 @@ public class GameControllerTest {
     // List of Public Games
     // ----------------------
 
+    //Doesn't actually tests real game details, as games already added and more than 2 games are in response
     @Test
     public void should_get_public_games_list_with_special_parameters(){
 
@@ -277,6 +292,17 @@ public class GameControllerTest {
         String secondUserToken = loginUser(USER_NAME_2, USER_PASSWORD_2);
         int firstUserId = getUserId(firstUserToken);
         int secondUserId = getUserId(secondUserToken);
+
+        // Assert public games empty response
+        given()
+            .port(SERVER_PORT)
+            .header("Accept", ACCEPT_CONTENT_TYPE)
+            .parameters("token", secondUserToken)
+        .when()
+            .post(URL_PUBLIC_GAMES_LIST)
+        .then()
+            .statusCode(200)
+            .body("findall.size()", equalTo(3));
 
         // Create 1st public game by user1
         given()
@@ -298,31 +324,61 @@ public class GameControllerTest {
         .then()
             .statusCode(200);
 
-        // Assert public games response
+
+        long now = System.currentTimeMillis();
+
+        // Assert public games response entities
         given()
             .port(SERVER_PORT)
             .header("Accept", ACCEPT_CONTENT_TYPE)
-            .parameters("token", firstUserToken)
+            .parameters("token", secondUserToken)
         .when()
             .post(URL_PUBLIC_GAMES_LIST)
         .then()
             .statusCode(200)
-            .body("findall.size()", equalTo(2))
+            .body("findall.size()", equalTo(5))
             .body("creatorId", hasItems(firstUserId, secondUserId)) //Checks that items in the list have different creator id
-                .body("[0].gameId", greaterThan(0))
+            .body("[0].gameId", greaterThan(0))
             .body("[0].privateGame", equalTo(false))
             .body("[0].status", equalTo(GameStatus.NEW.toString()))
-            .body("[0].dateCreated", is(both(
-                    greaterThan(System.currentTimeMillis() - 60000))
-                    .and(
-                            lessThanOrEqualTo(System.currentTimeMillis()))))
+            .body("[0].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))))
             .body("[1].gameId", greaterThan(0))
             .body("[1].privateGame", equalTo(false))
             .body("[1].status", equalTo(GameStatus.NEW.toString()))
-            .body("[1].dateCreated", is(both(
-                    greaterThan(System.currentTimeMillis() - 60000))
-                    .and(
-                            lessThanOrEqualTo(System.currentTimeMillis()))));
+            .body("[1].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))));
+
+        // Assert public games response again but in another way
+        List<GameDetails> games = Arrays.asList(
+                given()
+                    .port(SERVER_PORT)
+                    .header("Accept", ACCEPT_CONTENT_TYPE)
+                    .parameters("token", secondUserToken)
+                .when()
+                    .post(URL_PUBLIC_GAMES_LIST)
+                    .as(GameDetails[].class));
+        //then
+        assertNotNull(games);
+        assertThat("Size of list should be 2", games.size(), is(5));
+
+        //create instances of game details after assertion that response contains 2 games
+        GameDetails firstGameDetails = games.get(0);
+        GameDetails secondGameDetails = games.get(1);
+        assertNotEquals("Game Ids should be different", firstGameDetails.getGameId(), secondGameDetails.getGameId());
+
+        //Assert first game details
+        assertThat("Game Id should be fore than 0", firstGameDetails.getGameId(), greaterThan(0));
+        assertThat("Status of first game should be NEW", firstGameDetails.getStatus(), is(GameStatus.NEW.toString()));
+        assertFalse("Game should be public", firstGameDetails.isPrivateGame());
+        assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
+                firstGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
+
+        //Assert second game details
+        assertThat("Game Id should be fore than 0", secondGameDetails.getGameId(), greaterThan(0));
+        assertThat("Status of first game should be NEW", secondGameDetails.getStatus(), is(GameStatus.NEW.toString()));
+        assertFalse("Game should be public", secondGameDetails.isPrivateGame());
+        assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
+                secondGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
+
     }
 
     @Test
