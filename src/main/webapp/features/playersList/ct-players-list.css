@@ -1,0 +1,32 @@
+ct-players-list .user-icon {
+    float: left;
+    width: 36px;
+    margin-right: 5px;
+}
+
+ct-players-list .user-icon > *:nth-child(1) {
+    height: 12px;
+    background: #ccc;
+}
+
+ct-players-list .user-icon > *:nth-child(2) {
+    font-size: 1rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+ct-players-list .user-icon > .color-1 {
+    background: #f50;
+}
+
+ct-players-list .user-icon > .color-2 {
+    background: #55f;
+}
+
+ct-players-list .user-icon > .color-3 {
+    background: #dc0;
+}
+
+ct-players-list .user-icon > .color-4 {
+    background: #0f5;
+}

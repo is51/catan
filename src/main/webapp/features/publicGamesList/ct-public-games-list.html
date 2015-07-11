@@ -4,17 +4,18 @@
     <div ng-hide="items">- no games -</div>
 
     <table ng-if="items" class="table table-condensed table-striped">
-        <tr>
-            <th>Game ID</th>
-            <th>Creator ID</th>
-            <th>Is Private</th>
-            <th>Date Created</th>
-        </tr>
         <tr ng-repeat="item in items">
-            <td>{{item.gameId}}</td>
-            <td>{{item.creatorId}}</td>
-            <td>{{item.privateGame}}</td>
-            <td>{{item.dateCreated | date : 'short'}}</td>
+            <td>#{{item.gameId}}</td>
+            <td>User #{{item.creatorId}}</td>
+            <td style="font-size: 1.2rem; line-height: 2.4rem;">
+                <span ng-show="item.privateGame"><span class="glyphicon glyphicon-eye-open"></span> Private</span>
+                <span ng-hide="item.privateGame"><span class="glyphicon glyphicon-globe"></span> Public</span>
+            </td>
+            <td style="font-size: 1.2rem; line-height: 2.4rem;">{{item.dateCreated | date : 'short'}}</td>
+            <td><span class="label label-warning">{{item.status}}</span></td>
+            <td>
+                <ct-players-list game="item"></ct-players-list>
+            </td>
         </tr>
     </table>
 
