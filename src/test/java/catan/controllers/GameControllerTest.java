@@ -27,6 +27,7 @@ public class GameControllerTest {
     public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/public";
     public static final String URL_JOIN_PUBLIC_GAME = "/api/game/join/public";
     public static final String URL_JOIN_PRIVATE_GAME = "/api/game/join/private";
+    public static final String URL_LEAVE_GAME = "/api/game/leave";
 
     public static final String USER_NAME_1 = "user1_GameTest";
     public static final String USER_PASSWORD_1 = "password1";
@@ -119,6 +120,16 @@ public class GameControllerTest {
                 .parameters("token", token, "privateCode", privateCode)
             .when()
                 .post(URL_JOIN_PRIVATE_GAME);
+    }
+
+    private Response leaveGame(String token, int gameId) {
+        return
+            given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId)
+            .when()
+                .post(URL_LEAVE_GAME);
     }
 
     @Before
@@ -452,4 +463,57 @@ public class GameControllerTest {
                 .statusCode(400)
                 .body("errorCode", equalTo("INVALID_CODE"));
     }
+
+    // ----------------------
+    // Leave Game
+    // ----------------------
+
+    @Test
+    public void should_successfully_leave_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        joinPublicGame(userToken2, gameId);
+
+        leaveGame(userToken2, gameId)
+            .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void should_fails_when_user_leaves_game_if_he_is_not_joined() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        leaveGame(userToken2, gameId)
+            .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
+    @Test
+    public void should_fails_when_user_leaves_nonexistent_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+
+        leaveGame(userToken1, 999999999)
+            .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
+    /*@Test
+    public void should_fails_when_user_leaves_already_started_game() {
+        //TODO: should_fails_when_user_leaves_already_started_game
+        //needs to be written when game starting is implemented
+    }*/
+
+    /*@Test
+    public void should_fails_when_user_leaves_finished_game() {
+        //TODO: should_fails_when_user_leaves_finished_game
+    }*/
 }
