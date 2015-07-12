@@ -87,7 +87,7 @@ public class JoinGameTest extends GameTestUtil {
     }*/
 
     @Test
-    public void should_fails_when_user_joins_public_game_if_to_many_players_in() {
+    public void should_fails_when_user_joins_public_game_if_too_many_players_in() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int gameId = createNewGame(userToken1, false)
                 .path("gameId");
@@ -99,7 +99,7 @@ public class JoinGameTest extends GameTestUtil {
         joinPublicGame(loginUser(USER_NAME_5, USER_PASSWORD_5), gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("TO_MANY_PLAYERS"));
+                .body("errorCode", equalTo("TOO_MANY_PLAYERS"));
     }
 
     @Test
@@ -120,7 +120,8 @@ public class JoinGameTest extends GameTestUtil {
 
         joinPublicGame("some invalid token", gameId)
                 .then()
-                .statusCode(403);
+                .statusCode(403)
+                .body("errorCode", equalTo("ERROR"));
     }
 
     // ----------------------
