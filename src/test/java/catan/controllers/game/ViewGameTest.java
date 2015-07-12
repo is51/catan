@@ -90,7 +90,6 @@ public class ViewGameTest extends GameTestUtil {
 
         viewGame("some invalid token", gameId)
                 .then()
-                .statusCode(403)
-                .body("errorCode", equalTo("ERROR"));
+                .statusCode(403);
     }
 }
