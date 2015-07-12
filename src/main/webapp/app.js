@@ -43,4 +43,5 @@ angular.module('catan', [
         RemoteProvider.setRequest('game', 'joinPublic', { url: '/api/game/join/public'});
         RemoteProvider.setRequest('game', 'joinPrivate', { url: '/api/game/join/private'});
         RemoteProvider.setRequest('game', 'details', { url: '/api/game/details'});
+        RemoteProvider.setRequest('game', 'leave', { url: '/api/game/leave'});
     }]);
