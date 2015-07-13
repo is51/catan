@@ -149,4 +149,58 @@ public class JoinGameTest extends GameTestUtil {
                 .statusCode(400)
                 .body("errorCode", equalTo("INVALID_CODE"));
     }
+
+    @Test
+    public void should_fails_when_already_joined_user_joins_public_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken2, gameId)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
+    @Test
+    public void should_fails_when_creator_joins_his_public_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        joinPublicGame(userToken1, gameId)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
+    @Test
+    public void should_fails_when_already_joined_user_joins_private_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String privateCode = createNewGame(userToken1, true)
+                .path("privateCode");
+
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        joinPrivateGame(userToken2, privateCode);
+        joinPrivateGame(userToken2, privateCode)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void should_fails_when_creator_joins_his_private_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String privateCode = createNewGame(userToken1, true)
+                .path("privateCode");
+
+        joinPrivateGame(userToken1, privateCode)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
 }

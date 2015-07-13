@@ -8,7 +8,14 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -16,9 +23,9 @@ import static org.hamcrest.Matchers.equalTo;
 @WebIntegrationTest("server.port:8091")
 public class ViewGameTest extends GameTestUtil {
 
-    public static final String USER_NAME_1 = "user1_LeaveGameTest";
+    public static final String USER_NAME_1 = "user1_ViewGameTest";
     public static final String USER_PASSWORD_1 = "password1";
-    public static final String USER_NAME_2 = "user2_LeaveGameTest";
+    public static final String USER_NAME_2 = "user2_ViewGameTest";
     public static final String USER_PASSWORD_2 = "password2";
 
     private static boolean initialized = false;
@@ -33,28 +40,51 @@ public class ViewGameTest extends GameTestUtil {
     }
 
     @Test
-    public void creator_should_successfully_view_game_page() {
+    public void should_successfully_view_game_page_by_creator() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int gameId = createNewGame(userToken1, false)
                 .path("gameId");
+        int userId = getUserId(userToken1);
 
         viewGame(userToken1, gameId)
                 .then()
-                .statusCode(200);
+                .statusCode(200)
+                .body("gameId", greaterThan(0))
+                .body("creatorId", equalTo(userId))
+                .body("dateCreated", is(both(
+                        greaterThan(System.currentTimeMillis() - 60000))
+                        .and(
+                                lessThanOrEqualTo(System.currentTimeMillis()))))
+                .body("status", not(equalTo(isEmptyString())))
+                .body("gameUsers.user.id", hasItems(userId));
     }
 
     @Test
-    public void non_creator_should_successfully_view_game_page() {
+    public void should_successfully_view_game_page_by_non_creator() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int gameId = createNewGame(userToken1, false)
                 .path("gameId");
+        int userId1 = getUserId(userToken1);
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        int userId2 = getUserId(userToken2);
+
         joinPublicGame(userToken2, gameId);
 
         viewGame(userToken2, gameId)
                 .then()
-                .statusCode(200);
+                .statusCode(200)
+                .body("gameId", greaterThan(0))
+                .body("creatorId", is(both(
+                        greaterThan(0))
+                        .and(
+                                not(equalTo(userId2)))))
+                .body("dateCreated", is(both(
+                        greaterThan(System.currentTimeMillis() - 60000))
+                        .and(
+                                lessThanOrEqualTo(System.currentTimeMillis()))))
+                .body("status", not(equalTo(isEmptyString())))
+                .body("gameUsers.user.id", hasItems(userId1, userId2));
     }
 
     @Test
@@ -68,7 +98,7 @@ public class ViewGameTest extends GameTestUtil {
         viewGame(userToken2, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("ACCESS_DENIED"));
+                .body("errorCode", equalTo("USER_IS_NOT_JOINED"));
     }
 
     @Test
@@ -78,7 +108,7 @@ public class ViewGameTest extends GameTestUtil {
         viewGame(userToken1, 999999999)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("ERROR"));
+                .body("errorCode", equalTo("GAME_IS_NOT_FOUND"));
     }
 
     @Test
