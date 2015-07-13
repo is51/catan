@@ -84,10 +84,10 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, true, new Date(), GameStatus.NEW);
+        GameBean game1 = new GameBean(user, true, new Date(), GameStatus.NEW, 3, 4);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW);
+        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW, 3, 4);
         game2.setGameId(2);
 
 
@@ -135,10 +135,10 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, false, new Date(), GameStatus.NEW);
+        GameBean game1 = new GameBean(user, false, new Date(), GameStatus.NEW, 3, 4);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW);
+        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW, 3, 4);
         game2.setGameId(2);
 
         List<GameBean> expectedGames = new ArrayList<GameBean>();

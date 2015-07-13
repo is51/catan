@@ -7,7 +7,7 @@
     </Appenders>
     <Loggers>
         <Logger name="org.apache.log4j.xml" level="INFO"/>
-        <Logger name="org.hibernate" level="INFO"/>
+        <Logger name="org.hibernate" level="TRACE"/>
         <Logger name="org.springframework" level="INFO"/>
 
         <Root level="debug">

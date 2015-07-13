@@ -12,7 +12,7 @@ import javax.persistence.Table;
 public class UserBean {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "USERNAME", unique = true, nullable = false)
@@ -54,35 +54,33 @@ public class UserBean {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        result = prime * result + ((username == null) ? 0 : username.hashCode());
-        return result;
-    }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserBean)) return false;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof UserBean))
-            return false;
-        UserBean other = (UserBean) obj;
-        if (id != other.id)
-            return false;
-        if (username == null) {
-            if (other.username != null)
-                return false;
-        } else if (!username.equals(other.username))
-            return false;
+        UserBean userBean = (UserBean) o;
+
+        if (id != userBean.id) return false;
+        if (password != null ? !password.equals(userBean.password) : userBean.password != null) return false;
+        if (username != null ? !username.equals(userBean.username) : userBean.username != null) return false;
+
         return true;
     }
 
     @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
-        return "UserBean [id=" + id + ", username=" + username + "]";
+        return "UserBean{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

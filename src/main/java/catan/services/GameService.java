@@ -12,4 +12,6 @@ public interface GameService {
     List<GameBean> getListOfGamesCreatedBy(UserBean creator) throws GameException;
 
     List<GameBean> getListOfAllPublicGames();
+
+    void joinPublicGame(UserBean user, String gameId) throws GameException;
 }

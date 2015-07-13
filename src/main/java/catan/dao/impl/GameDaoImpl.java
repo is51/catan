@@ -3,6 +3,7 @@ package catan.dao.impl;
 import catan.dao.AbstractDao;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -17,6 +18,11 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     @Override
     public void addNewGame(GameBean newGame) {
         persist(newGame);
+    }
+
+    @Override
+    public void addNewGameUser(GameUserBean newGameUser) {
+        persist(newGameUser);
     }
 
     @Override
@@ -41,6 +47,7 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     public List<GameBean> getPublicGames() {
         Criteria criteria = getSession().createCriteria(GameBean.class);
         criteria.add(Restrictions.eq("privateGame", false));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         //noinspection unchecked
         return (List<GameBean>) criteria.list();

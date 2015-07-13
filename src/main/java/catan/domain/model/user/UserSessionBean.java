@@ -45,34 +45,29 @@ public class UserSessionBean {
         this.user = user;
     }
 
-
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((token == null) ? 0 : token.hashCode());
-        return result;
-    }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserSessionBean)) return false;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof UserSessionBean))
-            return false;
-        UserSessionBean other = (UserSessionBean) obj;
-        if (token == null) {
-            if (other.token != null)
-                return false;
-        } else if (!token.equals(other.token))
-            return false;
+        UserSessionBean that = (UserSessionBean) o;
+
+        if (token != null ? !token.equals(that.token) : that.token != null) return false;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
+
         return true;
     }
 
     @Override
+    public int hashCode() {
+        return token != null ? token.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
-        return "UserBean [token=" + token + ", user=" + user + "]";
+        return "UserSessionBean{" +
+                "token='" + token + '\'' +
+                ", userId=" + (user == null ? "" : user.getId()) +
+                '}';
     }
 }

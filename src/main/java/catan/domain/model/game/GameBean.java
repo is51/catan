@@ -13,15 +13,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "GAME")
 public class GameBean {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int gameId;
 
     @ManyToOne
@@ -37,17 +37,25 @@ public class GameBean {
     @Column(name = "GAME_STATUS", unique = false, nullable = false)
     private GameStatus status;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "gameUserId", cascade = CascadeType.ALL)
-    private List<GameUserBean> gameUsers = new ArrayList<GameUserBean>();
+    @Column(name = "MIN_USERS", unique = false, nullable = false)
+    private int minUsers;
+
+    @Column(name = "MAX_USERS", unique = false, nullable = false)
+    private int maxUsers;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "game")
+    private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     public GameBean() {
     }
 
-    public GameBean(UserBean creator, boolean privateGame, Date dateCreated, GameStatus status) {
+    public GameBean(UserBean creator, boolean privateGame, Date dateCreated, GameStatus status, int minUsers, int maxUsers) {
         this.creator = creator;
         this.privateGame = privateGame;
         this.dateCreated = dateCreated;
         this.status = status;
+        this.minUsers = minUsers;
+        this.maxUsers = maxUsers;
     }
 
     public int getGameId() {
@@ -91,48 +99,74 @@ public class GameBean {
         this.status = status;
     }
 
-    public List<GameUserBean> getGameUsers() {
+    public int getMinUsers() {
+        return minUsers;
+    }
+
+    public void setMinUsers(int minUsers) {
+        this.minUsers = minUsers;
+    }
+
+    public int getMaxUsers() {
+        return maxUsers;
+    }
+
+    public void setMaxUsers(int maxUsers) {
+        this.maxUsers = maxUsers;
+    }
+
+    public Set<GameUserBean> getGameUsers() {
         return gameUsers;
     }
 
-    public void setGameUsers(List<GameUserBean> gameUsers) {
+    public void setGameUsers(Set<GameUserBean> gameUsers) {
         this.gameUsers = gameUsers;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + gameId;
-        return result;
-    }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GameBean)) return false;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
+        GameBean gameBean = (GameBean) o;
+
+        if (gameId != gameBean.gameId) return false;
+        if (maxUsers != gameBean.maxUsers) return false;
+        if (minUsers != gameBean.minUsers) return false;
+        if (privateGame != gameBean.privateGame) return false;
+        if (creator != null ? !creator.equals(gameBean.creator) : gameBean.creator != null) return false;
+        if (dateCreated != null ? !dateCreated.equals(gameBean.dateCreated) : gameBean.dateCreated != null)
             return false;
-        if (!(obj instanceof GameBean))
-            return false;
-        GameBean other = (GameBean) obj;
-        if (gameId != other.gameId)
-            return false;
-        if (privateGame != other.privateGame)
-            return false;
-        if (status != other.status)
-            return false;
-        if (dateCreated == null) {
-            if (other.dateCreated != null)
-                return false;
-        } else if (!dateCreated.equals(other.dateCreated))
-            return false;
+        if (gameUsers != null ? !gameUsers.equals(gameBean.gameUsers) : gameBean.gameUsers != null) return false;
+        if (status != gameBean.status) return false;
+
         return true;
     }
 
     @Override
+    public int hashCode() {
+        int result = gameId;
+        result = 31 * result + (creator != null ? creator.hashCode() : 0);
+        result = 31 * result + (privateGame ? 1 : 0);
+        result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + minUsers;
+        result = 31 * result + maxUsers;
+        result = 31 * result + (gameUsers != null ? gameUsers.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
-        return "UserBean [gameId=" + gameId + ", privateGame=" + privateGame + ", dateCreated=" + dateCreated +
-                ", creator=" + creator + ", status=" + status + "]";
+        return "GameBean{" +
+                "gameId=" + gameId +
+                ", creator=" + creator +
+                ", privateGame=" + privateGame +
+                ", dateCreated=" + dateCreated +
+                ", status=" + status +
+                ", minUsers=" + minUsers +
+                ", maxUsers=" + maxUsers +
+                ", gameUsers=" + gameUsers +
+                '}';
     }
 }

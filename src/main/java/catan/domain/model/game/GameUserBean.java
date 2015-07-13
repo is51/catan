@@ -2,8 +2,10 @@ package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,13 +17,18 @@ import javax.persistence.Table;
 @Table(name = "GAME_USER")
 public class GameUserBean {
 
+    //TODO: think about removal of id in this table
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int gameUserId;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private UserBean user;
+
+    @ManyToOne (fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "GAME_ID")
+    private GameBean game;
 
     @Column(name = "COLOR_ID", unique = false, nullable = false)
     private int colorId;
@@ -29,8 +36,9 @@ public class GameUserBean {
     public GameUserBean() {
     }
 
-    public GameUserBean(UserBean user, int colorId) {
+    public GameUserBean(UserBean user, GameBean game, int colorId) {
         this.user = user;
+        this.game = game;
         this.colorId = colorId;
     }
 
@@ -50,11 +58,48 @@ public class GameUserBean {
         this.user = user;
     }
 
+    public GameBean getGame() {
+        return game;
+    }
+
+    public void setGame(GameBean game) {
+        this.game = game;
+    }
+
     public int getColorId() {
         return colorId;
     }
 
     public void setColorId(int colorId) {
         this.colorId = colorId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GameUserBean)) return false;
+
+        GameUserBean that = (GameUserBean) o;
+
+        if (colorId != that.colorId) return false;
+        if (gameUserId != that.gameUserId) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = gameUserId;
+        result = 31 * result + colorId;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "GameUserBean{" +
+                "gameUserId=" + gameUserId +
+                ", userId=" + (user == null ? "" : user.getId()) +
+                ", colorId=" + colorId +
+                '}';
     }
 }
