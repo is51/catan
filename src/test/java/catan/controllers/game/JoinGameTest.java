@@ -162,7 +162,7 @@ public class JoinGameTest extends GameTestUtil {
         joinPublicGame(userToken2, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("ERROR"));
+                .body("errorCode", equalTo("ALREADY_JOINED"));
     }
 
     @Test
@@ -174,7 +174,7 @@ public class JoinGameTest extends GameTestUtil {
         joinPublicGame(userToken1, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("ERROR"));
+                .body("errorCode", equalTo("ALREADY_JOINED"));
     }
 
     @Test
@@ -189,7 +189,7 @@ public class JoinGameTest extends GameTestUtil {
         joinPrivateGame(userToken2, privateCode)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("ERROR"));
+                .body("errorCode", equalTo("ALREADY_JOINED"));
     }
 
     @Test
@@ -201,7 +201,7 @@ public class JoinGameTest extends GameTestUtil {
         joinPrivateGame(userToken1, privateCode)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("ERROR"));
+                .body("errorCode", equalTo("ALREADY_JOINED"));
     }
 
 }
