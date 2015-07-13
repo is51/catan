@@ -1,9 +1,11 @@
 <div>
     Public games:<br>
 
-    <div ng-hide="items">- no games -</div>
+    <div ng-hide="items">Loading...</div>
 
-    <table ng-if="items" class="table table-condensed table-striped">
+    <div ng-show="items&&items.length===0">- no games -</div>
+
+    <table ng-if="items&&items.length" class="table table-condensed table-striped">
         <tr ng-repeat="item in items">
             <td>#{{item.gameId}}</td>
             <td>User #{{item.creatorId}}</td>
