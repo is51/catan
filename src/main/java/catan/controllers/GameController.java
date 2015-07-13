@@ -79,17 +79,17 @@ public class GameController {
                                @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        gameService.joinPublicGame(user, gameId);
+        gameService.joinGameByIdentifier(user, gameId, false);
     }
 
     @RequestMapping(value = "join/private",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void joinPrivateGame(@RequestParam(value = "token", required = false) String token,
-                               @RequestParam("privateCode") String privateCode) throws AuthenticationException, GameException {
+                                @RequestParam("privateCode") String privateCode) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        gameService.joinPrivateGame(user, privateCode);
+        gameService.joinGameByIdentifier(user, privateCode, true);
     }
 
     private GameDetails toGameDetails(GameBean game) {
@@ -105,9 +105,9 @@ public class GameController {
         }
 
         String privateCode = null;
-        if(game.isPrivateGame()){
+        if (game.isPrivateGame()) {
             String originalIntegerCode = String.valueOf(game.getPrivateCode());
-            if(originalIntegerCode.length() < 8){
+            if (originalIntegerCode.length() < 8) {
                 originalIntegerCode = "0" + originalIntegerCode;
             }
 

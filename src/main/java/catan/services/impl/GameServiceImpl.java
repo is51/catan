@@ -30,6 +30,7 @@ public class GameServiceImpl implements GameService {
     public static final String GAME_CANCELED_ERROR = "GAME_CANCELED";
     public static final String TOO_MANY_PLAYERS_ERROR = "TOO_MANY_PLAYERS";
     public static final String ALREADY_JOINED_ERROR = "ALREADY_JOINED";
+    public static final String INVALID_CODE_ERROR = "INVALID_CODE";
 
     GameDao gameDao;
 
@@ -42,11 +43,11 @@ public class GameServiceImpl implements GameService {
         }
 
         GameBean game = new GameBean(creator, privateGame, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
-        if(privateGame){
+        if (privateGame) {
             List<Integer> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
             int randomPrivateCode = -1;
-            while (randomPrivateCode < 0 || usedCodes.contains(randomPrivateCode)){
-                randomPrivateCode = (int)(Math.random() * 25) * 1000000 + (int)(Math.random() * 25) * 10000 + (int)(Math.random() * 9999);
+            while (randomPrivateCode < 0 || usedCodes.contains(randomPrivateCode)) {
+                randomPrivateCode = (int) (Math.random() * 25) * 1000000 + (int) (Math.random() * 25) * 10000 + (int) (Math.random() * 9999);
             }
 
             game.setPrivateCode(randomPrivateCode);
@@ -88,36 +89,34 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    synchronized public void joinPublicGame(UserBean user, String gameIdString) throws GameException {
-        log.debug(">> Join user " + user + " to game with id '" + gameIdString + "' ...");
+    synchronized public void joinGameByIdentifier(UserBean user, String gameIdentifier, boolean privateGame) throws GameException {
+        log.debug(">> Join user " + user + " to "
+                + (privateGame ? "private" : "public") + " game with "
+                + (privateGame ? "privateCode" : "id") + " '" + gameIdentifier + "' ...");
         if (user == null) {
             log.debug("<< Cannot join empty user to game");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        if (gameIdString == null || gameIdString.trim().length() == 0) {
-            log.debug("<< Cannot join user to game with empty game id");
+        if (gameIdentifier == null || gameIdentifier.trim().length() == 0) {
+            log.debug("<< Cannot join user to game with empty " + (privateGame ? "privateCode" : "game id"));
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        int gameId;
-        try {
-            gameId = Integer.parseInt(gameIdString);
-        } catch (Exception e) {
-            log.debug("<< Cannot convert gameId to integer value");
-            throw new GameException(ERROR_CODE_ERROR);
+        GameBean game = privateGame ? findPrivateGame(gameIdentifier) : findPublicGame(gameIdentifier);
+
+
+
+        if (game.getCreator().getId() == user.getId()) {
+            log.debug("<< Creator is not allowed to join game, as he is already joined");
+            throw new GameException(ALREADY_JOINED_ERROR);
         }
 
-        GameBean game = gameDao.getGameByGameId(gameId);
-        if (game == null) {
-            log.debug("<< Game with such game id doesn't exists");
-            throw new GameException(ERROR_CODE_ERROR);
-        }
-
-        if(game.isPrivateGame()){
-            log.debug("<< Game with id '" + game.getGameId() + "' is private," +
-                    " but under this method user is allowed to join only public games");
-            throw new GameException(ERROR_CODE_ERROR);
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().getId() == user.getId()) {
+                log.debug("<< User " + user + " already joined to this game");
+                throw new GameException(ALREADY_JOINED_ERROR);
+            }
         }
 
         if (!GameStatus.NEW.equals(game.getStatus())) {
@@ -137,21 +136,9 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        if(game.getGameUsers().size() == game.getMaxUsers()){
+        if (game.getGameUsers().size() == game.getMaxUsers()) {
             log.debug("<< Number of players is already up to limit");
             throw new GameException(TOO_MANY_PLAYERS_ERROR);
-        }
-
-        if(game.getCreator().getId() == user.getId()){
-            log.debug("<< Creator is not allowed to join game, as he is already joined");
-            throw new GameException(ALREADY_JOINED_ERROR);
-        }
-
-        for(GameUserBean gameUser : game.getGameUsers()){
-            if(gameUser.getUser().getId() == user.getId()){
-                log.debug("<< User " + user + " already joined to this game");
-                throw new GameException(ALREADY_JOINED_ERROR);
-            }
         }
 
         addUserToGame(game, user);
@@ -159,9 +146,57 @@ public class GameServiceImpl implements GameService {
         log.debug("<< User " + user + " successfully joined game " + game);
     }
 
-    @Override
-    public void joinPrivateGame(UserBean user, String privateCode) {
-        //TODO: implement
+    private GameBean findPrivateGame(String gameIdentifier) throws GameException {
+        if (gameIdentifier.length() != 6) {
+            log.debug("<< Private code has wrong length");
+            throw new GameException(INVALID_CODE_ERROR);
+        }
+
+        char firstLetter = gameIdentifier.charAt(0);
+        char secondLetter = gameIdentifier.charAt(1);
+
+        if (firstLetter - 65 < 0 || secondLetter - 65 < 0) {
+            log.debug("<< First to symbols of private code are not letters");
+            throw new GameException(INVALID_CODE_ERROR);
+        }
+
+        int privateCode = (firstLetter - 65) * 1000000 + (secondLetter - 65) * 10000 +
+                Integer.parseInt(gameIdentifier.substring(firstLetter > 74 ? 2 : 3));
+
+        log.debug("Game identifier: " + gameIdentifier + " converted to private code: " + privateCode);
+
+        GameBean game = gameDao.getGameByPrivateCode(privateCode);
+        if (game == null) {
+            log.debug("<< Game with such private code doesn't exists");
+            throw new GameException(INVALID_CODE_ERROR);
+        }
+
+        return game;
+    }
+
+    private GameBean findPublicGame(String gameIdentifier) throws GameException {
+        GameBean game;
+        int gameId;
+        try {
+            gameId = Integer.parseInt(gameIdentifier);
+        } catch (Exception e) {
+            log.debug("<< Cannot convert gameId to integer value");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        game = gameDao.getGameByGameId(gameId);
+        if (game == null) {
+            log.debug("<< Game with such game id doesn't exists");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        if (game.isPrivateGame()) {
+            log.debug("<< Game with id '" + game.getGameId() + "' is private," +
+                    " but join public game was initiated");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        return game;
     }
 
     private void addUserToGame(GameBean game, UserBean userBean) {

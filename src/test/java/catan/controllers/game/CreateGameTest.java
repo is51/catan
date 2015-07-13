@@ -65,7 +65,7 @@ public class CreateGameTest extends GameTestUtil {
         createNewGame(userToken, false)
                 .then()
                 .statusCode(200)
-                .body("privateCode", equalTo(isEmptyOrNullString()));
+                .body("privateCode", isEmptyOrNullString());
     }
 
     @Test

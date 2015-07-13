@@ -13,7 +13,5 @@ public interface GameService {
 
     List<GameBean> getListOfAllPublicGames();
 
-    void joinPublicGame(UserBean user, String gameId) throws GameException;
-
-    void joinPrivateGame(UserBean user, String privateCode);
+    void joinGameByIdentifier(UserBean user, String gameIdentifier, boolean privateGame) throws GameException;
 }

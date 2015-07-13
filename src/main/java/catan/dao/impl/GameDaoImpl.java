@@ -35,6 +35,14 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     }
 
     @Override
+    public GameBean getGameByPrivateCode(int privateCode) {
+        Criteria criteria = getSession().createCriteria(GameBean.class);
+        criteria.add(Restrictions.eq("privateCode", privateCode));
+
+        return (GameBean) criteria.uniqueResult();
+    }
+
+    @Override
     public List<GameBean> getGamesByCreatorId(int creatorId) {
         Query query = getSession().createQuery("SELECT game FROM " + GameBean.class.getSimpleName() + " AS game WHERE game.creator.id in " +
                 "(SELECT user.id FROM " + UserBean.class.getName() + " AS user WHERE user.id = :creatorId)");

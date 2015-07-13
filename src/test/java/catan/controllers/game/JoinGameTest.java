@@ -9,6 +9,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -185,7 +186,9 @@ public class JoinGameTest extends GameTestUtil {
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
-        joinPrivateGame(userToken2, privateCode);
+        joinPrivateGame(userToken2, privateCode)
+                .then()
+                .statusCode(200);
         joinPrivateGame(userToken2, privateCode)
                 .then()
                 .statusCode(400)
