@@ -82,6 +82,16 @@ public class GameController {
         gameService.joinPublicGame(user, gameId);
     }
 
+    @RequestMapping(value = "join/private",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void joinPrivateGame(@RequestParam(value = "token", required = false) String token,
+                               @RequestParam("privateCode") String privateCode) throws AuthenticationException, GameException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        gameService.joinPrivateGame(user, privateCode);
+    }
+
     private GameDetails toGameDetails(GameBean game) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
@@ -94,10 +104,23 @@ public class GameController {
             gameUsers.add(gameUserDetails);
         }
 
+        String privateCode = null;
+        if(game.isPrivateGame()){
+            String originalIntegerCode = String.valueOf(game.getPrivateCode());
+            if(originalIntegerCode.length() < 8){
+                originalIntegerCode = "0" + originalIntegerCode;
+            }
+
+            char firstLetter = (char) (65 + Integer.parseInt(originalIntegerCode.substring(0, 2)));
+            char secondLetter = (char) (65 + Integer.parseInt(originalIntegerCode.substring(2, 4)));
+            privateCode = "" + firstLetter + secondLetter + originalIntegerCode.substring(4);
+        }
+
         return new GameDetails(
                 game.getGameId(),
                 game.getCreator().getId(),
                 game.isPrivateGame(),
+                privateCode,
                 game.getDateCreated().getTime(),
                 game.getStatus().toString(),
                 gameUsers);

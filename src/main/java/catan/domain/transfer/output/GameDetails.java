@@ -6,6 +6,7 @@ public class GameDetails {
     private int gameId;
     private int creatorId;
     private boolean privateGame;
+    private String privateCode;
     private long dateCreated;
     private String status;
     private List<GameUserDetails> gameUsers;
@@ -13,10 +14,11 @@ public class GameDetails {
     public GameDetails() {
     }
 
-    public GameDetails(int gameId, int creatorId, boolean privateGame, long dateCreated, String status, List<GameUserDetails> gameUsers) {
+    public GameDetails(int gameId, int creatorId, boolean privateGame, String privateCode, long dateCreated, String status, List<GameUserDetails> gameUsers) {
         this.gameId = gameId;
         this.creatorId = creatorId;
         this.privateGame = privateGame;
+        this.privateCode = privateCode;
         this.dateCreated = dateCreated;
         this.status = status;
         this.gameUsers = gameUsers;
@@ -44,6 +46,14 @@ public class GameDetails {
 
     public void setPrivateGame(boolean privateGame) {
         this.privateGame = privateGame;
+    }
+
+    public String getPrivateCode() {
+        return privateCode;
+    }
+
+    public void setPrivateCode(String privateCode) {
+        this.privateCode = privateCode;
     }
 
     public long getDateCreated() {

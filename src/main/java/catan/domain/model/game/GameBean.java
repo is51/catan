@@ -5,6 +5,8 @@ import catan.domain.model.user.UserBean;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,9 +33,13 @@ public class GameBean {
     @Column(name = "IS_PRIVATE", unique = false, nullable = false)
     private boolean privateGame;
 
+    @Column(name = "PRIVATE_CODE", unique = false, nullable = false)
+    private int privateCode;
+
     @Column(name = "DATE_CREATED", unique = false, nullable = false)
     private Date dateCreated;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "GAME_STATUS", unique = false, nullable = false)
     private GameStatus status;
 
@@ -81,6 +87,14 @@ public class GameBean {
 
     public void setPrivateGame(boolean privateGame) {
         this.privateGame = privateGame;
+    }
+
+    public int getPrivateCode() {
+        return privateCode;
+    }
+
+    public void setPrivateCode(int privateCode) {
+        this.privateCode = privateCode;
     }
 
     public Date getDateCreated() {

@@ -34,7 +34,7 @@ public class GameServiceImpl implements GameService {
     GameDao gameDao;
 
     @Override
-    public GameBean createNewGame(UserBean creator, boolean privateGame) throws GameException {
+    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame) throws GameException {
         log.debug(">> Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + " ...");
         if (creator == null) {
             log.debug("<< Cannot create new game due to creator is empty");
@@ -42,11 +42,21 @@ public class GameServiceImpl implements GameService {
         }
 
         GameBean game = new GameBean(creator, privateGame, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
+        if(privateGame){
+            List<Integer> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
+            int randomPrivateCode = -1;
+            while (randomPrivateCode < 0 || usedCodes.contains(randomPrivateCode)){
+                randomPrivateCode = (int)(Math.random() * 25) * 1000000 + (int)(Math.random() * 25) * 10000 + (int)(Math.random() * 9999);
+            }
+
+            game.setPrivateCode(randomPrivateCode);
+        }
+
         gameDao.addNewGame(game);
 
         addUserToGame(game, creator);
 
-        log.debug("<< Game with id '" + game.getGameId() + "' successfully created with creator " + creator);
+        log.debug("<< Game '" + game + "' successfully created with creator " + creator);
 
         return game;
     }
@@ -70,7 +80,7 @@ public class GameServiceImpl implements GameService {
     public List<GameBean> getListOfAllPublicGames() {
         log.debug(">> Getting list of all public games ...");
 
-        List<GameBean> games = gameDao.getPublicGames();
+        List<GameBean> games = gameDao.getAllNewPublicGames();
 
         log.debug("<< " + games.size() + " games successfully retrieved");
 
@@ -147,6 +157,11 @@ public class GameServiceImpl implements GameService {
         addUserToGame(game, user);
 
         log.debug("<< User " + user + " successfully joined game " + game);
+    }
+
+    @Override
+    public void joinPrivateGame(UserBean user, String privateCode) {
+        //TODO: implement
     }
 
     private void addUserToGame(GameBean game, UserBean userBean) {

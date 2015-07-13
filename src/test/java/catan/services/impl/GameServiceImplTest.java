@@ -145,7 +145,7 @@ public class GameServiceImplTest {
         expectedGames.add(game1);
         expectedGames.add(game2);
 
-        expect(gameDao.getPublicGames()).andStubReturn(expectedGames);
+        expect(gameDao.getAllNewPublicGames()).andStubReturn(expectedGames);
         replay(gameDao);
 
         // WHEN
