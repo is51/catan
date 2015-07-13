@@ -188,7 +188,8 @@ public class JoinGameTest extends GameTestUtil {
         joinPrivateGame(userToken2, privateCode);
         joinPrivateGame(userToken2, privateCode)
                 .then()
-                .statusCode(200);
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
     }
 
     @Test
