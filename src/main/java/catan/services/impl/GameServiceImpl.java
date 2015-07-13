@@ -7,6 +7,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
 import catan.services.GameService;
+import catan.services.PrivateCodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class GameServiceImpl implements GameService {
             List<Integer> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
             int randomPrivateCode = -1;
             while (randomPrivateCode < 0 || usedCodes.contains(randomPrivateCode)) {
-                randomPrivateCode = (int) (Math.random() * 25) * 1000000 + (int) (Math.random() * 25) * 10000 + (int) (Math.random() * 9999);
+                randomPrivateCode = PrivateCodeUtil.generateRandomPrivateCode();
             }
 
             game.setPrivateCode(randomPrivateCode);
@@ -147,23 +148,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private GameBean findPrivateGame(String gameIdentifier) throws GameException {
-        if (gameIdentifier.length() != 6) {
-            log.debug("<< Private code has wrong length");
-            throw new GameException(INVALID_CODE_ERROR);
-        }
-
-        char firstLetter = gameIdentifier.charAt(0);
-        char secondLetter = gameIdentifier.charAt(1);
-
-        if (firstLetter - 65 < 0 || secondLetter - 65 < 0) {
-            log.debug("<< First to symbols of private code are not letters");
-            throw new GameException(INVALID_CODE_ERROR);
-        }
-
-        int privateCode = (firstLetter - 65) * 1000000 + (secondLetter - 65) * 10000 +
-                Integer.parseInt(gameIdentifier.substring(firstLetter > 74 ? 2 : 3));
-
-        log.debug("Game identifier: " + gameIdentifier + " converted to private code: " + privateCode);
+        int privateCode = PrivateCodeUtil.getPrivateCodeFromDisplayValue(gameIdentifier, log);
 
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {

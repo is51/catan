@@ -10,6 +10,7 @@ import catan.exception.AuthenticationException;
 import catan.exception.GameException;
 import catan.services.AuthenticationService;
 import catan.services.GameService;
+import catan.services.PrivateCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -106,14 +107,7 @@ public class GameController {
 
         String privateCode = null;
         if (game.isPrivateGame()) {
-            String originalIntegerCode = String.valueOf(game.getPrivateCode());
-            if (originalIntegerCode.length() < 8) {
-                originalIntegerCode = "0" + originalIntegerCode;
-            }
-
-            char firstLetter = (char) (65 + Integer.parseInt(originalIntegerCode.substring(0, 2)));
-            char secondLetter = (char) (65 + Integer.parseInt(originalIntegerCode.substring(2, 4)));
-            privateCode = "" + firstLetter + secondLetter + originalIntegerCode.substring(4);
+            privateCode = PrivateCodeUtil.getPrivateCodeDisplayValue(game);
         }
 
         return new GameDetails(
