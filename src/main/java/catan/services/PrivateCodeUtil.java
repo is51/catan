@@ -1,52 +1,66 @@
 package catan.services;
 
-import catan.domain.model.game.GameBean;
-import catan.exception.GameException;
-import catan.services.impl.GameServiceImpl;
-import org.slf4j.Logger;
+import catan.exception.PrivateCodeException;
 
 public class PrivateCodeUtil {
     public static final int LETTER_LENGTH = 2;
     public static final int DIGIT_LENGTH = 4;
+    public static final String WRONG_LENGTH_ERROR = "WRONG_LENGTH";
+    public static final String FIRST_SYMBOLS_ARE_NOT_LETTERS_ERROR = "FIRST_SYMBOLS_ARE_NOT_LETTERS";
+    public static final String SYMBOLS_ARE_NOT_DIGITS_ERROR = "SYMBOLS_ARE_NOT_DIGITS";
 
-    public static int generateRandomPrivateCode() {
-        return (int) (Math.random() * 25) * 1000000 + (int) (Math.random() * 25) * 10000 + (int) (Math.random() * 9999);
+    private RandomValeGenerator rvg = new RandomValeGenerator();
+
+    public int generateRandomPrivateCode() {
+        int firstTwoDigits = (int) (1 + rvg.randomValue() * 26) * 1000000;
+        int secondTwoDigits = (int) (1 + rvg.randomValue() * 26) * 10000;
+        int remainingDigits = (int) (rvg.randomValue() * 10000);
+
+        return firstTwoDigits + secondTwoDigits + remainingDigits;
     }
 
-    public static String getPrivateCodeDisplayValue(GameBean game) {
-        String privateCode;
-        String originalIntegerCode = String.valueOf(game.getPrivateCode());
+    public String getDisplayValueFromPrivateCode(int privateCode) {
+        String privateCodeDisplayValue;
+        String originalIntegerCode = String.valueOf(privateCode);
         if (originalIntegerCode.length() < (LETTER_LENGTH * 2 + DIGIT_LENGTH)) {
             originalIntegerCode = "0" + originalIntegerCode;
         }
 
-        char firstLetter = (char) (65 + Integer.parseInt(originalIntegerCode.substring(0, 2)));
-        char secondLetter = (char) (65 + Integer.parseInt(originalIntegerCode.substring(2, 4)));
+        char firstLetter = (char) (64 + Integer.parseInt(originalIntegerCode.substring(0, 2)));
+        char secondLetter = (char) (64 + Integer.parseInt(originalIntegerCode.substring(2, 4)));
 
-        privateCode = "" + firstLetter + secondLetter + originalIntegerCode.substring(DIGIT_LENGTH);
+        privateCodeDisplayValue = "" + firstLetter + secondLetter + originalIntegerCode.substring(DIGIT_LENGTH);
 
-        return privateCode;
+        return privateCodeDisplayValue;
     }
 
-    public static int getPrivateCodeFromDisplayValue(String gameIdentifier, Logger log) throws GameException {
-        if (gameIdentifier.length() != LETTER_LENGTH + DIGIT_LENGTH) {
-            log.debug("<< Private code has wrong length");
-            throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
+    public int getPrivateCodeFromDisplayValue(String gameIdentifier) throws PrivateCodeException {
+        String privateCodeDisplayValue = gameIdentifier.toUpperCase();
+
+        if (privateCodeDisplayValue.length() != LETTER_LENGTH + DIGIT_LENGTH) {
+            throw new PrivateCodeException(PrivateCodeUtil.WRONG_LENGTH_ERROR);
         }
 
-        char firstLetter = gameIdentifier.charAt(0);
-        char secondLetter = gameIdentifier.charAt(1);
+        char firstLetter = privateCodeDisplayValue.charAt(0);
+        char secondLetter = privateCodeDisplayValue.charAt(1);
 
-        if (firstLetter - 65 < 0 || secondLetter - 65 < 0) {
-            log.debug("<< First to symbols of private code are not letters");
-            throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
+        if (firstLetter - 65 < 0 || secondLetter - 65 < 0 || firstLetter - 65 > 25 || secondLetter - 65 > 25) {
+            throw new PrivateCodeException(PrivateCodeUtil.FIRST_SYMBOLS_ARE_NOT_LETTERS_ERROR);
         }
 
-        int privateCode = (firstLetter - 65) * 1000000 + (secondLetter - 65) * 10000 +
-                Integer.parseInt(gameIdentifier.substring(firstLetter > 74 ? LETTER_LENGTH * 2 - 2 : LETTER_LENGTH * 2 - 1));
+        int firstTwoDigits = (firstLetter - 64) * 1000000;
+        int secondTwoDigits = (secondLetter - 64) * 10000;
+        int remainingDigits;
+        try{
+            remainingDigits = Integer.parseInt(privateCodeDisplayValue.substring(LETTER_LENGTH));
+        } catch (Exception e){
+            throw new PrivateCodeException(PrivateCodeUtil.SYMBOLS_ARE_NOT_DIGITS_ERROR);
+        }
 
-        log.debug("Game identifier: " + gameIdentifier + " converted to private code: " + privateCode);
+        return firstTwoDigits + secondTwoDigits + remainingDigits;
+    }
 
-        return privateCode;
+    public void setRvg(RandomValeGenerator rvg) {
+        this.rvg = rvg;
     }
 }

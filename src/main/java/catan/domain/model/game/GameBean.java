@@ -55,9 +55,19 @@ public class GameBean {
     public GameBean() {
     }
 
-    public GameBean(UserBean creator, boolean privateGame, Date dateCreated, GameStatus status, int minUsers, int maxUsers) {
+    public GameBean(UserBean creator, Date dateCreated, GameStatus status, int minUsers, int maxUsers) {
         this.creator = creator;
-        this.privateGame = privateGame;
+        this.privateGame = false;
+        this.dateCreated = dateCreated;
+        this.status = status;
+        this.minUsers = minUsers;
+        this.maxUsers = maxUsers;
+    }
+
+    public GameBean(UserBean creator, int privateCode, Date dateCreated, GameStatus status, int minUsers, int maxUsers) {
+        this.creator = creator;
+        this.privateGame = true;
+        this.privateCode = privateCode;
         this.dateCreated = dateCreated;
         this.status = status;
         this.minUsers = minUsers;

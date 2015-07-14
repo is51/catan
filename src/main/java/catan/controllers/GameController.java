@@ -30,6 +30,7 @@ public class GameController {
 
     GameService gameService;
     AuthenticationService authenticationService;
+    PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
 
     @RequestMapping(value = "create",
             method = RequestMethod.POST,
@@ -107,7 +108,7 @@ public class GameController {
 
         String privateCode = null;
         if (game.isPrivateGame()) {
-            privateCode = PrivateCodeUtil.getPrivateCodeDisplayValue(game);
+            privateCode = privateCodeUtil.getDisplayValueFromPrivateCode(game.getPrivateCode());
         }
 
         return new GameDetails(

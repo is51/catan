@@ -95,7 +95,7 @@ public class ListGameTest extends GameTestUtil {
     @Test
     public void should_get_public_games_list_with_special_parameters() {
 
-        //TODO: change test should_get_public_games_list_with_special_parameters
+        //TODO: change test to verify correct parameters (maybe only size?)
         // + need checking of info about players
 
         String firstUserToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -104,7 +104,7 @@ public class ListGameTest extends GameTestUtil {
         int secondUserId = getUserId(secondUserToken);
 
         // Assert public games empty response
-        given()
+        int numberOfGamesInTheList = given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", secondUserToken)
@@ -112,7 +112,8 @@ public class ListGameTest extends GameTestUtil {
                 .post(URL_PUBLIC_GAMES_LIST)
                 .then()
                 .statusCode(200)
-                .body("findall.size()", equalTo(3));
+                .extract()
+                .path("findall.size()");
 
         createNewGame(firstUserToken, false);
         createNewGame(secondUserToken, false);
@@ -128,7 +129,7 @@ public class ListGameTest extends GameTestUtil {
                 .post(URL_PUBLIC_GAMES_LIST)
                 .then()
                 .statusCode(200)
-                .body("findall.size()", equalTo(5))
+                .body("findall.size()", equalTo(numberOfGamesInTheList + 2))
                 .body("creatorId", hasItems(firstUserId, secondUserId)) //Checks that items in the list have different creator id
                 .body("[0].gameId", greaterThan(0))
                 .body("[0].privateGame", equalTo(false))
@@ -150,7 +151,7 @@ public class ListGameTest extends GameTestUtil {
                         .as(GameDetails[].class));
         //then
         assertNotNull(games);
-        assertThat("Size of list should be 2", games.size(), is(7));
+        assertThat("Size of list should be " + (numberOfGamesInTheList + 2), games.size(), is(numberOfGamesInTheList + 2));
 
         //create instances of game details after assertion that response contains 2 games
         GameDetails firstGameDetails = games.get(0);

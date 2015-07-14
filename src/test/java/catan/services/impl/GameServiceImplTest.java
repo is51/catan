@@ -3,8 +3,10 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameStatus;
+import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
+import catan.services.RandomValeGeneratorMock;
 import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Before;
@@ -32,13 +34,17 @@ public class GameServiceImplTest {
 
     GameDao gameDao;
     GameServiceImpl gameService;
+    private RandomValeGeneratorMock rvg;
 
     @Before
     public void setUp() {
         gameDao = createMock(GameDao.class);
 
+        rvg = new RandomValeGeneratorMock();
+
         gameService = new GameServiceImpl();
         gameService.setGameDao(gameDao);
+        gameService.getPrivateCodeUtil().setRvg(rvg);
     }
 
     @After
@@ -49,8 +55,16 @@ public class GameServiceImplTest {
     @Test
     public void createNewGameSuccessful() throws GameException {
         // GIVEN
+        rvg.setNextGeneratedValue(0.4);
+        rvg.setNextGeneratedValue(0.6);
+        rvg.setNextGeneratedValue(0.8254);
+
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
+
+        expect(gameDao.getUsedActiveGamePrivateCodes()).andStubReturn(new ArrayList<Integer>());
+        gameDao.addNewGameUser(anyObject(GameUserBean.class));
+        expectLastCall();
 
         gameDao.addNewGame(anyObject(GameBean.class));
         expectLastCall().andAnswer(new IAnswer() {
@@ -76,6 +90,13 @@ public class GameServiceImplTest {
         assertNotNull(game.getDateCreated());
         assertTrue(game.getDateCreated().getTime() > 0);
         assertTrue(game.getDateCreated().getTime() <= System.currentTimeMillis());
+        assertEquals(11168254, game.getPrivateCode());
+        assertEquals(GameStatus.NEW, game.getStatus());
+        assertEquals(GameServiceImpl.MIN_USERS, game.getMinUsers());
+        assertEquals(GameServiceImpl.MAX_USERS, game.getMaxUsers());
+        assertNotNull(game.getGameUsers());
+        assertEquals(1, game.getGameUsers().size());
+        assertEquals(user, game.getGameUsers().iterator().next().getUser());
     }
 
     @Test
@@ -84,12 +105,16 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, true, new Date(), GameStatus.NEW, 3, 4);
+        GameBean game1 = new GameBean(user, 23163423, new Date(), GameStatus.NEW, 3, 4);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW, 3, 4);
+        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4);
         game2.setGameId(2);
 
+        GameUserBean gameUser1 = new GameUserBean(user, game1, 1);
+        GameUserBean gameUser2 = new GameUserBean(user, game2, 1);
+        game1.getGameUsers().add(gameUser1);
+        game2.getGameUsers().add(gameUser2);
 
         List<GameBean> expectedGames = new ArrayList<GameBean>();
         expectedGames.add(game1);
@@ -114,6 +139,12 @@ public class GameServiceImplTest {
         assertTrue(games.get(0).getDateCreated().getTime() > 0);
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(0).getStatus());
+        assertEquals(23163423, games.get(0).getPrivateCode());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinUsers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
+        assertNotNull(games.get(0).getGameUsers());
+        assertEquals(1, games.get(0).getGameUsers().size());
+        assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
         assertNotNull(games.get(1).getGameId());
@@ -125,6 +156,12 @@ public class GameServiceImplTest {
         assertTrue(games.get(1).getDateCreated().getTime() > 0);
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(1).getStatus());
+        assertEquals(0, games.get(1).getPrivateCode());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinUsers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
+        assertNotNull(games.get(1).getGameUsers());
+        assertEquals(1, games.get(1).getGameUsers().size());
+        assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
     }
@@ -132,14 +169,22 @@ public class GameServiceImplTest {
     @Test
     public void getListOfAllPublicGamesSuccessful() throws GameException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
-        user.setId((int) System.currentTimeMillis());
+        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1);
+        user1.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, false, new Date(), GameStatus.NEW, 3, 4);
+        UserBean user2 = new UserBean(USER_NAME1, PASSWORD1);
+        user2.setId((int) System.currentTimeMillis());
+
+        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, false, new Date(), GameStatus.NEW, 3, 4);
+        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4);
         game2.setGameId(2);
+
+        GameUserBean gameUser1 = new GameUserBean(user1, game1, 1);
+        GameUserBean gameUser2 = new GameUserBean(user2, game2, 1);
+        game1.getGameUsers().add(gameUser1);
+        game2.getGameUsers().add(gameUser2);
 
         List<GameBean> expectedGames = new ArrayList<GameBean>();
         expectedGames.add(game1);
@@ -158,23 +203,36 @@ public class GameServiceImplTest {
         assertNotNull(games.get(0).getGameId());
         assertTrue(games.get(0).getGameId() > 0);
         assertNotNull(games.get(0).getCreator());
-        assertEquals(user, games.get(0).getCreator());
+        assertEquals(user1, games.get(0).getCreator());
         assertFalse(games.get(0).isPrivateGame());
         assertNotNull(games.get(0).getDateCreated());
         assertTrue(games.get(0).getDateCreated().getTime() > 0);
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(0).getStatus());
+        assertEquals(0, games.get(0).getPrivateCode());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinUsers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
+        assertNotNull(games.get(0).getGameUsers());
+        assertEquals(1, games.get(0).getGameUsers().size());
+        assertEquals(user1, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
         assertNotNull(games.get(1).getGameId());
         assertTrue(games.get(1).getGameId() > 0);
         assertNotNull(games.get(1).getCreator());
-        assertEquals(user, games.get(1).getCreator());
+        assertEquals(user2, games.get(1).getCreator());
         assertFalse(games.get(1).isPrivateGame());
         assertNotNull(games.get(1).getDateCreated());
         assertTrue(games.get(1).getDateCreated().getTime() > 0);
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(1).getStatus());
+        assertEquals(0, games.get(1).getPrivateCode());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinUsers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
+        assertNotNull(games.get(1).getGameUsers());
+        assertEquals(1, games.get(1).getGameUsers().size());
+
+        assertEquals(user2, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
     }

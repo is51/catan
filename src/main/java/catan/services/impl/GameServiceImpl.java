@@ -6,6 +6,7 @@ import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
+import catan.exception.PrivateCodeException;
 import catan.services.GameService;
 import catan.services.PrivateCodeUtil;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ public class GameServiceImpl implements GameService {
     public static final String INVALID_CODE_ERROR = "INVALID_CODE";
 
     GameDao gameDao;
+    PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
 
     @Override
     synchronized public GameBean createNewGame(UserBean creator, boolean privateGame) throws GameException {
@@ -43,15 +45,17 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = new GameBean(creator, privateGame, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
+        GameBean game;
         if (privateGame) {
             List<Integer> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
             int randomPrivateCode = -1;
             while (randomPrivateCode < 0 || usedCodes.contains(randomPrivateCode)) {
-                randomPrivateCode = PrivateCodeUtil.generateRandomPrivateCode();
+                randomPrivateCode = privateCodeUtil.generateRandomPrivateCode();
             }
 
-            game.setPrivateCode(randomPrivateCode);
+            game = new GameBean(creator, randomPrivateCode, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
+        } else {
+            game = new GameBean(creator, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
         }
 
         gameDao.addNewGame(game);
@@ -148,7 +152,26 @@ public class GameServiceImpl implements GameService {
     }
 
     private GameBean findPrivateGame(String gameIdentifier) throws GameException {
-        int privateCode = PrivateCodeUtil.getPrivateCodeFromDisplayValue(gameIdentifier, log);
+        int privateCode = 0;
+        try {
+            privateCode = privateCodeUtil.getPrivateCodeFromDisplayValue(gameIdentifier);
+            log.debug("Game identifier: " + gameIdentifier + " converted to private code: " + privateCode);
+        } catch (PrivateCodeException e) {
+            if(PrivateCodeUtil.WRONG_LENGTH_ERROR.equals(e.getErrorCode())){
+                log.debug("<< First to symbols of private code are not letters");
+                throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
+            }
+
+            if(PrivateCodeUtil.FIRST_SYMBOLS_ARE_NOT_LETTERS_ERROR.equals(e.getErrorCode())){
+                log.debug("<< First to symbols of private code are not letters");
+                throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
+            }
+
+            if(PrivateCodeUtil.SYMBOLS_ARE_NOT_DIGITS_ERROR.equals(e.getErrorCode())){
+                log.debug("<< Remaining symbols are not digits");
+                throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
+            }
+        }
 
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {
@@ -192,6 +215,14 @@ public class GameServiceImpl implements GameService {
         gameDao.addNewGameUser(gameUserBean);
 
         game.getGameUsers().add(gameUserBean);
+    }
+
+    public PrivateCodeUtil getPrivateCodeUtil() {
+        return privateCodeUtil;
+    }
+
+    public void setPrivateCodeUtil(PrivateCodeUtil privateCodeUtil) {
+        this.privateCodeUtil = privateCodeUtil;
     }
 
     @Autowired
