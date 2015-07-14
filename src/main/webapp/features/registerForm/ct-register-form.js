@@ -10,10 +10,21 @@ angular.module('catan')
 
                 scope.data = {};
 
-                scope.submit = function() {
+                scope.submit = function(autologin) {
                     Auth.register(scope.data.username, scope.data.password)
                         .then(function() {
-                            alert('Successful registration');
+
+                            if (autologin) {
+                                Auth.login(scope.data.username, scope.data.password)
+                                    .then(function() {
+                                        // do nothing
+                                    }, function(response) {
+                                        alert('Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
+                                    });
+                            } else {
+                                alert('Successful registration');
+                            }
+
                         }, function(response) {
                             alert('Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });
