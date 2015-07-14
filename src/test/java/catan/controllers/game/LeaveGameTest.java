@@ -45,7 +45,10 @@ public class LeaveGameTest extends GameTestUtil {
                 .then()
                 .statusCode(200);
 
-        //TODO: check that game doesn't contain userGame
+        viewGame(userToken2, gameId)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("USER_IS_NOT_JOINED"));
     }
 
     @Test
