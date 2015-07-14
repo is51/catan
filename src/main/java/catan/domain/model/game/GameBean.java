@@ -33,8 +33,8 @@ public class GameBean {
     @Column(name = "IS_PRIVATE", unique = false, nullable = false)
     private boolean privateGame;
 
-    @Column(name = "PRIVATE_CODE", unique = false, nullable = false)
-    private int privateCode;
+    @Column(name = "PRIVATE_CODE", unique = false, nullable = true)
+    private String privateCode;
 
     @Column(name = "DATE_CREATED", unique = false, nullable = false)
     private Date dateCreated;
@@ -49,7 +49,7 @@ public class GameBean {
     @Column(name = "MAX_USERS", unique = false, nullable = false)
     private int maxUsers;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "game")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     public GameBean() {
@@ -64,7 +64,7 @@ public class GameBean {
         this.maxUsers = maxUsers;
     }
 
-    public GameBean(UserBean creator, int privateCode, Date dateCreated, GameStatus status, int minUsers, int maxUsers) {
+    public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minUsers, int maxUsers) {
         this.creator = creator;
         this.privateGame = true;
         this.privateCode = privateCode;
@@ -99,11 +99,11 @@ public class GameBean {
         this.privateGame = privateGame;
     }
 
-    public int getPrivateCode() {
+    public String getPrivateCode() {
         return privateCode;
     }
 
-    public void setPrivateCode(int privateCode) {
+    public void setPrivateCode(String privateCode) {
         this.privateCode = privateCode;
     }
 

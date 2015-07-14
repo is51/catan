@@ -16,4 +16,6 @@ public interface GameService {
     void joinGameByIdentifier(UserBean user, String gameIdentifier, boolean privateGame) throws GameException;
 
     GameBean getGameByGameIdWithJoinedUser(UserBean user, String gameId) throws GameException;
+
+    void leaveGame(UserBean user, String gameId) throws GameException;
 }

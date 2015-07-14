@@ -12,11 +12,15 @@ public interface GameDao {
 
     GameBean getGameByGameId(int gameId);
 
-    GameBean getGameByPrivateCode(int gameId);
+    GameBean getGameByPrivateCode(String privateCode);
 
     List<GameBean> getGamesByCreatorId(int creatorId);
 
     List<GameBean> getAllNewPublicGames();
 
-    List<Integer> getUsedActiveGamePrivateCodes();
+    List<String> getUsedActiveGamePrivateCodes();
+
+    void updateGame(GameBean game);
+
+    void updateGameUser(GameUserBean game);
 }

@@ -25,6 +25,7 @@ import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class GameServiceImplTest {
@@ -55,14 +56,40 @@ public class GameServiceImplTest {
     @Test
     public void createNewGameSuccessful() throws GameException {
         // GIVEN
+
+        //Should generate first privateCode KP8428
         rvg.setNextGeneratedValue(0.4);
         rvg.setNextGeneratedValue(0.6);
+        rvg.setNextGeneratedValue(0.8254);
+        //Should generate second privateCode KP8428
+        rvg.setNextGeneratedValue(0.4);
+        rvg.setNextGeneratedValue(0.6);
+        rvg.setNextGeneratedValue(0.8254);
+        //Should generate third privateCode KP8428
+        rvg.setNextGeneratedValue(0.4);
+        rvg.setNextGeneratedValue(0.6);
+        rvg.setNextGeneratedValue(0.8254);
+        //Should generate fourth privateCode KP8428
+        rvg.setNextGeneratedValue(0.4);
+        rvg.setNextGeneratedValue(0.6);
+        rvg.setNextGeneratedValue(0.8254);
+        //Should generate fifth privateCode KP8428
+        rvg.setNextGeneratedValue(0.4);
+        rvg.setNextGeneratedValue(0.6);
+        rvg.setNextGeneratedValue(0.8254);
+
+        //Should generate sixth privateCode FK84286
+        rvg.setNextGeneratedValue(0.2);
+        rvg.setNextGeneratedValue(0.4);
         rvg.setNextGeneratedValue(0.8254);
 
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        expect(gameDao.getUsedActiveGamePrivateCodes()).andStubReturn(new ArrayList<Integer>());
+        ArrayList<String> usedPrivateCodes = new ArrayList<String>();
+        usedPrivateCodes.add("KP8428");
+
+        expect(gameDao.getUsedActiveGamePrivateCodes()).andStubReturn(usedPrivateCodes);
         gameDao.addNewGameUser(anyObject(GameUserBean.class));
         expectLastCall();
 
@@ -90,7 +117,8 @@ public class GameServiceImplTest {
         assertNotNull(game.getDateCreated());
         assertTrue(game.getDateCreated().getTime() > 0);
         assertTrue(game.getDateCreated().getTime() <= System.currentTimeMillis());
-        assertEquals(11168254, game.getPrivateCode());
+        //Check that generated private code has reached limit of duplicates and increased number of digits
+        assertEquals("FK84286", game.getPrivateCode());
         assertEquals(GameStatus.NEW, game.getStatus());
         assertEquals(GameServiceImpl.MIN_USERS, game.getMinUsers());
         assertEquals(GameServiceImpl.MAX_USERS, game.getMaxUsers());
@@ -105,14 +133,14 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, 23163423, new Date(), GameStatus.NEW, 3, 4);
+        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4);
         game1.setGameId(1);
 
         GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4);
         game2.setGameId(2);
 
-        GameUserBean gameUser1 = new GameUserBean(user, game1, 1);
-        GameUserBean gameUser2 = new GameUserBean(user, game2, 1);
+        GameUserBean gameUser1 = new GameUserBean(user, 1);
+        GameUserBean gameUser2 = new GameUserBean(user, 1);
         game1.getGameUsers().add(gameUser1);
         game2.getGameUsers().add(gameUser2);
 
@@ -139,7 +167,7 @@ public class GameServiceImplTest {
         assertTrue(games.get(0).getDateCreated().getTime() > 0);
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(0).getStatus());
-        assertEquals(23163423, games.get(0).getPrivateCode());
+        assertEquals("TF3423", games.get(0).getPrivateCode());
         assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinUsers());
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
@@ -156,7 +184,7 @@ public class GameServiceImplTest {
         assertTrue(games.get(1).getDateCreated().getTime() > 0);
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(1).getStatus());
-        assertEquals(0, games.get(1).getPrivateCode());
+        assertNull(games.get(1).getPrivateCode());
         assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinUsers());
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());
@@ -181,8 +209,8 @@ public class GameServiceImplTest {
         GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4);
         game2.setGameId(2);
 
-        GameUserBean gameUser1 = new GameUserBean(user1, game1, 1);
-        GameUserBean gameUser2 = new GameUserBean(user2, game2, 1);
+        GameUserBean gameUser1 = new GameUserBean(user1, 1);
+        GameUserBean gameUser2 = new GameUserBean(user2, 1);
         game1.getGameUsers().add(gameUser1);
         game2.getGameUsers().add(gameUser2);
 
@@ -209,7 +237,7 @@ public class GameServiceImplTest {
         assertTrue(games.get(0).getDateCreated().getTime() > 0);
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(0).getStatus());
-        assertEquals(0, games.get(0).getPrivateCode());
+        assertNull(games.get(0).getPrivateCode());
         assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinUsers());
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
@@ -226,7 +254,7 @@ public class GameServiceImplTest {
         assertTrue(games.get(1).getDateCreated().getTime() > 0);
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(1).getStatus());
-        assertEquals(0, games.get(1).getPrivateCode());
+        assertNull(games.get(1).getPrivateCode());
         assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinUsers());
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());

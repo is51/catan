@@ -21,6 +21,10 @@ public abstract class AbstractDao {
         getSession().delete(entity);
     }
 
+    public void update(Object entity) {
+        getSession().update(entity);
+    }
+
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }

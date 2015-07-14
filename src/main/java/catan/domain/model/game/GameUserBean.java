@@ -26,19 +26,14 @@ public class GameUserBean {
     @JoinColumn(name = "USER_ID")
     private UserBean user;
 
-    @ManyToOne (fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
-    @JoinColumn(name = "GAME_ID")
-    private GameBean game;
-
     @Column(name = "COLOR_ID", unique = false, nullable = false)
     private int colorId;
 
     public GameUserBean() {
     }
 
-    public GameUserBean(UserBean user, GameBean game, int colorId) {
+    public GameUserBean(UserBean user, int colorId) {
         this.user = user;
-        this.game = game;
         this.colorId = colorId;
     }
 
@@ -56,14 +51,6 @@ public class GameUserBean {
 
     public void setUser(UserBean user) {
         this.user = user;
-    }
-
-    public GameBean getGame() {
-        return game;
-    }
-
-    public void setGame(GameBean game) {
-        this.game = game;
     }
 
     public int getColorId() {

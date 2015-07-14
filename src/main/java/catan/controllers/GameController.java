@@ -105,6 +105,15 @@ public class GameController {
         return toGameDetails(game);
     }
 
+    @RequestMapping(value = "leave",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void leaveGame(@RequestParam(value = "token", required = false) String token,
+                                 @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+        gameService.leaveGame(user, gameId);
+    }
+
     private GameDetails toGameDetails(GameBean game) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
@@ -117,10 +126,7 @@ public class GameController {
             gameUsers.add(gameUserDetails);
         }
 
-        String privateCode = null;
-        if (game.isPrivateGame()) {
-            privateCode = privateCodeUtil.getDisplayValueFromPrivateCode(game.getPrivateCode());
-        }
+        String privateCode = game.isPrivateGame() ? game.getPrivateCode() : null;
 
         return new GameDetails(
                 game.getGameId(),

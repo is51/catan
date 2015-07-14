@@ -35,7 +35,7 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     }
 
     @Override
-    public GameBean getGameByPrivateCode(int privateCode) {
+    public GameBean getGameByPrivateCode(String privateCode) {
         Criteria criteria = getSession().createCriteria(GameBean.class);
         criteria.add(Restrictions.eq("privateCode", privateCode));
 
@@ -64,7 +64,7 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     }
 
     @Override
-    public List<Integer> getUsedActiveGamePrivateCodes() {
+    public List<String> getUsedActiveGamePrivateCodes() {
         Query query = getSession().createQuery(
                 "SELECT game.privateCode " +
                         "FROM " + GameBean.class.getSimpleName() + " AS game " +
@@ -72,6 +72,16 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
 
 
         //noinspection unchecked
-        return (List<Integer>) query.list();
+        return (List<String>) query.list();
+    }
+
+    @Override
+    public void updateGame(GameBean game) {
+        update(game);
+    }
+
+    @Override
+    public void updateGameUser(GameUserBean gameUser) {
+        update(gameUser);
     }
 }

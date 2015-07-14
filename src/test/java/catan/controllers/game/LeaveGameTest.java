@@ -44,6 +44,8 @@ public class LeaveGameTest extends GameTestUtil {
         leaveGame(userToken2, gameId)
                 .then()
                 .statusCode(200);
+
+        //TODO: check that game doesn't contain userGame
     }
 
     @Test

@@ -21,6 +21,8 @@ import java.util.List;
 @Service("gameService")
 @Transactional
 public class GameServiceImpl implements GameService {
+    public static final int MAX_DUPLICATES_RATIO = 5;
+    public static final int START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE = 4;
     private Logger log = LoggerFactory.getLogger(GameService.class);
 
     public static final int MIN_USERS = 3;
@@ -35,6 +37,7 @@ public class GameServiceImpl implements GameService {
     public static final String INVALID_CODE_ERROR = "INVALID_CODE";
     public static final String GAME_IS_NOT_FOUND_ERROR = "GAME_IS_NOT_FOUND";
     public static final String USER_IS_NOT_JOINED_ERROR = "USER_IS_NOT_JOINED";
+    public static final String GAME_HAS_ALREADY_STARTED_ERROR = "GAME_HAS_ALREADY_STARTED";
 
     GameDao gameDao;
     PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
@@ -49,10 +52,20 @@ public class GameServiceImpl implements GameService {
 
         GameBean game;
         if (privateGame) {
-            List<Integer> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
-            int randomPrivateCode = -1;
-            while (randomPrivateCode < 0 || usedCodes.contains(randomPrivateCode)) {
-                randomPrivateCode = privateCodeUtil.generateRandomPrivateCode();
+            List<String> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
+
+            String randomPrivateCode = null;
+            int numberOfDuplicates = 0;
+
+            while (numberOfDuplicates != -1) {
+                int numberOfDigits = START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE + numberOfDuplicates / MAX_DUPLICATES_RATIO;
+                randomPrivateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
+
+                if(usedCodes.contains(randomPrivateCode)){
+                    numberOfDuplicates++;
+                } else{
+                    numberOfDuplicates = -1;
+                }
             }
 
             game = new GameBean(creator, randomPrivateCode, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
@@ -191,28 +204,60 @@ public class GameServiceImpl implements GameService {
         throw new GameException(USER_IS_NOT_JOINED_ERROR);
     }
 
-    private GameBean findPrivateGame(String gameIdentifier) throws GameException {
-        int privateCode = 0;
+    @Override
+    public void leaveGame(UserBean user, String gameIdString) throws GameException {
+        log.debug(">> Leaving user " + user + " from game with gameId '" + gameIdString + "' ...");
+        if (user == null) {
+            log.debug("<< Cannot leave empty user from game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        if (gameIdString == null || gameIdString.trim().length() == 0) {
+            log.debug("<< Cannot get game with empty gameId");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        int gameId;
         try {
-            privateCode = privateCodeUtil.getPrivateCodeFromDisplayValue(gameIdentifier);
-            log.debug("Game identifier: " + gameIdentifier + " converted to private code: " + privateCode);
-        } catch (PrivateCodeException e) {
-            if(PrivateCodeUtil.WRONG_LENGTH_ERROR.equals(e.getErrorCode())){
-                log.debug("<< First to symbols of private code are not letters");
-                throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
-            }
+            gameId = Integer.parseInt(gameIdString);
+        } catch (Exception e) {
+            log.debug("<< Cannot convert gameId to integer value");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
 
-            if(PrivateCodeUtil.FIRST_SYMBOLS_ARE_NOT_LETTERS_ERROR.equals(e.getErrorCode())){
-                log.debug("<< First to symbols of private code are not letters");
-                throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
-            }
+        GameBean game = gameDao.getGameByGameId(gameId);
+        if (game == null) {
+            log.debug("<< Game with such game id doesn't exists");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
 
-            if(PrivateCodeUtil.SYMBOLS_ARE_NOT_DIGITS_ERROR.equals(e.getErrorCode())){
-                log.debug("<< Remaining symbols are not digits");
-                throw new GameException(GameServiceImpl.INVALID_CODE_ERROR);
+        if(GameStatus.PLAYING.equals(game.getStatus())){
+            log.debug("<< Game already started");
+            throw new GameException(GAME_HAS_ALREADY_STARTED_ERROR);
+        }
+
+        if(!GameStatus.NEW.equals(game.getStatus())){
+            log.debug("<< Game can be leaved only when it is in status NEW");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        for(GameUserBean gameUser : game.getGameUsers()){
+            if(gameUser.getUser().getId() == user.getId()){
+                game.getGameUsers().remove(gameUser);
+                //gameUser.setGame(null);
+
+                gameDao.updateGame(game);
+                //gameDao.updateGameUser(gameUser);
+                log.debug("<< User " + user + " successfully left the game " + game);
+                return ;
             }
         }
 
+        log.debug("<< User " + user + " is not joined to game " + game);
+        throw new GameException(ERROR_CODE_ERROR);
+    }
+
+    private GameBean findPrivateGame(String privateCode) throws GameException {
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {
             log.debug("<< Game with such private code doesn't exists");
@@ -250,7 +295,7 @@ public class GameServiceImpl implements GameService {
         int numberOfUsers = game.getGameUsers().size();
         int colorId = numberOfUsers + 1;
 
-        GameUserBean gameUserBean = new GameUserBean(userBean, game, colorId);
+        GameUserBean gameUserBean = new GameUserBean(userBean, colorId);
         gameDao.addNewGameUser(gameUserBean);
 
         game.getGameUsers().add(gameUserBean);
