@@ -75,6 +75,18 @@ public class LeaveGameTest extends GameTestUtil {
                 .body("errorCode", equalTo("ERROR"));
     }
 
+    @Test
+    public void should_fails_when_creator_leaves_his_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        leaveGame(userToken1, gameId)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
     /*@Test
     public void should_fails_when_user_leaves_already_started_game() {
         //TODO: should_fails_when_user_leaves_already_started_game
