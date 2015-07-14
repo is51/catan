@@ -94,6 +94,17 @@ public class GameController {
         gameService.joinGameByIdentifier(user, privateCode, true);
     }
 
+    @RequestMapping(value = "details",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public GameDetails getGameDetails(@RequestParam(value = "token", required = false) String token,
+                                      @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+        GameBean game = gameService.getGameByGameIdWithJoinedUser(user, gameId);
+
+        return toGameDetails(game);
+    }
+
     private GameDetails toGameDetails(GameBean game) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
