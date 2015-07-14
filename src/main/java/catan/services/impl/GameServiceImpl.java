@@ -244,10 +244,8 @@ public class GameServiceImpl implements GameService {
         for(GameUserBean gameUser : game.getGameUsers()){
             if(gameUser.getUser().getId() == user.getId()){
                 game.getGameUsers().remove(gameUser);
-                //gameUser.setGame(null);
-
                 gameDao.updateGame(game);
-                //gameDao.updateGameUser(gameUser);
+
                 log.debug("<< User " + user + " successfully left the game " + game);
                 return ;
             }
