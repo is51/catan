@@ -47,13 +47,13 @@ public class CancelGameTest extends GameTestUtil {
 
         viewGame(userToken1, gameId)
                 .then()
-                .statusCode(400);
-        //.body("errorCode", equalTo("GAME_IS_NOT_FOUND")); TODO: check errorCode, later should be "GAME_CANCELED"
+                .statusCode(400)
+                .body("errorCode", equalTo("GAME_CANCELED"));
 
         viewGame(userToken2, gameId)
                 .then()
-                .statusCode(400);
-        //.body("errorCode", equalTo("GAME_IS_NOT_FOUND")); TODO: check errorCode, later should be "GAME_CANCELED"
+                .statusCode(400)
+                .body("errorCode", equalTo("GAME_CANCELED"));
     }
 
     @Test
@@ -92,6 +92,19 @@ public class CancelGameTest extends GameTestUtil {
                 .then()
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
+    }
+
+    @Test
+    public void should_fail_when_user_cancel_game_if_user_is_not_authorized() {
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken, false)
+                .path("gameId");
+
+        logoutUser(userToken);
+
+        cancelGame(userToken, gameId)
+                .then()
+                .statusCode(403);
     }
 
     /*@Test
