@@ -14,6 +14,7 @@ public class PrivateCodeUtil {
         char secondTwoDigits = (char) (65 + rvg.randomValue() * 26);
         int remainingDigits = (int) (digits + rvg.randomValue() * digits * 9);
 
+
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
     }
 
