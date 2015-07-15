@@ -28,7 +28,8 @@
 
                 <div>
                     <a href="#/" class="btn btn-default btn-xs">Back to Home</a>
-                    <a href="" ct-leave-game-button game="gameDetails" class="btn btn-danger btn-xs">Leave Game</a>
+                    <a ng-if="gameDetails.creatorId!==User.get().id" href="" ct-leave-game-button game="gameDetails" class="btn btn-danger btn-xs">Leave Game</a>
+                    <a ng-if="gameDetails.creatorId===User.get().id" href="" ct-cancel-game-button game="gameDetails" class="btn btn-danger btn-xs">Cancel Game</a>
                 </div>
             </div>
 
