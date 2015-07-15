@@ -217,6 +217,11 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
+        if (user.getId() == game.getCreator().getId()) {
+            log.debug("<< Creator can't leave his own game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().getId() == user.getId()) {
                 game.getGameUsers().remove(gameUser);
