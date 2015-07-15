@@ -6,7 +6,6 @@ import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
-import catan.exception.PrivateCodeException;
 import catan.services.GameService;
 import catan.services.PrivateCodeUtil;
 import org.slf4j.Logger;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -50,29 +50,7 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        GameBean game;
-        if (privateGame) {
-            List<String> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
-
-            String randomPrivateCode = null;
-            int numberOfDuplicates = 0;
-
-            while (numberOfDuplicates != -1) {
-                int numberOfDigits = START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE + numberOfDuplicates / MAX_DUPLICATES_RATIO;
-                randomPrivateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
-
-                if(usedCodes.contains(randomPrivateCode)){
-                    numberOfDuplicates++;
-                } else{
-                    numberOfDuplicates = -1;
-                }
-            }
-
-            game = new GameBean(creator, randomPrivateCode, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
-        } else {
-            game = new GameBean(creator, new Date(), GameStatus.NEW, MIN_USERS, MAX_USERS);
-        }
-
+        GameBean game = privateGame ? createPrivateGame(creator) : createPublicGame(creator);
         gameDao.addNewGame(game);
 
         addUserToGame(game, creator);
@@ -124,8 +102,6 @@ public class GameServiceImpl implements GameService {
         }
 
         GameBean game = privateGame ? findPrivateGame(gameIdentifier) : findPublicGame(gameIdentifier);
-
-
 
         if (game.getCreator().getId() == user.getId()) {
             log.debug("<< Creator is not allowed to join game, as he is already joined");
@@ -193,8 +169,8 @@ public class GameServiceImpl implements GameService {
             throw new GameException(GAME_IS_NOT_FOUND_ERROR);
         }
 
-        for(GameUserBean gameUser : game.getGameUsers()){
-            if(gameUser.getUser().getId() == user.getId()){
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().getId() == user.getId()) {
                 log.debug("<< Game " + game + " with joined user " + user + " successfully found ");
                 return game;
             }
@@ -231,28 +207,63 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        if(GameStatus.PLAYING.equals(game.getStatus())){
+        if (GameStatus.PLAYING.equals(game.getStatus())) {
             log.debug("<< Game already started");
             throw new GameException(GAME_HAS_ALREADY_STARTED_ERROR);
         }
 
-        if(!GameStatus.NEW.equals(game.getStatus())){
+        if (!GameStatus.NEW.equals(game.getStatus())) {
             log.debug("<< Game can be leaved only when it is in status NEW");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        for(GameUserBean gameUser : game.getGameUsers()){
-            if(gameUser.getUser().getId() == user.getId()){
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().getId() == user.getId()) {
                 game.getGameUsers().remove(gameUser);
                 gameDao.updateGame(game);
 
                 log.debug("<< User " + user + " successfully left the game " + game);
-                return ;
+                return;
             }
         }
 
         log.debug("<< User " + user + " is not joined to game " + game);
         throw new GameException(ERROR_CODE_ERROR);
+    }
+
+    private GameBean createPrivateGame(UserBean creator) {
+        List<String> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
+
+        String randomPrivateCode = null;
+        int numberOfDuplicates = 0;
+
+        while (numberOfDuplicates != -1) {
+            int numberOfDigits = START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE + numberOfDuplicates / MAX_DUPLICATES_RATIO;
+            randomPrivateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
+
+            if (usedCodes.contains(randomPrivateCode)) {
+                numberOfDuplicates++;
+            } else {
+                numberOfDuplicates = -1;
+            }
+        }
+
+        return new GameBean(
+                creator,
+                randomPrivateCode,
+                new Date(),
+                GameStatus.NEW,
+                MIN_USERS,
+                MAX_USERS);
+    }
+
+    private GameBean createPublicGame(UserBean creator) {
+        return new GameBean(
+                creator,
+                new Date(),
+                GameStatus.NEW,
+                MIN_USERS,
+                MAX_USERS);
     }
 
     private GameBean findPrivateGame(String privateCode) throws GameException {
@@ -290,13 +301,20 @@ public class GameServiceImpl implements GameService {
     }
 
     private void addUserToGame(GameBean game, UserBean userBean) {
-        int numberOfUsers = game.getGameUsers().size();
-        int colorId = numberOfUsers + 1;
+        List<Integer> usedColorCodes = new ArrayList<Integer>();
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            usedColorCodes.add(gameUser.getColorId());
+        }
 
-        GameUserBean gameUserBean = new GameUserBean(userBean, colorId);
-        gameDao.addNewGameUser(gameUserBean);
+        int colorId = 1;
+        while (usedColorCodes.contains(colorId)) {
+            colorId++;
+        }
 
-        game.getGameUsers().add(gameUserBean);
+        GameUserBean newGameUser = new GameUserBean(userBean, colorId);
+        gameDao.addNewGameUser(newGameUser);
+
+        game.getGameUsers().add(newGameUser);
     }
 
     public PrivateCodeUtil getPrivateCodeUtil() {
