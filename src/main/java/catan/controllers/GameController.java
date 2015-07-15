@@ -109,7 +109,7 @@ public class GameController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void leaveGame(@RequestParam(value = "token", required = false) String token,
-                                 @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+                          @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
         gameService.leaveGame(user, gameId);
     }

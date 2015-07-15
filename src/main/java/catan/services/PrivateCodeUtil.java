@@ -5,8 +5,8 @@ public class PrivateCodeUtil {
     private RandomValeGenerator rvg = new RandomValeGenerator();
 
     public String generateRandomPrivateCode(int numberOfDigits) {
-        int digits  = 1;
-        for(int i = 1; i < numberOfDigits; i++){
+        int digits = 1;
+        for (int i = 1; i < numberOfDigits; i++) {
             digits *= 10;
         }
 
