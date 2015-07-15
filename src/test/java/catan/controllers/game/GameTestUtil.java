@@ -13,6 +13,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
     public static final String URL_CURRENT_GAMES_LIST = "/api/game/list/current";
     public static final String URL_PUBLIC_GAMES_LIST = "/api/game/list/public";
     public static final String URL_LEAVE_GAME = "/api/game/leave";
+    public static final String URL_CANCEL_GAME = "/api/game/cancel";
     public static final String URL_VIEW_GAME_DETAILS = "/api/game/details";
 
     protected Response createNewGame(String token, boolean privateGame) {
@@ -49,6 +50,15 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
                 .parameters("token", token, "gameId", gameId)
                 .when()
                 .post(URL_LEAVE_GAME);
+    }
+
+    protected Response cancelGame(String token, int gameId) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId)
+                .when()
+                .post(URL_CANCEL_GAME);
     }
 
     protected Response viewGame(String token, int gameId) {
