@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Service("gameService")
@@ -222,11 +223,13 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getUser().getId() == user.getId()) {
-                game.getGameUsers().remove(gameUser);
-                gameDao.updateGame(game);
+        Iterator<GameUserBean> it = game.getGameUsers().iterator();
+        while (it.hasNext()) {
+            GameUserBean gameUser = it.next();
 
+            if (gameUser.getUser().getId() == user.getId()) {
+                it.remove();
+                gameDao.updateGame(game);
                 log.debug("<< User " + user + " successfully left the game " + game);
                 return;
             }
@@ -234,6 +237,50 @@ public class GameServiceImpl implements GameService {
 
         log.debug("<< User " + user + " is not joined to game " + game);
         throw new GameException(ERROR_CODE_ERROR);
+    }
+
+    @Override
+    public void cancelGame(UserBean user, String gameIdString) throws GameException {
+        log.debug(">> Canceling game with gameId '" + gameIdString + "' ...");
+        if (user == null) {
+            log.debug("<< Empty user cannot cancel game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        if (gameIdString == null || gameIdString.trim().length() == 0) {
+            log.debug("<< Cannot get game with empty gameId");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        int gameId;
+        try {
+            gameId = Integer.parseInt(gameIdString);
+        } catch (Exception e) {
+            log.debug("<< Cannot convert gameId to integer value");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        GameBean game = gameDao.getGameByGameId(gameId);
+        if (game == null) {
+            log.debug("<< Game with such game id doesn't exists");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        if (!GameStatus.NEW.equals(game.getStatus())) {
+            log.debug("<< Game can be cancelled only when it is in status NEW");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        if (user.getId() != game.getCreator().getId()) {
+            log.debug("<< Only creator can cancel the game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        game.getGameUsers().clear();
+        game.setStatus(GameStatus.CANCELLED);
+        gameDao.updateGame(game);
+
+        log.debug("<< Game " + game + " successfully cancelled");
     }
 
     private GameBean createPrivateGame(UserBean creator) {

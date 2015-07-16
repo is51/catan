@@ -18,4 +18,6 @@ public interface GameService {
     GameBean getGameByGameIdWithJoinedUser(UserBean user, String gameId) throws GameException;
 
     void leaveGame(UserBean user, String gameId) throws GameException;
+
+    void cancelGame(UserBean user, String gameId) throws GameException;
 }

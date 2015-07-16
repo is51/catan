@@ -114,6 +114,15 @@ public class GameController {
         gameService.leaveGame(user, gameId);
     }
 
+    @RequestMapping(value = "cancel",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void cancelGame(@RequestParam(value = "token", required = false) String token,
+                           @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+        gameService.cancelGame(user, gameId);
+    }
+
     private GameDetails toGameDetails(GameBean game) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
