@@ -9,7 +9,7 @@ import java.util.List;
 public interface GameService {
     GameBean createNewGame(UserBean creator, boolean privateGame) throws GameException;
 
-    List<GameBean> getListOfGamesCreatedBy(UserBean creator) throws GameException;
+    List<GameBean> getListOfGamesWithJoinedUser(UserBean user) throws GameException;
 
     List<GameBean> getListOfAllPublicGames();
 

@@ -62,16 +62,16 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<GameBean> getListOfGamesCreatedBy(UserBean creator) throws GameException {
-        log.debug(">> Getting list of games created by " + creator + " ...");
-        if (creator == null) {
-            log.debug("<< Cannot get list of games due to creator is empty");
+    public List<GameBean> getListOfGamesWithJoinedUser(UserBean user) throws GameException {
+        log.debug(">> Getting list of games joined by " + user + " ...");
+        if (user == null) {
+            log.debug("<< Cannot get list of games due to user is empty");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        List<GameBean> games = gameDao.getGamesByCreatorId(creator.getId());
+        List<GameBean> games = gameDao.getGamesWithJoinedUser(user.getId());
 
-        log.debug("<< " + games.size() + " games created by " + creator + " successfully retrieved");
+        log.debug("<< " + games.size() + " games joined by " + user + " successfully retrieved");
 
         return games;
     }

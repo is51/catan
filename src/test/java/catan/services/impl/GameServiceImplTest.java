@@ -152,7 +152,7 @@ public class GameServiceImplTest {
         replay(gameDao);
 
         // WHEN
-        List<GameBean> games = gameService.getListOfGamesCreatedBy(user);
+        List<GameBean> games = gameService.getListOfGamesWithJoinedUser(user);
 
         // THEN
         assertNotNull(games);

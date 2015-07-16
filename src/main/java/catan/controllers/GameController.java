@@ -53,7 +53,7 @@ public class GameController {
         switch (GameListType.fromValue(gameListType)) {
             case CURRENT:
                 UserBean user = authenticationService.authenticateUserByToken(token);
-                games = gameService.getListOfGamesCreatedBy(user);
+                games = gameService.getListOfGamesWithJoinedUser(user);
                 break;
             case PUBLIC:
                 games = gameService.getListOfAllPublicGames();
