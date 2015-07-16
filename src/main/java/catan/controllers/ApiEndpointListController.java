@@ -57,36 +57,10 @@ public class ApiEndpointListController {
                 "  -webkit-font-smoothing: antialiased;\n" +
                 "  text-rendering: optimizeLegibility;\n" +
                 "  color: #444;\n" +
-                "  background: #eee;\n" +
+                "  background: #fff;\n" +
                 "}\n" +
                 "\n" +
-                "h1 {\n" +
-                "  font-weight: normal;\n" +
-                "  letter-spacing: -1px;\n" +
-                "  color: #34495E;\n" +
-                "}\n" +
-                "\n" +
-                ".rwd-table {\n" +
-                "  background: #34495E;\n" +
-                "  color: #fff;\n" +
-                "  border-radius: .4em;\n" +
-                "  overflow: hidden;\n" +
-                "}\n" +
-                ".rwd-table tr {\n" +
-                "  border-color: #46627f;\n" +
-                "}\n" +
-                ".rwd-table th, .rwd-table td {\n" +
-                "  margin: .5em 1em;\n" +
-                "}\n" +
-                "@media (min-width: 480px) {\n" +
-                "  .rwd-table th, .rwd-table td {\n" +
-                "    padding-left: 0.5em;\n" +
-                "    padding-rigth: 0.5em;\n" +
-                "  }\n" +
-                "}\n" +
-                ".rwd-table th, .rwd-table td:before {\n" +
-                "  color: #dd5;\n" +
-                "}" +
+
                 "input {\n" +
                 "    display:inline-block;\n" +
                 "    *display: inline;     /* for IE7*/\n" +
@@ -100,15 +74,101 @@ public class ApiEndpointListController {
                 "    zoom:1;              /* for IE7*/\n" +
                 "    float: left;\n" +
                 "    text-align: left;\n" +
-                "    width: 120px;\n" +
-                "}");
+                "    width: 140px;\n" +
+                "}\n" +
+                "\n" +
+                "label:first-child.label-blank {\n" +
+                "    display:none;\n" +
+                "}\n" +
+                "\n" +
+                ".block {\n" +
+                "    padding-top: 30px;\n" +
+                "    border-bottom: 1px solid #ddd;\n" +
+                "    padding-bottom: 30px;\n" +
+                "}\n" +
+                "\n" +
+                ".url-rest {\n" +
+                "    background-color: #f4f4f4;\n" +
+                "    padding: 8px 9px;\n" +
+                "    border-radius: 5px;\n" +
+                "    margin-bottom: 10px;\n" +
+                "    \n" +
+                "    \n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                ".url {\n" +
+                "    display: inline-block;\n" +
+                "    color: #36c;\n" +
+                "}\n" +
+                "\n" +
+                ".rest {\n" +
+                "    display: inline-block;\n" +
+                "    background-color: #7b3;\n" +
+                "    color: #fff;\n" +
+                "    padding: 2px 5px;\n" +
+                "    border-radius: 5px;\n" +
+                "    margin-right: 10px;\n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                ".method {\n" +
+                "    padding: 0 5px 10px 5px;\n" +
+                "}\n" +
+                "\n" +
+                ".try {\n" +
+                "    color: #999;\n" +
+                "    padding: 5px;\n" +
+                "}\n" +
+                "\n" +
+                ".try span {\n" +
+                "    font-size: 0.8rem;\n" +
+                "}\n" +
+                "\n" +
+                ".response {\n" +
+                "    background-color: #f7f7f7;\n" +
+                "    border-radius: 5px;\n" +
+                "    padding: 1px 15px;\n" +
+                "    margin-top: 10px;\n" +
+                "    font-size: 0.9rem;\n" +
+                "    display: none;\n" +
+                "    \n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                ".response button {\n" +
+                "    float: right;\n" +
+                "    margin: 10px 10px 0 0;\n" +
+                "}\n" +
+                "");
         out.append("</style>" + NEWLINE);
         out.append("<script src=\"http://code.jquery.com/jquery-2.1.4.min.js\"></script>" + NEWLINE);
+        out.append("<script>\n" +
+                "$(function() {\n" +
+                "  \n" +
+                "  $('body').on('click', 'button', function() {\n" +
+                "       $(this).closest('.response').hide().html('')\n" +
+                "  });\n" +
+                "  $('form').on('submit', function(event) {\n" +
+                "      var thisForm = $(this);\n" +
+                "      $.ajax({\n" +
+                "        url: $(event.target).attr('action'),\n" +
+                "        method: 'post',\n" +
+                "        data: $(event.target).serializeArray(),\n" +
+                "        contentType : \"application/x-www-form-urlencoded\"\n" +
+                "      })\n" +
+                "       .always(function(data, status, error) {\n" +
+                "           var el = thisForm.children('.response');\n" +
+                "           el.html('<button>X</button><p>' + JSON.stringify(status) + '</p><p>' + JSON.stringify(error) + '</p><p>Status: ' + JSON.stringify(data.status) + '</p><p>Response: ' + JSON.stringify(data.responseJSON) + '</p>')\n" +
+                "           el.show();\n" +
+                "           \n" +
+                "      });\n" +
+                "    return false;\n" +
+                "  });\n" +
+                "});\n" +
+                "</script>" + NEWLINE);
         out.append("</head>" + NEWLINE);
         out.append("<body id=\"dt_example\">" + NEWLINE);
-        out.append("<table class=\"rwd-table\" cellpadding=\"0\" cellspacing=\"0\" border=\"1\" class=\"display\" id=\"endpoints\">" + NEWLINE);
-        out.append("<thead><tr><th>URI</th><th>REST</th><th>method</th><th>parameters</th><th>Try it here</th></tr></thead>" + NEWLINE);
-        out.append("<tbody>" + NEWLINE);
 
         for (Map.Entry<RequestMappingInfo, HandlerMethod> item : requestMapping.getHandlerMethods().entrySet()) {
             RequestMappingInfo mapping = item.getKey();
@@ -123,50 +183,41 @@ public class ApiEndpointListController {
                     continue;
                 }
 
-                out.append("<tr>");
+                out.append("<div class='block'>");
                 out.append("<form method=\"" + requestMappingAnnotation.method()[0] + "\" action=\"" + urlPattern + "\">");
-                out.append("<td>" + urlPattern + "</td>");
-                out.append("<td>" + requestMappingAnnotation.method()[0] + "</td>");
-                out.append("<td>" + method.getMethod().getName() + "</td>");
-                out.append("<td>");
-
-                for (MethodParameter parameter : method.getMethodParameters()) {
-                    if (parameter.getParameterAnnotation(PathVariable.class) != null) {
-                        out.append("path {" + parameter.getParameterAnnotation(PathVariable.class).value()
-                                + "}  (" + parameter.getParameterType().getName() + ")<br/>");
-                    }
-                    if (parameter.getParameterAnnotation(RequestParam.class) != null) {
-                        out.append("parameter {" + parameter.getParameterAnnotation(RequestParam.class).value()
-                                + "}  (" + parameter.getParameterType().getName() + ")<br/>");
-                    }
-                }
-                out.append("<br/>");
-                out.append("<td>");
+                out.append("<div class='url-rest'>");
+                out.append("    <span class='rest'>" + requestMappingAnnotation.method()[0] + "</span>");
+                out.append("    <span class='url'>" + urlPattern + "</span>");
+                out.append("</div>");
+                out.append("<div class='method'>Method: " + method.getMethod().getName() + "</div>");
+                out.append("<div class='try'>");
 
                 for (MethodParameter parameter : method.getMethodParameters()) {
                     if (parameter.getParameterAnnotation(PathVariable.class) != null) {
                         out.append("<label>_" + parameter.getParameterAnnotation(PathVariable.class).value()
                                 + "_:</label><input type=\"text\" name=\""
-                                + parameter.getParameterAnnotation(PathVariable.class).value() + "\"><br/>");
+                                + parameter.getParameterAnnotation(PathVariable.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
                     }
 
                     if (parameter.getParameterAnnotation(RequestParam.class) != null) {
                         out.append("<label>" + parameter.getParameterAnnotation(RequestParam.class).value()
                                 + ":</label><input type=\"text\" name=\""
-                                + parameter.getParameterAnnotation(RequestParam.class).value() + "\"><br/>");
+                                + parameter.getParameterAnnotation(RequestParam.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
                     }
                 }
 
-                out.append("<input type=\"submit\" value=\"Submit\">");
-                out.append("</td>");
+                out.append("<label class='label-blank'>&nbsp;</label><input type=\"submit\" value=\"Submit\">");
+                out.append("</div>");
+
+                out.append("<div class='response'>");
+                out.append("");
+                out.append("</div>");
+
                 out.append("</form>");
-                out.append("</td>");
-                out.append("</tr>" + NEWLINE);
+                out.append("</div>" + NEWLINE);
             }
 
         }
-        out.append("</tbody>");
-        out.append("</table>");
         out.append("</body></html>");
 
         return out.toString();
