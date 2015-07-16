@@ -170,6 +170,11 @@ public class GameServiceImpl implements GameService {
             throw new GameException(GAME_IS_NOT_FOUND_ERROR);
         }
 
+        if (GameStatus.CANCELLED.equals(game.getStatus())) {
+            log.debug("<< Game details cannot be retrieved when game status is CANCELLED");
+            throw new GameException(GAME_CANCELED_ERROR);
+        }
+
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().getId() == user.getId()) {
                 log.debug("<< Game " + game + " with joined user " + user + " successfully found ");
