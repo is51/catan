@@ -13,5 +13,9 @@
         <Root level="debug">
             <AppenderRef ref="STDOUT"/>
         </Root>
+
+        <logger name="org.springframework.boot.context.web.ErrorPageFilter">
+            <level value="OFF" />
+        </logger>
     </Loggers>
 </Configuration>

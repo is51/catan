@@ -12,7 +12,13 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Explores the Java classes looking for annotations
@@ -199,22 +205,6 @@ public class ApiEndpointListController {
                 "  onHashChange();\n" +
                 "  window.addEventListener('hashchange', onHashChange, false);\n" +
                 "  \n" +
-                "  $(window).scroll(function() {\n" +
-                "       var fromTop = 50;\n" +
-                "       \n" +
-                "       var cur = $('.block').map(function() {\n" +
-                "           if ($(this).offset().top - $(window).scrollTop() <= fromTop)\n" +
-                "               return this;\n" +
-                "       });\n" +
-                "       \n" +
-                "       cur = cur[cur.length-1];\n" +
-                "       var id = cur ? cur.id : '';\n" +
-                "       \n" +
-                "       $('.menu a').removeClass('active');\n" +
-                "       $('[href=\"#'+id+'\"]').addClass('active');\n" +
-                "  });\n" +
-                "  $(window).scroll();\n" +
-                "  \n" +
                 "  $('body').on('click', 'button', function() {\n" +
                 "       $(this).closest('.response').hide().html('')\n" +
                 "  });\n" +
@@ -250,77 +240,93 @@ public class ApiEndpointListController {
         out.append("<div class='menu'>" + NEWLINE);
 
         out.append("    <div>Methods:</div>" + NEWLINE);
-
-        for (Map.Entry<RequestMappingInfo, HandlerMethod> item : requestMapping.getHandlerMethods().entrySet()) {
-            RequestMappingInfo mapping = item.getKey();
-            HandlerMethod method = item.getValue();
-
-            for (String urlPattern : mapping.getPatternsCondition().getPatterns()) {
-                RequestMapping requestMappingAnnotation = method.getMethodAnnotation(RequestMapping.class);
-
-                if (!method.getBeanType().getPackage().getName().contains("catan")
-                        || requestMappingAnnotation == null
-                        || requestMappingAnnotation.method().length == 0) {
-                    continue;
-                }
-
-                out.append("<a href='#" + method.getMethod().getName() + "'>" + method.getMethod().getName() + "</a>" + NEWLINE);
-
-            }
+        Map<RequestMappingInfo, HandlerMethod> methodEntries = requestMapping.getHandlerMethods();
+        Map<HandlerMethod, RequestMappingInfo> invertedMethodEntries = new HashMap<HandlerMethod, RequestMappingInfo>();
+        for (Entry<RequestMappingInfo, HandlerMethod> methodEntry : methodEntries.entrySet()) {
+            invertedMethodEntries.put(methodEntry.getValue(), methodEntry.getKey());
         }
 
-        out.append("</div>" + NEWLINE);
-
-        out.append("<div class='list'>" + NEWLINE);
-
-        for (Map.Entry<RequestMappingInfo, HandlerMethod> item : requestMapping.getHandlerMethods().entrySet()) {
-            RequestMappingInfo mapping = item.getKey();
-            HandlerMethod method = item.getValue();
-
-            for (String urlPattern : mapping.getPatternsCondition().getPatterns()) {
-                RequestMapping requestMappingAnnotation = method.getMethodAnnotation(RequestMapping.class);
-
-                if (!method.getBeanType().getPackage().getName().contains("catan")
-                        || requestMappingAnnotation == null
-                        || requestMappingAnnotation.method().length == 0) {
-                    continue;
+        List<HandlerMethod> methods = new ArrayList<HandlerMethod>(methodEntries.values());
+        Collections.sort(methods, new Comparator<HandlerMethod>() {
+            @Override
+            public int compare(HandlerMethod o1, HandlerMethod o2) {
+                int result = o1.getMethod().getDeclaringClass().getSimpleName().compareTo(o2.getMethod().getDeclaringClass().getSimpleName());
+                if (result != 0) {
+                    return result;
                 }
+                result = o1.getMethod().getName().compareTo(o2.getMethod().getName());
 
-                out.append("<div class='block' id='" + method.getMethod().getName() + "'>");
-                out.append("<form method=\"" + requestMappingAnnotation.method()[0] + "\" action=\"" + urlPattern + "\">");
-                out.append("<div class='method'>Method: " + method.getMethod().getName() + "</div>");
-                out.append("<div class='url-rest'>");
-                out.append("    <span class='rest'>" + requestMappingAnnotation.method()[0] + "</span>");
-                out.append("    <span class='url'>" + urlPattern + "</span>");
-                out.append("</div>");
-                out.append("<div class='try'>");
+                return result;
+            }
+        });
 
-                for (MethodParameter parameter : method.getMethodParameters()) {
-                    if (parameter.getParameterAnnotation(PathVariable.class) != null) {
-                        out.append("<label>_" + parameter.getParameterAnnotation(PathVariable.class).value()
-                                + "_:</label><input type=\"text\" name=\""
-                                + parameter.getParameterAnnotation(PathVariable.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
-                    }
+        StringBuilder leftMenu = new StringBuilder();
+        StringBuilder content = new StringBuilder();
 
-                    if (parameter.getParameterAnnotation(RequestParam.class) != null) {
-                        out.append("<label>" + parameter.getParameterAnnotation(RequestParam.class).value()
-                                + ":</label><input type=\"text\" name=\""
-                                + parameter.getParameterAnnotation(RequestParam.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
-                    }
-                }
+        String currentClass = "";
+        for (HandlerMethod method : methods) {
+            if (!method.getMethod().getDeclaringClass().getSimpleName().equalsIgnoreCase(currentClass)) {
+                currentClass = method.getMethod().getDeclaringClass().getSimpleName();
+                leftMenu.append("<h3><a href='#" + currentClass + "'>" + currentClass + ":</a></h3>" + NEWLINE);
 
-                out.append("<label class='label-blank'>&nbsp;</label><input type=\"submit\" value=\"Submit\">");
-                out.append("</div>");
-
-                out.append("<div class='response'>");
-                out.append("");
-                out.append("</div>");
-
-                out.append("</form>");
-                out.append("</div>" + NEWLINE);
+                content.append("<div class='block' id='" + currentClass + "'>");
+                content.append("<div class='method'><br/><br/><br/>Controller: " + currentClass + "</div>");
+                content.append("</div>");
             }
 
+            RequestMapping requestMappingAnnotation = method.getMethodAnnotation(RequestMapping.class);
+
+            if (!method.getBeanType().getPackage().getName().contains("catan")
+                    || requestMappingAnnotation == null
+                    || requestMappingAnnotation.method().length == 0) {
+                continue;
+            }
+
+            leftMenu.append("<a href='#" + method.getMethod().getName() + "'>" + method.getMethod().getName() + "</a>" + NEWLINE);
+
+
+            String urlPattern = invertedMethodEntries.get(method).getPatternsCondition().getPatterns().iterator().next();
+            content.append("<div class='block' id='" + method.getMethod().getName() + "'>");
+            content.append("<form method=\"" + requestMappingAnnotation.method()[0] + "\" action=\"" + urlPattern + "\">");
+            content.append("<div class='method'>Method: " + method.getMethod().getName() + "</div>");
+            content.append("<div class='url-rest'>");
+            content.append("    <span class='rest'>" + requestMappingAnnotation.method()[0] + "</span>");
+            content.append("    <span class='url'>" + urlPattern + "</span>");
+            content.append("</div>");
+            content.append("<div class='try'>");
+
+            for (MethodParameter parameter : method.getMethodParameters()) {
+                if (parameter.getParameterAnnotation(PathVariable.class) != null) {
+                    content.append("<label>_" + parameter.getParameterAnnotation(PathVariable.class).value()
+                            + "_:</label><input type=\"text\" name=\""
+                            + parameter.getParameterAnnotation(PathVariable.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
+                }
+
+                if (parameter.getParameterAnnotation(RequestParam.class) != null) {
+                    content.append("<label>" + parameter.getParameterAnnotation(RequestParam.class).value()
+                            + ":</label><input type=\"text\" name=\""
+                            + parameter.getParameterAnnotation(RequestParam.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
+                }
+            }
+
+            content.append("<label class='label-blank'>&nbsp;</label><input type=\"submit\" value=\"Submit\">");
+            content.append("</div>");
+
+            content.append("<div class='response'>");
+            content.append("");
+            content.append("</div>");
+
+            content.append("</form>");
+            content.append("</div>").append(NEWLINE);
         }
+
+
+        out.append(leftMenu);
+        out.append("</div>").append(NEWLINE);
+
+        }
+        out.append("<div class='list'>").append(NEWLINE);
+        out.append(content);
         out.append("<div style='height: 600px'>&nbsp;</div>");
         out.append("</div>");
         out.append("</body></html>");
