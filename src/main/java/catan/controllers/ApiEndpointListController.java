@@ -112,6 +112,14 @@ public class ApiEndpointListController {
                 "    padding: 10px 0 10px 20px;\n" +
                 "}\n" +
                 "\n" +
+                ".menu h3{\n" +
+                "    margin-bottom: 0\n" +
+                "}\n" +
+                "\n" +
+                ".menu h3 a{\n" +
+                "    padding-left: 10px\n" +
+                "}\n" +
+                "\n" +
                 ".menu a {\n" +
                 "    display: block;\n" +
                 "    text-decoration: none;\n" +
@@ -324,7 +332,6 @@ public class ApiEndpointListController {
         out.append(leftMenu);
         out.append("</div>").append(NEWLINE);
 
-        }
         out.append("<div class='list'>").append(NEWLINE);
         out.append(content);
         out.append("<div style='height: 600px'>&nbsp;</div>");
