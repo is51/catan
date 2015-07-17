@@ -96,7 +96,7 @@ public class ApiEndpointListController {
                 "\n" +
                 ".list {\n" +
                 "    margin-left: 330px;\n" +
-                "    \n" +
+                "    margin-right: 30px;\n" +
                 "    \n" +
                 "}\n" +
                 "\n" +
@@ -117,14 +117,14 @@ public class ApiEndpointListController {
                 "}\n" +
                 "\n" +
                 ".menu h3 a{\n" +
-                "    padding-left: 10px\n" +
+                "    padding-left: 20px\n" +
                 "}\n" +
                 "\n" +
                 ".menu a {\n" +
                 "    display: block;\n" +
                 "    text-decoration: none;\n" +
                 "    color: #fff;\n" +
-                "    padding: 5px 20px\n" +
+                "    padding: 5px 0 5px 30px\n" +
                 "}\n" +
                 "\n" +
                 ".menu a:hover {\n" +
@@ -163,6 +163,10 @@ public class ApiEndpointListController {
                 ".method {\n" +
                 "    padding: 0 5px 15px 5px;\n" +
                 "    font-size: 1.3rem;\n" +
+                "}\n" +
+                "\n" +
+                ".method.controller {\n" +
+                "    font-size: 1.7rem;\n" +
                 "}\n" +
                 "\n" +
                 ".try {\n" +
@@ -213,14 +217,38 @@ public class ApiEndpointListController {
                 "  onHashChange();\n" +
                 "  window.addEventListener('hashchange', onHashChange, false);\n" +
                 "  \n" +
+                "  $(window).scroll(function() {\n" +
+                "       var fromTop = 50;\n" +
+                "       \n" +
+                "       var cur = $('.block').map(function() {\n" +
+                "           if ($(this).offset().top - $(window).scrollTop() <= fromTop)\n" +
+                "               return this;\n" +
+                "       });\n" +
+                "       \n" +
+                "       cur = cur[cur.length-1];\n" +
+                "       var id = cur ? cur.id : '';\n" +
+                "       \n" +
+                "       $('.menu a').removeClass('active');\n" +
+                "       $('[href=\"#'+id+'\"]').addClass('active');\n" +
+                "  });\n" +
+                "  $(window).scroll();\n" +
+                "  \n" +
+                "  \n" +
                 "  $('body').on('click', 'button', function() {\n" +
                 "       $(this).closest('.response').hide().html('')\n" +
                 "  });\n" +
                 "  $('form').on('submit', function(event) {\n" +
                 "      var thisForm = $(this);\n" +
                 "      var responseEl = thisForm.children('.response');\n" +
+                "      var url = $(event.target).attr('action');\n" +
+                "      \n" +
+                "      thisForm.find('input.replaceAction').each(function() {\n" +
+                "           url = url.replace(new RegExp('{'+$(this).attr('name')+'}', 'g'), $(this).val());\n" +
+                "           $(this).prop('disabled', true);\n" +
+                "      });\n" +
+                "      \n" +
                 "      $.ajax({\n" +
-                "        url: $(event.target).attr('action'),\n" +
+                "        url: url,\n" +
                 "        method: 'post',\n" +
                 "        data: $(event.target).serializeArray(),\n" +
                 "        contentType : \"application/x-www-form-urlencoded\"\n" +
@@ -231,12 +259,19 @@ public class ApiEndpointListController {
                 "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<p>' + JSON.stringify(jqXHR.responseJSON) + '</p>' : '') )\n" +
                 "           responseEl.show();\n" +
                 "           \n" +
+                "           thisForm.find('input.replaceAction').each(function() {\n" +
+                "               $(this).prop('disabled', false);\n" +
+                "           });\n" +
                 "      })\n" +
                 "       .fail(function(jqXHR, textStatus, errorThrown) {\n" +
                 "           responseEl.removeClass('done');\n" +
                 "           responseEl.addClass('fail');\n" +
                 "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<p>' + JSON.stringify(jqXHR.responseJSON) + '</p>' : '') )\n" +
                 "           responseEl.show();\n" +
+                "           \n" +
+                "           thisForm.find('input.replaceAction').each(function() {\n" +
+                "               $(this).prop('disabled', false);\n" +
+                "           });\n" +
                 "           \n" +
                 "      });\n" +
                 "    return false;\n" +
@@ -276,14 +311,14 @@ public class ApiEndpointListController {
             if (!method.getMethod().getDeclaringClass().getSimpleName().equalsIgnoreCase(currentClass)) {
                 String breaks = "";
                 if(currentClass.length() > 0){
-                    breaks = "<br/><br/><br/>";
+                    breaks = "<br/>";
                 }
 
                 currentClass = method.getMethod().getDeclaringClass().getSimpleName();
                 leftMenu.append("<h3><a href='#" + currentClass + "'>" + currentClass + ":</a></h3>" + NEWLINE);
 
                 content.append("<div class='block' id='" + currentClass + "'>");
-                content.append("<div class='method'>" + breaks + "Controller: " + currentClass + "</div>");
+                content.append("<div class='method controller'>" + breaks + "Controller: " + currentClass + "</div>");
                 content.append("</div>");
             }
 
@@ -310,8 +345,8 @@ public class ApiEndpointListController {
 
             for (MethodParameter parameter : method.getMethodParameters()) {
                 if (parameter.getParameterAnnotation(PathVariable.class) != null) {
-                    content.append("<label>_" + parameter.getParameterAnnotation(PathVariable.class).value()
-                            + "_:</label><input type=\"text\" name=\""
+                    content.append("<label>{" + parameter.getParameterAnnotation(PathVariable.class).value()
+                            + "}:</label><input type=\"text\" class=\"replaceAction\" name=\""
                             + parameter.getParameterAnnotation(PathVariable.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
                 }
 
