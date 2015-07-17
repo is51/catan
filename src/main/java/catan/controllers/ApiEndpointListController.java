@@ -52,7 +52,8 @@ public class ApiEndpointListController {
         out.append("<style type=\"text/css\">" + NEWLINE);
         out.append("@import \"http://fonts.googleapis.com/css?family=Montserrat:300,400,700\";\n" +
                 "body {\n" +
-                "  padding: 0 2em;\n" +
+                "  padding: 0;\n" +
+                "  margin: 0;\n" +
                 "  font-family: Montserrat, sans-serif;\n" +
                 "  -webkit-font-smoothing: antialiased;\n" +
                 "  text-rendering: optimizeLegibility;\n" +
@@ -87,6 +88,39 @@ public class ApiEndpointListController {
                 "    padding-bottom: 30px;\n" +
                 "}\n" +
                 "\n" +
+                ".list {\n" +
+                "    margin-left: 330px;\n" +
+                "    \n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                ".menu {\n" +
+                "    width: 300px;\n" +
+                "    background-color: #79c;\n" +
+                "    height: 100%;\n" +
+                "    position: fixed;\n" +
+                "    padding-top: 10px;\n" +
+                "}\n" +
+                "\n" +
+                ".menu div:first-child {\n" +
+                "    padding: 10px 0 10px 20px;\n" +
+                "}\n" +
+                "\n" +
+                ".menu a {\n" +
+                "    display: block;\n" +
+                "    text-decoration: none;\n" +
+                "    color: #fff;\n" +
+                "    padding: 5px 20px\n" +
+                "}\n" +
+                "\n" +
+                ".menu a:hover {\n" +
+                "    background-color: #68b;\n" +
+                "}\n" +
+                "\n" +
+                ".menu a.active {\n" +
+                "    background-color: #57a;\n" +
+                "}\n" +
+                "\n" +
                 ".url-rest {\n" +
                 "    background-color: #f4f4f4;\n" +
                 "    padding: 8px 9px;\n" +
@@ -113,7 +147,8 @@ public class ApiEndpointListController {
                 "}\n" +
                 "\n" +
                 ".method {\n" +
-                "    padding: 0 5px 10px 5px;\n" +
+                "    padding: 0 5px 15px 5px;\n" +
+                "    font-size: 1.3rem;\n" +
                 "}\n" +
                 "\n" +
                 ".try {\n" +
@@ -154,6 +189,16 @@ public class ApiEndpointListController {
         out.append("<script>\n" +
                 "$(function() {\n" +
                 "  \n" +
+                "  var onHashChange = function() {\n" +
+                "       var hash = window.location.hash;\n" +
+                "       $('.menu a').removeClass('active');\n" +
+                "       $('[href=\"'+hash+'\"]').addClass('active');\n" +
+                "       \n" +
+                "  };\n" +
+                "  \n" +
+                "  onHashChange();\n" +
+                "  window.addEventListener('hashchange', onHashChange, false);\n" +
+                "  \n" +
                 "  $('body').on('click', 'button', function() {\n" +
                 "       $(this).closest('.response').hide().html('')\n" +
                 "  });\n" +
@@ -186,6 +231,9 @@ public class ApiEndpointListController {
                 "</script>" + NEWLINE);
         out.append("</head>" + NEWLINE);
         out.append("<body id=\"dt_example\">" + NEWLINE);
+        out.append("<div class='menu'>" + NEWLINE);
+
+        out.append("    <div>Methods:</div>" + NEWLINE);
 
         for (Map.Entry<RequestMappingInfo, HandlerMethod> item : requestMapping.getHandlerMethods().entrySet()) {
             RequestMappingInfo mapping = item.getKey();
@@ -200,13 +248,35 @@ public class ApiEndpointListController {
                     continue;
                 }
 
-                out.append("<div class='block'>");
+                out.append("<a href='#" + method.getMethod().getName() + "'>" + method.getMethod().getName() + "</a>" + NEWLINE);
+
+            }
+        }
+
+        out.append("</div>" + NEWLINE);
+
+        out.append("<div class='list'>" + NEWLINE);
+
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> item : requestMapping.getHandlerMethods().entrySet()) {
+            RequestMappingInfo mapping = item.getKey();
+            HandlerMethod method = item.getValue();
+
+            for (String urlPattern : mapping.getPatternsCondition().getPatterns()) {
+                RequestMapping requestMappingAnnotation = method.getMethodAnnotation(RequestMapping.class);
+
+                if (!method.getBeanType().getPackage().getName().contains("catan")
+                        || requestMappingAnnotation == null
+                        || requestMappingAnnotation.method().length == 0) {
+                    continue;
+                }
+
+                out.append("<div class='block' id='" + method.getMethod().getName() + "'>");
                 out.append("<form method=\"" + requestMappingAnnotation.method()[0] + "\" action=\"" + urlPattern + "\">");
+                out.append("<div class='method'>Method: " + method.getMethod().getName() + "</div>");
                 out.append("<div class='url-rest'>");
                 out.append("    <span class='rest'>" + requestMappingAnnotation.method()[0] + "</span>");
                 out.append("    <span class='url'>" + urlPattern + "</span>");
                 out.append("</div>");
-                out.append("<div class='method'>Method: " + method.getMethod().getName() + "</div>");
                 out.append("<div class='try'>");
 
                 for (MethodParameter parameter : method.getMethodParameters()) {
@@ -235,6 +305,8 @@ public class ApiEndpointListController {
             }
 
         }
+        out.append("<div style='height: 300px'>&nbsp;</div>");
+        out.append("</div>");
         out.append("</body></html>");
 
         return out.toString();
