@@ -199,6 +199,22 @@ public class ApiEndpointListController {
                 "  onHashChange();\n" +
                 "  window.addEventListener('hashchange', onHashChange, false);\n" +
                 "  \n" +
+                "  $(window).scroll(function() {\n" +
+                "       var fromTop = 50;\n" +
+                "       \n" +
+                "       var cur = $('.block').map(function() {\n" +
+                "           if ($(this).offset().top - $(window).scrollTop() <= fromTop)\n" +
+                "               return this;\n" +
+                "       });\n" +
+                "       \n" +
+                "       cur = cur[cur.length-1];\n" +
+                "       var id = cur ? cur.id : '';\n" +
+                "       \n" +
+                "       $('.menu a').removeClass('active');\n" +
+                "       $('[href=\"#'+id+'\"]').addClass('active');\n" +
+                "  });\n" +
+                "  $(window).scroll();\n" +
+                "  \n" +
                 "  $('body').on('click', 'button', function() {\n" +
                 "       $(this).closest('.response').hide().html('')\n" +
                 "  });\n" +
@@ -305,7 +321,7 @@ public class ApiEndpointListController {
             }
 
         }
-        out.append("<div style='height: 300px'>&nbsp;</div>");
+        out.append("<div style='height: 600px'>&nbsp;</div>");
         out.append("</div>");
         out.append("</body></html>");
 
