@@ -136,6 +136,14 @@ public class ApiEndpointListController {
                 "    \n" +
                 "}\n" +
                 "\n" +
+                ".response.fail {\n" +
+                "    background-color: #fff7f7;\n" +
+                "}\n" +
+                "\n" +
+                ".response.done {\n" +
+                "    background-color: #f8fff7;\n" +
+                "}\n" +
+                "\n" +
                 ".response button {\n" +
                 "    float: right;\n" +
                 "    margin: 10px 10px 0 0;\n" +
@@ -151,16 +159,25 @@ public class ApiEndpointListController {
                 "  });\n" +
                 "  $('form').on('submit', function(event) {\n" +
                 "      var thisForm = $(this);\n" +
+                "      var responseEl = thisForm.children('.response');\n" +
                 "      $.ajax({\n" +
                 "        url: $(event.target).attr('action'),\n" +
                 "        method: 'post',\n" +
                 "        data: $(event.target).serializeArray(),\n" +
                 "        contentType : \"application/x-www-form-urlencoded\"\n" +
                 "      })\n" +
-                "       .always(function(data, status, error) {\n" +
-                "           var el = thisForm.children('.response');\n" +
-                "           el.html('<button>X</button><p>' + JSON.stringify(status) + '</p><p>' + JSON.stringify(error) + '</p><p>Status: ' + JSON.stringify(data.status) + '</p><p>Response: ' + JSON.stringify(data.responseJSON) + '</p>')\n" +
-                "           el.show();\n" +
+                "       .done(function(data, textStatus, jqXHR) {\n" +
+                "           responseEl.removeClass('fail');\n" +
+                "           responseEl.addClass('done');\n" +
+                "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<p>' + JSON.stringify(jqXHR.responseJSON) + '</p>' : '') )\n" +
+                "           responseEl.show();\n" +
+                "           \n" +
+                "      })\n" +
+                "       .fail(function(jqXHR, textStatus, errorThrown) {\n" +
+                "           responseEl.removeClass('done');\n" +
+                "           responseEl.addClass('fail');\n" +
+                "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<p>' + JSON.stringify(jqXHR.responseJSON) + '</p>' : '') )\n" +
+                "           responseEl.show();\n" +
                 "           \n" +
                 "      });\n" +
                 "    return false;\n" +
