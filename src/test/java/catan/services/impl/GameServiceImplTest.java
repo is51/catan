@@ -148,7 +148,7 @@ public class GameServiceImplTest {
         expectedGames.add(game1);
         expectedGames.add(game2);
 
-        expect(gameDao.getGamesByCreatorId(user.getId())).andStubReturn(expectedGames);
+        expect(gameDao.getGamesWithJoinedUser(user.getId())).andStubReturn(expectedGames);
         replay(gameDao);
 
         // WHEN
