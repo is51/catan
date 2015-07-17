@@ -44,8 +44,13 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
 
     @Override
     public List<GameBean> getGamesByCreatorId(int creatorId) {
-        Query query = getSession().createQuery("SELECT game FROM " + GameBean.class.getSimpleName() + " AS game WHERE game.creator.id in " +
-                "(SELECT user.id FROM " + UserBean.class.getName() + " AS user WHERE user.id = :creatorId)");
+        Query query = getSession().createQuery(
+                "SELECT game " +
+                "FROM " + GameBean.class.getSimpleName() + " AS game " +
+                "WHERE game.creator.id in (" +
+                    "SELECT user.id " +
+                    "FROM " + UserBean.class.getName() + " AS user " +
+                    "WHERE user.id = :creatorId)");
         query.setString("creatorId", String.valueOf(creatorId));
 
         //noinspection unchecked
@@ -55,9 +60,12 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     @Override
     public List<GameBean> getGamesWithJoinedUser(int userId) {
         //TODO: change script to return appropriate values!
-        Query query = getSession().createQuery("SELECT game FROM " + GameBean.class.getSimpleName() + " AS game WHERE game.creator.id in " +
-                "(SELECT user.id FROM " + UserBean.class.getName() + " AS user WHERE user.id = :creatorId)");
-        query.setString("creatorId", String.valueOf(userId));
+        Query query = getSession().createQuery(
+                "SELECT game " +
+                "FROM " + GameBean.class.getSimpleName() + " AS game " +
+                    "LEFT JOIN game.gameUsers as gameUser " +
+                "WHERE gameUser.user.id = :userId)");
+        query.setString("userId", String.valueOf(userId));
 
         //noinspection unchecked
         return (List<GameBean>) query.list();

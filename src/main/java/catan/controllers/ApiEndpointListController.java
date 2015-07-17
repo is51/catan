@@ -274,11 +274,16 @@ public class ApiEndpointListController {
         String currentClass = "";
         for (HandlerMethod method : methods) {
             if (!method.getMethod().getDeclaringClass().getSimpleName().equalsIgnoreCase(currentClass)) {
+                String breaks = "";
+                if(currentClass.length() > 0){
+                    breaks = "<br/><br/><br/>";
+                }
+
                 currentClass = method.getMethod().getDeclaringClass().getSimpleName();
                 leftMenu.append("<h3><a href='#" + currentClass + "'>" + currentClass + ":</a></h3>" + NEWLINE);
 
                 content.append("<div class='block' id='" + currentClass + "'>");
-                content.append("<div class='method'><br/><br/><br/>Controller: " + currentClass + "</div>");
+                content.append("<div class='method'>" + breaks + "Controller: " + currentClass + "</div>");
                 content.append("</div>");
             }
 
