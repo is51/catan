@@ -207,4 +207,27 @@ public class JoinGameTest extends GameTestUtil {
                 .body("errorCode", equalTo("ALREADY_JOINED"));
     }
 
+    @Test
+    public void should_successfully_run_when_players_colors_are_different() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+        String userToken4 = loginUser(USER_NAME_4, USER_PASSWORD_4);
+
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+        joinPublicGame(userToken4, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers.user.colorId", hasItems("1", "2", "3", "4"));
+
+        leaveGame(userToken3, gameId);
+        joinPublicGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers.user.colorId", hasItems("1", "2", "3", "4"));
+    }
 }
