@@ -199,4 +199,35 @@ public class ListGameTest extends GameTestUtil {
                 .then()
                 .statusCode(200);
     }
+
+    @Test
+    public void should_successfully_get_joined_games_list_even_if_user_is_not_creator() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+        createNewGame(userToken2, false);
+        joinPublicGame(userToken2, gameId);
+
+        given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", userToken1)
+                .when()
+                .post(URL_CURRENT_GAMES_LIST)
+                .then()
+                .statusCode(200)
+                .body("findall.size()", equalTo("1"));
+
+        given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", userToken2)
+                .when()
+                .post(URL_CURRENT_GAMES_LIST)
+                .then()
+                .statusCode(200)
+                .body("findall.size()", equalTo("2"));
+    }
 }
