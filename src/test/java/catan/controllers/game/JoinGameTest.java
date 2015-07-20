@@ -11,7 +11,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
@@ -81,11 +80,20 @@ public class JoinGameTest extends GameTestUtil {
         //needs to be written when game finishing is implemented
     }*/
 
-    /*@Test
+    @Test
     public void should_fails_when_user_joins_public_game_if_game_is_canceled() {
-        //TODO: should_fails_when_user_joins_public_game_if_game_is_canceled
-        //needs to be written when game canceling is implemented
-    }*/
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+        cancelGame(userToken1, gameId);
+
+        joinPublicGame(userToken2, gameId)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("GAME_CANCELED"));
+    }
 
     @Test
     public void should_fails_when_user_joins_public_game_if_too_many_players_in() {
@@ -186,9 +194,7 @@ public class JoinGameTest extends GameTestUtil {
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
-        joinPrivateGame(userToken2, privateCode)
-                .then()
-                .statusCode(200);
+        joinPrivateGame(userToken2, privateCode);
         joinPrivateGame(userToken2, privateCode)
                 .then()
                 .statusCode(400)
@@ -219,15 +225,17 @@ public class JoinGameTest extends GameTestUtil {
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
-        joinPublicGame(userToken4, gameId)
+        joinPublicGame(userToken4, gameId);
+        viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("gameUsers.user.colorId", hasItems("1", "2", "3", "4"));
+                .body("gameUsers.colorId", hasItems(1, 2, 3, 4));
 
         leaveGame(userToken3, gameId);
-        joinPublicGame(userToken3, gameId)
+        joinPublicGame(userToken3, gameId);
+        viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("gameUsers.user.colorId", hasItems("1", "2", "3", "4"));
+                .body("gameUsers.colorId", hasItems(1, 2, 3, 4));
     }
 }

@@ -218,7 +218,7 @@ public class ListGameTest extends GameTestUtil {
                 .post(URL_CURRENT_GAMES_LIST)
                 .then()
                 .statusCode(200)
-                .body("findall.size()", equalTo("1"));
+                .body("findall.size()", is(1));
 
         given()
                 .port(SERVER_PORT)
@@ -228,6 +228,6 @@ public class ListGameTest extends GameTestUtil {
                 .post(URL_CURRENT_GAMES_LIST)
                 .then()
                 .statusCode(200)
-                .body("findall.size()", equalTo("2"));
+                .body("findall.size()", is(2));
     }
 }
