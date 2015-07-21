@@ -104,11 +104,6 @@ public class GameServiceImpl implements GameService {
 
         GameBean game = privateGame ? findPrivateGame(gameIdentifier) : findPublicGame(gameIdentifier);
 
-        if (game.getCreator().getId() == user.getId()) {
-            log.debug("<< Creator is not allowed to join game, as he is already joined");
-            throw new GameException(ALREADY_JOINED_ERROR);
-        }
-
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().getId() == user.getId()) {
                 log.debug("<< User " + user + " already joined to this game");
@@ -376,10 +371,6 @@ public class GameServiceImpl implements GameService {
 
     public PrivateCodeUtil getPrivateCodeUtil() {
         return privateCodeUtil;
-    }
-
-    public void setPrivateCodeUtil(PrivateCodeUtil privateCodeUtil) {
-        this.privateCodeUtil = privateCodeUtil;
     }
 
     @Autowired
