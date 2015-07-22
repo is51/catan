@@ -14,6 +14,7 @@ public class GameDetails {
     private List<GameUserDetails> gameUsers;
     private int minUsers;
     private int maxUsers;
+    private int targetVictoryPoints;
 
     public GameDetails() {
     }
@@ -28,6 +29,7 @@ public class GameDetails {
         this.gameUsers = game.getGameUserDetails();
         this.minUsers = game.getMinUsers();
         this.maxUsers = game.getMaxUsers();
+        this.targetVictoryPoints = game.getTargetVictoryPoints();
     }
 
     public int getGameId() {
@@ -100,5 +102,13 @@ public class GameDetails {
 
     public void setMaxUsers(int maxUsers) {
         this.maxUsers = maxUsers;
+    }
+
+    public int getTargetVictoryPoints() {
+        return targetVictoryPoints;
+    }
+
+    public void setTargetVictoryPoints(int targetVictoryPoints) {
+        this.targetVictoryPoints = targetVictoryPoints;
     }
 }

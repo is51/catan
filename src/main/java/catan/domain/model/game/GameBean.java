@@ -36,6 +36,9 @@ public class GameBean {
     @Column(name = "MAX_USERS", unique = false, nullable = false)
     private int maxUsers;
 
+    @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
+    private int targetVictoryPoints;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
@@ -49,6 +52,7 @@ public class GameBean {
         this.status = status;
         this.minUsers = minUsers;
         this.maxUsers = maxUsers;
+        this.targetVictoryPoints = targetVictoryPoints;
     }
 
     public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minUsers, int maxUsers) {
@@ -59,6 +63,7 @@ public class GameBean {
         this.status = status;
         this.minUsers = minUsers;
         this.maxUsers = maxUsers;
+        this.targetVictoryPoints = targetVictoryPoints;
     }
 
     public int getGameId() {
@@ -134,6 +139,14 @@ public class GameBean {
         this.gameUsers = gameUsers;
     }
 
+    public int getTargetVictoryPoints() {
+        return targetVictoryPoints;
+    }
+
+    public void setTargetVictoryPoints(int targetVictoryPoints) {
+        this.targetVictoryPoints = targetVictoryPoints;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -150,6 +163,7 @@ public class GameBean {
             return false;
         if (gameUsers != null ? !gameUsers.equals(gameBean.gameUsers) : gameBean.gameUsers != null) return false;
         if (status != gameBean.status) return false;
+        if (targetVictoryPoints != gameBean.targetVictoryPoints) return false;
 
         return true;
     }
@@ -164,6 +178,7 @@ public class GameBean {
         result = 31 * result + minUsers;
         result = 31 * result + maxUsers;
         result = 31 * result + (gameUsers != null ? gameUsers.hashCode() : 0);
+        result = 31 * result + targetVictoryPoints;
         return result;
     }
 
@@ -178,6 +193,7 @@ public class GameBean {
                 ", minUsers=" + minUsers +
                 ", maxUsers=" + maxUsers +
                 ", gameUsers=" + gameUsers +
+                ", targetVictoryPoints=" + targetVictoryPoints +
                 '}';
     }
 
