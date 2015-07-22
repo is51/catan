@@ -9,6 +9,7 @@ List of methods available via http with real examples can be found under the fol
 http://localhost:8091/api
 ```
 
+
 ## How to run locally
 
 #### Required soft
