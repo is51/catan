@@ -18,15 +18,19 @@ public class UserBean {
     @Column(name = "USERNAME", unique = true, nullable = false)
     private String username;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "PASSWORD", nullable = true)
     private String password;
+
+    @Column(name = "GUEST", nullable = false)
+    private boolean guest;
 
     public UserBean() {
     }
 
-    public UserBean(String username, String password) {
+    public UserBean(String username, String password, boolean guest) {
         this.username = username;
         this.password = password;
+        this.guest = guest;
     }
 
     public int getId() {
@@ -53,6 +57,14 @@ public class UserBean {
         this.password = password;
     }
 
+    public boolean isGuest() {
+        return guest;
+    }
+
+    public void setGuest(boolean guest) {
+        this.guest = guest;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,6 +75,7 @@ public class UserBean {
         if (id != userBean.id) return false;
         if (password != null ? !password.equals(userBean.password) : userBean.password != null) return false;
         if (username != null ? !username.equals(userBean.username) : userBean.username != null) return false;
+        if (guest != userBean.guest) return false;
 
         return true;
     }
@@ -72,6 +85,7 @@ public class UserBean {
         int result = id;
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (guest ? 1 : 0);
         return result;
     }
 
@@ -81,6 +95,7 @@ public class UserBean {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", guest='" + guest + '\'' +
                 '}';
     }
 }

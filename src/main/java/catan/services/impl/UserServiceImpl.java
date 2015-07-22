@@ -2,6 +2,7 @@ package catan.services.impl;
 
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
+import catan.domain.model.user.UserSessionBean;
 import catan.exception.UserException;
 import catan.services.UserService;
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     UserDao userDao;
 
     @Override
-    public String login(String username, String password) throws UserException {
+    public String login(String username, String password, boolean temporary) throws UserException {
         log.debug(">> Login user with username '" + username + "' ...");
 
         if (username == null || username.trim().length() == 0) {
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
             throw new UserException(ERROR_CODE_ERROR);
         }
 
-        if (password == null || password.trim().length() == 0) {
+        if (!temporary && (password == null || password.trim().length() == 0)) {
             log.debug("<< Password is empty");
             throw new UserException(ERROR_CODE_ERROR);
         }
@@ -43,13 +44,21 @@ public class UserServiceImpl implements UserService {
             throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
         }
 
-        if (!user.getPassword().equals(password)) {
+        if(!temporary && user.isGuest()){
+            log.debug("<< Trying to login temporary user '" + username + "'");
+            throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
+        }
+
+        if (!temporary && (!user.getPassword().equals(password))) {
             log.debug("<< Password '" + password + "' doesn't match to original password of user '" + username + "'");
             throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
         }
 
+        userDao.removeSessionByUser(user);
+
         String token = UUID.randomUUID().toString();
-        userDao.allocateNewTokenToUser(token, user);
+        UserSessionBean userSession = new UserSessionBean(token, user);
+        userDao.addNewSession(userSession);
 
         log.debug("<< User '" + username + "' successfully logged in and session '" + token + "' assigned to him");
 
@@ -59,21 +68,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logout(String token) {
         log.debug(">> Logout user with token '" + token + "' ...");
-        userDao.removeSession(token);
+        userDao.removeSessionByToken(token);
         log.debug("<< User with token '" + token + "' successfully logged out");
     }
 
     @Override
-    public void register(String username, String password) throws UserException {
-        log.debug(">> Registering user with username '" + username + "'");
+    public void register(String username, String password, boolean temporary) throws UserException {
+        log.debug(">> Registering " + (temporary ? "temporary" : "permanent") + " user with username '" + username + "'");
 
         if (username == null || username.trim().length() == 0) {
             log.debug("<< Username is empty");
             throw new UserException(ERROR_CODE_ERROR);
         }
 
-        if (password == null || password.trim().length() == 0) {
-            log.debug("<< Password is empty");
+        if (!temporary && (password == null || password.trim().length() == 0)) {
+            log.debug("<< Password cannot be empty for permanent user");
             throw new UserException(ERROR_CODE_ERROR);
         }
 
@@ -83,7 +92,7 @@ public class UserServiceImpl implements UserService {
             throw new UserException(ERROR_CODE_USERNAME_ALREADY_EXISTS);
         }
 
-        UserBean newUser = new UserBean(username, password);
+        UserBean newUser = new UserBean(username, password, temporary);
 
         userDao.addNewUser(newUser);
         log.debug("<< User '" + username + "' successfully registered");

@@ -3,15 +3,17 @@ package catan.domain.transfer.output;
 public class UserDetails {
     private int id;
     private String username;
+    private boolean guest;
     private String firstName;
     private String lastName;
 
     public UserDetails() {
     }
 
-    public UserDetails(int id, String username) {
+    public UserDetails(int id, String username, boolean guest) {
         this.id = id;
         this.username = username;
+        this.guest = guest;
         this.firstName = "vasya";
         this.lastName = "pupkin";
     }
@@ -30,6 +32,14 @@ public class UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isGuest() {
+        return guest;
+    }
+
+    public void setGuest(boolean guest) {
+        this.guest = guest;
     }
 
     public String getFirstName() {

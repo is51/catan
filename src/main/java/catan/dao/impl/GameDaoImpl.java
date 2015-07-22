@@ -59,7 +59,6 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
 
     @Override
     public List<GameBean> getGamesWithJoinedUser(int userId) {
-        //TODO: change script to return appropriate values!
         Query query = getSession().createQuery(
                 "SELECT game " +
                 "FROM " + GameBean.class.getSimpleName() + " AS game " +

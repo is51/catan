@@ -8,9 +8,9 @@ import catan.domain.transfer.output.GameUserDetails;
 import catan.domain.transfer.output.UserDetails;
 import catan.exception.AuthenticationException;
 import catan.exception.GameException;
+import catan.exception.WrongPathException;
 import catan.services.AuthenticationService;
 import catan.services.GameService;
-import catan.services.PrivateCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,15 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
-import static catan.services.impl.GameServiceImpl.ERROR_CODE_ERROR;
-
 @RestController
 @RequestMapping("/api/game")
 public class GameController {
 
     GameService gameService;
     AuthenticationService authenticationService;
-    PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
 
     @RequestMapping(value = "create",
             method = RequestMethod.POST,
@@ -47,7 +44,7 @@ public class GameController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<GameDetails> getListOfGames(@PathVariable(value = "gameListType") String gameListType,
-                                            @RequestParam(value = "token", required = false) String token) throws AuthenticationException, GameException {
+                                            @RequestParam(value = "token", required = false) String token) throws AuthenticationException, GameException, WrongPathException {
 
         List<GameBean> games;
         switch (GameListType.fromValue(gameListType)) {
@@ -60,8 +57,7 @@ public class GameController {
                 break;
             case UNKNOWN:
             default:
-                //TODO: throw something like page not found exception (as soon as BG-7 is fixed)
-                throw new GameException(ERROR_CODE_ERROR);
+                throw new WrongPathException();
         }
 
         List<GameDetails> gamesToReturn = new ArrayList<GameDetails>();
@@ -129,7 +125,7 @@ public class GameController {
         for (GameUserBean gameUser : game.getGameUsers()) {
             UserBean user = gameUser.getUser();
 
-            UserDetails userDetails = new UserDetails(user.getId(), user.getUsername());
+            UserDetails userDetails = new UserDetails(user.getId(), user.getUsername(), user.isGuest());
             GameUserDetails gameUserDetails = new GameUserDetails(userDetails, gameUser.getColorId());
 
             gameUsers.add(gameUserDetails);

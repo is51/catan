@@ -15,7 +15,6 @@ import javax.persistence.Table;
 @Table(name = "GAME_USER")
 public class GameUserBean {
 
-    //TODO: think about removal of id in this table
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int gameUserId;

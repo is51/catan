@@ -31,7 +31,7 @@ public class AuthenticationServiceImplTest {
         try {
             // GIVEN
             String token = "token1";
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
             user.setId((int) System.currentTimeMillis());
 
             expect(userDao.getUserByToken(token)).andStubReturn(user);

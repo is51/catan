@@ -6,6 +6,7 @@ import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
+import catan.exception.UserException;
 import catan.services.RandomValeGeneratorMock;
 import org.easymock.IAnswer;
 import org.junit.After;
@@ -27,9 +28,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class GameServiceImplTest {
     public static final String USER_NAME1 = "userName1";
+    public static final String USER_NAME2 = "userName2";
     public static final String PASSWORD1 = "12345";
     public static final String PASSWORD2 = "67890";
 
@@ -54,7 +57,7 @@ public class GameServiceImplTest {
     }
 
     @Test
-    public void createNewGameSuccessful() throws GameException {
+    public void createNewPrivateGameSuccessful() throws GameException {
         // GIVEN
 
         //Should generate first privateCode KP8428
@@ -83,7 +86,7 @@ public class GameServiceImplTest {
         rvg.setNextGeneratedValue(0.4);
         rvg.setNextGeneratedValue(0.8254);
 
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
         ArrayList<String> usedPrivateCodes = new ArrayList<String>();
@@ -128,9 +131,27 @@ public class GameServiceImplTest {
     }
 
     @Test
+    public void createNewPublicGameFailedWhenUserIsNotRegistered() throws GameException {
+        try {
+            // GIVEN
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, true);
+
+            // WHEN
+            GameBean game = gameService.createNewGame(user, false);
+
+            fail("GameException with error code '" + GameServiceImpl.USER_IS_TEMPORARY_ERROR + "' should be thrown, but returned game " + game);
+        } catch (GameException e) {
+            // THEN
+            assertEquals(GameServiceImpl.USER_IS_TEMPORARY_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
     public void getListOfGamesCreatedBySuccessful() throws GameException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
         GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4);
@@ -197,10 +218,10 @@ public class GameServiceImplTest {
     @Test
     public void getListOfAllPublicGamesSuccessful() throws GameException {
         // GIVEN
-        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1, false);
         user1.setId((int) System.currentTimeMillis());
 
-        UserBean user2 = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false);
         user2.setId((int) System.currentTimeMillis());
 
         GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4);
@@ -260,7 +281,7 @@ public class GameServiceImplTest {
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
 
-        assertEquals(user2, games.get(0).getGameUsers().iterator().next().getUser());
+        assertEquals(user2, games.get(1).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
     }

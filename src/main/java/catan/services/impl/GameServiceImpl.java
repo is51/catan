@@ -39,6 +39,7 @@ public class GameServiceImpl implements GameService {
     public static final String GAME_IS_NOT_FOUND_ERROR = "GAME_IS_NOT_FOUND";
     public static final String USER_IS_NOT_JOINED_ERROR = "USER_IS_NOT_JOINED";
     public static final String GAME_HAS_ALREADY_STARTED_ERROR = "GAME_HAS_ALREADY_STARTED";
+    public static final String USER_IS_TEMPORARY_ERROR = "USER_IS_TEMPORARY";
 
     GameDao gameDao;
     PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
@@ -309,7 +310,12 @@ public class GameServiceImpl implements GameService {
                 MAX_USERS);
     }
 
-    private GameBean createPublicGame(UserBean creator) {
+    private GameBean createPublicGame(UserBean creator) throws GameException {
+        if (creator.isGuest()) {
+            log.debug("<< Temporary user cannot create new public games");
+            throw new GameException(USER_IS_TEMPORARY_ERROR);
+        }
+
         return new GameBean(
                 creator,
                 new Date(),

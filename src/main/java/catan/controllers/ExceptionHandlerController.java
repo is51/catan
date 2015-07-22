@@ -4,6 +4,7 @@ import catan.domain.transfer.output.ErrorDetails;
 import catan.exception.AuthenticationException;
 import catan.exception.GameException;
 import catan.exception.UserException;
+import catan.exception.WrongPathException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @ControllerAdvice
 public class ExceptionHandlerController {
+
+    @ExceptionHandler(WrongPathException.class)
+    public ResponseEntity handleWrongPathExceptions(WrongPathException e) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        return new ResponseEntity(status);
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity handleAuthenticationExceptions(AuthenticationException e) {
         HttpStatus status = HttpStatus.FORBIDDEN;
