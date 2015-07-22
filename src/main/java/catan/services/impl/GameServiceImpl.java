@@ -44,14 +44,14 @@ public class GameServiceImpl implements GameService {
     PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
 
     @Override
-    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame) throws GameException {
-        log.debug(">> Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + " ...");
+    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, int targetVictoryPoints) throws GameException {
+        log.debug(">> Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + targetVictoryPoints + " ...");
         if (creator == null) {
             log.debug("<< Cannot create new game due to creator is empty");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = privateGame ? createPrivateGame(creator) : createPublicGame(creator);
+        GameBean game = privateGame ? createPrivateGame(creator, targetVictoryPoints) : createPublicGame(creator, targetVictoryPoints);
         gameDao.addNewGame(game);
 
         addUserToGame(game, creator);
@@ -283,7 +283,7 @@ public class GameServiceImpl implements GameService {
         log.debug("<< Game " + game + " successfully cancelled");
     }
 
-    private GameBean createPrivateGame(UserBean creator) {
+    private GameBean createPrivateGame(UserBean creator, int targetVictoryPoints) {
         List<String> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
 
         String randomPrivateCode = null;
@@ -306,16 +306,18 @@ public class GameServiceImpl implements GameService {
                 new Date(),
                 GameStatus.NEW,
                 MIN_USERS,
-                MAX_USERS);
+                MAX_USERS,
+                targetVictoryPoints);
     }
 
-    private GameBean createPublicGame(UserBean creator) {
+    private GameBean createPublicGame(UserBean creator, int targetVictoryPoints) {
         return new GameBean(
                 creator,
                 new Date(),
                 GameStatus.NEW,
                 MIN_USERS,
-                MAX_USERS);
+                MAX_USERS,
+                targetVictoryPoints);
     }
 
     private GameBean findPrivateGame(String privateCode) throws GameException {

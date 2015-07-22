@@ -37,7 +37,7 @@ public class CreateGameTest extends GameTestUtil {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int userId = getUserId(userToken);
 
-        createNewGame(userToken, true)
+        createNewGame(userToken, true, 12)
                 .then()
                 .statusCode(200)
                 .contentType(ACCEPT_CONTENT_TYPE)
@@ -51,14 +51,16 @@ public class CreateGameTest extends GameTestUtil {
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
+                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS))
+                .body("targetVictoryPoints", greaterThan(2))
+                .body("gameUsers", not(equalTo(isEmptyString())));
     }
 
     @Test
     public void should_successfully_create_new_public_game() {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
-        createNewGame(userToken, false)
+        createNewGame(userToken, false, 12)
                 .then()
                 .statusCode(200)
                 .body("privateCode", isEmptyOrNullString());
@@ -71,7 +73,7 @@ public class CreateGameTest extends GameTestUtil {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", userToken)
+                .parameters("token", userToken, "targetVictoryPoints", 12)
                 .when()
                 .post(URL_CREATE_NEW_GAME)
                 .then()
@@ -86,7 +88,7 @@ public class CreateGameTest extends GameTestUtil {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("privateGame", true) // 'privateGame' is mandatory, 'token' is not mandatory
+                .parameters("privateGame", true, "targetVictoryPoints", 12) // 'privateGame' is mandatory, 'token' is not mandatory
                 .when()
                 .post(URL_CREATE_NEW_GAME)
                 .then()
@@ -98,15 +100,11 @@ public class CreateGameTest extends GameTestUtil {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", userToken, "privateGame", true)
+                .parameters("token", userToken, "privateGame", true, "targetVictoryPoints", 12)
                 .when()
                 .post(URL_CREATE_NEW_GAME)
                 .then()
                 .statusCode(403);
     }
 
-    /*@Test
-    public void should_creator_be_added_to_game_as_player() {
-        //TODO: should_creator_be_added_to_game_as_player
-    }*/
 }

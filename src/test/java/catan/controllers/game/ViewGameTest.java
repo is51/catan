@@ -36,7 +36,7 @@ public class ViewGameTest extends GameTestUtil {
     @Test
     public void should_successfully_view_game_page_by_creator() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
         int userId = getUserId(userToken1);
 
@@ -58,7 +58,7 @@ public class ViewGameTest extends GameTestUtil {
     @Test
     public void should_successfully_view_game_page_by_non_creator() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
         int userId1 = getUserId(userToken1);
 
@@ -88,7 +88,7 @@ public class ViewGameTest extends GameTestUtil {
     @Test
     public void should_fail_when_user_view_game_page_if_he_is_not_joined() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -112,7 +112,7 @@ public class ViewGameTest extends GameTestUtil {
     @Test
     public void should_fail_when_user_view_game_page_if_he_is_not_authorized() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
         logoutUser(userToken1);
 
@@ -124,7 +124,7 @@ public class ViewGameTest extends GameTestUtil {
     @Test
     public void should_fail_when_user_view_canceled_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
 
         cancelGame(userToken1, gameId);
