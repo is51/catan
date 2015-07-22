@@ -3,6 +3,7 @@ package catan.controllers.game;
 import catan.config.ApplicationConfig;
 import catan.domain.model.game.GameStatus;
 import catan.domain.transfer.output.GameDetails;
+import catan.services.impl.GameServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,16 +16,8 @@ import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -135,10 +128,14 @@ public class ListGameTest extends GameTestUtil {
                 .body("[0].privateGame", equalTo(false))
                 .body("[0].status", equalTo(GameStatus.NEW.toString()))
                 .body("[0].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))))
+                .body("[0].minUsers", equalTo(GameServiceImpl.MIN_USERS))
+                .body("[0].maxUsers", equalTo(GameServiceImpl.MAX_USERS))
                 .body("[1].gameId", greaterThan(0))
                 .body("[1].privateGame", equalTo(false))
                 .body("[1].status", equalTo(GameStatus.NEW.toString()))
-                .body("[1].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))));
+                .body("[1].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))))
+                .body("[1].minUsers", equalTo(GameServiceImpl.MIN_USERS))
+                .body("[1].maxUsers", equalTo(GameServiceImpl.MAX_USERS));
 
         // Assert public games response again but in another way
         List<GameDetails> games = Arrays.asList(
@@ -159,18 +156,22 @@ public class ListGameTest extends GameTestUtil {
         assertNotEquals("Game Ids should be different", firstGameDetails.getGameId(), secondGameDetails.getGameId());
 
         //Assert first game details
-        assertThat("Game Id should be fore than 0", firstGameDetails.getGameId(), greaterThan(0));
+        assertThat("Game Id should be greater than 0", firstGameDetails.getGameId(), greaterThan(0));
         assertThat("Status of first game should be NEW", firstGameDetails.getStatus(), is(GameStatus.NEW.toString()));
         assertFalse("Game should be public", firstGameDetails.isPrivateGame());
         assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
                 firstGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
+        assertThat("Min users should be filled up", firstGameDetails.getMinUsers(), equalTo(GameServiceImpl.MIN_USERS));
+        assertThat("Max users should be filled up", firstGameDetails.getMaxUsers(), equalTo(GameServiceImpl.MAX_USERS));
 
         //Assert second game details
-        assertThat("Game Id should be fore than 0", secondGameDetails.getGameId(), greaterThan(0));
+        assertThat("Game Id should be greater than 0", secondGameDetails.getGameId(), greaterThan(0));
         assertThat("Status of first game should be NEW", secondGameDetails.getStatus(), is(GameStatus.NEW.toString()));
         assertFalse("Game should be public", secondGameDetails.isPrivateGame());
         assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
                 secondGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
+        assertThat("Min users should be filled up", secondGameDetails.getMinUsers(), equalTo(GameServiceImpl.MIN_USERS));
+        assertThat("Max users should be filled up", secondGameDetails.getMaxUsers(), equalTo(GameServiceImpl.MAX_USERS));
 
     }
 

@@ -1,23 +1,10 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
+import catan.domain.transfer.output.GameUserDetails;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "GAME")
@@ -192,5 +179,15 @@ public class GameBean {
                 ", maxUsers=" + maxUsers +
                 ", gameUsers=" + gameUsers +
                 '}';
+    }
+
+    public List<GameUserDetails> getGameUserDetails() {
+        List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
+
+        for (GameUserBean gameUser : this.gameUsers) {
+            gameUsers.add(new GameUserDetails(gameUser));
+        }
+
+        return gameUsers;
     }
 }

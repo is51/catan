@@ -1,5 +1,7 @@
 package catan.domain.transfer.output;
 
+import catan.domain.model.user.UserBean;
+
 public class UserDetails {
     private int id;
     private String username;
@@ -9,9 +11,10 @@ public class UserDetails {
     public UserDetails() {
     }
 
-    public UserDetails(int id, String username) {
-        this.id = id;
-        this.username = username;
+    public UserDetails(UserBean user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        //TODO: should get firstName and lastName from UserBean in future
         this.firstName = "vasya";
         this.lastName = "pupkin";
     }

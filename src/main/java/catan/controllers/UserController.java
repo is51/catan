@@ -52,7 +52,7 @@ public class UserController {
     public UserDetails getUserDetailsByToken(@RequestParam(value = "token", required = false) String token) throws AuthenticationException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        return new UserDetails(user.getId(), user.getUsername());
+        return new UserDetails(user);
     }
 
     public UserService getUserService() {

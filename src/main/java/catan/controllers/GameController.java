@@ -1,11 +1,8 @@
 package catan.controllers;
 
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.GameDetails;
-import catan.domain.transfer.output.GameUserDetails;
-import catan.domain.transfer.output.UserDetails;
 import catan.exception.AuthenticationException;
 import catan.exception.GameException;
 import catan.services.AuthenticationService;
@@ -13,11 +10,7 @@ import catan.services.GameService;
 import catan.services.PrivateCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +33,7 @@ public class GameController {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean createdGame = gameService.createNewGame(user, privateGame);
 
-        return toGameDetails(createdGame);
+        return new GameDetails(createdGame);
     }
 
     @RequestMapping(value = "list/{gameListType}",
@@ -66,9 +59,7 @@ public class GameController {
 
         List<GameDetails> gamesToReturn = new ArrayList<GameDetails>();
         for (GameBean game : games) {
-            GameDetails gameDetails = toGameDetails(game);
-
-            gamesToReturn.add(gameDetails);
+            gamesToReturn.add(new GameDetails(game));
         }
 
         return gamesToReturn;
@@ -102,7 +93,7 @@ public class GameController {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean game = gameService.getGameByGameIdWithJoinedUser(user, gameId);
 
-        return toGameDetails(game);
+        return new GameDetails(game);
     }
 
     @RequestMapping(value = "leave",
@@ -121,30 +112,6 @@ public class GameController {
                            @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
         gameService.cancelGame(user, gameId);
-    }
-
-    private GameDetails toGameDetails(GameBean game) {
-        List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
-
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            UserBean user = gameUser.getUser();
-
-            UserDetails userDetails = new UserDetails(user.getId(), user.getUsername());
-            GameUserDetails gameUserDetails = new GameUserDetails(userDetails, gameUser.getColorId());
-
-            gameUsers.add(gameUserDetails);
-        }
-
-        String privateCode = game.isPrivateGame() ? game.getPrivateCode() : null;
-
-        return new GameDetails(
-                game.getGameId(),
-                game.getCreator().getId(),
-                game.isPrivateGame(),
-                privateCode,
-                game.getDateCreated().getTime(),
-                game.getStatus().toString(),
-                gameUsers);
     }
 
     @Autowired

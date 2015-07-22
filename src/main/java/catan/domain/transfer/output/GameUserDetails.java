@@ -1,5 +1,7 @@
 package catan.domain.transfer.output;
 
+import catan.domain.model.game.GameUserBean;
+
 public class GameUserDetails {
     private UserDetails user;
     private int colorId;
@@ -7,9 +9,9 @@ public class GameUserDetails {
     public GameUserDetails() {
     }
 
-    public GameUserDetails(UserDetails user, int colorId) {
-        this.user = user;
-        this.colorId = colorId;
+    public GameUserDetails(GameUserBean userBean) {
+        this.user = new UserDetails(userBean.getUser());
+        this.colorId = userBean.getColorId();
     }
 
     public UserDetails getUser() {

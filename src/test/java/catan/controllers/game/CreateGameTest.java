@@ -2,6 +2,7 @@ package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
 import catan.domain.model.game.GameStatus;
+import catan.services.impl.GameServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,14 +11,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +49,9 @@ public class CreateGameTest extends GameTestUtil {
                 .body("dateCreated", is(both(   //closeTo can be applied only to 'double' values, but dateCreated is 'long' value
                         greaterThan(System.currentTimeMillis() - 60000))
                         .and(
-                                lessThanOrEqualTo(System.currentTimeMillis()))));
+                                lessThanOrEqualTo(System.currentTimeMillis()))))
+                .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
+                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
     }
 
     @Test

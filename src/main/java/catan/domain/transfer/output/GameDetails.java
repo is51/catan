@@ -1,5 +1,7 @@
 package catan.domain.transfer.output;
 
+import catan.domain.model.game.GameBean;
+
 import java.util.List;
 
 public class GameDetails {
@@ -10,18 +12,22 @@ public class GameDetails {
     private long dateCreated;
     private String status;
     private List<GameUserDetails> gameUsers;
+    private int minUsers;
+    private int maxUsers;
 
     public GameDetails() {
     }
 
-    public GameDetails(int gameId, int creatorId, boolean privateGame, String privateCode, long dateCreated, String status, List<GameUserDetails> gameUsers) {
-        this.gameId = gameId;
-        this.creatorId = creatorId;
-        this.privateGame = privateGame;
-        this.privateCode = privateCode;
-        this.dateCreated = dateCreated;
-        this.status = status;
-        this.gameUsers = gameUsers;
+    public GameDetails(GameBean game) {
+        this.gameId = game.getGameId();
+        this.creatorId = game.getCreator().getId();
+        this.privateGame = game.isPrivateGame();
+        this.privateCode = game.isPrivateGame() ? game.getPrivateCode() : null;
+        this.dateCreated = game.getDateCreated().getTime();
+        this.status = game.getStatus().toString();
+        this.gameUsers = game.getGameUserDetails();
+        this.minUsers = game.getMinUsers();
+        this.maxUsers = game.getMaxUsers();
     }
 
     public int getGameId() {
@@ -78,5 +84,21 @@ public class GameDetails {
 
     public void setGameUsers(List<GameUserDetails> gameUsers) {
         this.gameUsers = gameUsers;
+    }
+
+    public int getMinUsers() {
+        return minUsers;
+    }
+
+    public void setMinUsers(int minUsers) {
+        this.minUsers = minUsers;
+    }
+
+    public int getMaxUsers() {
+        return maxUsers;
+    }
+
+    public void setMaxUsers(int maxUsers) {
+        this.maxUsers = maxUsers;
     }
 }
