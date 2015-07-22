@@ -9,11 +9,12 @@ angular.module('catan')
             link: function(scope) {
 
                 scope.data = {
-                    privateGame: false
+                    privateGame: false,
+                    targetVictoryPoints: 12
                 };
 
                 scope.submit = function() {
-                    Remote.game.create({'privateGame': scope.data.privateGame})
+                    Remote.game.create({'privateGame': scope.data.privateGame, 'targetVictoryPoints': scope.data.targetVictoryPoints})
                         .then(function(response) {
                             alert('Game has been created! Game ID = ' + response.data.gameId);
                         }, function(response) {

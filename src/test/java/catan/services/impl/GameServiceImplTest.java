@@ -105,7 +105,7 @@ public class GameServiceImplTest {
         replay(gameDao);
 
         // WHEN
-        GameBean game = gameService.createNewGame(user, true);
+        GameBean game = gameService.createNewGame(user, true, 12);
 
         // THEN
         assertNotNull(game);
@@ -125,6 +125,7 @@ public class GameServiceImplTest {
         assertNotNull(game.getGameUsers());
         assertEquals(1, game.getGameUsers().size());
         assertEquals(user, game.getGameUsers().iterator().next().getUser());
+        assertTrue(game.getTargetVictoryPoints() > 2);
     }
 
     @Test
@@ -133,10 +134,10 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4);
+        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4);
+        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, 12);
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user, 1);
@@ -172,6 +173,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
+        assertTrue(games.get(0).getTargetVictoryPoints() > 2);
         assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
@@ -189,6 +191,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
+        assertTrue(games.get(1).getTargetVictoryPoints() > 2);
         assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
@@ -203,10 +206,10 @@ public class GameServiceImplTest {
         UserBean user2 = new UserBean(USER_NAME1, PASSWORD1);
         user2.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4);
+        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, 12);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4);
+        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, 12);
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user1, 1);
@@ -242,6 +245,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
+        assertTrue(games.get(0).getTargetVictoryPoints() > 2);
         assertEquals(user1, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
@@ -259,6 +263,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
+        assertTrue(games.get(1).getTargetVictoryPoints() > 2);
 
         assertEquals(user2, games.get(0).getGameUsers().iterator().next().getUser());
 

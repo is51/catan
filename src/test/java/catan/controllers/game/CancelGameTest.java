@@ -35,7 +35,7 @@ public class CancelGameTest extends GameTestUtil {
     @Test
     public void should_successfully_cancel_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -59,7 +59,7 @@ public class CancelGameTest extends GameTestUtil {
     @Test
     public void should_fails_when_user_cancel_not_his_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -83,7 +83,7 @@ public class CancelGameTest extends GameTestUtil {
     @Test
     public void should_fails_when_user_cancel_canceled_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
+        int gameId = createNewGame(userToken1, false, 12)
                 .path("gameId");
 
         cancelGame(userToken1, gameId);
@@ -97,7 +97,7 @@ public class CancelGameTest extends GameTestUtil {
     @Test
     public void should_fail_when_user_cancel_game_if_user_is_not_authorized() {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken, false)
+        int gameId = createNewGame(userToken, false, 12)
                 .path("gameId");
 
         logoutUser(userToken);

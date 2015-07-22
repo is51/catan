@@ -29,9 +29,10 @@ public class GameController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GameDetails createNewGame(@RequestParam(value = "token", required = false) String token,
-                                     @RequestParam("privateGame") boolean privateGame) throws AuthenticationException, GameException {
+                                     @RequestParam("privateGame") boolean privateGame,
+                                     @RequestParam(value = "targetVictoryPoints") int targetVictoryPoints) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
-        GameBean createdGame = gameService.createNewGame(user, privateGame);
+        GameBean createdGame = gameService.createNewGame(user, privateGame, targetVictoryPoints);
 
         return new GameDetails(createdGame);
     }
