@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('catan', [
-    'ngRoute',
-    'ngCookies'
+    'ui.router'
 ])
 
     .run(['$rootScope', 'User', function($rootScope, User) {
@@ -10,10 +9,30 @@ angular.module('catan', [
         User.load();
     }])
 
-    .config(['$routeProvider', function($routeProvider) {
-        $routeProvider.when('/', {templateUrl: 'features/startPage/startPage.html', controller: 'StartPageController'});
-        $routeProvider.when('/game/:gameId', {templateUrl: 'features/gamePage/gamePage.html', controller: 'GamePageController'});
-        $routeProvider.otherwise({redirectTo: '/'});
+    .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+
+        $urlRouterProvider.otherwise('/');
+
+        $stateProvider
+
+            .state('start', {
+                url: '/',
+                templateUrl: 'features/screens/start/view.html'
+            })
+
+            .state('game', {
+                url: '/game/{gameId}',
+                templateUrl: 'features/screens/game/view.html',
+                controller: 'GameController'
+            })
+
+            .state('login', {templateUrl: 'features/screens/login/view.html'})
+            .state('register', {templateUrl: 'features/screens/register/view.html'})
+            .state('createGame', {templateUrl: 'features/screens/createGame/view.html'})
+            .state('joinGame', {templateUrl: 'features/screens/joinGame/view.html'})
+            .state('joinPublicGame', {templateUrl: 'features/screens/joinPublicGame/view.html'})
+            .state('joinPrivateGame', {templateUrl: 'features/screens/joinPrivateGame/view.html'})
+            .state('continueGame', {templateUrl: 'features/screens/continueGame/view.html'});
     }])
 
     .config(['$httpProvider', function($httpProvider) {

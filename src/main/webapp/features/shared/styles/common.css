@@ -1,0 +1,72 @@
+/* Temp css file for all styles */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background: #eee;
+    background: -webkit-radial-gradient(#f7f7f7, #e0e0e0); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(#f7f7f7, #e0e0e0); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(#f7f7f7, #e0e0e0); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(#f7f7f7, #e0e0e0); /* Standard syntax */
+}
+
+ui-view {
+    background: #fff;
+
+    display: block;
+    position: relative;
+
+    padding: 30px;
+
+    margin: -200px auto 0 auto;
+    top: 50%;
+    width: 600px;
+    height: 400px;
+    max-width: 100%;
+}
+
+@media (max-height: 410px), (max-width: 610px) {
+    ui-view {
+        margin-top: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.logo {
+    text-transform: uppercase;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 8rem;
+    width: 100%;
+    text-align: center;
+    color: #e6e6e6;
+}
+
+.btn-sq {
+    height: 150px;
+    line-height: 125px;
+}
+
+.btn-back {
+    position: absolute;
+    top: 340px;
+    left: 30px;
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 25px;
+
+}
+
+label {
+    font-size: 18px;
+    font-weight: normal;
+}
