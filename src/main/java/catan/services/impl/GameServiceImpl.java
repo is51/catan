@@ -39,6 +39,7 @@ public class GameServiceImpl implements GameService {
     public static final String GAME_IS_NOT_FOUND_ERROR = "GAME_IS_NOT_FOUND";
     public static final String USER_IS_NOT_JOINED_ERROR = "USER_IS_NOT_JOINED";
     public static final String GAME_HAS_ALREADY_STARTED_ERROR = "GAME_HAS_ALREADY_STARTED";
+    public static final String NOT_ENOUGH_VICTORY_POINTS_ERROR = "NOT_ENOUGH_VICTORY_POINTS";
 
     GameDao gameDao;
     PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
@@ -49,6 +50,11 @@ public class GameServiceImpl implements GameService {
         if (creator == null) {
             log.debug("<< Cannot create new game due to creator is empty");
             throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        if (targetVictoryPoints < 3) {
+            log.debug("<< Cannot create game with less than 3 victory points");
+            throw new GameException(NOT_ENOUGH_VICTORY_POINTS_ERROR);
         }
 
         GameBean game = privateGame ? createPrivateGame(creator, targetVictoryPoints) : createPublicGame(creator, targetVictoryPoints);
