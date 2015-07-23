@@ -52,8 +52,8 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        if (targetVictoryPoints < 3) {
-            log.debug("<< Cannot create game with less than 3 victory points");
+        if (targetVictoryPoints < 2) {
+            log.debug("<< Cannot create game with less than 2 victory points");
             throw new GameException(NOT_ENOUGH_VICTORY_POINTS_ERROR);
         }
 

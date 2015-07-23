@@ -35,7 +35,7 @@ public class LeaveGameTest extends GameTestUtil {
     @Test
     public void should_successfully_leave_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false, 12)
+        int gameId = createNewGame(userToken1, false)
                 .path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -54,7 +54,7 @@ public class LeaveGameTest extends GameTestUtil {
     @Test
     public void should_fails_when_user_leaves_game_if_he_is_not_joined() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false, 12)
+        int gameId = createNewGame(userToken1, false)
                 .path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -78,7 +78,7 @@ public class LeaveGameTest extends GameTestUtil {
     @Test
     public void should_fails_when_creator_leaves_his_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false, 12)
+        int gameId = createNewGame(userToken1, false)
                 .path("gameId");
 
         leaveGame(userToken1, gameId)
@@ -90,7 +90,7 @@ public class LeaveGameTest extends GameTestUtil {
     @Test
     public void should_fail_when_user_leave_game_if_user_is_not_authorized() {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken, false, 12)
+        int gameId = createNewGame(userToken, false)
                 .path("gameId");
 
         logoutUser(userToken);

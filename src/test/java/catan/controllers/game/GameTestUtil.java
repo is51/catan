@@ -16,11 +16,11 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
     public static final String URL_CANCEL_GAME = "/api/game/cancel";
     public static final String URL_VIEW_GAME_DETAILS = "/api/game/details";
 
-    protected Response createNewGame(String token, boolean privateGame, int targetVictoryPoints) {
+    protected Response createNewGame(String token, boolean privateGame) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "privateGame", privateGame, "targetVictoryPoints", targetVictoryPoints)
+                .parameters("token", token, "privateGame", privateGame)
                 .when()
                 .post(URL_CREATE_NEW_GAME);
     }

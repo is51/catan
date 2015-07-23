@@ -108,8 +108,8 @@ public class ListGameTest extends GameTestUtil {
                 .extract()
                 .path("findall.size()");
 
-        createNewGame(firstUserToken, false, 12);
-        createNewGame(secondUserToken, false, 12);
+        createNewGame(firstUserToken, false);
+        createNewGame(secondUserToken, false);
 
         long now = System.currentTimeMillis();
 
@@ -206,9 +206,9 @@ public class ListGameTest extends GameTestUtil {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
-        int gameId = createNewGame(userToken1, false, 12)
+        int gameId = createNewGame(userToken1, false)
                 .path("gameId");
-        createNewGame(userToken2, false, 12);
+        createNewGame(userToken2, false);
         joinPublicGame(userToken2, gameId);
 
         given()
