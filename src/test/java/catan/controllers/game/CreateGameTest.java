@@ -2,7 +2,6 @@ package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
 import catan.domain.model.game.GameStatus;
-import catan.services.impl.GameServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,8 +51,9 @@ public class CreateGameTest extends GameTestUtil {
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("targetVictoryPoints", equalTo(99))
-                //.body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                //.body("maxUsers", equalTo(GameServiceImpl.MAX_USERS))
+                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
+                .body("dateStarted", equalTo(0))
                 .body("gameUsers", not(equalTo(isEmptyString()))); // wtf?
     }
 

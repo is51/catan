@@ -15,8 +15,12 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
     public static final String URL_LEAVE_GAME = "/api/game/leave";
     public static final String URL_CANCEL_GAME = "/api/game/cancel";
     public static final String URL_VIEW_GAME_DETAILS = "/api/game/details";
+    public static final String URL_SET_USER_READY = "/api/game/ready";
+    public static final String URL_SET_USER_NOT_READY = "/api/game/not-ready";
 
     public static final int DEFAULT_TARGET_VICTORY_POINTS = 12;
+    public static final int TEMPORARY_MIN_PLAYERS = 3;
+    public static final int TEMPORARY_MAX_PLAYERS = 4;
 
     protected Response createNewGame(String token, boolean privateGame) {
         return createNewGame(token, privateGame, DEFAULT_TARGET_VICTORY_POINTS);
@@ -74,5 +78,23 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
                 .parameters("token", token, "gameId", gameId)
                 .when()
                 .post(URL_VIEW_GAME_DETAILS);
+    }
+
+    protected Response setUserReady(String token, int gameId) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId)
+                .when()
+                .post(URL_SET_USER_READY);
+    }
+
+    protected Response setUserNotReady(String token, int gameId) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId)
+                .when()
+                .post(URL_SET_USER_NOT_READY);
     }
 }
