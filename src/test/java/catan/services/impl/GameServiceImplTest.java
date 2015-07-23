@@ -125,7 +125,7 @@ public class GameServiceImplTest {
         assertNotNull(game.getGameUsers());
         assertEquals(1, game.getGameUsers().size());
         assertEquals(user, game.getGameUsers().iterator().next().getUser());
-        assertTrue(game.getTargetVictoryPoints() >= GameServiceImpl.MIN_VICTORY_POINTS);
+        assertEquals(12, game.getTargetVictoryPoints());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
-        assertTrue(games.get(0).getTargetVictoryPoints() >= GameServiceImpl.MIN_VICTORY_POINTS);
+        assertEquals(12, games.get(0).getTargetVictoryPoints());
         assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
@@ -191,7 +191,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
-        assertTrue(games.get(1).getTargetVictoryPoints() >= GameServiceImpl.MIN_VICTORY_POINTS);
+        assertEquals(12, games.get(1).getTargetVictoryPoints());
         assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
@@ -245,7 +245,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
-        assertTrue(games.get(0).getTargetVictoryPoints() >= GameServiceImpl.MIN_VICTORY_POINTS);
+        assertEquals(12, games.get(0).getTargetVictoryPoints());
         assertEquals(user1, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
@@ -263,8 +263,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
-        assertTrue(games.get(1).getTargetVictoryPoints() >= GameServiceImpl.MIN_VICTORY_POINTS);
-
+        assertEquals(12, games.get(1).getTargetVictoryPoints());
         assertEquals(user2, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
