@@ -21,6 +21,7 @@ public class CreateGameTest extends GameTestUtil {
 
     public static final String USER_NAME_1 = "user1_CreateGameTest";
     public static final String USER_PASSWORD_1 = "password1";
+    public static final int MIN_TARGET_VICTORY_POINTS = 2;
 
     private static boolean initialized = false;
 
@@ -37,7 +38,7 @@ public class CreateGameTest extends GameTestUtil {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int userId = getUserId(userToken);
 
-        createNewGame(userToken, true)
+        createNewGame(userToken, true, 99)
                 .then()
                 .statusCode(200)
                 .contentType(ACCEPT_CONTENT_TYPE)
@@ -50,9 +51,10 @@ public class CreateGameTest extends GameTestUtil {
                         greaterThan(System.currentTimeMillis() - 60000))
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
+                .body("targetVictoryPoints", equalTo(99))
                 //.body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
                 //.body("maxUsers", equalTo(GameServiceImpl.MAX_USERS))
-                .body("gameUsers", not(equalTo(isEmptyString())));
+                .body("gameUsers", not(equalTo(isEmptyString()))); // wtf?
     }
 
     @Test
@@ -99,6 +101,16 @@ public class CreateGameTest extends GameTestUtil {
         createNewGame(userToken, true)
                 .then()
                 .statusCode(403);
+    }
+
+    @Test
+    public void should_fail_when_target_victory_points_fewer_than_min() {
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+
+        createNewGame(userToken, false, MIN_TARGET_VICTORY_POINTS - 1)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
     }
 
 }
