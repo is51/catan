@@ -50,9 +50,9 @@ public class ViewGameTest extends GameTestUtil {
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
-                .body("gameUsers.user.id", hasItems(userId))
-                .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
+                .body("gameUsers.user.id", hasItems(userId));
+                //.body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
+                //.body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
     }
 
     @Test
@@ -80,9 +80,9 @@ public class ViewGameTest extends GameTestUtil {
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
-                .body("gameUsers.user.id", hasItems(userId1, userId2))
-                .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
+                .body("gameUsers.user.id", hasItems(userId1, userId2));
+                //.body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
+                //.body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
     }
 
     @Test

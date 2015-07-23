@@ -50,8 +50,8 @@ public class CreateGameTest extends GameTestUtil {
                         greaterThan(System.currentTimeMillis() - 60000))
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
-                .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS))
+                //.body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
+                //.body("maxUsers", equalTo(GameServiceImpl.MAX_USERS))
                 .body("gameUsers", not(equalTo(isEmptyString())));
     }
 
@@ -87,7 +87,7 @@ public class CreateGameTest extends GameTestUtil {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("privateGame", true) // 'privateGame' is mandatory, 'token' is not mandatory
+                .parameters("privateGame", true, "targetVictoryPoints", DEFAULT_TARGET_VICTORY_POINTS) // 'privateGame' is mandatory, 'token' is not mandatory
                 .when()
                 .post(URL_CREATE_NEW_GAME)
                 .then()
@@ -96,12 +96,7 @@ public class CreateGameTest extends GameTestUtil {
         logoutUser(userToken);
 
         // with old token
-        given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", userToken, "privateGame", true)
-                .when()
-                .post(URL_CREATE_NEW_GAME)
+        createNewGame(userToken, true)
                 .then()
                 .statusCode(403);
     }
