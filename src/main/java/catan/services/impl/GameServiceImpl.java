@@ -28,6 +28,7 @@ public class GameServiceImpl implements GameService {
 
     public static final int MIN_USERS = 3;
     public static final int MAX_USERS = 4;
+    public static final int MIN_VICTORY_POINTS = 2;
 
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String GAME_ALREADY_STARTED_ERROR = "GAME_ALREADY_STARTED";
@@ -45,15 +46,23 @@ public class GameServiceImpl implements GameService {
     PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
 
     @Override
-    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, int targetVictoryPoints) throws GameException {
-        log.debug(">> Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + targetVictoryPoints + " ...");
+    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
+        log.debug(">> Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + inputTargetVictoryPoints + " ...");
         if (creator == null) {
             log.debug("<< Cannot create new game due to creator is empty");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        if (targetVictoryPoints < 2) {
-            log.debug("<< Cannot create game with less than 2 victory points");
+        int targetVictoryPoints;
+        try {
+            targetVictoryPoints = Integer.parseInt(inputTargetVictoryPoints);
+        } catch (Exception e) {
+            log.debug("<< Cannot create game with non-integer format of victory points");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        if (targetVictoryPoints < MIN_VICTORY_POINTS) {
+            log.debug("<< Cannot create game with less than " + MIN_VICTORY_POINTS + " victory points");
             throw new GameException(NOT_ENOUGH_VICTORY_POINTS_ERROR);
         }
 
