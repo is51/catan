@@ -161,8 +161,8 @@ public class ListGameTest extends GameTestUtil {
         assertFalse("Game should be public", firstGameDetails.isPrivateGame());
         assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
                 firstGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
-        assertThat("Min users should be filled up", firstGameDetails.getMinUsers(), equalTo(GameServiceImpl.MIN_USERS));
-        assertThat("Max users should be filled up", firstGameDetails.getMaxUsers(), equalTo(GameServiceImpl.MAX_USERS));
+        assertThat("Min users should be filled up", firstGameDetails.getMinPlayers(), equalTo(GameServiceImpl.MIN_USERS));
+        assertThat("Max users should be filled up", firstGameDetails.getMaxPlayers(), equalTo(GameServiceImpl.MAX_USERS));
 
         //Assert second game details
         assertThat("Game Id should be greater than 0", secondGameDetails.getGameId(), greaterThan(0));
@@ -170,8 +170,8 @@ public class ListGameTest extends GameTestUtil {
         assertFalse("Game should be public", secondGameDetails.isPrivateGame());
         assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
                 secondGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
-        assertThat("Min users should be filled up", secondGameDetails.getMinUsers(), equalTo(GameServiceImpl.MIN_USERS));
-        assertThat("Max users should be filled up", secondGameDetails.getMaxUsers(), equalTo(GameServiceImpl.MAX_USERS));
+        assertThat("Min users should be filled up", secondGameDetails.getMinPlayers(), equalTo(GameServiceImpl.MIN_USERS));
+        assertThat("Max users should be filled up", secondGameDetails.getMaxPlayers(), equalTo(GameServiceImpl.MAX_USERS));
 
     }
 

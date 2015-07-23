@@ -12,8 +12,8 @@ public class GameDetails {
     private long dateCreated;
     private String status;
     private List<GameUserDetails> gameUsers;
-    private int minUsers;
-    private int maxUsers;
+    private int minPlayers;
+    private int maxPlayers;
     private int targetVictoryPoints;
 
     public GameDetails() {
@@ -27,8 +27,8 @@ public class GameDetails {
         this.dateCreated = game.getDateCreated().getTime();
         this.status = game.getStatus().toString();
         this.gameUsers = game.getGameUserDetails();
-        this.minUsers = game.getMinUsers();
-        this.maxUsers = game.getMaxUsers();
+        this.minPlayers = game.getMinUsers();
+        this.maxPlayers = game.getMaxUsers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
     }
 
@@ -88,20 +88,20 @@ public class GameDetails {
         this.gameUsers = gameUsers;
     }
 
-    public int getMinUsers() {
-        return minUsers;
+    public int getMinPlayers() {
+        return minPlayers;
     }
 
-    public void setMinUsers(int minUsers) {
-        this.minUsers = minUsers;
+    public void setMinPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
     }
 
-    public int getMaxUsers() {
-        return maxUsers;
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
-    public void setMaxUsers(int maxUsers) {
-        this.maxUsers = maxUsers;
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
     }
 
     public int getTargetVictoryPoints() {
