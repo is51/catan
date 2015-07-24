@@ -1,12 +1,12 @@
 package catan.domain.model.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import javax.persistence.*;
+
+import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "USER_SESSION", uniqueConstraints = {
@@ -47,27 +47,28 @@ public class UserSessionBean {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserSessionBean)) return false;
+        if (!(o instanceof UserSessionBean)) {
+            return false;
+        }
 
-        UserSessionBean that = (UserSessionBean) o;
+        final UserSessionBean other = (UserSessionBean) o;
 
-        if (token != null ? !token.equals(that.token) : that.token != null) return false;
-        if (user != null ? !user.equals(that.user) : that.user != null) return false;
-
-        return true;
+        return new EqualsBuilder()
+                .append(token, other.token)
+                .append(user, other.user)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return token != null ? token.hashCode() : 0;
+        return new HashCodeBuilder()
+                .append(token)
+                .append(user)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return "UserSessionBean{" +
-                "token='" + token + '\'' +
-                ", userId=" + (user == null ? "" : user.getId()) +
-                '}';
+        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 }

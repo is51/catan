@@ -7,44 +7,37 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
 import catan.services.RandomValeGeneratorMock;
-import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class GameServiceImplTest {
     public static final String USER_NAME1 = "userName1";
     public static final String PASSWORD1 = "12345";
     public static final String PASSWORD2 = "67890";
 
-    GameDao gameDao;
-    GameServiceImpl gameService;
-    private RandomValeGeneratorMock rvg;
+    @Mock
+    private GameDao gameDao;
+    @InjectMocks
+    private GameServiceImpl gameService;
+
+    private RandomValeGeneratorMock rvg = new RandomValeGeneratorMock();
 
     @Before
     public void setUp() {
-        gameDao = createMock(GameDao.class);
-
-        rvg = new RandomValeGeneratorMock();
-
-        gameService = new GameServiceImpl();
-        gameService.setGameDao(gameDao);
         gameService.getPrivateCodeUtil().setRvg(rvg);
     }
 
@@ -83,34 +76,26 @@ public class GameServiceImplTest {
         rvg.setNextGeneratedValue(0.4);
         rvg.setNextGeneratedValue(0.8254);
 
+        ArgumentCaptor<GameBean> gameBeanArgumentCaptor = ArgumentCaptor.forClass(GameBean.class);
+
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
         ArrayList<String> usedPrivateCodes = new ArrayList<String>();
         usedPrivateCodes.add("KP8428");
 
-        expect(gameDao.getUsedActiveGamePrivateCodes()).andStubReturn(usedPrivateCodes);
-        gameDao.addNewGameUser(anyObject(GameUserBean.class));
-        expectLastCall();
-
-        gameDao.addNewGame(anyObject(GameBean.class));
-        expectLastCall().andAnswer(new IAnswer() {
-            public Object answer() { // mock inner behavior of addNewGame method
-                GameBean arg1 = (GameBean) getCurrentArguments()[0];
-                arg1.setGameId(1);
-
-                return null;
-            }
-        });
-        replay(gameDao);
+        when(gameDao.getUsedActiveGamePrivateCodes()).thenReturn(usedPrivateCodes);
 
         // WHEN
         GameBean game = gameService.createNewGame(user, true, "12");
 
         // THEN
+        verify(gameDao, times(1)).addNewGameUser(any(GameUserBean.class));
+        verify(gameDao, times(1)).addNewGame(gameBeanArgumentCaptor.capture());
+
         assertNotNull(game);
         assertNotNull(game.getGameId());
-        assertTrue(game.getGameId() > 0);
+        assertEquals(game.getGameId(), gameBeanArgumentCaptor.getValue().getGameId());
         assertNotNull(game.getCreator());
         assertEquals(user, game.getCreator());
         assertTrue(game.isPrivateGame());
@@ -149,8 +134,7 @@ public class GameServiceImplTest {
         expectedGames.add(game1);
         expectedGames.add(game2);
 
-        expect(gameDao.getGamesWithJoinedUser(user.getId())).andStubReturn(expectedGames);
-        replay(gameDao);
+        when(gameDao.getGamesWithJoinedUser(user.getId())).thenReturn(expectedGames);
 
         // WHEN
         List<GameBean> games = gameService.getListOfGamesWithJoinedUser(user);
@@ -221,8 +205,7 @@ public class GameServiceImplTest {
         expectedGames.add(game1);
         expectedGames.add(game2);
 
-        expect(gameDao.getAllNewPublicGames()).andStubReturn(expectedGames);
-        replay(gameDao);
+        when(gameDao.getAllNewPublicGames()).thenReturn(expectedGames);
 
         // WHEN
         List<GameBean> games = gameService.getListOfAllPublicGames();
@@ -267,5 +250,72 @@ public class GameServiceImplTest {
         assertEquals(user2, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
+    }
+
+    @Test
+    public void testSetReadyStatusSuccess() throws Exception {
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        game.setGameId(1);
+        game.getGameUsers().add(new GameUserBean(user, 1));
+
+        ArgumentCaptor<GameUserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(GameUserBean.class);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        gameService.readyForGame(user, "1", true);
+
+        verify(gameDao, times(1)).updateGameUserBean(gameUserBeanCaptor.capture());
+
+        GameUserBean gameBean = gameUserBeanCaptor.getValue();
+        assertEquals(gameBean.getUser(), user);
+        assertEquals(gameBean.isReady(), true);
+    }
+
+    @Test
+    public void testUnsetReadyStatusSuccess() throws Exception {
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        game.setGameId(1);
+        game.getGameUsers().add(new GameUserBean(user, 1));
+
+        ArgumentCaptor<GameUserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(GameUserBean.class);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        gameService.readyForGame(user, "1", false);
+
+        verify(gameDao, times(1)).updateGameUserBean(gameUserBeanCaptor.capture());
+
+        GameUserBean gameBean = gameUserBeanCaptor.getValue();
+        assertEquals(gameBean.getUser(), user);
+        assertEquals(gameBean.isReady(), false);
+    }
+
+    @Test(expected = GameException.class)
+    public void testSetReadyStatus_UserHaventJoinedGame() throws Exception {
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        game.setGameId(1);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        gameService.readyForGame(user, "1", true);
+    }
+
+    @Test(expected = GameException.class)
+    public void testSetReadyStatus_GameAlreadyStarted() throws Exception {
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, 12);
+        game.setGameId(1);
+        game.getGameUsers().add(new GameUserBean(user, 1));
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        gameService.readyForGame(user, "1", true);
     }
 }

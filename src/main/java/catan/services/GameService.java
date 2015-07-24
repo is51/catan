@@ -20,4 +20,6 @@ public interface GameService {
     void leaveGame(UserBean user, String gameId) throws GameException;
 
     void cancelGame(UserBean user, String gameId) throws GameException;
+
+    void readyForGame(UserBean user, String gameId, boolean readyForGame) throws GameException;
 }

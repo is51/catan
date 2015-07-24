@@ -2,9 +2,14 @@ package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.GameUserDetails;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import java.util.*;
+
+import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "GAME")
@@ -149,52 +154,43 @@ public class GameBean {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof GameBean)) return false;
-
-        GameBean gameBean = (GameBean) o;
-
-        if (gameId != gameBean.gameId) return false;
-        if (maxUsers != gameBean.maxUsers) return false;
-        if (minUsers != gameBean.minUsers) return false;
-        if (privateGame != gameBean.privateGame) return false;
-        if (creator != null ? !creator.equals(gameBean.creator) : gameBean.creator != null) return false;
-        if (dateCreated != null ? !dateCreated.equals(gameBean.dateCreated) : gameBean.dateCreated != null)
+        if (!(o instanceof GameBean)) {
             return false;
-        if (gameUsers != null ? !gameUsers.equals(gameBean.gameUsers) : gameBean.gameUsers != null) return false;
-        if (status != gameBean.status) return false;
-        if (targetVictoryPoints != gameBean.targetVictoryPoints) return false;
+        }
 
-        return true;
+        final GameBean other = (GameBean) o;
+
+        return new EqualsBuilder()
+                .append(gameId, other.gameId)
+                .append(creator, other.creator)
+                .append(privateGame, other.privateGame)
+                .append(privateCode, other.privateCode)
+                .append(dateCreated, other.dateCreated)
+                .append(status, other.status)
+                .append(minUsers, other.minUsers)
+                .append(maxUsers, other.maxUsers)
+                .append(targetVictoryPoints, other.targetVictoryPoints)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = gameId;
-        result = 31 * result + (creator != null ? creator.hashCode() : 0);
-        result = 31 * result + (privateGame ? 1 : 0);
-        result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + minUsers;
-        result = 31 * result + maxUsers;
-        result = 31 * result + (gameUsers != null ? gameUsers.hashCode() : 0);
-        result = 31 * result + targetVictoryPoints;
-        return result;
+        return new HashCodeBuilder()
+                .append(gameId)
+                .append(creator)
+                .append(privateGame)
+                .append(privateCode)
+                .append(dateCreated)
+                .append(status)
+                .append(minUsers)
+                .append(maxUsers)
+                .append(targetVictoryPoints)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return "GameBean{" +
-                "gameId=" + gameId +
-                ", creator=" + creator +
-                ", privateGame=" + privateGame +
-                ", dateCreated=" + dateCreated +
-                ", status=" + status +
-                ", minUsers=" + minUsers +
-                ", maxUsers=" + maxUsers +
-                ", gameUsers=" + gameUsers +
-                ", targetVictoryPoints=" + targetVictoryPoints +
-                '}';
+        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
     public List<GameUserDetails> getGameUserDetails() {
