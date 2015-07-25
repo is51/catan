@@ -7,10 +7,10 @@
     Or apply somehow this interceptor to Remote requests
 
     2
-    TODO: Get ng-route and ng-cookie for angular 1.3
+    TODO: Don't forget about "loading..."
 
     3
-    TODO: Don't forget about "loading..."
+    TODO: Refactor RemoteProvider - add "return this" for not using name of class in every line in config
 -->
 
 <html lang="en" ng-app="catan">
@@ -21,47 +21,41 @@
     <title>IT Catan</title>
     <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css"/>
 
-    <link rel="stylesheet" href="features/loginForm/ct-login-form.css"/>
-    <link rel="stylesheet" href="features/registerForm/ct-register-form.css"/>
-    <link rel="stylesheet" href="features/createGameForm/ct-create-game-form.css"/>
-    <link rel="stylesheet" href="features/currentGamesList/ct-current-games-list.css"/>
-    <link rel="stylesheet" href="features/publicGamesList/ct-public-games-list.css"/>
-    <link rel="stylesheet" href="features/playersList/ct-players-list.css"/>
-    <link rel="stylesheet" href="features/joinPrivateGameForm/ct-join-private-game-form.css"/>
+    <link rel="stylesheet" href="features/shared/styles/common.css"/>
+    <link rel="stylesheet" href="features/shared/directives/gamesList/ct-games-list.css"/>
+    <link rel="stylesheet" href="features/shared/directives/playersList/ct-players-list.css"/>
 
     <link rel="shortcut icon" href="/favicon.ico">
 
 </head>
 <body>
 
-    <ng-view></ng-view>
+    <div class="logo">Itinizators</div>
+
+    <ui-view></ui-view>
 
     <script src="vendor/jquery/jquery-2.1.0.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="vendor/angular/angular.min.js"></script>
-    <script src="vendor/angular/angular-route.min.js"></script>
-    <script src="vendor/angular/angular-cookies.min.js"></script>
+    <script src="vendor/angular/angular-ui-router.min.js"></script>
 
     <script src="app.js"></script>
 
-    <script src="features/startPage/StartPage.controller.js"></script>
-    <script src="features/auth/Auth.service.js"></script>
-    <script src="features/auth/AuthInterceptor.service.js"></script>
-    <script src="features/auth/AuthToken.service.js"></script>
-    <script src="features/user/User.service.js"></script>
-    <script src="features/remote/Remote.service.js"></script>
-    <script src="features/loginForm/ct-login-form.js"></script>
-    <script src="features/registerForm/ct-register-form.js"></script>
-    <script src="features/logoutButton/ct-logout-button.js"></script>
-    <script src="features/createGameForm/ct-create-game-form.js"></script>
-    <script src="features/currentGamesList/ct-current-games-list.js"></script>
-    <script src="features/publicGamesList/ct-public-games-list.js"></script>
-    <script src="features/playersList/ct-players-list.js"></script>
-    <script src="features/joinPublicGameButton/ct-join-public-game-button.js"></script>
-    <script src="features/joinPrivateGameForm/ct-join-private-game-form.js"></script>
-    <script src="features/gamePage/gamePage.controller.js"></script>
-    <script src="features/leaveGameButton/ct-leave-game-button.js"></script>
-    <script src="features/cancelGameButton/ct-cancel-game-button.js"></script>
+    <script src="features/shared/services/auth/Auth.service.js"></script>
+    <script src="features/shared/services/auth/AuthInterceptor.service.js"></script>
+    <script src="features/shared/services/auth/AuthToken.service.js"></script>
+    <script src="features/shared/services/User.service.js"></script>
+    <script src="features/shared/services/Remote.service.js"></script>
+    <script src="features/shared/directives/playersList/ct-players-list.js"></script>
+    <script src="features/shared/directives/gamesList/ct-games-list.js"></script>
+    <script src="features/shared/directives/ct-join-public-game-button.js"></script>
+    <script src="features/screens/login/loginForm/ct-login-form.js"></script>
+    <script src="features/screens/register/registerForm/ct-register-form.js"></script>
+    <script src="features/screens/start/ct-logout-button.js"></script>
+    <script src="features/screens/createGame/createGameForm/ct-create-game-form.js"></script>
+    <script src="features/screens/joinPrivateGame/joinPrivateGameForm/ct-join-private-game-form.js"></script>
+    <script src="features/screens/game/Game.controller.js"></script>
+    <script src="features/screens/game/ct-leave-game-button.js"></script>
+    <script src="features/screens/game/ct-cancel-game-button.js"></script>
 
 </body>
 </html>

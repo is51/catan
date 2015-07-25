@@ -10,14 +10,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,6 +20,7 @@ public class CreateGameTest extends GameTestUtil {
 
     public static final String USER_NAME_1 = "user1_CreateGameTest";
     public static final String USER_PASSWORD_1 = "password1";
+    public static final int MIN_TARGET_VICTORY_POINTS = 2;
 
     private static boolean initialized = false;
 
@@ -43,7 +37,7 @@ public class CreateGameTest extends GameTestUtil {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int userId = getUserId(userToken);
 
-        createNewGame(userToken, true)
+        createNewGame(userToken, true, 99)
                 .then()
                 .statusCode(200)
                 .contentType(ACCEPT_CONTENT_TYPE)
@@ -55,7 +49,12 @@ public class CreateGameTest extends GameTestUtil {
                 .body("dateCreated", is(both(   //closeTo can be applied only to 'double' values, but dateCreated is 'long' value
                         greaterThan(System.currentTimeMillis() - 60000))
                         .and(
-                                lessThanOrEqualTo(System.currentTimeMillis()))));
+                                lessThanOrEqualTo(System.currentTimeMillis()))))
+                .body("targetVictoryPoints", equalTo(99))
+                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
+                .body("dateStarted", equalTo(0))
+                .body("gameUsers", not(equalTo(isEmptyString()))); // wtf?
     }
 
     @Test
@@ -90,7 +89,7 @@ public class CreateGameTest extends GameTestUtil {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("privateGame", true) // 'privateGame' is mandatory, 'token' is not mandatory
+                .parameters("privateGame", true, "targetVictoryPoints", DEFAULT_TARGET_VICTORY_POINTS) // 'privateGame' is mandatory, 'token' is not mandatory
                 .when()
                 .post(URL_CREATE_NEW_GAME)
                 .then()
@@ -99,18 +98,19 @@ public class CreateGameTest extends GameTestUtil {
         logoutUser(userToken);
 
         // with old token
-        given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", userToken, "privateGame", true)
-                .when()
-                .post(URL_CREATE_NEW_GAME)
+        createNewGame(userToken, true)
                 .then()
                 .statusCode(403);
     }
 
-    /*@Test
-    public void should_creator_be_added_to_game_as_player() {
-        //TODO: should_creator_be_added_to_game_as_player
-    }*/
+    @Test
+    public void should_fail_when_target_victory_points_fewer_than_min() {
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+
+        createNewGame(userToken, false, MIN_TARGET_VICTORY_POINTS - 1)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
 }

@@ -7,7 +7,7 @@ import catan.exception.GameException;
 import java.util.List;
 
 public interface GameService {
-    GameBean createNewGame(UserBean creator, boolean privateGame) throws GameException;
+    GameBean createNewGame(UserBean creator, boolean privateGame, String targetVictoryPoints) throws GameException;
 
     List<GameBean> getListOfGamesWithJoinedUser(UserBean user) throws GameException;
 
@@ -20,4 +20,6 @@ public interface GameService {
     void leaveGame(UserBean user, String gameId) throws GameException;
 
     void cancelGame(UserBean user, String gameId) throws GameException;
+
+    void readyForGame(UserBean user, String gameId, boolean readyForGame) throws GameException;
 }

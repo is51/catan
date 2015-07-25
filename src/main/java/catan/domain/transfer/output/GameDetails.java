@@ -1,5 +1,7 @@
 package catan.domain.transfer.output;
 
+import catan.domain.model.game.GameBean;
+
 import java.util.List;
 
 public class GameDetails {
@@ -10,18 +12,24 @@ public class GameDetails {
     private long dateCreated;
     private String status;
     private List<GameUserDetails> gameUsers;
+    private int minPlayers;
+    private int maxPlayers;
+    private int targetVictoryPoints;
 
     public GameDetails() {
     }
 
-    public GameDetails(int gameId, int creatorId, boolean privateGame, String privateCode, long dateCreated, String status, List<GameUserDetails> gameUsers) {
-        this.gameId = gameId;
-        this.creatorId = creatorId;
-        this.privateGame = privateGame;
-        this.privateCode = privateCode;
-        this.dateCreated = dateCreated;
-        this.status = status;
-        this.gameUsers = gameUsers;
+    public GameDetails(GameBean game) {
+        this.gameId = game.getGameId();
+        this.creatorId = game.getCreator().getId();
+        this.privateGame = game.isPrivateGame();
+        this.privateCode = game.isPrivateGame() ? game.getPrivateCode() : null;
+        this.dateCreated = game.getDateCreated().getTime();
+        this.status = game.getStatus().toString();
+        this.gameUsers = game.getGameUserDetails();
+        this.minPlayers = game.getMinUsers();
+        this.maxPlayers = game.getMaxUsers();
+        this.targetVictoryPoints = game.getTargetVictoryPoints();
     }
 
     public int getGameId() {
@@ -78,5 +86,29 @@ public class GameDetails {
 
     public void setGameUsers(List<GameUserDetails> gameUsers) {
         this.gameUsers = gameUsers;
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
+    }
+
+    public void setMinPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public int getTargetVictoryPoints() {
+        return targetVictoryPoints;
+    }
+
+    public void setTargetVictoryPoints(int targetVictoryPoints) {
+        this.targetVictoryPoints = targetVictoryPoints;
     }
 }

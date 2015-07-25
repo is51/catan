@@ -23,4 +23,6 @@ public interface GameDao {
     List<String> getUsedActiveGamePrivateCodes();
 
     void updateGame(GameBean game);
+
+    void updateGameUserBean(GameUserBean gameUserBean);
 }

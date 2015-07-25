@@ -1,6 +1,7 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
+import catan.services.impl.GameServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,14 +9,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -56,7 +50,10 @@ public class ViewGameTest extends GameTestUtil {
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
-                .body("gameUsers.user.id", hasItems(userId));
+                .body("gameUsers.user.id", hasItems(userId))
+                .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
+                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
     }
 
     @Test
@@ -84,7 +81,10 @@ public class ViewGameTest extends GameTestUtil {
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
-                .body("gameUsers.user.id", hasItems(userId1, userId2));
+                .body("gameUsers.user.id", hasItems(userId1, userId2))
+                .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
+                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
     }
 
     @Test
