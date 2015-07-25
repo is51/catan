@@ -27,6 +27,9 @@ public class JoinGameTest extends GameTestUtil {
     public static final String USER_NAME_5 = "user5_JoinGameTest";
     public static final String USER_PASSWORD_5 = "password5";
 
+    public static final String USER_NAME_GUEST_1 = "guest1_JoinGameTest";
+    public static final String USER_NAME_GUEST_2 = "guest2_JoinGameTest";
+
     private static boolean initialized = false;
 
     @Before
@@ -48,6 +51,20 @@ public class JoinGameTest extends GameTestUtil {
                 .path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        joinPublicGame(userToken2, gameId)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void should_guest_successfully_join_public_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        String userToken2 = registerAndLoginGuest(USER_NAME_GUEST_1)
+                .path("token");
 
         joinPublicGame(userToken2, gameId)
                 .then()
@@ -143,6 +160,19 @@ public class JoinGameTest extends GameTestUtil {
                 .path("privateCode");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+
+        joinPrivateGame(userToken2, privateCode)
+                .then()
+                .statusCode(200);
+    }
+
+    public void should_guest_successfully_join_private_game() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String privateCode = createNewGame(userToken1, true)
+                .path("privateCode");
+
+        String userToken2 = registerAndLoginGuest(USER_NAME_GUEST_2)
+                .path("token");
 
         joinPrivateGame(userToken2, privateCode)
                 .then()

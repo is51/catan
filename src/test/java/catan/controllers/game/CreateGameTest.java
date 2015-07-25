@@ -27,6 +27,8 @@ public class CreateGameTest extends GameTestUtil {
 
     public static final String USER_NAME_1 = "user1_CreateGameTest";
     public static final String USER_PASSWORD_1 = "password1";
+    public static final String USER_NAME_GUEST_1 = "guest1_CreateGameTest";
+    public static final String USER_NAME_GUEST_2 = "guest2_CreateGameTest";
 
     private static boolean initialized = false;
 
@@ -59,6 +61,16 @@ public class CreateGameTest extends GameTestUtil {
     }
 
     @Test
+    public void should_guest_successfully_create_new_private_game() {
+        String userToken = registerAndLoginGuest(USER_NAME_GUEST_1)
+                .path("token");
+
+        createNewGame(userToken, true)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
     public void should_successfully_create_new_public_game() {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
@@ -66,6 +78,17 @@ public class CreateGameTest extends GameTestUtil {
                 .then()
                 .statusCode(200)
                 .body("privateCode", isEmptyOrNullString());
+    }
+
+    @Test
+    public void should_fail_when_create_new_public_game_if_creator_is_guest() {
+        String userToken = registerAndLoginGuest(USER_NAME_GUEST_2)
+                .path("token");
+
+        createNewGame(userToken, false)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("USER_IS_TEMPORARY"));
     }
 
     @Test
