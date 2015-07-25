@@ -92,7 +92,6 @@ public class GameServiceImplTest {
 
         ArgumentCaptor<GameBean> gameBeanArgumentCaptor = ArgumentCaptor.forClass(GameBean.class);
 
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
@@ -135,7 +134,7 @@ public class GameServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1, true);
 
             // WHEN
-            GameBean game = gameService.createNewGame(user, false);
+            GameBean game = gameService.createNewGame(user, false, "12");
 
             fail("GameException with error code '" + GameServiceImpl.USER_IS_TEMPORARY_ERROR + "' should be thrown, but returned game " + game);
         } catch (GameException e) {
@@ -287,7 +286,7 @@ public class GameServiceImplTest {
 
     @Test
     public void testSetReadyStatusSuccess() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
@@ -308,7 +307,7 @@ public class GameServiceImplTest {
 
     @Test
     public void testUnsetReadyStatusSuccess() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
@@ -329,7 +328,7 @@ public class GameServiceImplTest {
 
     @Test(expected = GameException.class)
     public void testSetReadyStatus_UserHaventJoinedGame() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
@@ -341,7 +340,7 @@ public class GameServiceImplTest {
 
     @Test(expected = GameException.class)
     public void testSetReadyStatus_GameAlreadyStarted() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, 12);
         game.setGameId(1);

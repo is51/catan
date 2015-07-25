@@ -320,7 +320,7 @@ public class GameServiceImpl implements GameService {
                 targetVictoryPoints);
     }
 
-    private GameBean createPublicGame(UserBean creator, int targetVictoryPoints) {
+    private GameBean createPublicGame(UserBean creator, int targetVictoryPoints) throws GameException {
         if (creator.isGuest()) {
             log.debug("<< Temporary user cannot create new public games");
             throw new GameException(USER_IS_TEMPORARY_ERROR);
