@@ -55,7 +55,7 @@ public class CreateGameTest extends GameTestUtil {
                 .body("targetVictoryPoints", equalTo(99))
                 .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
                 .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
-                .body("dateStarted", equalTo(0))
+                .body("dateStarted", equalTo(null))
                 .body("gameUsers", not(equalTo(isEmptyString()))); // wtf?
     }
 
