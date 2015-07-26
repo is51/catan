@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import com.jayway.restassured.response.Response;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
@@ -156,14 +157,17 @@ public class JoinGameTest extends GameTestUtil {
     @Test
     public void should_successfully_join_private_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        String privateCode = createNewGame(userToken1, true)
-                .path("privateCode");
+
+        Response response = createNewGame(userToken1, true);
+        int gameId = response.path("gameId");
+        String privateCode = response.path("privateCode");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
         joinPrivateGame(userToken2, privateCode)
                 .then()
-                .statusCode(200);
+                .statusCode(200)
+                .body("gameId", equalTo(gameId));
     }
 
     public void should_guest_successfully_join_private_game() {
