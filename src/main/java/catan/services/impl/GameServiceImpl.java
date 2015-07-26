@@ -29,7 +29,7 @@ public class GameServiceImpl implements GameService {
 
     public static final int MIN_USERS = 3;
     public static final int MAX_USERS = 4;
-    public static final int MIN_VICTORY_POINTS = 2;
+    public static final int MIN_TARGET_VICTORY_POINTS = 2;
 
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String GAME_ALREADY_STARTED_ERROR = "GAME_ALREADY_STARTED";
@@ -62,8 +62,8 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        if (targetVictoryPoints < MIN_VICTORY_POINTS) {
-            log.debug("<< Cannot create game with less than " + MIN_VICTORY_POINTS + " victory points");
+        if (targetVictoryPoints < MIN_TARGET_VICTORY_POINTS) {
+            log.debug("<< Cannot create game with less than " + MIN_TARGET_VICTORY_POINTS + " victory points");
             throw new GameException(ERROR_CODE_ERROR);
         }
 

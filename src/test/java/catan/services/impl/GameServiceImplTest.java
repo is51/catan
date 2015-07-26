@@ -29,6 +29,8 @@ public class GameServiceImplTest {
     public static final String PASSWORD1 = "12345";
     public static final String PASSWORD2 = "67890";
 
+    public static final int DEFAULT_TARGET_VICTORY_POINTS = 12;
+
     @Mock
     private GameDao gameDao;
     @InjectMocks
@@ -87,7 +89,7 @@ public class GameServiceImplTest {
         when(gameDao.getUsedActiveGamePrivateCodes()).thenReturn(usedPrivateCodes);
 
         // WHEN
-        GameBean game = gameService.createNewGame(user, true, "12");
+        GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS));
 
         // THEN
         verify(gameDao, times(1)).addNewGameUser(any(GameUserBean.class));
@@ -110,7 +112,7 @@ public class GameServiceImplTest {
         assertNotNull(game.getGameUsers());
         assertEquals(1, game.getGameUsers().size());
         assertEquals(user, game.getGameUsers().iterator().next().getUser());
-        assertEquals(12, game.getTargetVictoryPoints());
+        assertEquals(DEFAULT_TARGET_VICTORY_POINTS, game.getTargetVictoryPoints());
     }
 
     @Test
@@ -119,10 +121,10 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user, 1);
@@ -157,7 +159,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
-        assertEquals(12, games.get(0).getTargetVictoryPoints());
+        assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(0).getTargetVictoryPoints());
         assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
@@ -175,7 +177,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
-        assertEquals(12, games.get(1).getTargetVictoryPoints());
+        assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(1).getTargetVictoryPoints());
         assertEquals(user, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
@@ -190,10 +192,10 @@ public class GameServiceImplTest {
         UserBean user2 = new UserBean(USER_NAME1, PASSWORD1);
         user2.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user1, 1);
@@ -228,7 +230,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
-        assertEquals(12, games.get(0).getTargetVictoryPoints());
+        assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(0).getTargetVictoryPoints());
         assertEquals(user1, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertNotNull(games.get(1));
@@ -246,7 +248,7 @@ public class GameServiceImplTest {
         assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
-        assertEquals(12, games.get(1).getTargetVictoryPoints());
+        assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(1).getTargetVictoryPoints());
         assertEquals(user2, games.get(0).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
@@ -277,7 +279,7 @@ public class GameServiceImplTest {
     public void testUnsetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game.setGameId(1);
         game.getGameUsers().add(new GameUserBean(user, 1));
 
@@ -298,7 +300,7 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_UserHaventJoinedGame() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game.setGameId(1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -310,7 +312,7 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_GameAlreadyStarted() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game.setGameId(1);
         game.getGameUsers().add(new GameUserBean(user, 1));
 
