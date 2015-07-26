@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctLoginForm', ['Auth', '$state', function(Auth, $state) {
+    .directive('ctLoginForm', ['Auth', '$state', '$stateParams', function(Auth, $state, $stateParams) {
         return {
             restrict: 'E',
             scope: {},
@@ -13,7 +13,11 @@ angular.module('catan')
                 scope.submit = function() {
                     Auth.login(scope.data.username, scope.data.password)
                         .then(function() {
-                            $state.go('start');
+                            if ($stateParams.onLogin) {
+                                $stateParams.onLogin();
+                            } else {
+                                $state.go('start');
+                            }
                         }, function(response) {
                             alert('Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });

@@ -12,7 +12,6 @@ angular.module('catan')
                 element.on('click', function() {
                     Remote.game.cancel({gameId: scope.game.gameId})
                         .then(function() {
-                            alert('Successful canceling');
                             $state.go("start");
                         }, function(response) {
                             alert('Error: ' + ((response.data && response.data.errorCode) ? response.data.errorCode : 'unknown'));

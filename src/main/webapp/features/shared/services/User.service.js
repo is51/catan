@@ -15,12 +15,16 @@ angular.module('catan')
                 return status === STATUS_AUTHORIZED;
             },
 
-            isGuest: function() {
+            isNotAuthorized: function() {
                 return status === STATUS_NOT_AUTHORIZED;
             },
 
             isPending: function() {
                 return status === STATUS_PENDING;
+            },
+
+            isTypeGuest: function() {
+                return status === STATUS_AUTHORIZED && details.guest;
             },
 
             get: function() {
