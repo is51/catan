@@ -87,7 +87,7 @@ public class CreateGameTest extends GameTestUtil {
         createNewGame(userToken, false)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("USER_IS_TEMPORARY"));
+                .body("errorCode", equalTo("GUEST_NOT_PERMITTED"));
     }
 
     @Test

@@ -6,7 +6,6 @@ import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
-import catan.exception.UserException;
 import catan.services.RandomValeGeneratorMock;
 import org.junit.After;
 import org.junit.Before;
@@ -21,20 +20,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameServiceImplTest {
@@ -136,10 +131,10 @@ public class GameServiceImplTest {
             // WHEN
             GameBean game = gameService.createNewGame(user, false, "12");
 
-            fail("GameException with error code '" + GameServiceImpl.USER_IS_TEMPORARY_ERROR + "' should be thrown, but returned game " + game);
+            fail("GameException with error code '" + GameServiceImpl.GUEST_NOT_PERMITTED_ERROR + "' should be thrown, but returned game " + game);
         } catch (GameException e) {
             // THEN
-            assertEquals(GameServiceImpl.USER_IS_TEMPORARY_ERROR, e.getErrorCode());
+            assertEquals(GameServiceImpl.GUEST_NOT_PERMITTED_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
