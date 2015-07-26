@@ -4,6 +4,9 @@ import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.domain.model.user.UserSessionBean;
 import catan.exception.UserException;
+import org.apache.http.util.Args;
+import org.easymock.Capture;
+import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +19,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +48,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void loginSuccessful() throws UserException {
+    public void loginUserSuccessful() throws UserException {
         // GIVEN
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
@@ -57,7 +61,28 @@ public class UserServiceImplTest {
         replay(userDao);
 
         // WHEN
-        String session = userService.login(USER_NAME1, PASSWORD1, false);
+        String session = userService.loginUser(USER_NAME1, PASSWORD1);
+
+        // THEN
+        assertNotNull(session);
+        assertEquals(36, session.length());
+    }
+
+    @Test
+    public void loginGuestSuccessful() throws UserException {
+        // GIVEN
+        UserBean user = new UserBean(USER_NAME1, null, true);
+        user.setId((int) System.currentTimeMillis());
+
+        expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
+        userDao.removeSessionByUser(anyObject(UserBean.class));
+        expectLastCall().atLeastOnce();
+        userDao.addNewSession(anyObject(UserSessionBean.class));
+        expectLastCall().atLeastOnce();
+        replay(userDao);
+
+        // WHEN
+        String session = userService.loginGuest(USER_NAME1);
 
         // THEN
         assertNotNull(session);
@@ -78,8 +103,8 @@ public class UserServiceImplTest {
         replay(userDao);
 
         // WHEN
-        String firstSession = userService.login(USER_NAME1, PASSWORD1, false);
-        String secondSession = userService.login(USER_NAME1, PASSWORD1, false);
+        String firstSession = userService.loginUser(USER_NAME1, PASSWORD1);
+        String secondSession = userService.loginUser(USER_NAME1, PASSWORD1);
 
         // THEN
         assertNotNull(firstSession);
@@ -91,7 +116,7 @@ public class UserServiceImplTest {
     public void loginErrorWhenPasswordIncorrect() throws UserException {
         try {
             // WHEN
-            userService.login(USER_NAME1, null, false);
+            userService.loginUser(USER_NAME1, null);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -105,7 +130,7 @@ public class UserServiceImplTest {
     public void loginErrorWhenUsernameIncorrect() throws UserException {
         try {
             // WHEN
-            userService.login(null, PASSWORD1, false);
+            userService.loginUser(null, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -123,7 +148,7 @@ public class UserServiceImplTest {
             replay(userDao);
 
             // WHEN
-            userService.login(USER_NAME1, PASSWORD1, false);
+            userService.loginUser(USER_NAME1, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -144,7 +169,28 @@ public class UserServiceImplTest {
             replay(userDao);
 
             // WHEN
-            userService.login(USER_NAME1, PASSWORD2, false);
+            userService.loginUser(USER_NAME1, PASSWORD2);
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
+        } catch (UserException e) {
+            // THEN
+            assertEquals(UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void loginUserErrorWhenUserIsGuest() throws UserException {
+        try {
+            // GIVEN
+            UserBean user = new UserBean(USER_NAME1, null, true);
+            user.setId((int) System.currentTimeMillis());
+
+            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
+            replay(userDao);
+
+            // WHEN
+            userService.loginUser(USER_NAME1, PASSWORD2);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -171,23 +217,32 @@ public class UserServiceImplTest {
     public void registerPermanentUserSuccessful() {
         try {
             // GIVEN
+            // Example FIRST of how to assert passed values in mock
+            Capture<UserBean> capturedArgs = new Capture<UserBean>();
+
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
-            userDao.addNewUser(anyObject(UserBean.class));
+            userDao.addNewUser(EasyMock.capture(capturedArgs));
             expectLastCall();
             replay(userDao);
 
             // WHEN
-            userService.register(USER_NAME1, PASSWORD1, false);
+            userService.registerUser(USER_NAME1, PASSWORD1);
+
+            UserBean user = capturedArgs.getValue();
+            assertNotNull(user);
+            assertFalse(user.isGuest());
         } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
     }
 
     @Test
-    public void registerGuestUserSuccessfulWhenPasswordIsEmpty() throws UserException {
+    public void registerGuestUserSuccessful() throws UserException {
             // GIVEN
             expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
             userDao.addNewUser(anyObject(UserBean.class));
+
+            // Example SECOND of how to assert passed values in mock
             expectLastCall().andAnswer(new IAnswer() {
                 public Object answer() { // assert parameter passed to addNewUser method
                     UserBean arg1 = (UserBean) getCurrentArguments()[0];
@@ -199,7 +254,7 @@ public class UserServiceImplTest {
             replay(userDao);
 
             // WHEN
-            userService.register(USER_NAME1, null, true);
+            userService.registerGuest(USER_NAME1);
 
             // THEN
             // no exceptions should be thrown
@@ -209,7 +264,7 @@ public class UserServiceImplTest {
     public void registerErrorWhenPasswordIncorrect() throws UserException {
         try {
             // WHEN
-            userService.register(USER_NAME1, null, false);
+            userService.registerUser(USER_NAME1, null);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -223,7 +278,7 @@ public class UserServiceImplTest {
     public void registerErrorWhenUsernameIncorrect() throws UserException {
         try {
             // WHEN
-            userService.register(null, PASSWORD1, false);
+            userService.registerUser(null, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -244,7 +299,7 @@ public class UserServiceImplTest {
             replay(userDao);
 
             // WHEN
-            userService.register(USER_NAME1, PASSWORD1, false);
+            userService.registerUser(USER_NAME1, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_USERNAME_ALREADY_EXISTS + "' should be thrown");
         } catch (UserException e) {
             // THEN

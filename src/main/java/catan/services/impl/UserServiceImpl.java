@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     UserDao userDao;
 
     @Override
-    public String login(String username, String password, boolean temporary) throws UserException {
+    public String loginUser(String username, String password) throws UserException {
         log.debug(">> Login user with username '" + username + "' ...");
 
         if (username == null || username.trim().length() == 0) {
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
             throw new UserException(ERROR_CODE_ERROR);
         }
 
-        if (!temporary && (password == null || password.trim().length() == 0)) {
+        if (password == null || password.trim().length() == 0) {
             log.debug("<< Password is empty");
             throw new UserException(ERROR_CODE_ERROR);
         }
@@ -44,23 +44,42 @@ public class UserServiceImpl implements UserService {
             throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
         }
 
-        if(!temporary && user.isGuest()){
-            log.debug("<< Trying to login temporary user '" + username + "'");
+        if(user.isGuest()){
+            log.debug("<< Trying to login guest user '" + username + "' as permanent user");
             throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
         }
 
-        if (!temporary && (!user.getPassword().equals(password))) {
+        if (!user.getPassword().equals(password)){
             log.debug("<< Password '" + password + "' doesn't match to original password of user '" + username + "'");
             throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
         }
 
-        userDao.removeSessionByUser(user);
-
-        String token = UUID.randomUUID().toString();
-        UserSessionBean userSession = new UserSessionBean(token, user);
-        userDao.addNewSession(userSession);
+        String token = allocateNewSessionTokenToUser(user);
 
         log.debug("<< User '" + username + "' successfully logged in and session '" + token + "' assigned to him");
+
+        return token;
+    }
+
+    @Override
+    public String loginGuest(String username) throws UserException {
+        log.debug(">> Login guest user with username '" + username + "' ...");
+
+        if (username == null || username.trim().length() == 0) {
+            log.debug("<< Username is empty");
+            throw new UserException(ERROR_CODE_ERROR);
+        }
+
+        UserBean user = userDao.getUserByUsername(username);
+
+        if (user == null) {
+            log.debug("<< No user found with username '" + username + "'");
+            throw new UserException(ERROR_CODE_INCORRECT_LOGIN_PASSWORD);
+        }
+
+        String token = allocateNewSessionTokenToUser(user);
+
+        log.debug("<< Guest user '" + username + "' successfully logged in and session '" + token + "' assigned to him");
 
         return token;
     }
@@ -73,29 +92,58 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(String username, String password, boolean temporary) throws UserException {
-        log.debug(">> Registering " + (temporary ? "temporary" : "permanent") + " user with username '" + username + "'");
+    public void registerUser(String username, String password) throws UserException {
+        log.debug(">> Registering user with username '" + username + "'");
 
         if (username == null || username.trim().length() == 0) {
             log.debug("<< Username is empty");
             throw new UserException(ERROR_CODE_ERROR);
         }
 
-        if (!temporary && (password == null || password.trim().length() == 0)) {
+        if (password == null || password.trim().length() == 0) {
             log.debug("<< Password cannot be empty for permanent user");
             throw new UserException(ERROR_CODE_ERROR);
         }
 
+        addNewUserIfNotExists(username, password, false);
+
+        log.debug("<< User '" + username + "' successfully registered");
+    }
+
+    @Override
+    public void registerGuest(String username) throws UserException {
+        log.debug(">> Registering guest user with username '" + username + "'");
+
+        if (username == null || username.trim().length() == 0) {
+            log.debug("<< Username is empty");
+            throw new UserException(ERROR_CODE_ERROR);
+        }
+
+        addNewUserIfNotExists(username, null, true);
+
+        log.debug("<< Guest user '" + username + "' successfully registered");
+    }
+
+    private String allocateNewSessionTokenToUser(UserBean user) {
+        userDao.removeSessionByUser(user);
+
+        String token = UUID.randomUUID().toString();
+        UserSessionBean userSession = new UserSessionBean(token, user);
+        userDao.addNewSession(userSession);
+
+        return token;
+    }
+
+    private void addNewUserIfNotExists(String username, String password, boolean guestUser) throws UserException {
         UserBean user = userDao.getUserByUsername(username);
         if (user != null) {
             log.debug("<< User '" + username + "' with such username already exists");
             throw new UserException(ERROR_CODE_USERNAME_ALREADY_EXISTS);
         }
 
-        UserBean newUser = new UserBean(username, password, temporary);
+        UserBean newUser = new UserBean(username, password, guestUser);
 
         userDao.addNewUser(newUser);
-        log.debug("<< User '" + username + "' successfully registered");
     }
 
     @Autowired
