@@ -353,7 +353,7 @@ public class GameServiceImplTest {
         gameUserBean1.setReady(true);
         GameUserBean gameUserBean2 = new GameUserBean(user, 1);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 1, 2, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 2, 4, 12);
         game.setGameId(1);
         game.getGameUsers().add(gameUserBean1);
         game.getGameUsers().add(gameUserBean2);
@@ -378,7 +378,7 @@ public class GameServiceImplTest {
         gameUserBean1.setReady(true);
         GameUserBean gameUserBean2 = new GameUserBean(user, 1);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 1, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
         game.getGameUsers().add(gameUserBean1);
         game.getGameUsers().add(gameUserBean2);

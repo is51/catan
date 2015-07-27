@@ -273,7 +273,7 @@ public class GameServiceImpl implements GameService {
     private void startGame(GameBean game) {
         log.debug("<< Checking if game {} can be started (all players is ready)", game);
 
-        if (game.getMaxPlayers() != game.getGameUsers().size()) {
+        if (game.getMinPlayers() > game.getGameUsers().size()) {
             log.info("<< There are not enough players to start game {}. " +
                     "Game will start when players count will be {}, current count is {}",
                     game, game.getMaxPlayers(), game.getGameUsers().size());
