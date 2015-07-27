@@ -4,34 +4,24 @@ import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.domain.model.user.UserSessionBean;
 import catan.exception.UserException;
-import org.apache.http.util.Args;
-import org.easymock.Capture;
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
@@ -64,7 +54,8 @@ public class UserServiceImplTest {
         assertNotNull(session);
         assertEquals(36, session.length());
 
-        verify(userDao, times(1)).allocateNewTokenToUser(anyString(), any(UserBean.class));
+        verify(userDao, times(1)).removeSessionByUser(any(UserBean.class));
+        verify(userDao, times(1)).addNewSession(any(UserSessionBean.class));
     }
 
     @Test
@@ -73,12 +64,7 @@ public class UserServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, null, true);
         user.setId((int) System.currentTimeMillis());
 
-        expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-        userDao.removeSessionByUser(anyObject(UserBean.class));
-        expectLastCall().atLeastOnce();
-        userDao.addNewSession(anyObject(UserSessionBean.class));
-        expectLastCall().atLeastOnce();
-        replay(userDao);
+        when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
         // WHEN
         String session = userService.loginGuest(USER_NAME1);
@@ -86,6 +72,9 @@ public class UserServiceImplTest {
         // THEN
         assertNotNull(session);
         assertEquals(36, session.length());
+
+        verify(userDao, times(1)).removeSessionByUser(any(UserBean.class));
+        verify(userDao, times(1)).addNewSession(any(UserSessionBean.class));
     }
 
     @Test
@@ -105,7 +94,8 @@ public class UserServiceImplTest {
         assertNotNull(secondSession);
         assertNotSame(firstSession, secondSession);
 
-        verify(userDao, times(2)).allocateNewTokenToUser(Matchers.anyString(), any(UserBean.class));
+        verify(userDao, times(2)).removeSessionByUser(any(UserBean.class));
+        verify(userDao, times(2)).addNewSession(any(UserSessionBean.class));
     }
 
     @Test
@@ -180,8 +170,8 @@ public class UserServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, null, true);
             user.setId((int) System.currentTimeMillis());
 
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
+
 
             // WHEN
             userService.loginUser(USER_NAME1, PASSWORD2);
@@ -212,42 +202,39 @@ public class UserServiceImplTest {
         try {
             // GIVEN
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
+            ArgumentCaptor<UserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(UserBean.class);
 
             // WHEN
             userService.registerUser(USER_NAME1, PASSWORD1);
 
-            UserBean user = capturedArgs.getValue();
+            // THEN
+            verify(userDao, times(1)).addNewUser(gameUserBeanCaptor.capture());
+            UserBean user = gameUserBeanCaptor.getValue();
             assertNotNull(user);
             assertFalse(user.isGuest());
         } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
-
-        verify(userDao, times(1)).addNewUser(any(UserBean.class));
     }
 
     @Test
     public void registerGuestUserSuccessful() throws UserException {
+        try {
             // GIVEN
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
-            userDao.addNewUser(anyObject(UserBean.class));
-
-            // Example SECOND of how to assert passed values in mock
-            expectLastCall().andAnswer(new IAnswer() {
-                public Object answer() { // assert parameter passed to addNewUser method
-                    UserBean arg1 = (UserBean) getCurrentArguments()[0];
-                    assertTrue(arg1.isGuest());
-
-                    return null;
-                }
-            });
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
+            ArgumentCaptor<UserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(UserBean.class);
 
             // WHEN
             userService.registerGuest(USER_NAME1);
 
             // THEN
-            // no exceptions should be thrown
+            verify(userDao, times(1)).addNewUser(gameUserBeanCaptor.capture());
+            UserBean user = gameUserBeanCaptor.getValue();
+            assertNotNull(user);
+            assertTrue(user.isGuest());
+        } catch (Exception e) {
+            fail("No exceptions should be thrown");
+        }
     }
 
     @Test

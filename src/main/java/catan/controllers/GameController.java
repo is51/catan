@@ -3,6 +3,7 @@ package catan.controllers;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.GameDetails;
+import catan.domain.transfer.output.GameIdDetails;
 import catan.exception.AuthenticationException;
 import catan.exception.GameException;
 import catan.exception.WrongPathException;
@@ -10,7 +11,11 @@ import catan.services.AuthenticationService;
 import catan.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +30,13 @@ public class GameController {
     @RequestMapping(value = "create",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public GameDetails createNewGame(@RequestParam(value = "token", required = false) String token,
-                                     @RequestParam("privateGame") boolean privateGame,
-                                     @RequestParam(value = "targetVictoryPoints") String targetVictoryPoints) throws AuthenticationException, GameException {
+    public GameIdDetails createNewGame(@RequestParam(value = "token", required = false) String token,
+                                       @RequestParam(value = "privateGame") boolean privateGame,
+                                       @RequestParam(value = "targetVictoryPoints") String targetVictoryPoints) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean createdGame = gameService.createNewGame(user, privateGame, targetVictoryPoints);
 
-        return new GameDetails(createdGame);
+        return new GameIdDetails(createdGame.getGameId());
     }
 
     @RequestMapping(value = "list/{gameListType}",
@@ -75,13 +80,12 @@ public class GameController {
     @RequestMapping(value = "join/private",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public GameDetails joinPrivateGame(@RequestParam(value = "token", required = false) String token,
-                                @RequestParam("privateCode") String privateCode) throws AuthenticationException, GameException {
+    public GameIdDetails joinPrivateGame(@RequestParam(value = "token", required = false) String token,
+                                         @RequestParam(value = "privateCode", required = true) String privateCode) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean game = gameService.joinGameByIdentifier(user, privateCode, true);
 
-        //TODO: return only gameId instead of whole object
-        return new GameDetails(game);
+        return new GameIdDetails(game.getGameId());
     }
 
     @RequestMapping(value = "details",
@@ -117,7 +121,8 @@ public class GameController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void userReady(@RequestParam(value = "token", required = false) String token,
-                          @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+                          @RequestParam("gameId") String gameId
+    ) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
         gameService.updateGameUserStatus(user, gameId, true);
     }

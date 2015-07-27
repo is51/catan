@@ -355,14 +355,14 @@ public class GameServiceImplTest {
 
     @Test
     public void testSetReadyStatus_UserIsAlreadyReady() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameUserBean gameUserBean = new GameUserBean(user, 1);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
         game.getGameUsers().add(gameUserBean);
-        game.getGameUsers().add(new GameUserBean(new UserBean("user1", "pwd"), 2));
+        game.getGameUsers().add(new GameUserBean(new UserBean("user1", "pwd", false), 2));
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -376,9 +376,9 @@ public class GameServiceImplTest {
 
     @Test
     public void testSetReadyStatus_AllPlayersAreReady_GameShouldBeStarted() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd"), 2);
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2);
         gameUserBean1.setReady(true);
         GameUserBean gameUserBean2 = new GameUserBean(user, 1);
 
@@ -402,9 +402,9 @@ public class GameServiceImplTest {
 
     @Test
     public void testSetReadyStatus_ThereAreNotEnoughPlayers_GameShouldNotBeStarted() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd"), 2);
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2);
         gameUserBean1.setReady(true);
         GameUserBean gameUserBean2 = new GameUserBean(user, 1);
 

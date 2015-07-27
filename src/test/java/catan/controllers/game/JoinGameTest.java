@@ -158,9 +158,8 @@ public class JoinGameTest extends GameTestUtil {
     public void should_successfully_join_private_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
-        Response response = createNewGame(userToken1, true);
-        int gameId = response.path("gameId");
-        String privateCode = response.path("privateCode");
+        int gameId = createNewGame(userToken1, true).path("gameId");
+        String privateCode = viewGame(userToken1, gameId).path("privateCode");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
@@ -223,8 +222,8 @@ public class JoinGameTest extends GameTestUtil {
     @Test
     public void should_fails_when_already_joined_user_joins_private_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        String privateCode = createNewGame(userToken1, true)
-                .path("privateCode");
+        int gameId = createNewGame(userToken1, true).path("gameId");
+        String privateCode = viewGame(userToken1, gameId).path("privateCode");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
@@ -238,8 +237,8 @@ public class JoinGameTest extends GameTestUtil {
     @Test
     public void should_fails_when_creator_joins_his_private_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        String privateCode = createNewGame(userToken1, true)
-                .path("privateCode");
+        int gameId = createNewGame(userToken1, true).path("gameId");
+        String privateCode = viewGame(userToken1, gameId).path("privateCode");
 
         joinPrivateGame(userToken1, privateCode)
                 .then()
