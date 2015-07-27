@@ -290,6 +290,7 @@ public class GameServiceImpl implements GameService {
         log.debug("<< Starting game {}", game);
 
         game.setStatus(GameStatus.PLAYING);
+        game.setDateStarted(new Date());
         gameDao.updateGame(game);
     }
 

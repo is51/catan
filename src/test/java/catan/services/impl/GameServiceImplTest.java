@@ -368,6 +368,7 @@ public class GameServiceImplTest {
         verify(gameDao, times(1)).updateGame(gameBeanCaptor.capture());
 
         assertEquals(gameBeanCaptor.getValue().getStatus(), GameStatus.PLAYING);
+        assertNotNull(gameBeanCaptor.getValue().getDateStarted());
     }
 
     @Test

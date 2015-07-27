@@ -31,6 +31,9 @@ public class GameBean {
     @Column(name = "DATE_CREATED", unique = false, nullable = false)
     private Date dateCreated;
 
+    @Column(name = "DATE_STARTED", unique = false)
+    private Date dateStarted;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "GAME_STATUS", unique = false, nullable = false)
     private GameStatus status;
@@ -112,6 +115,14 @@ public class GameBean {
         this.dateCreated = dateCreated;
     }
 
+    public Date getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(Date dateStarted) {
+        this.dateStarted = dateStarted;
+    }
+
     public GameStatus getStatus() {
         return status;
     }
@@ -166,6 +177,7 @@ public class GameBean {
                 .append(privateGame, other.privateGame)
                 .append(privateCode, other.privateCode)
                 .append(dateCreated, other.dateCreated)
+                .append(dateStarted, other.dateStarted)
                 .append(status, other.status)
                 .append(minPlayers, other.minPlayers)
                 .append(maxPlayers, other.maxPlayers)
@@ -181,6 +193,7 @@ public class GameBean {
                 .append(privateGame)
                 .append(privateCode)
                 .append(dateCreated)
+                .append(dateStarted)
                 .append(status)
                 .append(minPlayers)
                 .append(maxPlayers)
