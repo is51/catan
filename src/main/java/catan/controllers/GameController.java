@@ -119,11 +119,18 @@ public class GameController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void userReady(@RequestParam(value = "token", required = false) String token,
-                          @RequestParam("gameId") String gameId,
-                          @RequestParam("ready") boolean readyForGame
-                          ) throws AuthenticationException, GameException {
+                          @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
-        gameService.readyForGame(user, gameId, readyForGame);
+        gameService.updateGameUserStatus(user, gameId, true);
+    }
+
+    @RequestMapping(value = "not-ready",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void userNotReady(@RequestParam(value = "token", required = false) String token,
+                             @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+        gameService.updateGameUserStatus(user, gameId, false);
     }
 
     @Autowired

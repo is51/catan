@@ -9,11 +9,11 @@ import static org.junit.Assert.assertEquals;
 
 public class PrivateCodeUtilTest {
     PrivateCodeUtil privateCodeUtil;
-    RandomValeGeneratorMock rvg;
+    RandomValueGeneratorMock rvg;
 
     @Before
     public void setUp() {
-        rvg = new RandomValeGeneratorMock();
+        rvg = new RandomValueGeneratorMock();
 
         privateCodeUtil = new PrivateCodeUtil();
         privateCodeUtil.setRvg(rvg);
