@@ -1,6 +1,6 @@
 package catan.services;
 
-public class RandomValeGenerator {
+public class RandomValueGenerator {
 
     public double randomValue() {
         return Math.random();

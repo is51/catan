@@ -6,7 +6,7 @@ import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
-import catan.services.RandomValeGeneratorMock;
+import catan.services.RandomValueGeneratorMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class GameServiceImplTest {
     @InjectMocks
     private GameServiceImpl gameService;
 
-    private RandomValeGeneratorMock rvg = new RandomValeGeneratorMock();
+    private RandomValueGeneratorMock rvg = new RandomValueGeneratorMock();
 
     @Before
     public void setUp() {
@@ -264,9 +264,9 @@ public class GameServiceImplTest {
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        gameService.readyForGame(user, "1", true);
+        gameService.updateGameUserStatus(user, "1", true);
 
-        verify(gameDao, times(1)).updateGameUserBean(gameUserBeanCaptor.capture());
+        verify(gameDao, times(1)).updateGameUser(gameUserBeanCaptor.capture());
 
         GameUserBean gameBean = gameUserBeanCaptor.getValue();
         assertEquals(gameBean.getUser(), user);
@@ -277,17 +277,20 @@ public class GameServiceImplTest {
     public void testUnsetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
 
+        GameUserBean gameUserBean = new GameUserBean(user, 1);
+        gameUserBean.setReady(true);
+
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
-        game.getGameUsers().add(new GameUserBean(user, 1));
+        game.getGameUsers().add(gameUserBean);
 
         ArgumentCaptor<GameUserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(GameUserBean.class);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        gameService.readyForGame(user, "1", false);
+        gameService.updateGameUserStatus(user, "1", false);
 
-        verify(gameDao, times(1)).updateGameUserBean(gameUserBeanCaptor.capture());
+        verify(gameDao, times(1)).updateGameUser(gameUserBeanCaptor.capture());
 
         GameUserBean gameBean = gameUserBeanCaptor.getValue();
         assertEquals(gameBean.getUser(), user);
@@ -303,7 +306,7 @@ public class GameServiceImplTest {
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        gameService.readyForGame(user, "1", true);
+        gameService.updateGameUserStatus(user, "1", true);
     }
 
     @Test(expected = GameException.class)
@@ -316,6 +319,73 @@ public class GameServiceImplTest {
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        gameService.readyForGame(user, "1", true);
+        gameService.updateGameUserStatus(user, "1", true);
+    }
+
+    @Test
+    public void testSetReadyStatus_UserIsAlreadyReady() throws Exception {
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+
+        GameUserBean gameUserBean = new GameUserBean(user, 1);
+
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        game.setGameId(1);
+        game.getGameUsers().add(gameUserBean);
+        game.getGameUsers().add(new GameUserBean(new UserBean("user1", "pwd"), 2));
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        gameService.updateGameUserStatus(user, "1", true);
+        gameService.updateGameUserStatus(user, "1", true);
+
+        //There was only one call to updateGameUser
+        verify(gameDao, times(1)).updateGameUser(any(GameUserBean.class));
+        verify(gameDao, times(0)).updateGame(any(GameBean.class));
+    }
+
+    @Test
+    public void testSetReadyStatus_AllPlayersAreReady_GameShouldBeStarted() throws Exception {
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd"), 2);
+        gameUserBean1.setReady(true);
+        GameUserBean gameUserBean2 = new GameUserBean(user, 1);
+
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 1, 2, 12);
+        game.setGameId(1);
+        game.getGameUsers().add(gameUserBean1);
+        game.getGameUsers().add(gameUserBean2);
+
+        ArgumentCaptor<GameBean> gameBeanCaptor = ArgumentCaptor.forClass(GameBean.class);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        gameService.updateGameUserStatus(user, "1", true);
+
+        verify(gameDao, times(1)).updateGameUser(any(GameUserBean.class));
+        verify(gameDao, times(1)).updateGame(gameBeanCaptor.capture());
+
+        assertEquals(gameBeanCaptor.getValue().getStatus(), GameStatus.PLAYING);
+    }
+
+    @Test
+    public void testSetReadyStatus_ThereAreNotEnoughPlayers_GameShouldNotBeStarted() throws Exception {
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd"), 2);
+        gameUserBean1.setReady(true);
+        GameUserBean gameUserBean2 = new GameUserBean(user, 1);
+
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 1, 4, 12);
+        game.setGameId(1);
+        game.getGameUsers().add(gameUserBean1);
+        game.getGameUsers().add(gameUserBean2);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        gameService.updateGameUserStatus(user, "1", true);
+
+        verify(gameDao, times(1)).updateGameUser(any(GameUserBean.class));
+        verify(gameDao, times(0)).updateGame(any(GameBean.class));
     }
 }

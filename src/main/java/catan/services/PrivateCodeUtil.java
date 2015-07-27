@@ -2,7 +2,7 @@ package catan.services;
 
 public class PrivateCodeUtil {
 
-    private RandomValeGenerator rvg = new RandomValeGenerator();
+    private RandomValueGenerator rvg = new RandomValueGenerator();
 
     public String generateRandomPrivateCode(int numberOfDigits) {
         int digits = 1;
@@ -18,7 +18,7 @@ public class PrivateCodeUtil {
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
     }
 
-    public void setRvg(RandomValeGenerator rvg) {
+    public void setRvg(RandomValueGenerator rvg) {
         this.rvg = rvg;
     }
 }
