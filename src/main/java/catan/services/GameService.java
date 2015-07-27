@@ -21,5 +21,5 @@ public interface GameService {
 
     void cancelGame(UserBean user, String gameId) throws GameException;
 
-    void readyForGame(UserBean user, String gameId, boolean readyForGame) throws GameException;
+    void updateGameUserStatus(UserBean user, String gameId, boolean readyForGame) throws GameException;
 }

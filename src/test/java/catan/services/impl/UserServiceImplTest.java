@@ -9,8 +9,12 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
@@ -24,23 +28,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
     public static final String USER_NAME1 = "userName1";
     public static final String PASSWORD1 = "12345";
     public static final String PASSWORD2 = "67890";
 
-    UserDao userDao;
-    UserServiceImpl userService;
-
-    @Before
-    public void setUp() {
-        userDao = createMock(UserDao.class);
-
-        userService = new UserServiceImpl();
-        userService.setUserDao(userDao);
-    }
+    @InjectMocks
+    private UserServiceImpl userService;
+    @Mock
+    private UserDao userDao;
 
     @After
     public void tearDown() {
@@ -53,12 +55,7 @@ public class UserServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
-        expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-        userDao.removeSessionByUser(anyObject(UserBean.class));
-        expectLastCall().atLeastOnce();
-        userDao.addNewSession(anyObject(UserSessionBean.class));
-        expectLastCall().atLeastOnce();
-        replay(userDao);
+        when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
         // WHEN
         String session = userService.loginUser(USER_NAME1, PASSWORD1);
@@ -66,6 +63,8 @@ public class UserServiceImplTest {
         // THEN
         assertNotNull(session);
         assertEquals(36, session.length());
+
+        verify(userDao, times(1)).allocateNewTokenToUser(anyString(), any(UserBean.class));
     }
 
     @Test
@@ -95,12 +94,7 @@ public class UserServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
-        expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-        userDao.removeSessionByUser(anyObject(UserBean.class));
-        expectLastCall().atLeastOnce();
-        userDao.addNewSession(anyObject(UserSessionBean.class));
-        expectLastCall().atLeastOnce();
-        replay(userDao);
+        when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
         // WHEN
         String firstSession = userService.loginUser(USER_NAME1, PASSWORD1);
@@ -110,6 +104,8 @@ public class UserServiceImplTest {
         assertNotNull(firstSession);
         assertNotNull(secondSession);
         assertNotSame(firstSession, secondSession);
+
+        verify(userDao, times(2)).allocateNewTokenToUser(Matchers.anyString(), any(UserBean.class));
     }
 
     @Test
@@ -144,8 +140,7 @@ public class UserServiceImplTest {
     public void loginErrorWhenUserNotFound() throws UserException {
         try {
             // GIVEN
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
 
             // WHEN
             userService.loginUser(USER_NAME1, PASSWORD1);
@@ -165,8 +160,7 @@ public class UserServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
             user.setId((int) System.currentTimeMillis());
 
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
             // WHEN
             userService.loginUser(USER_NAME1, PASSWORD2);
@@ -217,13 +211,7 @@ public class UserServiceImplTest {
     public void registerPermanentUserSuccessful() {
         try {
             // GIVEN
-            // Example FIRST of how to assert passed values in mock
-            Capture<UserBean> capturedArgs = new Capture<UserBean>();
-
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
-            userDao.addNewUser(EasyMock.capture(capturedArgs));
-            expectLastCall();
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
 
             // WHEN
             userService.registerUser(USER_NAME1, PASSWORD1);
@@ -234,6 +222,8 @@ public class UserServiceImplTest {
         } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
+
+        verify(userDao, times(1)).addNewUser(any(UserBean.class));
     }
 
     @Test
@@ -295,8 +285,7 @@ public class UserServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
             user.setId((int) System.currentTimeMillis());
 
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
             // WHEN
             userService.registerUser(USER_NAME1, PASSWORD1);
