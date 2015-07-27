@@ -136,7 +136,7 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        if (game.getGameUsers().size() == game.getMaxUsers()) {
+        if (game.getGameUsers().size() == game.getMaxPlayers()) {
             log.debug("<< Number of players is already up to limit");
             throw new GameException(TOO_MANY_PLAYERS_ERROR);
         }
@@ -273,10 +273,10 @@ public class GameServiceImpl implements GameService {
     private void startGame(GameBean game) {
         log.debug("<< Checking if game {} can be started (all players is ready)", game);
 
-        if (game.getMaxUsers() != game.getGameUsers().size()) {
+        if (game.getMaxPlayers() != game.getGameUsers().size()) {
             log.info("<< There are not enough players to start game {}. " +
                     "Game will start when players count will be {}, current count is {}",
-                    game, game.getMaxUsers(), game.getGameUsers().size());
+                    game, game.getMaxPlayers(), game.getGameUsers().size());
             return;
         }
 

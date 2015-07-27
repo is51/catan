@@ -107,8 +107,8 @@ public class GameServiceImplTest {
         //Check that generated private code has reached limit of duplicates and increased number of digits
         assertEquals("FK84286", game.getPrivateCode());
         assertEquals(GameStatus.NEW, game.getStatus());
-        assertEquals(GameServiceImpl.MIN_USERS, game.getMinUsers());
-        assertEquals(GameServiceImpl.MAX_USERS, game.getMaxUsers());
+        assertEquals(GameServiceImpl.MIN_USERS, game.getMinPlayers());
+        assertEquals(GameServiceImpl.MAX_USERS, game.getMaxPlayers());
         assertNotNull(game.getGameUsers());
         assertEquals(1, game.getGameUsers().size());
         assertEquals(user, game.getGameUsers().iterator().next().getUser());
@@ -155,8 +155,8 @@ public class GameServiceImplTest {
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(0).getStatus());
         assertEquals("TF3423", games.get(0).getPrivateCode());
-        assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinUsers());
-        assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinPlayers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxPlayers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
         assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(0).getTargetVictoryPoints());
@@ -173,8 +173,8 @@ public class GameServiceImplTest {
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(1).getStatus());
         assertNull(games.get(1).getPrivateCode());
-        assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinUsers());
-        assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinPlayers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxPlayers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
         assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(1).getTargetVictoryPoints());
@@ -226,8 +226,8 @@ public class GameServiceImplTest {
         assertTrue(games.get(0).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(0).getStatus());
         assertNull(games.get(0).getPrivateCode());
-        assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinUsers());
-        assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxUsers());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(0).getMinPlayers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(0).getMaxPlayers());
         assertNotNull(games.get(0).getGameUsers());
         assertEquals(1, games.get(0).getGameUsers().size());
         assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(0).getTargetVictoryPoints());
@@ -244,8 +244,8 @@ public class GameServiceImplTest {
         assertTrue(games.get(1).getDateCreated().getTime() <= System.currentTimeMillis());
         assertEquals(GameStatus.NEW, games.get(1).getStatus());
         assertNull(games.get(1).getPrivateCode());
-        assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinUsers());
-        assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxUsers());
+        assertEquals(GameServiceImpl.MIN_USERS, games.get(1).getMinPlayers());
+        assertEquals(GameServiceImpl.MAX_USERS, games.get(1).getMaxPlayers());
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
         assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(1).getTargetVictoryPoints());

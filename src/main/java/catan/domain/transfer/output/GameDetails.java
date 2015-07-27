@@ -27,8 +27,8 @@ public class GameDetails {
         this.dateCreated = game.getDateCreated().getTime();
         this.status = game.getStatus().toString();
         this.gameUsers = game.getGameUserDetails();
-        this.minPlayers = game.getMinUsers();
-        this.maxPlayers = game.getMaxUsers();
+        this.minPlayers = game.getMinPlayers();
+        this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
     }
 
