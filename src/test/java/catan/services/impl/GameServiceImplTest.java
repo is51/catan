@@ -300,6 +300,8 @@ public class GameServiceImplTest {
         assertEquals(gameBean.isReady(), true);
     }
 
+    //TODO: add unit tests for join and leave games
+
     @Test
     public void testUnsetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);

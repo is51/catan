@@ -75,11 +75,13 @@ public class GameController {
     @RequestMapping(value = "join/private",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void joinPrivateGame(@RequestParam(value = "token", required = false) String token,
+    public GameDetails joinPrivateGame(@RequestParam(value = "token", required = false) String token,
                                 @RequestParam("privateCode") String privateCode) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
+        GameBean game = gameService.joinGameByIdentifier(user, privateCode, true);
 
-        gameService.joinGameByIdentifier(user, privateCode, true);
+        //TODO: return only gameId instead of whole object
+        return new GameDetails(game);
     }
 
     @RequestMapping(value = "details",

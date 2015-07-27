@@ -105,7 +105,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    synchronized public void joinGameByIdentifier(UserBean user, String gameIdentifier, boolean privateGame) throws GameException {
+    synchronized public GameBean joinGameByIdentifier(UserBean user, String gameIdentifier, boolean privateGame) throws GameException {
         log.debug(">> Join user " + user + " to "
                 + (privateGame ? "private" : "public") + " game with "
                 + (privateGame ? "privateCode" : "id") + " '" + gameIdentifier + "' ...");
@@ -145,6 +145,8 @@ public class GameServiceImpl implements GameService {
         addUserToGame(game, user);
 
         log.debug("<< User " + user + " successfully joined game " + game);
+
+        return game;
     }
 
     @Override
