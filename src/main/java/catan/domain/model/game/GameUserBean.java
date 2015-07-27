@@ -25,7 +25,7 @@ public class GameUserBean {
     @Column(name = "COLOR_ID", unique = false, nullable = false)
     private int colorId;
 
-    @Column(name = "READY")
+    @Column(name = "READY", nullable = false)
     private boolean ready;
 
     public GameUserBean() {

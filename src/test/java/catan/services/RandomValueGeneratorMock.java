@@ -3,7 +3,7 @@ package catan.services;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RandomValeGeneratorMock extends RandomValeGenerator {
+public class RandomValueGeneratorMock extends RandomValueGenerator {
 
     private List<Double> valuesToGenerate = new LinkedList<Double>();
 
