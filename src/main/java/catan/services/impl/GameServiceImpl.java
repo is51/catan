@@ -2,7 +2,7 @@ package catan.services.impl;
 
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameStatus;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
@@ -380,7 +380,7 @@ public class GameServiceImpl implements GameService {
             colorId++;
         }
 
-        GameUserBean newGameUser = new GameUserBean(userBean, colorId);
+        GameUserBean newGameUser = new GameUserBean(userBean, colorId, game);
         gameDao.addNewGameUser(newGameUser);
 
         game.getGameUsers().add(newGameUser);

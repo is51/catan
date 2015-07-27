@@ -2,7 +2,7 @@ package catan.services.impl;
 
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameStatus;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
@@ -140,8 +140,8 @@ public class GameServiceImplTest {
         GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, 12);
         game2.setGameId(2);
 
-        GameUserBean gameUser1 = new GameUserBean(user, 1);
-        GameUserBean gameUser2 = new GameUserBean(user, 1);
+        GameUserBean gameUser1 = new GameUserBean(user, 1, game1);
+        GameUserBean gameUser2 = new GameUserBean(user, 1, game2);
         game1.getGameUsers().add(gameUser1);
         game2.getGameUsers().add(gameUser2);
 
@@ -212,8 +212,8 @@ public class GameServiceImplTest {
         GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, 12);
         game2.setGameId(2);
 
-        GameUserBean gameUser1 = new GameUserBean(user1, 1);
-        GameUserBean gameUser2 = new GameUserBean(user2, 1);
+        GameUserBean gameUser1 = new GameUserBean(user1, 1, game1);
+        GameUserBean gameUser2 = new GameUserBean(user2, 1, game2);
         game1.getGameUsers().add(gameUser1);
         game2.getGameUsers().add(gameUser2);
 

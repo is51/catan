@@ -1,5 +1,6 @@
 package catan.domain.model.game;
 
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.GameUserDetails;
 
@@ -11,6 +12,7 @@ import java.util.*;
 public class GameBean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "GAME_ID", unique = true, nullable = false)
     private int gameId;
 
     @ManyToOne
@@ -39,7 +41,7 @@ public class GameBean {
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     public GameBean() {

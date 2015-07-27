@@ -2,6 +2,7 @@ package catan.domain.transfer.output;
 
 import catan.domain.model.game.GameUserBean;
 
+//TODO: move to catan.domain.transfer.output.game after pull request
 public class GameUserDetails {
     private UserDetails user;
     private int colorId;

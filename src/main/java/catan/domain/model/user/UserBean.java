@@ -13,6 +13,7 @@ public class UserBean {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "USER_ID", unique = true, nullable = false)
     private int id;
 
     @Column(name = "USERNAME", unique = true, nullable = false)

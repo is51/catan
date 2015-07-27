@@ -4,6 +4,7 @@ import catan.domain.model.user.UserBean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +19,7 @@ public class GameUserBean {
     //TODO: think about removal of id in this table
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "GAME_USER_ID", unique = true, nullable = false)
     private int gameUserId;
 
     @ManyToOne
@@ -27,12 +29,17 @@ public class GameUserBean {
     @Column(name = "COLOR_ID", unique = false, nullable = false)
     private int colorId;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "GAME_ID", nullable = false)
+    private GameBean game;
+
     public GameUserBean() {
     }
 
-    public GameUserBean(UserBean user, int colorId) {
+    public GameUserBean(UserBean user, int colorId, GameBean game) {
         this.user = user;
         this.colorId = colorId;
+        this.game = game;
     }
 
     public int getGameUserId() {
@@ -57,6 +64,14 @@ public class GameUserBean {
 
     public void setColorId(int colorId) {
         this.colorId = colorId;
+    }
+
+    public GameBean getGame() {
+        return game;
+    }
+
+    public void setGame(GameBean game) {
+        this.game = game;
     }
 
     @Override

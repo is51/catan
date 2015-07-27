@@ -1,9 +1,11 @@
 package catan.domain.transfer.output;
 
 import catan.domain.model.game.GameBean;
+import catan.domain.transfer.output.dashboard.DashboardDetails;
 
 import java.util.List;
 
+//TODO: move to catan.domain.transfer.output.game after pull request
 public class GameDetails {
     private int gameId;
     private int creatorId;
@@ -15,6 +17,7 @@ public class GameDetails {
     private int minPlayers;
     private int maxPlayers;
     private int targetVictoryPoints;
+    private DashboardDetails dashboard;
 
     public GameDetails() {
     }
@@ -110,5 +113,13 @@ public class GameDetails {
 
     public void setTargetVictoryPoints(int targetVictoryPoints) {
         this.targetVictoryPoints = targetVictoryPoints;
+    }
+
+    public DashboardDetails getDashboard() {
+        return dashboard;
+    }
+
+    public void setDashboard(DashboardDetails dashboard) {
+        this.dashboard = dashboard;
     }
 }

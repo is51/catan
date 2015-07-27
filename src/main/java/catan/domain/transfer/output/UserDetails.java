@@ -2,6 +2,7 @@ package catan.domain.transfer.output;
 
 import catan.domain.model.user.UserBean;
 
+//TODO: move to catan.domain.transfer.output.user after pull request
 public class UserDetails {
     private int id;
     private String username;

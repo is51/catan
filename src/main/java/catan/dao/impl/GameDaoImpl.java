@@ -3,7 +3,7 @@ package catan.dao.impl;
 import catan.dao.AbstractDao;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameStatus;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import org.hibernate.Criteria;
