@@ -29,23 +29,13 @@ angular.module('catan')
 
                         if (scope.data.privateGame) {
                             $state.go('registerGuest', {
-                                onRegister: function() {
-                                    $state.go('createGame', {data: scope.data});
-                                    createGame();
-                                },
-                                onBack: function() {
-                                    $state.go('createGame', {data: scope.data});
-                                }
+                                onRegister: goBackAndCreateGame,
+                                onBack: goBack
                             });
                         } else {
                             $state.go('login', {
-                                onLogin: function() {
-                                    $state.go('createGame', {data: scope.data});
-                                    createGame();
-                                },
-                                onBack: function() {
-                                    $state.go('createGame', {data: scope.data});
-                                }
+                                onLogin: goBackAndCreateGame,
+                                onBack: goBack
                             });
                         }
 
@@ -53,6 +43,15 @@ angular.module('catan')
 
                     return false;
                 };
+
+                function goBack() {
+                    $state.go('createGame', {data: scope.data});
+                }
+
+                function goBackAndCreateGame() {
+                    goBack();
+                    createGame();
+                }
 
                 function createGame() {
                     Remote.game.create({

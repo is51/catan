@@ -10,38 +10,54 @@ angular.module('catan', [
 
         $stateProvider
 
-            .state('start', {
-                url: '/',
-                templateUrl: 'features/screens/start/view.html'
-            })
+                .state('start', {
+                    url: '/',
+                    templateUrl: 'features/screens/start/view.html'
+                })
 
-            .state('game', {
-                url: '/game/{gameId}',
-                templateUrl: 'features/screens/game/view.html',
-                controller: 'GameController'
-            })
+                .state('game', {
+                    url: '/game/{gameId}',
+                    templateUrl: 'features/screens/game/view.html',
+                    controller: 'GameController'
+                })
 
-            .state('registerGuest', {
+                .state('registerGuest', {
                     templateUrl: 'features/screens/registerGuest/view.html',
                     controller: 'RegisterGuestController',
                     params: {onRegister: null, onBack: null}
-            })
+                })
 
-            .state('login', {
+                .state('login', {
                     templateUrl: 'features/screens/login/view.html',
                     params: {onLogin: null, onBack: null}
-            })
+                })
 
-            .state('register', {
+                .state('register', {
                     templateUrl: 'features/screens/register/view.html',
                     params: {onRegister: null, onBack: null}
-            })
+                })
 
-            .state('createGame', {templateUrl: 'features/screens/createGame/view.html', params: {data: null}})
-            .state('joinGame', {templateUrl: 'features/screens/joinGame/view.html'})
-            .state('joinPublicGame', {templateUrl: 'features/screens/joinPublicGame/view.html'})
-            .state('joinPrivateGame', {templateUrl: 'features/screens/joinPrivateGame/view.html', params: {data: null}})
-            .state('continueGame', {templateUrl: 'features/screens/continueGame/view.html'});
+                .state('createGame', {
+                    templateUrl: 'features/screens/createGame/view.html',
+                    params: {data: null}
+                })
+
+                .state('joinGame', {
+                    templateUrl: 'features/screens/joinGame/view.html'
+                })
+
+                .state('joinPublicGame', {
+                    templateUrl: 'features/screens/joinPublicGame/view.html'
+                })
+
+                .state('joinPrivateGame', {
+                    templateUrl: 'features/screens/joinPrivateGame/view.html',
+                    params: {data: null}
+                })
+
+                .state('continueGame', {
+                    templateUrl: 'features/screens/continueGame/view.html'
+                });
     }])
 
     .config(['$httpProvider', function($httpProvider) {
