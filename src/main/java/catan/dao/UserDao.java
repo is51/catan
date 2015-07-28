@@ -1,15 +1,18 @@
 package catan.dao;
 
 import catan.domain.model.user.UserBean;
+import catan.domain.model.user.UserSessionBean;
 
 public interface UserDao {
     void addNewUser(UserBean newUser);
+
+    void addNewSession(UserSessionBean newSession);
 
     UserBean getUserByUsername(String username);
 
     UserBean getUserByToken(String token);
 
-    void allocateNewTokenToUser(String token, UserBean user);
+    void removeSessionByUser(UserBean user);
 
-    void removeSession(String token);
+    void removeSessionByToken(String token);
 }

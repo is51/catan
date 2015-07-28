@@ -41,6 +41,7 @@ public class GameServiceImpl implements GameService {
     public static final String GAME_IS_NOT_FOUND_ERROR = "GAME_IS_NOT_FOUND";
     public static final String USER_IS_NOT_JOINED_ERROR = "USER_IS_NOT_JOINED";
     public static final String GAME_HAS_ALREADY_STARTED_ERROR = "GAME_HAS_ALREADY_STARTED";
+    public static final String GUEST_NOT_PERMITTED_ERROR = "GUEST_NOT_PERMITTED";
 
     private GameDao gameDao;
 
@@ -104,7 +105,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    synchronized public void joinGameByIdentifier(UserBean user, String gameId, boolean privateGame) throws GameException {
+    synchronized public GameBean joinGameByIdentifier(UserBean user, String gameId, boolean privateGame) throws GameException {
         log.debug(">> Join user " + user + " to "
                 + (privateGame ? "private" : "public") + " game with "
                 + (privateGame ? "privateCode" : "id") + " '" + gameId + "' ...");
@@ -144,6 +145,8 @@ public class GameServiceImpl implements GameService {
         addUserToGame(game, user);
 
         log.debug("<< User " + user + " successfully joined game " + game);
+
+        return game;
     }
 
     @Override
@@ -351,7 +354,12 @@ public class GameServiceImpl implements GameService {
                 targetVictoryPoints);
     }
 
-    private GameBean createPublicGame(UserBean creator, int targetVictoryPoints) {
+    private GameBean createPublicGame(UserBean creator, int targetVictoryPoints) throws GameException {
+        if (creator.isGuest()) {
+            log.debug("<< Guest user cannot create new public games");
+            throw new GameException(GUEST_NOT_PERMITTED_ERROR);
+        }
+
         return new GameBean(
                 creator,
                 new Date(),

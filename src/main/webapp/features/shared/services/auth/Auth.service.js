@@ -12,8 +12,10 @@ angular.module('catan')
                 }).then(function (response, status, headers, config) {
 
                     if (response.data && response.data.token) {
+
                         AuthToken.set(response.data.token);
                         User.load();
+
                         deferred.resolve(response, status, headers, config);
                     } else {
                         deferred.reject(response, 400, headers, config);
@@ -39,6 +41,30 @@ angular.module('catan')
                 return deferred.promise;
             },
 
+            registerAndLoginGuest: function(username) {
+                var deferred = $q.defer();
+
+                Remote.auth.registerAndLoginGuest({
+                    username: username
+                }).then(function (response, status, headers, config) {
+
+                    if (response.data && response.data.token) {
+
+                        AuthToken.set(response.data.token);
+                        User.load();
+
+                        deferred.resolve(response, status, headers, config);
+                    } else {
+                        deferred.reject(response, 400, headers, config);
+                    }
+                }, function (response, status, headers, config) {
+                    deferred.reject(response, status, headers, config);
+                });
+
+                return deferred.promise;
+            },
+
+            // TODO: remove this method and replace everywhere with Remote
             register: function (username, password) {
                 return Remote.auth.register({
                     username: username,
@@ -46,4 +72,5 @@ angular.module('catan')
                 });
             }
         };
+
     }]);

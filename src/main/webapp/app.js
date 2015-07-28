@@ -4,11 +4,6 @@ angular.module('catan', [
     'ui.router'
 ])
 
-    .run(['$rootScope', 'User', function($rootScope, User) {
-        $rootScope.User = User;
-        User.load();
-    }])
-
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
         $urlRouterProvider.otherwise('/');
@@ -26,12 +21,26 @@ angular.module('catan', [
                 controller: 'GameController'
             })
 
-            .state('login', {templateUrl: 'features/screens/login/view.html'})
-            .state('register', {templateUrl: 'features/screens/register/view.html'})
-            .state('createGame', {templateUrl: 'features/screens/createGame/view.html'})
+            .state('registerGuest', {
+                    templateUrl: 'features/screens/registerGuest/view.html',
+                    controller: 'RegisterGuestController',
+                    params: {onRegister: null, onBack: null}
+            })
+
+            .state('login', {
+                    templateUrl: 'features/screens/login/view.html',
+                    params: {onLogin: null, onBack: null}
+            })
+
+            .state('register', {
+                    templateUrl: 'features/screens/register/view.html',
+                    params: {onRegister: null, onBack: null}
+            })
+
+            .state('createGame', {templateUrl: 'features/screens/createGame/view.html', params: {data: null}})
             .state('joinGame', {templateUrl: 'features/screens/joinGame/view.html'})
             .state('joinPublicGame', {templateUrl: 'features/screens/joinPublicGame/view.html'})
-            .state('joinPrivateGame', {templateUrl: 'features/screens/joinPrivateGame/view.html'})
+            .state('joinPrivateGame', {templateUrl: 'features/screens/joinPrivateGame/view.html', params: {data: null}})
             .state('continueGame', {templateUrl: 'features/screens/continueGame/view.html'});
     }])
 
@@ -52,6 +61,7 @@ angular.module('catan', [
         });
 
         RemoteProvider.setRequest('auth', 'register', { url: '/api/user/register'});
+        RemoteProvider.setRequest('auth', 'registerAndLoginGuest', { url: '/api/user/register/guest'});
         RemoteProvider.setRequest('auth', 'login', { url: '/api/user/login'});
         RemoteProvider.setRequest('auth', 'logout', { url: '/api/user/logout'});
         RemoteProvider.setRequest('auth', 'details', { url: '/api/user/details'});
@@ -64,4 +74,21 @@ angular.module('catan', [
         RemoteProvider.setRequest('game', 'details', { url: '/api/game/details'});
         RemoteProvider.setRequest('game', 'leave', { url: '/api/game/leave'});
         RemoteProvider.setRequest('game', 'cancel', { url: '/api/game/cancel'});
+    }])
+
+    .run(['$rootScope', 'User', function($rootScope, User) {
+        $rootScope.User = User;
+        User.load();
+    }])
+
+    .run(['$rootScope', '$state', function($rootScope, $state) {
+        $rootScope.$state = $state;
+
+        // hack for tracking previous state
+        $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState) {
+            $state.previous = fromState;
+        });
+        $state.goPrevious = function(params) {
+            $state.go($state.previous.name, params);
+        };
     }]);
