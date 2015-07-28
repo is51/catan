@@ -64,7 +64,7 @@ public class HexBean {
     private NodeBean leftUpNode;
 
     @ManyToOne
-    @JoinColumn(name = "RIGHT_UP_NODE_ID")
+    @JoinColumn(name = "RIGHT_UP_EDGE_ID")
     private EdgeBean rightUpEdge;
 
     @ManyToOne
