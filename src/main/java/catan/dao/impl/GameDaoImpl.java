@@ -99,7 +99,7 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     }
 
     @Override
-    public void updateGameUserBean(GameUserBean gameUserBean) {
+    public void updateGameUser(GameUserBean gameUserBean) {
         persist(gameUserBean);
     }
 

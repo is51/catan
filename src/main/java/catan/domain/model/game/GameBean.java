@@ -31,15 +31,18 @@ public class GameBean {
     @Column(name = "DATE_CREATED", unique = false, nullable = false)
     private Date dateCreated;
 
+    @Column(name = "DATE_STARTED", unique = false)
+    private Date dateStarted;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "GAME_STATUS", unique = false, nullable = false)
     private GameStatus status;
 
-    @Column(name = "MIN_USERS", unique = false, nullable = false)
-    private int minUsers;
+    @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
+    private int minPlayers;
 
-    @Column(name = "MAX_USERS", unique = false, nullable = false)
-    private int maxUsers;
+    @Column(name = "MAX_PLAYERS", unique = false, nullable = false)
+    private int maxPlayers;
 
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
@@ -50,24 +53,24 @@ public class GameBean {
     public GameBean() {
     }
 
-    public GameBean(UserBean creator, Date dateCreated, GameStatus status, int minUsers, int maxUsers, int targetVictoryPoints) {
+    public GameBean(UserBean creator, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints) {
         this.creator = creator;
         this.privateGame = false;
         this.dateCreated = dateCreated;
         this.status = status;
-        this.minUsers = minUsers;
-        this.maxUsers = maxUsers;
+        this.minPlayers = minPlayers;
+        this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
     }
 
-    public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minUsers, int maxUsers, int targetVictoryPoints) {
+    public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints) {
         this.creator = creator;
         this.privateGame = true;
         this.privateCode = privateCode;
         this.dateCreated = dateCreated;
         this.status = status;
-        this.minUsers = minUsers;
-        this.maxUsers = maxUsers;
+        this.minPlayers = minPlayers;
+        this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
     }
 
@@ -112,6 +115,14 @@ public class GameBean {
         this.dateCreated = dateCreated;
     }
 
+    public Date getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(Date dateStarted) {
+        this.dateStarted = dateStarted;
+    }
+
     public GameStatus getStatus() {
         return status;
     }
@@ -120,20 +131,20 @@ public class GameBean {
         this.status = status;
     }
 
-    public int getMinUsers() {
-        return minUsers;
+    public int getMinPlayers() {
+        return minPlayers;
     }
 
-    public void setMinUsers(int minUsers) {
-        this.minUsers = minUsers;
+    public void setMinPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
     }
 
-    public int getMaxUsers() {
-        return maxUsers;
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
-    public void setMaxUsers(int maxUsers) {
-        this.maxUsers = maxUsers;
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
     }
 
     public Set<GameUserBean> getGameUsers() {
@@ -166,9 +177,10 @@ public class GameBean {
                 .append(privateGame, other.privateGame)
                 .append(privateCode, other.privateCode)
                 .append(dateCreated, other.dateCreated)
+                .append(dateStarted, other.dateStarted)
                 .append(status, other.status)
-                .append(minUsers, other.minUsers)
-                .append(maxUsers, other.maxUsers)
+                .append(minPlayers, other.minPlayers)
+                .append(maxPlayers, other.maxPlayers)
                 .append(targetVictoryPoints, other.targetVictoryPoints)
                 .isEquals();
     }
@@ -181,9 +193,10 @@ public class GameBean {
                 .append(privateGame)
                 .append(privateCode)
                 .append(dateCreated)
+                .append(dateStarted)
                 .append(status)
-                .append(minUsers)
-                .append(maxUsers)
+                .append(minPlayers)
+                .append(maxPlayers)
                 .append(targetVictoryPoints)
                 .toHashCode();
     }
