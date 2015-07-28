@@ -3,7 +3,7 @@ package catan.domain.transfer.output.dashboard;
 import java.util.List;
 
 public class HexDetails {
-    private Integer id;
+    private Integer hexId;
     private Integer x;
     private Integer y;
     private String type;
@@ -12,12 +12,12 @@ public class HexDetails {
     private List<Integer> nodeIds;
     private List<Integer> edgeIds;
 
-    public Integer getId() {
-        return id;
+    public Integer getHexId() {
+        return hexId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setHexId(Integer hexId) {
+        this.hexId = hexId;
     }
 
     public Integer getX() {

@@ -3,19 +3,19 @@ package catan.domain.transfer.output.dashboard;
 import java.util.List;
 
 public class NodeDetails {
-    private Integer id;
+    private Integer nodeId;
     private String port;
     private String built;
     private Integer buildingOwnerId;
     private List<Integer> hexIds;
     private List<Integer> edgeIds;
 
-    public int getId() {
-        return id;
+    public Integer getNodeId() {
+        return nodeId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
     }
 
     public String getPort() {
@@ -32,10 +32,6 @@ public class NodeDetails {
 
     public void setBuilt(String built) {
         this.built = built;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Integer getBuildingOwnerId() {

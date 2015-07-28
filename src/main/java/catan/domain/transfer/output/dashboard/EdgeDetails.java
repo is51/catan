@@ -3,18 +3,18 @@ package catan.domain.transfer.output.dashboard;
 import java.util.List;
 
 public class EdgeDetails {
-    private Integer id;
+    private Integer edgeId;
     private String built;
     private Integer buildingOwnerId;
     private List<Integer> hexIds;
     private List<Integer> nodeIds;
 
-    public Integer getId() {
-        return id;
+    public Integer getEdgeId() {
+        return edgeId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setEdgeId(Integer edgeId) {
+        this.edgeId = edgeId;
     }
 
     public String getBuilt() {
