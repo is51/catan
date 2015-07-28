@@ -128,14 +128,16 @@ public class ListGameTest extends GameTestUtil {
                 .body("[0].privateGame", equalTo(false))
                 .body("[0].status", equalTo(GameStatus.NEW.toString()))
                 .body("[0].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))))
-                .body("[0].minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("[0].maxUsers", equalTo(GameServiceImpl.MAX_USERS))
+                .body("[0].targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
+                .body("[0].minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("[0].maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
                 .body("[1].gameId", greaterThan(0))
                 .body("[1].privateGame", equalTo(false))
                 .body("[1].status", equalTo(GameStatus.NEW.toString()))
                 .body("[1].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))))
-                .body("[1].minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("[1].maxUsers", equalTo(GameServiceImpl.MAX_USERS));
+                .body("[1].targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
+                .body("[1].minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("[1].maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
 
         // Assert public games response again but in another way
         List<GameDetails> games = Arrays.asList(

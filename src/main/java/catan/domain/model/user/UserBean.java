@@ -1,11 +1,12 @@
 package catan.domain.model.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import javax.persistence.*;
+
+import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "USER")
@@ -56,32 +57,30 @@ public class UserBean {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserBean)) return false;
+        if (!(o instanceof UserBean)) {
+            return false;
+        }
 
-        UserBean userBean = (UserBean) o;
+        final UserBean other = (UserBean) o;
 
-        if (id != userBean.id) return false;
-        if (password != null ? !password.equals(userBean.password) : userBean.password != null) return false;
-        if (username != null ? !username.equals(userBean.username) : userBean.username != null) return false;
-
-        return true;
+        return new EqualsBuilder()
+                .append(id, other.id)
+                .append(username, other.username)
+                .append(password, other.password)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        return result;
+        return new HashCodeBuilder()
+                .append(id)
+                .append(username)
+                .append(password)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return "UserBean{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 }

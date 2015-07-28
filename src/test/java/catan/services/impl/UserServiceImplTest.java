@@ -4,36 +4,28 @@ import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.exception.UserException;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.anyString;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
     public static final String USER_NAME1 = "userName1";
     public static final String PASSWORD1 = "12345";
     public static final String PASSWORD2 = "67890";
 
-    UserDao userDao;
-    UserServiceImpl userService;
-
-    @Before
-    public void setUp() {
-        userDao = createMock(UserDao.class);
-
-        userService = new UserServiceImpl();
-        userService.setUserDao(userDao);
-    }
+    @InjectMocks
+    private UserServiceImpl userService;
+    @Mock
+    private UserDao userDao;
 
     @After
     public void tearDown() {
@@ -46,10 +38,7 @@ public class UserServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-        userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
-        expectLastCall();
-        replay(userDao);
+        when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
         // WHEN
         String session = userService.login(USER_NAME1, PASSWORD1);
@@ -57,6 +46,8 @@ public class UserServiceImplTest {
         // THEN
         assertNotNull(session);
         assertEquals(36, session.length());
+
+        verify(userDao, times(1)).allocateNewTokenToUser(anyString(), any(UserBean.class));
     }
 
     @Test
@@ -65,10 +56,7 @@ public class UserServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1);
         user.setId((int) System.currentTimeMillis());
 
-        expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-        userDao.allocateNewTokenToUser(anyString(), anyObject(UserBean.class));
-        expectLastCall().atLeastOnce();
-        replay(userDao);
+        when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
         // WHEN
         String firstSession = userService.login(USER_NAME1, PASSWORD1);
@@ -78,6 +66,8 @@ public class UserServiceImplTest {
         assertNotNull(firstSession);
         assertNotNull(secondSession);
         assertNotSame(firstSession, secondSession);
+
+        verify(userDao, times(2)).allocateNewTokenToUser(Matchers.anyString(), any(UserBean.class));
     }
 
     @Test
@@ -112,8 +102,7 @@ public class UserServiceImplTest {
     public void loginErrorWhenUserNotFound() throws UserException {
         try {
             // GIVEN
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
 
             // WHEN
             userService.login(USER_NAME1, PASSWORD1);
@@ -133,8 +122,7 @@ public class UserServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1);
             user.setId((int) System.currentTimeMillis());
 
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
             // WHEN
             userService.login(USER_NAME1, PASSWORD2);
@@ -164,16 +152,15 @@ public class UserServiceImplTest {
     public void registerSuccessful() {
         try {
             // GIVEN
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(null);
-            userDao.addNewUser(anyObject(UserBean.class));
-            expectLastCall();
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
 
             // WHEN
             userService.register(USER_NAME1, PASSWORD1);
         } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
+
+        verify(userDao, times(1)).addNewUser(any(UserBean.class));
     }
 
     @Test
@@ -211,8 +198,7 @@ public class UserServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1);
             user.setId((int) System.currentTimeMillis());
 
-            expect(userDao.getUserByUsername(USER_NAME1)).andStubReturn(user);
-            replay(userDao);
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
             // WHEN
             userService.register(USER_NAME1, PASSWORD1);

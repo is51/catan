@@ -1,6 +1,9 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.*;
+
+import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "GAME_USER")
@@ -32,6 +38,9 @@ public class GameUserBean {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GAME_ID", nullable = false)
     private GameBean game;
+
+    @Column(name = "READY", nullable = false)
+    private boolean ready;
 
     public GameUserBean() {
     }
@@ -74,32 +83,41 @@ public class GameUserBean {
         this.game = game;
     }
 
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof GameUserBean)) return false;
+        if (!(o instanceof GameUserBean)) {
+            return false;
+        }
+        final GameUserBean other = (GameUserBean) o;
 
-        GameUserBean that = (GameUserBean) o;
-
-        if (colorId != that.colorId) return false;
-        if (gameUserId != that.gameUserId) return false;
-
-        return true;
+        return new EqualsBuilder()
+                .append(gameUserId, other.gameUserId)
+                .append(user, other.user)
+                .append(colorId, other.colorId)
+                .append(ready, other.ready)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = gameUserId;
-        result = 31 * result + colorId;
-        return result;
+        return new HashCodeBuilder()
+                .append(gameUserId)
+                .append(user)
+                .append(colorId)
+                .append(ready)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return "GameUserBean{" +
-                "gameUserId=" + gameUserId +
-                ", userId=" + (user == null ? "" : user.getId()) +
-                ", colorId=" + colorId +
-                '}';
+        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 }

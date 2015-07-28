@@ -3,6 +3,7 @@ package catan.controllers.game;
 import catan.config.ApplicationConfig;
 import catan.domain.model.game.types.GameStatus;
 import catan.services.impl.GameServiceImpl;
+import catan.domain.model.game.GameStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ public class CreateGameTest extends GameTestUtil {
 
     public static final String USER_NAME_1 = "user1_CreateGameTest";
     public static final String USER_PASSWORD_1 = "password1";
+    public static final int MIN_TARGET_VICTORY_POINTS = 2;
 
     private static boolean initialized = false;
 
@@ -37,7 +39,7 @@ public class CreateGameTest extends GameTestUtil {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int userId = getUserId(userToken);
 
-        createNewGame(userToken, true)
+        createNewGame(userToken, true, 99)
                 .then()
                 .statusCode(200)
                 .contentType(ACCEPT_CONTENT_TYPE)
@@ -50,9 +52,11 @@ public class CreateGameTest extends GameTestUtil {
                         greaterThan(System.currentTimeMillis() - 60000))
                         .and(
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
-                .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS))
-                .body("gameUsers", not(equalTo(isEmptyString())));
+                .body("targetVictoryPoints", equalTo(99))
+                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
+                .body("dateStarted", equalTo(0))
+                .body("gameUsers", not(equalTo(isEmptyString()))); // wtf?
     }
 
     @Test
@@ -87,7 +91,7 @@ public class CreateGameTest extends GameTestUtil {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("privateGame", true) // 'privateGame' is mandatory, 'token' is not mandatory
+                .parameters("privateGame", true, "targetVictoryPoints", DEFAULT_TARGET_VICTORY_POINTS) // 'privateGame' is mandatory, 'token' is not mandatory
                 .when()
                 .post(URL_CREATE_NEW_GAME)
                 .then()
@@ -96,14 +100,19 @@ public class CreateGameTest extends GameTestUtil {
         logoutUser(userToken);
 
         // with old token
-        given()
-                .port(SERVER_PORT)
-                .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", userToken, "privateGame", true)
-                .when()
-                .post(URL_CREATE_NEW_GAME)
+        createNewGame(userToken, true)
                 .then()
                 .statusCode(403);
+    }
+
+    @Test
+    public void should_fail_when_target_victory_points_fewer_than_min() {
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+
+        createNewGame(userToken, false, MIN_TARGET_VICTORY_POINTS - 1)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
     }
 
 }

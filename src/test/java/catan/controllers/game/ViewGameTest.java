@@ -51,8 +51,9 @@ public class ViewGameTest extends GameTestUtil {
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
                 .body("gameUsers.user.id", hasItems(userId))
-                .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
+                .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
+                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
     }
 
     @Test
@@ -81,8 +82,9 @@ public class ViewGameTest extends GameTestUtil {
                                 lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
                 .body("gameUsers.user.id", hasItems(userId1, userId2))
-                .body("minUsers", equalTo(GameServiceImpl.MIN_USERS))
-                .body("maxUsers", equalTo(GameServiceImpl.MAX_USERS));
+                .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
+                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
     }
 
     @Test

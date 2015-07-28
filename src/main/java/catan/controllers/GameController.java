@@ -115,6 +115,24 @@ public class GameController {
         gameService.cancelGame(user, gameId);
     }
 
+    @RequestMapping(value = "ready",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void userReady(@RequestParam(value = "token", required = false) String token,
+                          @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+        gameService.updateGameUserStatus(user, gameId, true);
+    }
+
+    @RequestMapping(value = "not-ready",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void userNotReady(@RequestParam(value = "token", required = false) String token,
+                             @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+        gameService.updateGameUserStatus(user, gameId, false);
+    }
+
     @Autowired
     public void setGameService(GameService gameService) {
         this.gameService = gameService;
