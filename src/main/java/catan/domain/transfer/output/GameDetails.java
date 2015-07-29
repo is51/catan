@@ -1,7 +1,7 @@
 package catan.domain.transfer.output;
 
 import catan.domain.model.game.GameBean;
-import catan.domain.transfer.output.dashboard.DashboardDetails;
+import catan.domain.transfer.output.dashboard.MapDetails;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class GameDetails {
     private int minPlayers;
     private int maxPlayers;
     private int targetVictoryPoints;
-    private DashboardDetails dashboard;
+    private MapDetails map;
 
     public GameDetails() {
     }
@@ -125,11 +125,11 @@ public class GameDetails {
         this.targetVictoryPoints = targetVictoryPoints;
     }
 
-    public DashboardDetails getDashboard() {
-        return dashboard;
+    public MapDetails getMap() {
+        return map;
     }
 
-    public void setDashboard(DashboardDetails dashboard) {
-        this.dashboard = dashboard;
+    public void setMap(MapDetails map) {
+        this.map = map;
     }
 }

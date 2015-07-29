@@ -2,7 +2,7 @@ package catan.domain.transfer.output.dashboard;
 
 import java.util.List;
 
-public class DashboardDetails {
+public class MapDetails {
     private List<EdgeDetails> edges;
     private List<HexDetails> hexes;
     private List<NodeDetails> nodes;

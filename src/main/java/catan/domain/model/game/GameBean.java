@@ -49,7 +49,7 @@ public class GameBean {
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", orphanRemoval = true)
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     public GameBean() {

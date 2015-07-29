@@ -25,4 +25,6 @@ public interface GameDao {
     void updateGame(GameBean game);
 
     void updateGameUser(GameUserBean gameUserBean);
+
+    void deleteGameUser(GameUserBean gameUserBean);
 }

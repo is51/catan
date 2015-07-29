@@ -103,4 +103,9 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
         persist(gameUserBean);
     }
 
+    @Override
+    public void deleteGameUser(GameUserBean gameUserBean) {
+        delete(gameUserBean);
+    }
+
 }
