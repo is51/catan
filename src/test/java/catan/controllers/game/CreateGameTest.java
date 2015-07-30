@@ -21,6 +21,8 @@ public class CreateGameTest extends GameTestUtil {
     public static final String USER_NAME_1 = "user1_CreateGameTest";
     public static final String USER_PASSWORD_1 = "password1";
     public static final int MIN_TARGET_VICTORY_POINTS = 2;
+    public static final String USER_NAME_GUEST_1 = "guest1_CreateGameTest";
+    public static final String USER_NAME_GUEST_2 = "guest2_CreateGameTest";
 
     private static boolean initialized = false;
 
@@ -35,26 +37,22 @@ public class CreateGameTest extends GameTestUtil {
     @Test
     public void should_successfully_create_new_private_game() {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int userId = getUserId(userToken);
 
         createNewGame(userToken, true, 99)
                 .then()
                 .statusCode(200)
                 .contentType(ACCEPT_CONTENT_TYPE)
-                .body("gameId", greaterThan(0))
-                .body("creatorId", equalTo(userId))
-                .body("privateGame", equalTo(true))
-                .body("status", equalTo(GameStatus.NEW.toString()))
-                .body("privateCode", not(equalTo(isEmptyString())))
-                .body("dateCreated", is(both(   //closeTo can be applied only to 'double' values, but dateCreated is 'long' value
-                        greaterThan(System.currentTimeMillis() - 60000))
-                        .and(
-                                lessThanOrEqualTo(System.currentTimeMillis()))))
-                .body("targetVictoryPoints", equalTo(99))
-                .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
-                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
-                .body("dateStarted", equalTo(0))
-                .body("gameUsers", not(equalTo(isEmptyString()))); // wtf?
+                .body("gameId", greaterThan(0));
+    }
+
+    @Test
+    public void should_guest_successfully_create_new_private_game() {
+        String userToken = registerAndLoginGuest(USER_NAME_GUEST_1)
+                .path("token");
+
+        createNewGame(userToken, true)
+                .then()
+                .statusCode(200);
     }
 
     @Test
@@ -65,6 +63,17 @@ public class CreateGameTest extends GameTestUtil {
                 .then()
                 .statusCode(200)
                 .body("privateCode", isEmptyOrNullString());
+    }
+
+    @Test
+    public void should_fail_when_create_new_public_game_if_creator_is_guest() {
+        String userToken = registerAndLoginGuest(USER_NAME_GUEST_2)
+                .path("token");
+
+        createNewGame(userToken, false)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("GUEST_NOT_PERMITTED"));
     }
 
     @Test

@@ -26,7 +26,7 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public SessionTokenDetails login(@RequestParam("username") String username,
                                      @RequestParam("password") String password) throws UserException {
-        String token = userService.login(username, password);
+        String token = userService.loginUser(username, password);
 
         return new SessionTokenDetails(token);
     }
@@ -43,7 +43,17 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void register(@RequestParam("username") String username,
                          @RequestParam("password") String password) throws UserException {
-        userService.register(username, password);
+        userService.registerUser(username, password);
+    }
+
+    @RequestMapping(value = "register/guest",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public SessionTokenDetails addGuestUser(@RequestParam("username") String username) throws UserException {
+        userService.registerGuest(username);
+        String token = userService.loginGuest(username);
+
+        return new SessionTokenDetails(token);
     }
 
     @RequestMapping(value = "details",

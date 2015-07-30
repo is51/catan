@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-    .controller('GameController', ['$scope', '$stateParams', '$location', 'Remote', function($scope, $stateParams, $location, Remote) {
+    .controller('GameController', ['$scope', '$stateParams', '$state', 'Remote', function($scope, $stateParams, $state, Remote) {
 
         $scope.gameDetails = null;
 
@@ -11,7 +11,7 @@ angular.module('catan')
                     $scope.gameDetails = response.data;
                 }, function(response) {
                     alert('Getting Game Details Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
-                    $location.path("/");
+                    $state.go("start");
                 });
         };
 

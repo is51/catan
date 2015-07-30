@@ -13,7 +13,6 @@ import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 @Table(name = "GAME_USER")
 public class GameUserBean {
 
-    //TODO: think about removal of id in this table
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int gameUserId;

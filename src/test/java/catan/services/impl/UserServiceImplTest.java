@@ -2,19 +2,26 @@ package catan.services.impl;
 
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
+import catan.domain.model.user.UserSessionBean;
 import catan.exception.UserException;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
@@ -33,48 +40,69 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void loginSuccessful() throws UserException {
+    public void loginUserSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
         when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
         // WHEN
-        String session = userService.login(USER_NAME1, PASSWORD1);
+        String session = userService.loginUser(USER_NAME1, PASSWORD1);
 
         // THEN
         assertNotNull(session);
         assertEquals(36, session.length());
 
-        verify(userDao, times(1)).allocateNewTokenToUser(anyString(), any(UserBean.class));
+        verify(userDao, times(1)).removeSessionByUser(any(UserBean.class));
+        verify(userDao, times(1)).addNewSession(any(UserSessionBean.class));
     }
 
     @Test
-    public void loginGeneratesNewTokenSuccessful() throws UserException {
+    public void loginGuestSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, null, true);
         user.setId((int) System.currentTimeMillis());
 
         when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
         // WHEN
-        String firstSession = userService.login(USER_NAME1, PASSWORD1);
-        String secondSession = userService.login(USER_NAME1, PASSWORD1);
+        String session = userService.loginGuest(USER_NAME1);
+
+        // THEN
+        assertNotNull(session);
+        assertEquals(36, session.length());
+
+        verify(userDao, times(1)).removeSessionByUser(any(UserBean.class));
+        verify(userDao, times(1)).addNewSession(any(UserSessionBean.class));
+    }
+
+    @Test
+    public void loginGeneratesNewTokenSuccessful() throws UserException {
+        // GIVEN
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
+        user.setId((int) System.currentTimeMillis());
+
+        when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
+
+        // WHEN
+        String firstSession = userService.loginUser(USER_NAME1, PASSWORD1);
+        String secondSession = userService.loginUser(USER_NAME1, PASSWORD1);
 
         // THEN
         assertNotNull(firstSession);
         assertNotNull(secondSession);
         assertNotSame(firstSession, secondSession);
 
-        verify(userDao, times(2)).allocateNewTokenToUser(Matchers.anyString(), any(UserBean.class));
+        verify(userDao, times(2)).removeSessionByUser(any(UserBean.class));
+        verify(userDao, times(2)).addNewSession(any(UserSessionBean.class));
     }
 
     @Test
     public void loginErrorWhenPasswordIncorrect() throws UserException {
         try {
             // WHEN
-            userService.login(USER_NAME1, null);
+            userService.loginUser(USER_NAME1, null);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -88,7 +116,7 @@ public class UserServiceImplTest {
     public void loginErrorWhenUsernameIncorrect() throws UserException {
         try {
             // WHEN
-            userService.login(null, PASSWORD1);
+            userService.loginUser(null, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -105,7 +133,7 @@ public class UserServiceImplTest {
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
 
             // WHEN
-            userService.login(USER_NAME1, PASSWORD1);
+            userService.loginUser(USER_NAME1, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -119,13 +147,34 @@ public class UserServiceImplTest {
     public void loginErrorWhenPasswordDoesNotMatch() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
             user.setId((int) System.currentTimeMillis());
 
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
             // WHEN
-            userService.login(USER_NAME1, PASSWORD2);
+            userService.loginUser(USER_NAME1, PASSWORD2);
+            fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
+        } catch (UserException e) {
+            // THEN
+            assertEquals(UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void loginUserErrorWhenUserIsGuest() throws UserException {
+        try {
+            // GIVEN
+            UserBean user = new UserBean(USER_NAME1, null, true);
+            user.setId((int) System.currentTimeMillis());
+
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
+
+
+            // WHEN
+            userService.loginUser(USER_NAME1, PASSWORD2);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_INCORRECT_LOGIN_PASSWORD + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -149,25 +198,50 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void registerSuccessful() {
+    public void registerPermanentUserSuccessful() {
         try {
             // GIVEN
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
+            ArgumentCaptor<UserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(UserBean.class);
 
             // WHEN
-            userService.register(USER_NAME1, PASSWORD1);
+            userService.registerUser(USER_NAME1, PASSWORD1);
+
+            // THEN
+            verify(userDao, times(1)).addNewUser(gameUserBeanCaptor.capture());
+            UserBean user = gameUserBeanCaptor.getValue();
+            assertNotNull(user);
+            assertFalse(user.isGuest());
         } catch (Exception e) {
             fail("No exceptions should be thrown");
         }
+    }
 
-        verify(userDao, times(1)).addNewUser(any(UserBean.class));
+    @Test
+    public void registerGuestUserSuccessful() throws UserException {
+        try {
+            // GIVEN
+            when(userDao.getUserByUsername(USER_NAME1)).thenReturn(null);
+            ArgumentCaptor<UserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(UserBean.class);
+
+            // WHEN
+            userService.registerGuest(USER_NAME1);
+
+            // THEN
+            verify(userDao, times(1)).addNewUser(gameUserBeanCaptor.capture());
+            UserBean user = gameUserBeanCaptor.getValue();
+            assertNotNull(user);
+            assertTrue(user.isGuest());
+        } catch (Exception e) {
+            fail("No exceptions should be thrown");
+        }
     }
 
     @Test
     public void registerErrorWhenPasswordIncorrect() throws UserException {
         try {
             // WHEN
-            userService.register(USER_NAME1, null);
+            userService.registerUser(USER_NAME1, null);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -181,7 +255,7 @@ public class UserServiceImplTest {
     public void registerErrorWhenUsernameIncorrect() throws UserException {
         try {
             // WHEN
-            userService.register(null, PASSWORD1);
+            userService.registerUser(null, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (UserException e) {
             // THEN
@@ -195,13 +269,13 @@ public class UserServiceImplTest {
     public void registerErrorWhenUserWithSuchUsernameAlreadyExists() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
             user.setId((int) System.currentTimeMillis());
 
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
 
             // WHEN
-            userService.register(USER_NAME1, PASSWORD1);
+            userService.registerUser(USER_NAME1, PASSWORD1);
             fail("UserException with error code '" + UserServiceImpl.ERROR_CODE_USERNAME_ALREADY_EXISTS + "' should be thrown");
         } catch (UserException e) {
             // THEN

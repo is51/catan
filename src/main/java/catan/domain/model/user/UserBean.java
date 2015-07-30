@@ -19,15 +19,19 @@ public class UserBean {
     @Column(name = "USERNAME", unique = true, nullable = false)
     private String username;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "PASSWORD", nullable = true)
     private String password;
+
+    @Column(name = "GUEST", nullable = false)
+    private boolean guest;
 
     public UserBean() {
     }
 
-    public UserBean(String username, String password) {
+    public UserBean(String username, String password, boolean guest) {
         this.username = username;
         this.password = password;
+        this.guest = guest;
     }
 
     public int getId() {
@@ -52,6 +56,14 @@ public class UserBean {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isGuest() {
+        return guest;
+    }
+
+    public void setGuest(boolean guest) {
+        this.guest = guest;
     }
 
     @Override
