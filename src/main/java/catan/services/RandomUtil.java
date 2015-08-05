@@ -1,6 +1,8 @@
 package catan.services;
 
-public class PrivateCodeUtil {
+import catan.domain.model.dashboard.types.HexType;
+
+public class RandomUtil {
 
     private RandomValueGenerator rvg = new RandomValueGenerator();
 
@@ -16,6 +18,24 @@ public class PrivateCodeUtil {
 
 
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
+    }
+
+    public HexType generateRandomHexType() {
+        int randomHexTypeId = (int) (rvg.randomValue() * 6);
+        switch (randomHexTypeId){
+            case 0:
+                return HexType.BRICK;
+            case 1:
+                return HexType.WOOD;
+            case 2:
+                return HexType.SHEEP;
+            case 3:
+                return HexType.WHEAT;
+            case 4:
+                return HexType.STONE;
+            default:
+                return HexType.EMPTY;
+        }
     }
 
     public void setRvg(RandomValueGenerator rvg) {

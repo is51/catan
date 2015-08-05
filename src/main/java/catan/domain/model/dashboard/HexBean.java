@@ -5,6 +5,7 @@ import catan.domain.model.game.GameBean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,8 +21,8 @@ public class HexBean {
     @Column(name = "HEX_ID", unique = true, nullable = false)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "GAME_ID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "GAME_ID", nullable = false)
     private GameBean game;
 
     @Column(name = "X_COORDINATE", unique = false, nullable = false)
@@ -90,7 +91,9 @@ public class HexBean {
     public HexBean() {
     }
 
-    public HexBean(GameBean game, int xCoordinate, int yCoordinate, HexType resourceType, int dice, boolean robbed, NodeBean upNode, NodeBean rightUpNode, NodeBean rightDownNode, NodeBean downNode, NodeBean leftDownNode, NodeBean leftUpNode, EdgeBean rightUpEdge, EdgeBean rightEdge, EdgeBean rightDownEdge, EdgeBean leftDownEdge, EdgeBean leftEdge, EdgeBean leftUpEdge) {
+    public HexBean(GameBean game, int xCoordinate, int yCoordinate, HexType resourceType, int dice, boolean robbed,
+                   NodeBean upNode, NodeBean rightUpNode, NodeBean rightDownNode, NodeBean downNode, NodeBean leftDownNode, NodeBean leftUpNode,
+                   EdgeBean rightUpEdge, EdgeBean rightEdge, EdgeBean rightDownEdge, EdgeBean leftDownEdge, EdgeBean leftEdge, EdgeBean leftUpEdge) {
         this.game = game;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;

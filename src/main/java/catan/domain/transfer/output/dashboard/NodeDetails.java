@@ -1,14 +1,15 @@
 package catan.domain.transfer.output.dashboard;
 
-import java.util.List;
-
 public class NodeDetails {
     private Integer nodeId;
     private String port;
-    private String built;
-    private Integer buildingOwnerId;
-    private List<Integer> hexIds;
-    private List<Integer> edgeIds;
+    private BuildingDetails building;
+    private Integer upHexId;
+    private Integer rightDownHexId;
+    private Integer leftDownHexId;
+    private Integer rightUpEdgeId;
+    private Integer dowEdgeId;
+    private Integer leftUpEdgeId;
 
     public Integer getNodeId() {
         return nodeId;
@@ -26,35 +27,59 @@ public class NodeDetails {
         this.port = port;
     }
 
-    public String getBuilt() {
-        return built;
+    public BuildingDetails getBuilding() {
+        return building;
     }
 
-    public void setBuilt(String built) {
-        this.built = built;
+    public void setBuilding(BuildingDetails building) {
+        this.building = building;
     }
 
-    public Integer getBuildingOwnerId() {
-        return buildingOwnerId;
+    public Integer getUpHexId() {
+        return upHexId;
     }
 
-    public void setBuildingOwnerId(Integer buildingOwnerId) {
-        this.buildingOwnerId = buildingOwnerId;
+    public void setUpHexId(Integer upHexId) {
+        this.upHexId = upHexId;
     }
 
-    public List<Integer> getHexIds() {
-        return hexIds;
+    public Integer getRightDownHexId() {
+        return rightDownHexId;
     }
 
-    public void setHexIds(List<Integer> hexIds) {
-        this.hexIds = hexIds;
+    public void setRightDownHexId(Integer rightDownHexId) {
+        this.rightDownHexId = rightDownHexId;
     }
 
-    public List<Integer> getEdgeIds() {
-        return edgeIds;
+    public Integer getLeftDownHexId() {
+        return leftDownHexId;
     }
 
-    public void setEdgeIds(List<Integer> edgeIds) {
-        this.edgeIds = edgeIds;
+    public void setLeftDownHexId(Integer leftDownHexId) {
+        this.leftDownHexId = leftDownHexId;
+    }
+
+    public Integer getRightUpEdgeId() {
+        return rightUpEdgeId;
+    }
+
+    public void setRightUpEdgeId(Integer rightUpEdgeId) {
+        this.rightUpEdgeId = rightUpEdgeId;
+    }
+
+    public Integer getDowEdgeId() {
+        return dowEdgeId;
+    }
+
+    public void setDowEdgeId(Integer dowEdgeId) {
+        this.dowEdgeId = dowEdgeId;
+    }
+
+    public Integer getLeftUpEdgeId() {
+        return leftUpEdgeId;
+    }
+
+    public void setLeftUpEdgeId(Integer leftUpEdgeId) {
+        this.leftUpEdgeId = leftUpEdgeId;
     }
 }

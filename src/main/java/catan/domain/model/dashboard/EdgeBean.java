@@ -1,16 +1,16 @@
 package catan.domain.model.dashboard;
 
-import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameUserBean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -21,16 +21,13 @@ public class EdgeBean {
     @Column(name = "EDGE_ID", unique = true, nullable = false)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "GAME_ID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "GAME_ID", nullable = false)
     private GameBean game;
 
-    @Column(name = "BUILT", unique = false, nullable = false)
-    private EdgeBuiltType built;
-
-    @ManyToOne
-    @JoinColumn(name = "BUILDING_OWNER_ID")
-    private GameUserBean buildingOwner;
+    @OneToOne
+    @JoinColumn(name = "BUILDING_ID")
+    private BuildingBean building;
 
     //TODO: probably related hexes will be stored as Set<HexBean>
     @ManyToOne
@@ -53,10 +50,9 @@ public class EdgeBean {
     public EdgeBean() {
     }
 
-    public EdgeBean(GameBean game, EdgeBuiltType built, GameUserBean buildingOwner, HexBean upHex, HexBean downHex, NodeBean leftNode, NodeBean rightNode) {
+    public EdgeBean(GameBean game, BuildingBean building, HexBean upHex, HexBean downHex, NodeBean leftNode, NodeBean rightNode) {
         this.game = game;
-        this.built = built;
-        this.buildingOwner = buildingOwner;
+        this.building = building;
         this.upHex = upHex;
         this.downHex = downHex;
         this.leftNode = leftNode;
@@ -79,20 +75,12 @@ public class EdgeBean {
         this.game = game;
     }
 
-    public EdgeBuiltType getBuilt() {
-        return built;
+    public BuildingBean getBuilding() {
+        return building;
     }
 
-    public void setBuilt(EdgeBuiltType built) {
-        this.built = built;
-    }
-
-    public GameUserBean getBuildingOwner() {
-        return buildingOwner;
-    }
-
-    public void setBuildingOwner(GameUserBean buildingOwner) {
-        this.buildingOwner = buildingOwner;
+    public void setBuilding(BuildingBean building) {
+        this.building = building;
     }
 
     public HexBean getUpHex() {

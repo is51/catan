@@ -1,13 +1,15 @@
 package catan.services.impl;
 
 import catan.dao.GameDao;
+import catan.domain.model.dashboard.HexBean;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
 import catan.services.GameService;
-import catan.services.PrivateCodeUtil;
+import catan.services.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,7 @@ public class GameServiceImpl implements GameService {
 
     private GameDao gameDao;
 
-    private PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
+    private RandomUtil randomUtil = new RandomUtil();
 
     @Override
     synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
@@ -69,9 +71,10 @@ public class GameServiceImpl implements GameService {
         }
 
         GameBean game = privateGame ? createPrivateGame(creator, targetVictoryPoints) : createPublicGame(creator, targetVictoryPoints);
-        gameDao.addNewGame(game);
-
+        generateNewGameMap(game);
         addUserToGame(game, creator);
+
+        gameDao.addNewGame(game);
 
         log.debug("<< Game '" + game + "' successfully created with creator " + creator);
 
@@ -143,6 +146,7 @@ public class GameServiceImpl implements GameService {
         }
 
         addUserToGame(game, user);
+        gameDao.updateGame(game);
 
         log.debug("<< User " + user + " successfully joined game " + game);
 
@@ -297,6 +301,26 @@ public class GameServiceImpl implements GameService {
         gameDao.updateGame(game);
     }
 
+    private void generateNewGameMap(GameBean game) {
+        for(int i = -3; i < 4; i++){
+            for(int j = -3; j < 4; j++){
+                if(i + j < 3 && i + j > -3 ){
+                    HexType randomHexType = randomUtil.generateRandomHexType();
+
+                    HexBean hex = new HexBean();
+                    hex.setGame(game);
+                    hex.setxCoordinate(i);
+                    hex.setyCoordinate(j);
+                    hex.setResourceType(randomHexType);
+                    hex.setDice(i + j + 4);
+                    hex.setRobbed(false);
+
+                    game.getHexes().add(hex);
+                }
+            }
+        }
+    }
+
     private void checkParameters(UserBean user, String gameId) throws GameException {
         if (user == null) {
             log.debug("<< User should not be empty");
@@ -335,7 +359,7 @@ public class GameServiceImpl implements GameService {
 
         while (numberOfDuplicates != -1) {
             int numberOfDigits = START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE + numberOfDuplicates / MAX_DUPLICATES_RATIO;
-            randomPrivateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
+            randomPrivateCode = randomUtil.generateRandomPrivateCode(numberOfDigits);
 
             if (usedCodes.contains(randomPrivateCode)) {
                 numberOfDuplicates++;
@@ -403,13 +427,11 @@ public class GameServiceImpl implements GameService {
         }
 
         GameUserBean newGameUser = new GameUserBean(userBean, colorId, game);
-        gameDao.addNewGameUser(newGameUser);
-
         game.getGameUsers().add(newGameUser);
     }
 
-    public PrivateCodeUtil getPrivateCodeUtil() {
-        return privateCodeUtil;
+    public RandomUtil getRandomUtil() {
+        return randomUtil;
     }
 
     @Autowired

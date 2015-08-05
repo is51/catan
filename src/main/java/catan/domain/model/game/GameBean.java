@@ -1,8 +1,12 @@
 package catan.domain.model.game;
 
+import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.HexBean;
+import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.GameUserDetails;
+import catan.domain.transfer.output.dashboard.HexDetails;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -49,8 +53,17 @@ public class GameBean {
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EdgeBean> edges = new HashSet<EdgeBean>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<HexBean> hexes = new HashSet<HexBean>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<NodeBean> nodes = new HashSet<NodeBean>();
 
     public GameBean() {
     }
@@ -165,6 +178,30 @@ public class GameBean {
         this.targetVictoryPoints = targetVictoryPoints;
     }
 
+    public Set<EdgeBean> getEdges() {
+        return edges;
+    }
+
+    public void setEdges(Set<EdgeBean> edges) {
+        this.edges = edges;
+    }
+
+    public Set<HexBean> getHexes() {
+        return hexes;
+    }
+
+    public void setHexes(Set<HexBean> hexes) {
+        this.hexes = hexes;
+    }
+
+    public Set<NodeBean> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(Set<NodeBean> nodes) {
+        this.nodes = nodes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof GameBean)) {
@@ -216,5 +253,15 @@ public class GameBean {
         }
 
         return gameUsers;
+    }
+
+    public List<HexDetails> getHexDetails() {
+        List<HexDetails> hexes = new ArrayList<HexDetails>();
+
+        for (HexBean hex : this.hexes) {
+            hexes.add(new HexDetails(hex));
+        }
+
+        return hexes;
     }
 }

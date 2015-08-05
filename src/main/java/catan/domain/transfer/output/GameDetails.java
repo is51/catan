@@ -35,6 +35,8 @@ public class GameDetails {
         this.minPlayers = game.getMinPlayers();
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
+        this.map = new MapDetails();
+        this.map.setHexes(game.getHexDetails());
     }
 
     public int getGameId() {

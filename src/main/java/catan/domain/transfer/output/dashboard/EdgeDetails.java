@@ -1,13 +1,12 @@
 package catan.domain.transfer.output.dashboard;
 
-import java.util.List;
-
 public class EdgeDetails {
     private Integer edgeId;
-    private String built;
-    private Integer buildingOwnerId;
-    private List<Integer> hexIds;
-    private List<Integer> nodeIds;
+    private BuildingDetails building;
+    private Integer upHex;
+    private Integer downHex;
+    private Integer leftNode;
+    private Integer rightNode;
 
     public Integer getEdgeId() {
         return edgeId;
@@ -17,35 +16,43 @@ public class EdgeDetails {
         this.edgeId = edgeId;
     }
 
-    public String getBuilt() {
-        return built;
+    public BuildingDetails getBuilding() {
+        return building;
     }
 
-    public void setBuilt(String built) {
-        this.built = built;
+    public void setBuilding(BuildingDetails building) {
+        this.building = building;
     }
 
-    public Integer getBuildingOwnerId() {
-        return buildingOwnerId;
+    public Integer getUpHex() {
+        return upHex;
     }
 
-    public void setBuildingOwnerId(Integer buildingOwnerId) {
-        this.buildingOwnerId = buildingOwnerId;
+    public void setUpHex(Integer upHex) {
+        this.upHex = upHex;
     }
 
-    public List<Integer> getHexIds() {
-        return hexIds;
+    public Integer getDownHex() {
+        return downHex;
     }
 
-    public void setHexIds(List<Integer> hexIds) {
-        this.hexIds = hexIds;
+    public void setDownHex(Integer downHex) {
+        this.downHex = downHex;
     }
 
-    public List<Integer> getNodeIds() {
-        return nodeIds;
+    public Integer getLeftNode() {
+        return leftNode;
     }
 
-    public void setNodeIds(List<Integer> nodeIds) {
-        this.nodeIds = nodeIds;
+    public void setLeftNode(Integer leftNode) {
+        this.leftNode = leftNode;
+    }
+
+    public Integer getRightNode() {
+        return rightNode;
+    }
+
+    public void setRightNode(Integer rightNode) {
+        this.rightNode = rightNode;
     }
 }

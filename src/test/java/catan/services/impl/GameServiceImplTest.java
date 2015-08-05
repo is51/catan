@@ -49,7 +49,7 @@ public class GameServiceImplTest {
 
     @Before
     public void setUp() {
-        gameService.getPrivateCodeUtil().setRvg(rvg);
+        gameService.getRandomUtil().setRvg(rvg);
     }
 
     @After
@@ -101,7 +101,6 @@ public class GameServiceImplTest {
         GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS));
 
         // THEN
-        verify(gameDao, times(1)).addNewGameUser(any(GameUserBean.class));
         verify(gameDao, times(1)).addNewGame(gameBeanArgumentCaptor.capture());
 
         assertNotNull(game);

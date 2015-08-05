@@ -22,11 +22,6 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     }
 
     @Override
-    public void addNewGameUser(GameUserBean newGameUser) {
-        persist(newGameUser);
-    }
-
-    @Override
     public GameBean getGameByGameId(int gameId) {
         Criteria criteria = getSession().createCriteria(GameBean.class);
         criteria.add(Restrictions.eq("gameId", gameId));
@@ -46,11 +41,11 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     public List<GameBean> getGamesByCreatorId(int creatorId) {
         Query query = getSession().createQuery(
                 "SELECT game " +
-                "FROM " + GameBean.class.getSimpleName() + " AS game " +
-                "WHERE game.creator.id in (" +
-                    "SELECT user.id " +
-                    "FROM " + UserBean.class.getName() + " AS user " +
-                    "WHERE user.id = :creatorId)");
+                        "FROM " + GameBean.class.getSimpleName() + " AS game " +
+                        "WHERE game.creator.id in (" +
+                        "SELECT user.id " +
+                        "FROM " + UserBean.class.getName() + " AS user " +
+                        "WHERE user.id = :creatorId)");
         query.setString("creatorId", String.valueOf(creatorId));
 
         //noinspection unchecked
@@ -101,11 +96,6 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     @Override
     public void updateGameUser(GameUserBean gameUserBean) {
         persist(gameUserBean);
-    }
-
-    @Override
-    public void deleteGameUser(GameUserBean gameUserBean) {
-        delete(gameUserBean);
     }
 
 }
