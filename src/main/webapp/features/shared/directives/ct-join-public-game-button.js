@@ -18,17 +18,19 @@ angular.module('catan')
                     if (User.isNotAuthorized()) {
                         $state.go('registerGuest', {
                             onRegister: function() {
-                                $state.go('joinPublicGame');
+                                goBack();
                                 joinPublicGame();
                             },
-                            onBack: function() {
-                                $state.go('joinPublicGame');
-                            }
+                            onBack: goBack
                         });
                     }
 
                     return false;
                 });
+
+                function goBack() {
+                    $state.go('joinPublicGame');
+                }
 
                 function joinPublicGame() {
                     Remote.game.joinPublic({gameId: scope.game.gameId})

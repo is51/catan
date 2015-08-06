@@ -256,7 +256,7 @@ public class ApiEndpointListController {
                 "       .done(function(data, textStatus, jqXHR) {\n" +
                 "           responseEl.removeClass('fail');\n" +
                 "           responseEl.addClass('done');\n" +
-                "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<p>' + JSON.stringify(jqXHR.responseJSON) + '</p>' : '') )\n" +
+                "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<pre>' + JSON.stringify(jqXHR.responseJSON) + '</pre>' : '') )\n" +
                 "           responseEl.show();\n" +
                 "           \n" +
                 "           thisForm.find('input.replaceAction').each(function() {\n" +
@@ -266,7 +266,7 @@ public class ApiEndpointListController {
                 "       .fail(function(jqXHR, textStatus, errorThrown) {\n" +
                 "           responseEl.removeClass('done');\n" +
                 "           responseEl.addClass('fail');\n" +
-                "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<p>' + JSON.stringify(jqXHR.responseJSON) + '</p>' : '') )\n" +
+                "           responseEl.html('<button>X</button><p>' + jqXHR.status + ' ' + jqXHR.statusText + '</p>' + ((jqXHR.responseJSON!==undefined) ? '<pre>' + JSON.stringify(jqXHR.responseJSON) + '</pre>' : '') )\n" +
                 "           responseEl.show();\n" +
                 "           \n" +
                 "           thisForm.find('input.replaceAction').each(function() {\n" +

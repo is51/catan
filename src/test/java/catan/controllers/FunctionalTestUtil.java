@@ -1,11 +1,11 @@
-// TODO: remove checking of statusCode in each method. (Needs to be approved)
-
 package catan.controllers;
 
 import static com.jayway.restassured.RestAssured.given;
 import com.jayway.restassured.response.Response;
 
 public abstract class FunctionalTestUtil {
+    // TODO: remove checking of statusCode in each method. (Needs to be approved)
+
     public static final int SERVER_PORT = 8091;
     public static final String ACCEPT_CONTENT_TYPE = "application/json";
 

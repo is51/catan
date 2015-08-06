@@ -1,5 +1,3 @@
-// TODO: these tests need to be refactored: create methods like "register", "login", ... which will be returning "Response" objects. And use them.
-
 package catan.controllers.user;
 
 import catan.config.ApplicationConfig;
@@ -18,6 +16,9 @@ import static org.hamcrest.Matchers.*;
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class UserControllerTest extends FunctionalTestUtil {
+    // TODO: these tests need to be refactored: create methods like "register", "login", ... which will be returning "Response" objects. And use them.
+
+
     public static final int SERVER_PORT = 8091;
 
     public static final String USER_NAME_1 = "user1_UserTest";
@@ -165,7 +166,7 @@ public class UserControllerTest extends FunctionalTestUtil {
         String userToken = registerAndLoginGuest(USER_NAME_GUEST_1)
                 .then()
                 .statusCode(200)
-                .body("token", not(equalTo(isEmptyString())))
+                .body("token", not(isEmptyOrNullString()))
                 .extract()
                 .path("token");
 
