@@ -1,7 +1,9 @@
 package catan.services;
 
 import catan.domain.model.dashboard.types.HexType;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RandomUtil {
 
     private RandomValueGenerator rvg = new RandomValueGenerator();

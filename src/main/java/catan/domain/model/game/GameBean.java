@@ -1,5 +1,6 @@
 package catan.domain.model.game;
 
+import catan.domain.model.dashboard.CoordinatesBean;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
@@ -57,11 +58,13 @@ public class GameBean {
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Map<CoordinatesBean, HexBean> hexes = new HashMap<CoordinatesBean, HexBean>();
+
+    //TODO: think about removal of this set as it may be redundant
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EdgeBean> edges = new HashSet<EdgeBean>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<HexBean> hexes = new HashSet<HexBean>();
-
+    //TODO: think about removal of this set as it may be redundant
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<NodeBean> nodes = new HashSet<NodeBean>();
 
@@ -186,11 +189,11 @@ public class GameBean {
         this.edges = edges;
     }
 
-    public Set<HexBean> getHexes() {
+    public Map<CoordinatesBean, HexBean> getHexes() {
         return hexes;
     }
 
-    public void setHexes(Set<HexBean> hexes) {
+    public void setHexes(Map<CoordinatesBean, HexBean> hexes) {
         this.hexes = hexes;
     }
 
@@ -258,7 +261,7 @@ public class GameBean {
     public List<HexDetails> getHexDetails() {
         List<HexDetails> hexes = new ArrayList<HexDetails>();
 
-        for (HexBean hex : this.hexes) {
+        for (HexBean hex : this.hexes.values()) {
             hexes.add(new HexDetails(hex));
         }
 

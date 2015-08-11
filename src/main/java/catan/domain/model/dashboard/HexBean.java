@@ -3,6 +3,7 @@ package catan.domain.model.dashboard;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -18,18 +20,16 @@ import javax.persistence.Table;
 public class HexBean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "HEX_ID", unique = true, nullable = false)
+    @Column(name = "HEXES_KEY", unique = true, nullable = false)
     private int id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GAME_ID", nullable = false)
     private GameBean game;
 
-    @Column(name = "X_COORDINATE", unique = false, nullable = false)
-    private int xCoordinate;
-
-    @Column(name = "Y_COORDINATE", unique = false, nullable = false)
-    private int yCoordinate;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "COORDINATES_ID")
+    private CoordinatesBean coordinates;
 
     @Column(name = "RESOURCE_TYPE", unique = false, nullable = false)
     private HexType resourceType;
@@ -40,63 +40,60 @@ public class HexBean {
     @Column(name = "IS_ROBBED", unique = false, nullable = false)
     private boolean robbed;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "UP_NODE_ID")
     private NodeBean upNode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "RIGHT_UP_NODE_ID")
     private NodeBean rightUpNode;
 
-    @ManyToOne
-    @JoinColumn(name = "UP_DOWN_NODE_ID")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "RIGHT_DOWN_NODE_ID")
     private NodeBean rightDownNode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "DOWN_NODE_ID")
     private NodeBean downNode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "LEFT_DOWN_NODE_ID")
     private NodeBean leftDownNode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "LEFT_UP_NODE_ID")
     private NodeBean leftUpNode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "RIGHT_UP_EDGE_ID")
     private EdgeBean rightUpEdge;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "RIGHT_EDGE_ID")
     private EdgeBean rightEdge;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "RIGHT_DOWN_EDGE_ID")
     private EdgeBean rightDownEdge;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "LEFT_DOWN_EDGE_ID")
     private EdgeBean leftDownEdge;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "LEFT_EDGE_ID")
     private EdgeBean leftEdge;
 
-    @ManyToOne
-    @JoinColumn(name = "LEFT_UP_ID")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "LEFT_UP_EDGE_ID")
     private EdgeBean leftUpEdge;
 
     public HexBean() {
     }
 
-    public HexBean(GameBean game, int xCoordinate, int yCoordinate, HexType resourceType, int dice, boolean robbed,
-                   NodeBean upNode, NodeBean rightUpNode, NodeBean rightDownNode, NodeBean downNode, NodeBean leftDownNode, NodeBean leftUpNode,
-                   EdgeBean rightUpEdge, EdgeBean rightEdge, EdgeBean rightDownEdge, EdgeBean leftDownEdge, EdgeBean leftEdge, EdgeBean leftUpEdge) {
+    public HexBean(GameBean game, CoordinatesBean coordinates, HexType resourceType, int dice, boolean robbed, NodeBean upNode, NodeBean rightUpNode, NodeBean rightDownNode, NodeBean downNode, NodeBean leftDownNode, NodeBean leftUpNode, EdgeBean rightUpEdge, EdgeBean rightEdge, EdgeBean rightDownEdge, EdgeBean leftDownEdge, EdgeBean leftEdge, EdgeBean leftUpEdge) {
         this.game = game;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+        this.coordinates = coordinates;
         this.resourceType = resourceType;
         this.dice = dice;
         this.robbed = robbed;
@@ -130,20 +127,12 @@ public class HexBean {
         this.game = game;
     }
 
-    public int getxCoordinate() {
-        return xCoordinate;
+    public CoordinatesBean getCoordinates() {
+        return coordinates;
     }
 
-    public void setxCoordinate(int xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
-    public int getyCoordinate() {
-        return yCoordinate;
-    }
-
-    public void setyCoordinate(int yCoordinate) {
-        this.yCoordinate = yCoordinate;
+    public void setCoordinates(CoordinatesBean coordinates) {
+        this.coordinates = coordinates;
     }
 
     public HexType getResourceType() {

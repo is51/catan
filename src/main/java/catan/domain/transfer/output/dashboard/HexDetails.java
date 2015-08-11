@@ -24,11 +24,17 @@ public class HexDetails {
 
     public HexDetails(HexBean hex) {
         this.hexId = hex.getId();
-        this.x = hex.getxCoordinate();
-        this.y = hex.getyCoordinate();
+        this.x = hex.getCoordinates().getxCoordinate();
+        this.y = hex.getCoordinates().getyCoordinate();
         this.type = hex.getResourceType().name();
         this.dice = hex.getDice();
         this.robbed = hex.isRobbed();
+        this.upNodeId = hex.getUpNode().getId();
+        this.rightUpNodeId = hex.getRightUpNode().getId();
+        this.rightDownNodeId = hex.getRightDownNode().getId();
+        this.downNodeId = hex.getDownNode().getId();
+        this.leftDownNodeId = hex.getLeftDownNode().getId();
+        this.leftUpNodeId = hex.getLeftUpNode().getId();
     }
 
     public Integer getHexId() {

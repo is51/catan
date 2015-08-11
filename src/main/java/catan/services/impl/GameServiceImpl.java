@@ -1,14 +1,13 @@
 package catan.services.impl;
 
 import catan.dao.GameDao;
-import catan.domain.model.dashboard.HexBean;
-import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.exception.GameException;
 import catan.services.GameService;
+import catan.services.MapUtil;
 import catan.services.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +45,8 @@ public class GameServiceImpl implements GameService {
     public static final String GUEST_NOT_PERMITTED_ERROR = "GUEST_NOT_PERMITTED";
 
     private GameDao gameDao;
-
-    private RandomUtil randomUtil = new RandomUtil();
+    private RandomUtil randomUtil;
+    private MapUtil mapUtil;
 
     @Override
     synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
@@ -70,9 +69,11 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = privateGame ? createPrivateGame(creator, targetVictoryPoints) : createPublicGame(creator, targetVictoryPoints);
-        generateNewGameMap(game);
+        GameBean game = privateGame
+                ? createPrivateGame(creator, targetVictoryPoints)
+                : createPublicGame(creator, targetVictoryPoints);
         addUserToGame(game, creator);
+        mapUtil.generateNewGameMap(game);
 
         gameDao.addNewGame(game);
 
@@ -240,7 +241,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     synchronized public void updateGameUserStatus(UserBean user, String gameId, boolean readyForGame) throws GameException {
-        log.debug(">> Setting status ready for user {} for game {}", user, gameId );
+        log.debug(">> Setting status ready for user {} for game {}", user, gameId);
         checkParameters(user, gameId);
 
         GameBean game = getGameBean(gameId, ERROR_CODE_ERROR);
@@ -282,7 +283,7 @@ public class GameServiceImpl implements GameService {
 
         if (game.getMinPlayers() > game.getGameUsers().size()) {
             log.info("<< There are not enough players to start game {}. " +
-                    "Game will start when players count will be {}, current count is {}",
+                            "Game will start when players count will be {}, current count is {}",
                     game, game.getMaxPlayers(), game.getGameUsers().size());
             return;
         }
@@ -301,25 +302,6 @@ public class GameServiceImpl implements GameService {
         gameDao.updateGame(game);
     }
 
-    private void generateNewGameMap(GameBean game) {
-        for(int i = -3; i < 4; i++){
-            for(int j = -3; j < 4; j++){
-                if(i + j < 3 && i + j > -3 ){
-                    HexType randomHexType = randomUtil.generateRandomHexType();
-
-                    HexBean hex = new HexBean();
-                    hex.setGame(game);
-                    hex.setxCoordinate(i);
-                    hex.setyCoordinate(j);
-                    hex.setResourceType(randomHexType);
-                    hex.setDice(i + j + 4);
-                    hex.setRobbed(false);
-
-                    game.getHexes().add(hex);
-                }
-            }
-        }
-    }
 
     private void checkParameters(UserBean user, String gameId) throws GameException {
         if (user == null) {
@@ -437,5 +419,15 @@ public class GameServiceImpl implements GameService {
     @Autowired
     public void setGameDao(GameDao gameDao) {
         this.gameDao = gameDao;
+    }
+
+    @Autowired
+    public void setRandomUtil(RandomUtil randomUtil) {
+        this.randomUtil = randomUtil;
+    }
+
+    @Autowired
+    public void setMapUtil(MapUtil mapUtil) {
+        this.mapUtil = mapUtil;
     }
 }

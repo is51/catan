@@ -35,15 +35,15 @@ public class NodeBean {
 
     @ManyToOne
     @JoinColumn(name = "UP_HEX_ID")
-    private HexBean upHex;
+    private HexBean upHex;          // inverted downHex
 
     @ManyToOne
     @JoinColumn(name = "RIGHT_DOWN_HEX_ID")
-    private HexBean rightDownHex;
+    private HexBean rightDownHex;   // inverted leftUpHex
 
     @ManyToOne
     @JoinColumn(name = "LEFT_DOWN_HEX_ID")
-    private HexBean leftDownHex;
+    private HexBean leftDownHex;    // inverted rightUpHex
 
     @ManyToOne
     @JoinColumn(name = "RIGHT_UP_EDGE_ID")
@@ -60,16 +60,9 @@ public class NodeBean {
     public NodeBean() {
     }
 
-    public NodeBean(GameBean game, NodePortType port, BuildingBean building, HexBean upHex, HexBean rightDownHex, HexBean leftDownHex, EdgeBean rightUpEdge, EdgeBean dowEdge, EdgeBean leftUpEdge) {
+    public NodeBean(GameBean game, NodePortType port) {
         this.game = game;
         this.port = port;
-        this.building = building;
-        this.upHex = upHex;
-        this.rightDownHex = rightDownHex;
-        this.leftDownHex = leftDownHex;
-        this.rightUpEdge = rightUpEdge;
-        this.dowEdge = dowEdge;
-        this.leftUpEdge = leftUpEdge;
     }
 
     public int getId() {
@@ -112,6 +105,10 @@ public class NodeBean {
         this.upHex = upHex;
     }
 
+    public void populateDownHex(HexBean downHex) {
+        this.upHex = downHex;
+    }
+
     public HexBean getRightDownHex() {
         return rightDownHex;
     }
@@ -120,12 +117,20 @@ public class NodeBean {
         this.rightDownHex = rightDownHex;
     }
 
+    public void populateLeftUpHex(HexBean leftUpHex) {
+        this.rightDownHex = leftUpHex;
+    }
+
     public HexBean getLeftDownHex() {
         return leftDownHex;
     }
 
     public void setLeftDownHex(HexBean leftDownHex) {
         this.leftDownHex = leftDownHex;
+    }
+
+    public void populateRightUpHex(HexBean rightUpHex) {
+        this.leftDownHex = rightUpHex;
     }
 
     public EdgeBean getRightUpEdge() {
