@@ -1,5 +1,6 @@
 package catan.domain.model.dashboard;
 
+import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 
@@ -32,6 +33,9 @@ public class NodeBean {
     @OneToOne
     @JoinColumn(name = "BUILDING_ID")
     private BuildingBean building;
+
+    @Column(name = "ORIENTATION", unique = false, nullable = false)
+    private NodeOrientationType orientation;
 
     @ManyToOne
     @JoinColumn(name = "UP_HEX_ID")
@@ -95,6 +99,14 @@ public class NodeBean {
 
     public void setBuilding(BuildingBean building) {
         this.building = building;
+    }
+
+    public NodeOrientationType getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(NodeOrientationType orientation) {
+        this.orientation = orientation;
     }
 
     public HexBean getUpHex() {
