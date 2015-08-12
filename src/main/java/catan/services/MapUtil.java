@@ -47,7 +47,7 @@ public class MapUtil {
             node = getCurrentNodeOfRightNeighbourHex(hex.getGame(), nodePosition, hex.getCoordinates());
         }
         if (node == null) {
-            node = new NodeBean(hex.getGame(), NodePortType.NONE);
+            node = new NodeBean(hex.getGame(), NodePortType.NONE); //TODO: create ports randomly
         }
 
         switch (nodePosition) {
