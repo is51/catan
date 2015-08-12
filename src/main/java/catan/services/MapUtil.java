@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 public class MapUtil {
     private RandomUtil randomUtil;
 
-    public void generateNewGameMap(GameBean game) {
-        for (int x = -2; x <= 2; x++) {
-            for (int y = -2; y <= 2; y++) {
-                if (x + y >= -2 && x + y <= 2) {
+    public void generateNewRoundGameMap(GameBean game, int size) {
+        for (int x = -size; x <= size; x++) {
+            for (int y = -size; y <= size; y++) {
+                if (x + y >= -size && x + y <= size) {
                     createHex(game, x, y);
                 }
             }
@@ -35,19 +35,19 @@ public class MapUtil {
         hex.setRobbed(false);
 
         for (NodePosition position : NodePosition.values()) {
-            createNode(game, hex, position);
+            createNode(hex, position);
         }
 
         game.getHexes().put(coordinates, hex);
     }
 
-    private void createNode(GameBean game, HexBean hex, NodePosition nodePosition) {
-        NodeBean node = getCurrentNodeOfLeftNeighbourHex(game, nodePosition);
+    protected void createNode(HexBean hex, NodePosition nodePosition) {
+        NodeBean node = getCurrentNodeOfLeftNeighbourHex(hex.getGame(), nodePosition, hex.getCoordinates());
         if (node == null) {
-            node = getCurrentNodeOfRightNeighbourHex(game, nodePosition);
+            node = getCurrentNodeOfRightNeighbourHex(hex.getGame(), nodePosition, hex.getCoordinates());
         }
         if (node == null) {
-            node = new NodeBean(game, NodePortType.NONE);
+            node = new NodeBean(hex.getGame(), NodePortType.NONE);
         }
 
         switch (nodePosition) {
@@ -78,9 +78,12 @@ public class MapUtil {
         }
     }
 
-    private NodeBean getCurrentNodeOfLeftNeighbourHex(GameBean game, NodePosition nodePosition) {
-        CoordinatesBean coordinates = new CoordinatesBean(nodePosition.getLeftHexX(), nodePosition.getLeftHexY());
-        HexBean leftNeighbour = game.getHexes().get(coordinates);
+    protected NodeBean getCurrentNodeOfLeftNeighbourHex(GameBean game, NodePosition nodePosition, CoordinatesBean currentHexCoordinates) {
+        int xCoordinate = currentHexCoordinates.getxCoordinate() + nodePosition.getLeftNeighborHexXShift();
+        int yCoordinate = currentHexCoordinates.getyCoordinate() + nodePosition.getLeftNeighborHexYShift();
+
+        CoordinatesBean leftNeighbourCoordinates = new CoordinatesBean(xCoordinate, yCoordinate);
+        HexBean leftNeighbour = game.getHexes().get(leftNeighbourCoordinates);
         if (leftNeighbour == null) {
             return null;
         }
@@ -103,9 +106,12 @@ public class MapUtil {
         }
     }
 
-    public NodeBean getCurrentNodeOfRightNeighbourHex(GameBean game, NodePosition nodePosition) {
-        CoordinatesBean coordinates = new CoordinatesBean(nodePosition.getRightHexX(), nodePosition.getRightHexY());
-        HexBean rightNeighbour = game.getHexes().get(coordinates);
+    protected NodeBean getCurrentNodeOfRightNeighbourHex(GameBean game, NodePosition nodePosition, CoordinatesBean currentHexCoordinates) {
+        int xCoordinate = currentHexCoordinates.getxCoordinate() + nodePosition.getRightNeighborHexXShift();
+        int yCoordinate = currentHexCoordinates.getyCoordinate() + nodePosition.getRightNeighborHexYShift();
+
+        CoordinatesBean rightNeighbourCoordinates = new CoordinatesBean(xCoordinate, yCoordinate);
+        HexBean rightNeighbour = game.getHexes().get(rightNeighbourCoordinates);
         if (rightNeighbour == null) {
             return null;
         }

@@ -20,7 +20,7 @@ import javax.persistence.Table;
 public class HexBean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "HEXES_KEY", unique = true, nullable = false)
+    @Column(name = "HEX_ID", unique = true, nullable = false)
     private int id;
 
     @ManyToOne(fetch = FetchType.EAGER)

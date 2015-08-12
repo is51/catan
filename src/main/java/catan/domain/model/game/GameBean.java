@@ -58,6 +58,7 @@ public class GameBean {
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKeyJoinColumn(name="COORDINATES_ID")
     private Map<CoordinatesBean, HexBean> hexes = new HashMap<CoordinatesBean, HexBean>();
 
     //TODO: think about removal of this set as it may be redundant

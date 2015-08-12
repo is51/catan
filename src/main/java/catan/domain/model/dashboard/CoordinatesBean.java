@@ -12,7 +12,7 @@ import javax.persistence.Table;
 public class CoordinatesBean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "COORDINATE_ID", unique = true, nullable = false)
+    @Column(name = "COORDINATES_ID", unique = true, nullable = false)
     private int id;
 
     @Column(name = "X_COORDINATE", unique = false, nullable = false)
@@ -51,5 +51,25 @@ public class CoordinatesBean {
 
     public void setyCoordinate(int yCoordinate) {
         this.yCoordinate = yCoordinate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CoordinatesBean that = (CoordinatesBean) o;
+
+        if (xCoordinate != that.xCoordinate) return false;
+        if (yCoordinate != that.yCoordinate) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = xCoordinate;
+        result = 31 * result + yCoordinate;
+        return result;
     }
 }

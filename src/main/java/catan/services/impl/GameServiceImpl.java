@@ -24,13 +24,12 @@ import java.util.List;
 @Transactional
 public class GameServiceImpl implements GameService {
     private Logger log = LoggerFactory.getLogger(GameService.class);
-
     public static final int MAX_DUPLICATES_RATIO = 5;
     public static final int START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE = 4;
-
     public static final int MIN_USERS = 3;
     public static final int MAX_USERS = 4;
     public static final int MIN_TARGET_VICTORY_POINTS = 2;
+    public static final int ROUND_MAP_SIZE = 2;
 
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String GAME_ALREADY_STARTED_ERROR = "GAME_ALREADY_STARTED";
@@ -73,7 +72,7 @@ public class GameServiceImpl implements GameService {
                 ? createPrivateGame(creator, targetVictoryPoints)
                 : createPublicGame(creator, targetVictoryPoints);
         addUserToGame(game, creator);
-        mapUtil.generateNewGameMap(game);
+        mapUtil.generateNewRoundGameMap(game, ROUND_MAP_SIZE);
 
         gameDao.addNewGame(game);
 

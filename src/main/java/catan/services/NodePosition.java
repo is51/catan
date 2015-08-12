@@ -7,31 +7,31 @@ public enum NodePosition {
     DOWN(0, 1, -1, 1),
     LEFT_DOWN(-1, 1, -1, 0),
     LEFT_UP(-1, 0, 0, -1);
-    private final int leftHexX;
-    private final int leftHexY;
-    private final int rightHexX;
-    private final int rightHexY;
+    private final int leftNeighborHexXShift;
+    private final int leftNeighborHexYShift;
+    private final int rightNeighborHexXShift;
+    private final int rightNeighborHexYShift;
 
-    NodePosition(int leftHexX, int leftHexY, int rightHexX, int rightHexY) {
-        this.leftHexX = leftHexX;
-        this.leftHexY = leftHexY;
-        this.rightHexX = rightHexX;
-        this.rightHexY = rightHexY;
+    NodePosition(int leftNeighborHexXShift, int leftNeighborHexYShift, int rightNeighborHexXShift, int rightNeighborHexYShift) {
+        this.leftNeighborHexXShift = leftNeighborHexXShift;
+        this.leftNeighborHexYShift = leftNeighborHexYShift;
+        this.rightNeighborHexXShift = rightNeighborHexXShift;
+        this.rightNeighborHexYShift = rightNeighborHexYShift;
     }
 
-    public int getLeftHexX() {
-        return leftHexX;
+    public int getLeftNeighborHexXShift() {
+        return leftNeighborHexXShift;
     }
 
-    public int getLeftHexY() {
-        return leftHexY;
+    public int getLeftNeighborHexYShift() {
+        return leftNeighborHexYShift;
     }
 
-    public int getRightHexX() {
-        return rightHexX;
+    public int getRightNeighborHexXShift() {
+        return rightNeighborHexXShift;
     }
 
-    public int getRightHexY() {
-        return rightHexY;
+    public int getRightNeighborHexYShift() {
+        return rightNeighborHexYShift;
     }
 }

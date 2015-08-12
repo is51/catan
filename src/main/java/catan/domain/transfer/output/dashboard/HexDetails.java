@@ -22,6 +22,9 @@ public class HexDetails {
     private Integer leftEdgeId;
     private Integer leftUpEdgeId;
 
+    public HexDetails() {
+    }
+
     public HexDetails(HexBean hex) {
         this.hexId = hex.getId();
         this.x = hex.getCoordinates().getxCoordinate();
