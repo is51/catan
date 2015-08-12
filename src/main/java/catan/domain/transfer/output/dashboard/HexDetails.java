@@ -38,6 +38,7 @@ public class HexDetails {
         this.downNodeId = hex.getDownNode().getId();
         this.leftDownNodeId = hex.getLeftDownNode().getId();
         this.leftUpNodeId = hex.getLeftUpNode().getId();
+        //TODO: set edge ids
     }
 
     public Integer getHexId() {

@@ -37,6 +37,7 @@ public class GameDetails {
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.map = new MapDetails();
         this.map.setHexes(game.getHexDetails());
+        //TODO: populate edges and nodes
     }
 
     public int getGameId() {
