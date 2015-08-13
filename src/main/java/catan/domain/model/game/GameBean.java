@@ -7,7 +7,9 @@ import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.GameUserDetails;
+import catan.domain.transfer.output.dashboard.EdgeDetails;
 import catan.domain.transfer.output.dashboard.HexDetails;
+import catan.domain.transfer.output.dashboard.NodeDetails;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -260,12 +262,32 @@ public class GameBean {
     }
 
     public List<HexDetails> getHexDetails() {
-        List<HexDetails> hexes = new ArrayList<HexDetails>();
+        List<HexDetails> hexesDetails = new ArrayList<HexDetails>();
 
         for (HexBean hex : this.hexes.values()) {
-            hexes.add(new HexDetails(hex));
+            hexesDetails.add(new HexDetails(hex));
         }
 
-        return hexes;
+        return hexesDetails;
+    }
+
+    public List<NodeDetails> getNodeDetails() {
+        List<NodeDetails> nodesDetails = new ArrayList<NodeDetails>();
+
+        for (NodeBean node : this.nodes) {
+            nodesDetails.add(new NodeDetails(node));
+        }
+
+        return nodesDetails;
+    }
+
+    public List<EdgeDetails> getEdgeDetails() {
+        List<EdgeDetails> edgesDetails = new ArrayList<EdgeDetails>();
+
+        for (EdgeBean edge : this.edges) {
+            edgesDetails.add(new EdgeDetails(edge));
+        }
+
+        return edgesDetails;
     }
 }

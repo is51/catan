@@ -35,9 +35,7 @@ public class GameDetails {
         this.minPlayers = game.getMinPlayers();
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
-        this.map = new MapDetails();
-        this.map.setHexes(game.getHexDetails());
-        //TODO: populate edges and nodes
+        this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
     }
 
     public int getGameId() {

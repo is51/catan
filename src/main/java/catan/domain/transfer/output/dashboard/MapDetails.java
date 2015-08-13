@@ -7,6 +7,15 @@ public class MapDetails {
     private List<HexDetails> hexes;
     private List<NodeDetails> nodes;
 
+    public MapDetails() {
+    }
+
+    public MapDetails(List<EdgeDetails> edges, List<HexDetails> hexes, List<NodeDetails> nodes) {
+        this.edges = edges;
+        this.hexes = hexes;
+        this.nodes = nodes;
+    }
+
     public List<EdgeDetails> getEdges() {
         return edges;
     }
