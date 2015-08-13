@@ -1,18 +1,23 @@
 package catan.domain.model.dashboard;
 
+import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -30,9 +35,10 @@ public class NodeBean {
     @Column(name = "PORT", unique = false, nullable = false)
     private NodePortType port;
 
-    @OneToOne
-    @JoinColumn(name = "BUILDING_ID")
-    private BuildingBean building;
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "BUILT", column = @Column(name = "BUILT")) })
+    @Enumerated(EnumType.STRING)
+    private Building<NodeBuiltType> building;
 
     @Column(name = "ORIENTATION", unique = false, nullable = false)
     private NodeOrientationType orientation;
@@ -93,11 +99,11 @@ public class NodeBean {
         this.port = port;
     }
 
-    public BuildingBean getBuilding() {
+    public Building getBuilding() {
         return building;
     }
 
-    public void setBuilding(BuildingBean building) {
+    public void setBuilding(Building building) {
         this.building = building;
     }
 

@@ -1,11 +1,15 @@
 package catan.services;
 
-import catan.domain.model.dashboard.CoordinatesBean;
+import catan.domain.model.dashboard.Coordinates;
+import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.GameBean;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertNull;
 
@@ -51,11 +55,12 @@ public class MapUtilTest {
     @Test
     public void getCurrentNodeOfRightNeighbourHexReturnNullWhenNeighbourIsMissing() {
         //given
-        GameBean game = new GameBean();  //TODO: populate game object
-        CoordinatesBean currentHexCoordinates = new CoordinatesBean(0, -1);
+        //TODO: populate game object
+        Map<Coordinates, HexBean> tempCoordinatesToHexMap = new HashMap<Coordinates, HexBean>();
+        Coordinates currentHexCoordinates = new Coordinates(0, -1);
 
         //when
-        NodeBean rightNeighbour = mapUtil.getCurrentNodeOfRightNeighbourHex(game, NodePosition.UP, currentHexCoordinates);
+        NodeBean rightNeighbour = mapUtil.getCurrentNodeOfRightNeighbourHex(tempCoordinatesToHexMap, NodePosition.UP, currentHexCoordinates);
 
         //then
         assertNull("Right neighbour of UP node that belongs to Hex with coordinates: (0, -1), should be null", rightNeighbour);

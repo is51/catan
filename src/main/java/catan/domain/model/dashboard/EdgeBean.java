@@ -1,9 +1,11 @@
 package catan.domain.model.dashboard;
 
+import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.EdgeOrientationType;
 import catan.domain.model.game.GameBean;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,7 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -26,9 +27,9 @@ public class EdgeBean {
     @JoinColumn(name = "GAME_ID", nullable = false)
     private GameBean game;
 
-    @OneToOne
-    @JoinColumn(name = "BUILDING_ID")
-    private BuildingBean building;
+    @Embedded
+    //@AttributeOverrides({ @AttributeOverride(name = "BUILT", column = @Column(name = "ROAD_BUILT")) })
+    private Building<EdgeBuiltType> building;
 
     @Column(name = "ORIENTATION", unique = false, nullable = false)
     private EdgeOrientationType orientation;
@@ -74,11 +75,11 @@ public class EdgeBean {
         this.game = game;
     }
 
-    public BuildingBean getBuilding() {
+    public Building getBuilding() {
         return building;
     }
 
-    public void setBuilding(BuildingBean building) {
+    public void setBuilding(Building building) {
         this.building = building;
     }
 

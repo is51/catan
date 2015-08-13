@@ -1,6 +1,5 @@
 package catan.domain.model.game;
 
-import catan.domain.model.dashboard.CoordinatesBean;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
@@ -14,8 +13,24 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
@@ -60,8 +75,7 @@ public class GameBean {
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKeyJoinColumn(name="COORDINATES_ID")
-    private Map<CoordinatesBean, HexBean> hexes = new HashMap<CoordinatesBean, HexBean>();
+    private Set<HexBean> hexes = new HashSet<HexBean>();
 
     //TODO: think about removal of this set as it may be redundant
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -192,11 +206,11 @@ public class GameBean {
         this.edges = edges;
     }
 
-    public Map<CoordinatesBean, HexBean> getHexes() {
+    public Set<HexBean> getHexes() {
         return hexes;
     }
 
-    public void setHexes(Map<CoordinatesBean, HexBean> hexes) {
+    public void setHexes(Set<HexBean> hexes) {
         this.hexes = hexes;
     }
 
@@ -264,7 +278,7 @@ public class GameBean {
     public List<HexDetails> getHexDetails() {
         List<HexDetails> hexesDetails = new ArrayList<HexDetails>();
 
-        for (HexBean hex : this.hexes.values()) {
+        for (HexBean hex : this.hexes) {
             hexesDetails.add(new HexDetails(hex));
         }
 

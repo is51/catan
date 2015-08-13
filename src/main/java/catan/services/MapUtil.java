@@ -1,6 +1,6 @@
 package catan.services;
 
-import catan.domain.model.dashboard.CoordinatesBean;
+import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
@@ -9,6 +9,9 @@ import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static catan.domain.model.dashboard.types.EdgeOrientationType.LEFT_DOWN;
 import static catan.domain.model.dashboard.types.EdgeOrientationType.RIGHT_DOWN;
@@ -21,6 +24,8 @@ public class MapUtil {
     private RandomUtil randomUtil;
 
     public void generateNewRoundGameMap(GameBean game, int size) {
+        Map<Coordinates, HexBean> tempCoordinatesToHexMap = new HashMap<Coordinates, HexBean>();
+
         for (int x = -size; x <= size; x++) {
             for (int y = -size; y <= size; y++) {
                 if (x + y >= -size && x + y <= size) {
@@ -32,13 +37,13 @@ public class MapUtil {
                     nodePort = randomUtil.generateRandomNodePortType();
                 }
 
-                createHex(game, x, y, nodePort);
+                createHex(tempCoordinatesToHexMap, game, x, y, nodePort);
             }
         }
     }
 
-    private void createHex(GameBean game, int x, int y, NodePortType nodePort) {
-        CoordinatesBean coordinates = new CoordinatesBean(x, y);
+    private void createHex(Map<Coordinates, HexBean> tempCoordinatesToHexMap, GameBean game, int x, int y, NodePortType nodePort) {
+        Coordinates coordinates = new Coordinates(x, y);
         HexType randomHexType = randomUtil.generateRandomHexType();
 
         HexBean hex = new HexBean();
@@ -49,22 +54,24 @@ public class MapUtil {
         hex.setRobbed(false);
 
         for (NodePosition position : NodePosition.values()) {
-            createNodeAtPosition(hex, position, nodePort); //TODO: put port only at one position, depending on border and other ports
+            //TODO: put port only at one position, depending on border and other ports
+            createNodeAtPosition(tempCoordinatesToHexMap, hex, position, nodePort);
         }
 
         //TODO: maybe make it in one (previous) cycle
         for (NodePosition position : NodePosition.values()) {
-            createEdgeRightToNodePosition(hex, position);
+            createEdgeRightToNodePosition(tempCoordinatesToHexMap, hex, position);
         }
 
-        game.getHexes().put(coordinates, hex);
+        game.getHexes().add(hex);
+        tempCoordinatesToHexMap.put(coordinates, hex);
     }
 
-    protected void createNodeAtPosition(HexBean hex, NodePosition nodePosition, NodePortType port) {
+    protected void createNodeAtPosition(Map<Coordinates, HexBean> tempCoordinatesToHexMap, HexBean hex, NodePosition nodePosition, NodePortType port) {
         //Check if left or right neighbour hex of this node already defined and stored current node
-        NodeBean node = getCurrentNodeOfLeftNeighbourHex(hex.getGame(), nodePosition, hex.getCoordinates());
+        NodeBean node = getCurrentNodeOfLeftNeighbourHex(tempCoordinatesToHexMap, nodePosition, hex.getCoordinates());
         if (node == null) {
-            node = getCurrentNodeOfRightNeighbourHex(hex.getGame(), nodePosition, hex.getCoordinates());
+            node = getCurrentNodeOfRightNeighbourHex(tempCoordinatesToHexMap, nodePosition, hex.getCoordinates());
         }
 
         //If neighbour hex is not defined yet, or doesn't exists in map, create a new node
@@ -107,9 +114,9 @@ public class MapUtil {
         }
     }
 
-    protected void createEdgeRightToNodePosition(HexBean innerHex, NodePosition nodePosition) {
+    protected void createEdgeRightToNodePosition(Map<Coordinates, HexBean> tempCoordinatesToHexMap, HexBean innerHex, NodePosition nodePosition) {
         //Check if RIGHT neighbour hex of this node already defined and stored current edge
-        EdgeBean edge = getCurrentEdgeOfOuterHex(innerHex.getGame(), nodePosition, innerHex.getCoordinates());
+        EdgeBean edge = getCurrentEdgeOfOuterHex(tempCoordinatesToHexMap, nodePosition, innerHex.getCoordinates());
 
         //If RIGHT neighbour hex of node is not defined yet, or doesn't exists in map, create a new edge
         if (edge == null) {
@@ -170,12 +177,12 @@ public class MapUtil {
 
     }
 
-    protected NodeBean getCurrentNodeOfLeftNeighbourHex(GameBean game, NodePosition nodePosition, CoordinatesBean currentHexCoordinates) {
+    protected NodeBean getCurrentNodeOfLeftNeighbourHex(Map<Coordinates, HexBean> tempCoordinatesToHexMap, NodePosition nodePosition, Coordinates currentHexCoordinates) {
         int xCoordinate = currentHexCoordinates.getxCoordinate() + nodePosition.getLeftNeighborHexXShift();
         int yCoordinate = currentHexCoordinates.getyCoordinate() + nodePosition.getLeftNeighborHexYShift();
 
-        CoordinatesBean leftNeighbourCoordinates = new CoordinatesBean(xCoordinate, yCoordinate);
-        HexBean leftNeighbour = game.getHexes().get(leftNeighbourCoordinates);
+        Coordinates leftNeighbourCoordinates = new Coordinates(xCoordinate, yCoordinate);
+        HexBean leftNeighbour = tempCoordinatesToHexMap.get(leftNeighbourCoordinates);
         if (leftNeighbour == null) {
             return null;
         }
@@ -198,12 +205,12 @@ public class MapUtil {
         }
     }
 
-    protected NodeBean getCurrentNodeOfRightNeighbourHex(GameBean game, NodePosition nodePosition, CoordinatesBean currentHexCoordinates) {
+    protected NodeBean getCurrentNodeOfRightNeighbourHex(Map<Coordinates, HexBean> tempCoordinatesToHexMap, NodePosition nodePosition, Coordinates currentHexCoordinates) {
         int xCoordinate = currentHexCoordinates.getxCoordinate() + nodePosition.getRightNeighborHexXShift();
         int yCoordinate = currentHexCoordinates.getyCoordinate() + nodePosition.getRightNeighborHexYShift();
 
-        CoordinatesBean rightNeighbourCoordinates = new CoordinatesBean(xCoordinate, yCoordinate);
-        HexBean rightNeighbour = game.getHexes().get(rightNeighbourCoordinates);
+        Coordinates rightNeighbourCoordinates = new Coordinates(xCoordinate, yCoordinate);
+        HexBean rightNeighbour = tempCoordinatesToHexMap.get(rightNeighbourCoordinates);
         if (rightNeighbour == null) {
             return null;
         }
@@ -226,12 +233,12 @@ public class MapUtil {
         }
     }
 
-    protected EdgeBean getCurrentEdgeOfOuterHex(GameBean game, NodePosition nodePosition, CoordinatesBean currentHexCoordinates) {
+    protected EdgeBean getCurrentEdgeOfOuterHex(Map<Coordinates, HexBean> tempCoordinatesToHexMap, NodePosition nodePosition, Coordinates currentHexCoordinates) {
         int xCoordinate = currentHexCoordinates.getxCoordinate() + nodePosition.getRightNeighborHexXShift();
         int yCoordinate = currentHexCoordinates.getyCoordinate() + nodePosition.getRightNeighborHexYShift();
 
-        CoordinatesBean outerHexCoordinates = new CoordinatesBean(xCoordinate, yCoordinate);
-        HexBean outerHex = game.getHexes().get(outerHexCoordinates);
+        Coordinates outerHexCoordinates = new Coordinates(xCoordinate, yCoordinate);
+        HexBean outerHex = tempCoordinatesToHexMap.get(outerHexCoordinates);
         if (outerHex == null) {
             return null;
         }

@@ -1,6 +1,6 @@
 package catan.domain.transfer.output.dashboard;
 
-import catan.domain.model.dashboard.BuildingBean;
+import catan.domain.model.dashboard.Building;
 
 public class BuildingDetails {
     private Integer ownerGameUserId;
@@ -9,7 +9,7 @@ public class BuildingDetails {
     public BuildingDetails() {
     }
 
-    public BuildingDetails(BuildingBean building) {
+    public BuildingDetails(Building building) {
         this.ownerGameUserId = building.getBuildingOwner().getGameUserId();
         this.built = building.getBuilt().name();
     }

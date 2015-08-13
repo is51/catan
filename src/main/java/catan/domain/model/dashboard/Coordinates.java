@@ -1,19 +1,13 @@
 package catan.domain.model.dashboard;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.Embeddable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "COORDINATES")
-public class CoordinatesBean {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "COORDINATES_ID", unique = true, nullable = false)
-    private int id;
+@Embeddable
+public class Coordinates {
 
     @Column(name = "X_COORDINATE", unique = false, nullable = false)
     private int xCoordinate;
@@ -21,20 +15,12 @@ public class CoordinatesBean {
     @Column(name = "Y_COORDINATE", unique = false, nullable = false)
     private int yCoordinate;
 
-    public CoordinatesBean() {
+    public Coordinates() {
     }
 
-    public CoordinatesBean(int xCoordinate, int yCoordinate) {
+    public Coordinates(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getxCoordinate() {
@@ -58,7 +44,7 @@ public class CoordinatesBean {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CoordinatesBean that = (CoordinatesBean) o;
+        Coordinates that = (Coordinates) o;
 
         if (xCoordinate != that.xCoordinate) return false;
         if (yCoordinate != that.yCoordinate) return false;
