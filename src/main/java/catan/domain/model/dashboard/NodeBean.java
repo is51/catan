@@ -51,15 +51,15 @@ public class NodeBean {
 
     @ManyToOne
     @JoinColumn(name = "RIGHT_UP_EDGE_ID")
-    private EdgeBean rightUpEdge;
+    private EdgeBean rightUpEdge;   // inverted leftDownEdge
 
     @ManyToOne
     @JoinColumn(name = "DOWN_EDGE_ID")
-    private EdgeBean dowEdge;
+    private EdgeBean downEdge;       // inverted upEdge
 
     @ManyToOne
     @JoinColumn(name = "LEFT_UP_EDGE_ID")
-    private EdgeBean leftUpEdge;
+    private EdgeBean leftUpEdge;   // inverted rightDownEdge
 
     public NodeBean() {
     }
@@ -153,12 +153,20 @@ public class NodeBean {
         this.rightUpEdge = rightUpEdge;
     }
 
-    public EdgeBean getDowEdge() {
-        return dowEdge;
+    public void populateLeftDownEdge(EdgeBean leftDownEdge) {
+        this.rightUpEdge = leftDownEdge;
     }
 
-    public void setDowEdge(EdgeBean dowEdge) {
-        this.dowEdge = dowEdge;
+    public EdgeBean getDownEdge() {
+        return downEdge;
+    }
+
+    public void setDownEdge(EdgeBean downEdge) {
+        this.downEdge = downEdge;
+    }
+
+    public void populateUpEdge(EdgeBean upEdge) {
+        this.downEdge = upEdge;
     }
 
     public EdgeBean getLeftUpEdge() {
@@ -167,5 +175,9 @@ public class NodeBean {
 
     public void setLeftUpEdge(EdgeBean leftUpEdge) {
         this.leftUpEdge = leftUpEdge;
+    }
+
+    public void populateRightDownEdge(EdgeBean rightDownEdge) {
+        this.leftUpEdge = rightDownEdge;
     }
 }

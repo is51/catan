@@ -24,13 +24,20 @@ public class MapUtil {
         for (int x = -size; x <= size; x++) {
             for (int y = -size; y <= size; y++) {
                 if (x + y >= -size && x + y <= size) {
-                    createHex(game, x, y);
+                    continue;
                 }
+
+                NodePortType nodePort = NodePortType.NONE;
+                if(x + y == -size || x + y == size){
+                    nodePort = randomUtil.generateRandomNodePortType();
+                }
+
+                createHex(game, x, y, nodePort);
             }
         }
     }
 
-    private void createHex(GameBean game, int x, int y) {
+    private void createHex(GameBean game, int x, int y, NodePortType nodePort) {
         CoordinatesBean coordinates = new CoordinatesBean(x, y);
         HexType randomHexType = randomUtil.generateRandomHexType();
 
@@ -42,7 +49,7 @@ public class MapUtil {
         hex.setRobbed(false);
 
         for (NodePosition position : NodePosition.values()) {
-            createNodeAtPosition(hex, position);
+            createNodeAtPosition(hex, position, nodePort); //TODO: put port only at one position, depending on border and other ports
         }
 
         //TODO: maybe make it in one (previous) cycle
@@ -53,7 +60,7 @@ public class MapUtil {
         game.getHexes().put(coordinates, hex);
     }
 
-    protected void createNodeAtPosition(HexBean hex, NodePosition nodePosition) {
+    protected void createNodeAtPosition(HexBean hex, NodePosition nodePosition, NodePortType port) {
         //Check if left or right neighbour hex of this node already defined and stored current node
         NodeBean node = getCurrentNodeOfLeftNeighbourHex(hex.getGame(), nodePosition, hex.getCoordinates());
         if (node == null) {
@@ -62,7 +69,7 @@ public class MapUtil {
 
         //If neighbour hex is not defined yet, or doesn't exists in map, create a new node
         if (node == null) {
-            node = new NodeBean(hex.getGame(), NodePortType.NONE); //TODO: create ports randomly
+            node = new NodeBean(hex.getGame(), port);
         }
 
         //Populate relationship between node and hex and set orientation of node
@@ -116,6 +123,7 @@ public class MapUtil {
                 edge.setLeftNode(innerHex.getUpNode());
                 edge.setRightNode(innerHex.getRightUpNode());
                 edge.setDownHex(innerHex);
+                innerHex.getUpNode().populateRightDownEdge(edge);
                 innerHex.setRightUpEdge(edge);
                 break;
             case RIGHT_UP:
@@ -123,6 +131,7 @@ public class MapUtil {
                 edge.populateUpNode(innerHex.getRightUpNode());
                 edge.populateDownNode(innerHex.getRightDownNode());
                 edge.populateLeftHex(innerHex);
+                innerHex.getRightUpNode().setDownEdge(edge);
                 innerHex.setRightEdge(edge);
                 break;
             case RIGHT_DOWN:
@@ -130,6 +139,7 @@ public class MapUtil {
                 edge.setRightNode(innerHex.getRightDownNode());
                 edge.setLeftNode(innerHex.getDownNode());
                 edge.setUpHex(innerHex);
+                innerHex.getRightDownNode().populateLeftDownEdge(edge);
                 innerHex.setRightDownEdge(edge);
                 break;
             case DOWN:
@@ -137,6 +147,7 @@ public class MapUtil {
                 edge.setRightNode(innerHex.getDownNode());
                 edge.setLeftNode(innerHex.getLeftDownNode());
                 edge.setUpHex(innerHex);
+                innerHex.getDownNode().setLeftUpEdge(edge);
                 innerHex.setLeftDownEdge(edge);
                 break;
             case LEFT_DOWN:
@@ -144,6 +155,7 @@ public class MapUtil {
                 edge.populateDownNode(innerHex.getLeftDownNode());
                 edge.populateUpNode(innerHex.getLeftUpNode());
                 edge.populateRightHex(innerHex);
+                innerHex.getLeftDownNode().populateUpEdge(edge);
                 innerHex.setLeftEdge(edge);
                 break;
             case LEFT_UP:
@@ -151,6 +163,7 @@ public class MapUtil {
                 edge.setLeftNode(innerHex.getLeftUpNode());
                 edge.setRightNode(innerHex.getUpNode());
                 edge.setDownHex(innerHex);
+                innerHex.getLeftUpNode().setRightUpEdge(edge);
                 innerHex.setLeftUpEdge(edge);
                 break;
         }
