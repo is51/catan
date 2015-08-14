@@ -3,7 +3,6 @@ package catan.services;
 import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
-import catan.domain.model.game.GameBean;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,9 +59,9 @@ public class MapUtilTest {
         Coordinates currentHexCoordinates = new Coordinates(0, -1);
 
         //when
-        NodeBean rightNeighbour = mapUtil.getCurrentNodeOfRightNeighbourHex(tempCoordinatesToHexMap, NodePosition.UP, currentHexCoordinates);
+        NodeBean rightNeighbour = mapUtil.getCurrentNodeOfClockwiseNeighbourHex(tempCoordinatesToHexMap, NodePosition.TOP, currentHexCoordinates);
 
         //then
-        assertNull("Right neighbour of UP node that belongs to Hex with coordinates: (0, -1), should be null", rightNeighbour);
+        assertNull("Right neighbour of TOP node that belongs to Hex with coordinates: (0, -1), should be null", rightNeighbour);
     }
 }

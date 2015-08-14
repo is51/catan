@@ -7,12 +7,8 @@ public class NodeDetails {
     private String port;
     private BuildingDetails building;
     private String orientation;
-    private Integer upHexId;
-    private Integer rightDownHexId;
-    private Integer leftDownHexId;
-    private Integer rightUpEdgeId;
-    private Integer dowEdgeId;
-    private Integer leftUpEdgeId;
+    private LinkDetails hexes;
+    private LinkDetails edges;
 
     public NodeDetails() {
     }
@@ -21,27 +17,9 @@ public class NodeDetails {
         this.nodeId = node.getId();
         this.port = node.getPort().name();
         this.orientation = node.getOrientation().name();
-        this.building = node.getBuilding() != null
-                ? new BuildingDetails(node.getBuilding())
-                : null;
-        this.upHexId =  node.getUpHex() != null
-                ? node.getUpHex().getId()
-                : null;
-        this.rightDownHexId = node.getRightDownHex() != null
-                ? node.getRightDownHex().getId()
-                : null;
-        this.leftDownHexId = node.getLeftDownHex() != null
-                ? node.getLeftDownHex().getId()
-                : null;
-        this.rightUpEdgeId = node.getRightUpEdge() != null
-                ? node.getRightUpEdge().getId()
-                : null;
-        this.dowEdgeId = node.getDownEdge() != null
-                ? node.getDownEdge().getId()
-                : null;
-        this.leftUpEdgeId = node.getLeftUpEdge() != null
-                ? node.getLeftUpEdge().getId()
-                : null;
+        this.building = node.getBuilding() != null ? new BuildingDetails(node.getBuilding()) : null;
+        this.hexes = new LinkDetails(node.getHexes());
+        this.edges = new LinkDetails(node.getEdges());
     }
 
     public Integer getNodeId() {
@@ -76,51 +54,19 @@ public class NodeDetails {
         this.orientation = orientation;
     }
 
-    public Integer getUpHexId() {
-        return upHexId;
+    public LinkDetails getHexes() {
+        return hexes;
     }
 
-    public void setUpHexId(Integer upHexId) {
-        this.upHexId = upHexId;
+    public void setHexes(LinkDetails hexes) {
+        this.hexes = hexes;
     }
 
-    public Integer getRightDownHexId() {
-        return rightDownHexId;
+    public LinkDetails getEdges() {
+        return edges;
     }
 
-    public void setRightDownHexId(Integer rightDownHexId) {
-        this.rightDownHexId = rightDownHexId;
-    }
-
-    public Integer getLeftDownHexId() {
-        return leftDownHexId;
-    }
-
-    public void setLeftDownHexId(Integer leftDownHexId) {
-        this.leftDownHexId = leftDownHexId;
-    }
-
-    public Integer getRightUpEdgeId() {
-        return rightUpEdgeId;
-    }
-
-    public void setRightUpEdgeId(Integer rightUpEdgeId) {
-        this.rightUpEdgeId = rightUpEdgeId;
-    }
-
-    public Integer getDowEdgeId() {
-        return dowEdgeId;
-    }
-
-    public void setDowEdgeId(Integer dowEdgeId) {
-        this.dowEdgeId = dowEdgeId;
-    }
-
-    public Integer getLeftUpEdgeId() {
-        return leftUpEdgeId;
-    }
-
-    public void setLeftUpEdgeId(Integer leftUpEdgeId) {
-        this.leftUpEdgeId = leftUpEdgeId;
+    public void setEdges(LinkDetails edges) {
+        this.edges = edges;
     }
 }

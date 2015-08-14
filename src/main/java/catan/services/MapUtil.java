@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-import static catan.domain.model.dashboard.types.EdgeOrientationType.LEFT_DOWN;
-import static catan.domain.model.dashboard.types.EdgeOrientationType.RIGHT_DOWN;
-import static catan.domain.model.dashboard.types.EdgeOrientationType.UP;
+import static catan.domain.model.dashboard.types.EdgeOrientationType.BOTTOM_LEFT;
+import static catan.domain.model.dashboard.types.EdgeOrientationType.BOTTOM_RIGHT;
+import static catan.domain.model.dashboard.types.EdgeOrientationType.VERTICAL;
 import static catan.domain.model.dashboard.types.NodeOrientationType.SINGLE_DOWN;
 import static catan.domain.model.dashboard.types.NodeOrientationType.SINGLE_UP;
 
@@ -46,12 +46,7 @@ public class MapUtil {
         Coordinates coordinates = new Coordinates(x, y);
         HexType randomHexType = randomUtil.generateRandomHexType();
 
-        HexBean hex = new HexBean();
-        hex.setGame(game);
-        hex.setCoordinates(coordinates);
-        hex.setResourceType(randomHexType);
-        hex.setDice(x + y + 4);
-        hex.setRobbed(false);
+        HexBean hex = new HexBean(game, coordinates, randomHexType, x + y + 4, false);
 
         for (NodePosition position : NodePosition.values()) {
             //TODO: put port only at one position, depending on border and other ports
@@ -71,7 +66,7 @@ public class MapUtil {
         //Check if left or right neighbour hex of this node already defined and stored current node
         NodeBean node = getCurrentNodeOfLeftNeighbourHex(tempCoordinatesToHexMap, nodePosition, hex.getCoordinates());
         if (node == null) {
-            node = getCurrentNodeOfRightNeighbourHex(tempCoordinatesToHexMap, nodePosition, hex.getCoordinates());
+            node = getCurrentNodeOfClockwiseNeighbourHex(tempCoordinatesToHexMap, nodePosition, hex.getCoordinates());
         }
 
         //If neighbour hex is not defined yet, or doesn't exists in map, create a new node
@@ -81,35 +76,35 @@ public class MapUtil {
 
         //Populate relationship between node and hex and set orientation of node
         switch (nodePosition) {
-            case UP:
+            case TOP:
                 node.setOrientation(SINGLE_DOWN);  //TODO: move orientation set to hex setter
-                node.populateDownHex(hex);
-                hex.setUpNode(node);
+                node.getHexes().setBottom(hex);
+                hex.getNodes().setTop(node);
                 break;
-            case RIGHT_UP:
+            case TOP_RIGHT:
                 node.setOrientation(SINGLE_UP);
-                node.setLeftDownHex(hex);
-                hex.setRightUpNode(node);
+                node.getHexes().setBottomLeft(hex);
+                hex.getNodes().setTopRight(node);
                 break;
-            case RIGHT_DOWN:
+            case BOTTOM_RIGHT:
                 node.setOrientation(SINGLE_DOWN);
-                node.populateLeftUpHex(hex);
-                hex.setRightDownNode(node);
+                node.getHexes().setTopLeft(hex);
+                hex.getNodes().setBottomRight(node);
                 break;
-            case DOWN:
+            case BOTTOM:
                 node.setOrientation(SINGLE_UP);
-                node.setUpHex(hex);
-                hex.setDownNode(node);
+                node.getHexes().setTop(hex);
+                hex.getNodes().setBottom(node);
                 break;
-            case LEFT_DOWN:
+            case BOTTOM_LEFT:
                 node.setOrientation(SINGLE_DOWN);
-                node.populateRightUpHex(hex);
-                hex.setLeftDownNode(node);
+                node.getHexes().setTopRight(hex);
+                hex.getNodes().setBottomLeft(node);
                 break;
-            case LEFT_UP:
+            case TOP_LEFT:
                 node.setOrientation(SINGLE_UP);
-                node.setRightDownHex(hex);
-                hex.setLeftUpNode(node);
+                node.getHexes().setBottomRight(hex);
+                hex.getNodes().setTopLeft(node);
                 break;
         }
     }
@@ -125,58 +120,77 @@ public class MapUtil {
 
         //Populate relationship between edge and hex and set orientation of edge
         switch (nodePosition) {
-            case UP:
-                edge.setOrientation(RIGHT_DOWN);       //TODO: move orientation set to hex setter
-                edge.setLeftNode(innerHex.getUpNode());
-                edge.setRightNode(innerHex.getRightUpNode());
-                edge.setDownHex(innerHex);
-                innerHex.getUpNode().populateRightDownEdge(edge);
-                innerHex.setRightUpEdge(edge);
+            case TOP:
+                edge.setOrientation(BOTTOM_RIGHT);
+
+                edge.getNodes().setTopLeft(innerHex.getNodes().getTop());
+                edge.getNodes().setBottomRight(innerHex.getNodes().getTopRight());
+
+                edge.getHexes().setBottomLeft(innerHex);
+
+                innerHex.getNodes().getTop().getEdges().setBottomRight(edge);
+                innerHex.getEdges().setTopRight(edge);
                 break;
-            case RIGHT_UP:
-                edge.setOrientation(UP);
-                edge.populateUpNode(innerHex.getRightUpNode());
-                edge.populateDownNode(innerHex.getRightDownNode());
-                edge.populateLeftHex(innerHex);
-                innerHex.getRightUpNode().setDownEdge(edge);
-                innerHex.setRightEdge(edge);
+            case TOP_RIGHT:
+                edge.setOrientation(VERTICAL);
+
+                edge.getNodes().setTop(innerHex.getNodes().getTopRight());
+                edge.getNodes().setBottom(innerHex.getNodes().getBottomRight());
+
+                edge.getHexes().setLeft(innerHex);
+
+                innerHex.getNodes().getTopRight().getEdges().setBottom(edge);
+                innerHex.getEdges().setRight(edge);
                 break;
-            case RIGHT_DOWN:
-                edge.setOrientation(LEFT_DOWN);
-                edge.setRightNode(innerHex.getRightDownNode());
-                edge.setLeftNode(innerHex.getDownNode());
-                edge.setUpHex(innerHex);
-                innerHex.getRightDownNode().populateLeftDownEdge(edge);
-                innerHex.setRightDownEdge(edge);
+            case BOTTOM_RIGHT:
+                edge.setOrientation(BOTTOM_LEFT);
+
+                edge.getNodes().setTopRight(innerHex.getNodes().getBottomRight());
+                edge.getNodes().setBottomLeft(innerHex.getNodes().getBottom());
+
+                edge.getHexes().setTopLeft(innerHex);
+
+                innerHex.getNodes().getBottomRight().getEdges().setBottomLeft(edge);
+                innerHex.getEdges().setBottomRight(edge);
                 break;
-            case DOWN:
-                edge.setOrientation(RIGHT_DOWN);
-                edge.setRightNode(innerHex.getDownNode());
-                edge.setLeftNode(innerHex.getLeftDownNode());
-                edge.setUpHex(innerHex);
-                innerHex.getDownNode().setLeftUpEdge(edge);
-                innerHex.setLeftDownEdge(edge);
+            case BOTTOM:
+                edge.setOrientation(BOTTOM_RIGHT);
+
+                edge.getNodes().setBottomRight(innerHex.getNodes().getBottom());
+                edge.getNodes().setTopLeft(innerHex.getNodes().getBottomLeft());
+
+                edge.getHexes().setTopRight(innerHex);
+
+                innerHex.getNodes().getBottom().getEdges().setTopLeft(edge);
+                innerHex.getEdges().setBottomLeft(edge);
                 break;
-            case LEFT_DOWN:
-                edge.setOrientation(UP);
-                edge.populateDownNode(innerHex.getLeftDownNode());
-                edge.populateUpNode(innerHex.getLeftUpNode());
-                edge.populateRightHex(innerHex);
-                innerHex.getLeftDownNode().populateUpEdge(edge);
-                innerHex.setLeftEdge(edge);
+            case BOTTOM_LEFT:
+                edge.setOrientation(VERTICAL);
+
+                edge.getNodes().setBottom(innerHex.getNodes().getBottomLeft());
+                edge.getNodes().setTop(innerHex.getNodes().getTopLeft());
+
+                edge.getHexes().setRight(innerHex);
+
+                innerHex.getNodes().getBottomLeft().getEdges().setTop(edge);
+                innerHex.getEdges().setLeft(edge);
                 break;
-            case LEFT_UP:
-                edge.setOrientation(LEFT_DOWN);
-                edge.setLeftNode(innerHex.getLeftUpNode());
-                edge.setRightNode(innerHex.getUpNode());
-                edge.setDownHex(innerHex);
-                innerHex.getLeftUpNode().setRightUpEdge(edge);
-                innerHex.setLeftUpEdge(edge);
+            case TOP_LEFT:
+                edge.setOrientation(BOTTOM_LEFT);
+
+                edge.getNodes().setBottomLeft(innerHex.getNodes().getTopLeft());
+                edge.getNodes().setTopRight(innerHex.getNodes().getTop());
+
+                edge.getHexes().setBottomRight(innerHex);
+
+                innerHex.getNodes().getTopLeft().getEdges().setTopRight(edge);
+                innerHex.getEdges().setTopLeft(edge);
                 break;
         }
 
     }
 
+    // Counter Clockwise Neighbour
     protected NodeBean getCurrentNodeOfLeftNeighbourHex(Map<Coordinates, HexBean> tempCoordinatesToHexMap, NodePosition nodePosition, Coordinates currentHexCoordinates) {
         int xCoordinate = currentHexCoordinates.getxCoordinate() + nodePosition.getLeftNeighborHexXShift();
         int yCoordinate = currentHexCoordinates.getyCoordinate() + nodePosition.getLeftNeighborHexYShift();
@@ -188,24 +202,25 @@ public class MapUtil {
         }
 
         switch (nodePosition) {
-            case UP:
-                return leftNeighbour.getRightDownNode();
-            case RIGHT_UP:
-                return leftNeighbour.getDownNode();
-            case RIGHT_DOWN:
-                return leftNeighbour.getLeftDownNode();
-            case DOWN:
-                return leftNeighbour.getLeftUpNode();
-            case LEFT_DOWN:
-                return leftNeighbour.getUpNode();
-            case LEFT_UP:
-                return leftNeighbour.getRightUpNode();
+            case TOP:
+                return leftNeighbour.getNodes().getBottomRight();
+            case TOP_RIGHT:
+                return leftNeighbour.getNodes().getBottom();
+            case BOTTOM_RIGHT:
+                return leftNeighbour.getNodes().getBottomLeft();
+            case BOTTOM:
+                return leftNeighbour.getNodes().getTopLeft();
+            case BOTTOM_LEFT:
+                return leftNeighbour.getNodes().getTop();
+            case TOP_LEFT:
+                return leftNeighbour.getNodes().getTopRight();
             default:
                 return null;
         }
     }
 
-    protected NodeBean getCurrentNodeOfRightNeighbourHex(Map<Coordinates, HexBean> tempCoordinatesToHexMap, NodePosition nodePosition, Coordinates currentHexCoordinates) {
+    // Clockwise Neighbour
+    protected NodeBean getCurrentNodeOfClockwiseNeighbourHex(Map<Coordinates, HexBean> tempCoordinatesToHexMap, NodePosition nodePosition, Coordinates currentHexCoordinates) {
         int xCoordinate = currentHexCoordinates.getxCoordinate() + nodePosition.getRightNeighborHexXShift();
         int yCoordinate = currentHexCoordinates.getyCoordinate() + nodePosition.getRightNeighborHexYShift();
 
@@ -216,18 +231,18 @@ public class MapUtil {
         }
 
         switch (nodePosition) {
-            case UP:
-                return rightNeighbour.getLeftDownNode();
-            case RIGHT_UP:
-                return rightNeighbour.getLeftUpNode();
-            case RIGHT_DOWN:
-                return rightNeighbour.getUpNode();
-            case DOWN:
-                return rightNeighbour.getRightUpNode();
-            case LEFT_DOWN:
-                return rightNeighbour.getRightDownNode();
-            case LEFT_UP:
-                return rightNeighbour.getDownNode();
+            case TOP:
+                return rightNeighbour.getNodes().getBottomLeft();
+            case TOP_RIGHT:
+                return rightNeighbour.getNodes().getTopLeft();
+            case BOTTOM_RIGHT:
+                return rightNeighbour.getNodes().getTop();
+            case BOTTOM:
+                return rightNeighbour.getNodes().getTopRight();
+            case BOTTOM_LEFT:
+                return rightNeighbour.getNodes().getBottomRight();
+            case TOP_LEFT:
+                return rightNeighbour.getNodes().getBottom();
             default:
                 return null;
         }
@@ -242,23 +257,26 @@ public class MapUtil {
         if (outerHex == null) {
             return null;
         }
-
+        //TODO: finish at home
+        /*
         switch (nodePosition) {
-            case UP:
-                return outerHex.getLeftDownEdge();
-            case RIGHT_UP:
-                return outerHex.getLeftEdge();
-            case RIGHT_DOWN:
-                return outerHex.getLeftUpEdge();
-            case DOWN:
-                return outerHex.getRightUpEdge();
-            case LEFT_DOWN:
-                return outerHex.getRightEdge();
-            case LEFT_UP:
-                return outerHex.getRightDownEdge();
+            case TOP:
+                return outerHex.getEdges().getLeftDownEdge();
+            case TOP_RIGHT:
+                return outerHex.getEdges().getLeftEdge();
+            case BOTTOM_RIGHT:
+                return outerHex.getEdges().getLeftUpEdge();
+            case BOTTOM:
+                return outerHex.getEdges().getRightUpEdge();
+            case BOTTOM_LEFT:
+                return outerHex.getEdges().getRightEdge();
+            case TOP_LEFT:
+                return outerHex.getEdges().getRightDownEdge();
             default:
                 return null;
         }
+        */
+        return null;
     }
 
     @Autowired

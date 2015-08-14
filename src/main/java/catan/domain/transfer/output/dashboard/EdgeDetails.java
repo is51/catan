@@ -6,10 +6,8 @@ public class EdgeDetails {
     private Integer edgeId;
     private BuildingDetails building;
     private String orientation;
-    private Integer upHex;
-    private Integer downHex;
-    private Integer leftNode;
-    private Integer rightNode;
+    private LinkDetails hexes;
+    private LinkDetails nodes;
 
     public EdgeDetails() {
     }
@@ -17,17 +15,9 @@ public class EdgeDetails {
     public EdgeDetails(EdgeBean edge) {
         this.edgeId = edge.getId();
         this.orientation = edge.getOrientation().name();
-        this.building = edge.getBuilding() != null
-                ? new BuildingDetails(edge.getBuilding())
-                : null;
-        this.upHex = edge.getUpHex() != null
-                ? edge.getUpHex().getId()
-                : null;
-        this.downHex = edge.getDownHex() != null
-                ? edge.getDownHex().getId()
-                : null;
-        this.leftNode = edge.getLeftNode().getId();
-        this.rightNode = edge.getRightNode().getId();
+        this.building = edge.getBuilding() != null ? new BuildingDetails(edge.getBuilding()) : null;
+        this.hexes = new LinkDetails(edge.getHexes());
+        this.nodes = new LinkDetails(edge.getNodes());
     }
 
     public Integer getEdgeId() {
@@ -54,35 +44,19 @@ public class EdgeDetails {
         this.orientation = orientation;
     }
 
-    public Integer getUpHex() {
-        return upHex;
+    public LinkDetails getHexes() {
+        return hexes;
     }
 
-    public void setUpHex(Integer upHex) {
-        this.upHex = upHex;
+    public void setHexes(LinkDetails hexes) {
+        this.hexes = hexes;
     }
 
-    public Integer getDownHex() {
-        return downHex;
+    public LinkDetails getNodes() {
+        return nodes;
     }
 
-    public void setDownHex(Integer downHex) {
-        this.downHex = downHex;
-    }
-
-    public Integer getLeftNode() {
-        return leftNode;
-    }
-
-    public void setLeftNode(Integer leftNode) {
-        this.leftNode = leftNode;
-    }
-
-    public Integer getRightNode() {
-        return rightNode;
-    }
-
-    public void setRightNode(Integer rightNode) {
-        this.rightNode = rightNode;
+    public void setNodes(LinkDetails nodes) {
+        this.nodes = nodes;
     }
 }

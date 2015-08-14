@@ -4,6 +4,8 @@ import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.EdgeOrientationType;
 import catan.domain.model.game.GameBean;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -17,7 +19,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EDGE")
-public class EdgeBean {
+public class EdgeBean implements MapElement {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "EDGE_ID", unique = true, nullable = false)
@@ -28,29 +30,32 @@ public class EdgeBean {
     private GameBean game;
 
     @Embedded
-    //@AttributeOverrides({ @AttributeOverride(name = "BUILT", column = @Column(name = "ROAD_BUILT")) })
-    private Building<EdgeBuiltType> building;
+    private Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
 
     @Column(name = "ORIENTATION", unique = false, nullable = false)
     private EdgeOrientationType orientation;
 
-    //TODO: probably related hexes will be stored as Set<HexBean>
-    @ManyToOne
-    @JoinColumn(name = "UP_HEX_ID")
-    private HexBean upHex;
+    @Embedded
+    @AssociationOverrides({
+            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "HEX_TOP_LEFT")),
+            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "HEX_TOP_RIGHT")),
+            @AssociationOverride(name = "right", joinColumns = @JoinColumn(name = "HEX_RIGHT")),
+            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "HEX_BOTTOM_RIGHT")),
+            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "HEX_BOTTOM_LEFT")),
+            @AssociationOverride(name = "left", joinColumns = @JoinColumn(name = "HEX_LEFT"))
+    })
+    private HorizontalLinks<HexBean> hexes = new HorizontalLinks<HexBean>();
 
-    @ManyToOne
-    @JoinColumn(name = "DOWN_HEX_ID")
-    private HexBean downHex;
-
-    //TODO: probably related nodes will be stored as Set<NodeBean>
-    @ManyToOne
-    @JoinColumn(name = "LEFT_NODE_ID")
-    private NodeBean leftNode;
-
-    @ManyToOne
-    @JoinColumn(name = "RIGHT_NODE_ID")
-    private NodeBean rightNode;
+    @Embedded
+    @AssociationOverrides({
+            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "NODE_TOP_LEFT")),
+            @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "NODE_TOP")),
+            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "NODE_TOP_RIGHT")),
+            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "NODE_BOTTOM_RIGHT")),
+            @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "NODE_BOTTOM")),
+            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "NODE_BOTTOM_LEFT"))
+    })
+    private VerticalLinks<NodeBean> nodes = new VerticalLinks<NodeBean>();
 
     public EdgeBean() {
     }
@@ -75,11 +80,11 @@ public class EdgeBean {
         this.game = game;
     }
 
-    public Building getBuilding() {
+    public Building<EdgeBuiltType> getBuilding() {
         return building;
     }
 
-    public void setBuilding(Building building) {
+    public void setBuilding(Building<EdgeBuiltType> building) {
         this.building = building;
     }
 
@@ -91,51 +96,19 @@ public class EdgeBean {
         this.orientation = orientation;
     }
 
-    public HexBean getUpHex() {
-        return upHex;
+    public HorizontalLinks<HexBean> getHexes() {
+        return hexes;
     }
 
-    public void setUpHex(HexBean upHex) {
-        this.upHex = upHex;
+    public void setHexes(HorizontalLinks<HexBean> hexes) {
+        this.hexes = hexes;
     }
 
-    public void populateRightHex(HexBean rightHex) {
-        this.upHex = rightHex;
+    public VerticalLinks<NodeBean> getNodes() {
+        return nodes;
     }
 
-    public HexBean getDownHex() {
-        return downHex;
-    }
-
-    public void setDownHex(HexBean downHex) {
-        this.downHex = downHex;
-    }
-
-    public void populateLeftHex(HexBean leftHex) {
-        this.downHex = leftHex;
-    }
-
-    public NodeBean getLeftNode() {
-        return leftNode;
-    }
-
-    public void setLeftNode(NodeBean leftNode) {
-        this.leftNode = leftNode;
-    }
-
-    public void populateUpNode(NodeBean upNode) {
-        this.leftNode = upNode;
-    }
-
-    public NodeBean getRightNode() {
-        return rightNode;
-    }
-
-    public void setRightNode(NodeBean rightNode) {
-        this.rightNode = rightNode;
-    }
-
-    public void populateDownNode(NodeBean downNode) {
-        this.rightNode = downNode;
+    public void setNodes(VerticalLinks<NodeBean> nodes) {
+        this.nodes = nodes;
     }
 }

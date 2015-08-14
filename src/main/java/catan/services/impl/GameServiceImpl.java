@@ -29,7 +29,8 @@ public class GameServiceImpl implements GameService {
     public static final int MIN_USERS = 3;
     public static final int MAX_USERS = 4;
     public static final int MIN_TARGET_VICTORY_POINTS = 2;
-    public static final int ROUND_MAP_SIZE = 2;
+    public static final int ROUND_MAP_SIZE = 1;
+    //public static final int ROUND_MAP_SIZE = 2;
 
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String GAME_ALREADY_STARTED_ERROR = "GAME_ALREADY_STARTED";

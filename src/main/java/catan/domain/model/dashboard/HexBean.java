@@ -3,6 +3,8 @@ package catan.domain.model.dashboard;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -18,7 +20,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "HEX")
-public class HexBean {
+public class HexBean implements MapElement{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "HEX_ID", unique = true, nullable = false)
@@ -40,75 +42,37 @@ public class HexBean {
     @Column(name = "IS_ROBBED", unique = false, nullable = false)
     private boolean robbed;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "UP_NODE_ID")
-    private NodeBean upNode;
+    @Embedded
+    @AssociationOverrides({
+            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "NODE_TOP_LEFT")),
+            @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "NODE_TOP")),
+            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "NODE_TOP_RIGHT")),
+            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "NODE_BOTTOM_RIGHT")),
+            @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "NODE_BOTTOM")),
+            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "NODE_BOTTOM_LEFT"))
+    })
+    private VerticalLinks<NodeBean> nodes = new VerticalLinks<NodeBean>();
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "RIGHT_UP_NODE_ID")
-    private NodeBean rightUpNode;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "RIGHT_DOWN_NODE_ID")
-    private NodeBean rightDownNode;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "DOWN_NODE_ID")
-    private NodeBean downNode;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "LEFT_DOWN_NODE_ID")
-    private NodeBean leftDownNode;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "LEFT_UP_NODE_ID")
-    private NodeBean leftUpNode;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "RIGHT_UP_EDGE_ID")
-    private EdgeBean rightUpEdge;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "RIGHT_EDGE_ID")
-    private EdgeBean rightEdge;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "RIGHT_DOWN_EDGE_ID")
-    private EdgeBean rightDownEdge;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "LEFT_DOWN_EDGE_ID")
-    private EdgeBean leftDownEdge;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "LEFT_EDGE_ID")
-    private EdgeBean leftEdge;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "LEFT_UP_EDGE_ID")
-    private EdgeBean leftUpEdge;
+    @Embedded
+    @AssociationOverrides({
+            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "EDGE_TOP_LEFT")),
+            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "EDGE_TOP_RIGHT")),
+            @AssociationOverride(name = "right", joinColumns = @JoinColumn(name = "EDGE_RIGHT")),
+            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_RIGHT")),
+            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_LEFT")),
+            @AssociationOverride(name = "left", joinColumns = @JoinColumn(name = "EDGE_LEFT"))
+    })
+    private HorizontalLinks<EdgeBean> edges = new HorizontalLinks<EdgeBean>();
 
     public HexBean() {
     }
 
-    public HexBean(GameBean game, Coordinates coordinates, HexType resourceType, int dice, boolean robbed, NodeBean upNode, NodeBean rightUpNode, NodeBean rightDownNode, NodeBean downNode, NodeBean leftDownNode, NodeBean leftUpNode, EdgeBean rightUpEdge, EdgeBean rightEdge, EdgeBean rightDownEdge, EdgeBean leftDownEdge, EdgeBean leftEdge, EdgeBean leftUpEdge) {
+    public HexBean(GameBean game, Coordinates coordinates, HexType resourceType, int dice, boolean robbed) {
         this.game = game;
         this.coordinates = coordinates;
         this.resourceType = resourceType;
         this.dice = dice;
         this.robbed = robbed;
-        this.upNode = upNode;
-        this.rightUpNode = rightUpNode;
-        this.rightDownNode = rightDownNode;
-        this.downNode = downNode;
-        this.leftDownNode = leftDownNode;
-        this.leftUpNode = leftUpNode;
-        this.rightUpEdge = rightUpEdge;
-        this.rightEdge = rightEdge;
-        this.rightDownEdge = rightDownEdge;
-        this.leftDownEdge = leftDownEdge;
-        this.leftEdge = leftEdge;
-        this.leftUpEdge = leftUpEdge;
     }
 
     public int getId() {
@@ -159,99 +123,19 @@ public class HexBean {
         this.robbed = robbed;
     }
 
-    public NodeBean getUpNode() {
-        return upNode;
+    public VerticalLinks<NodeBean> getNodes() {
+        return nodes;
     }
 
-    public void setUpNode(NodeBean upNode) {
-        this.upNode = upNode;
+    public void setNodes(VerticalLinks<NodeBean> nodes) {
+        this.nodes = nodes;
     }
 
-    public NodeBean getRightUpNode() {
-        return rightUpNode;
+    public HorizontalLinks<EdgeBean> getEdges() {
+        return edges;
     }
 
-    public void setRightUpNode(NodeBean rightUpNode) {
-        this.rightUpNode = rightUpNode;
-    }
-
-    public NodeBean getRightDownNode() {
-        return rightDownNode;
-    }
-
-    public void setRightDownNode(NodeBean rightDownNode) {
-        this.rightDownNode = rightDownNode;
-    }
-
-    public NodeBean getDownNode() {
-        return downNode;
-    }
-
-    public void setDownNode(NodeBean downNode) {
-        this.downNode = downNode;
-    }
-
-    public NodeBean getLeftDownNode() {
-        return leftDownNode;
-    }
-
-    public void setLeftDownNode(NodeBean leftDownNode) {
-        this.leftDownNode = leftDownNode;
-    }
-
-    public NodeBean getLeftUpNode() {
-        return leftUpNode;
-    }
-
-    public void setLeftUpNode(NodeBean leftUpNode) {
-        this.leftUpNode = leftUpNode;
-    }
-
-    public EdgeBean getRightUpEdge() {
-        return rightUpEdge;
-    }
-
-    public void setRightUpEdge(EdgeBean rightUpEdge) {
-        this.rightUpEdge = rightUpEdge;
-    }
-
-    public EdgeBean getRightEdge() {
-        return rightEdge;
-    }
-
-    public void setRightEdge(EdgeBean rightEdge) {
-        this.rightEdge = rightEdge;
-    }
-
-    public EdgeBean getRightDownEdge() {
-        return rightDownEdge;
-    }
-
-    public void setRightDownEdge(EdgeBean rightDownEdge) {
-        this.rightDownEdge = rightDownEdge;
-    }
-
-    public EdgeBean getLeftDownEdge() {
-        return leftDownEdge;
-    }
-
-    public void setLeftDownEdge(EdgeBean leftDownEdge) {
-        this.leftDownEdge = leftDownEdge;
-    }
-
-    public EdgeBean getLeftEdge() {
-        return leftEdge;
-    }
-
-    public void setLeftEdge(EdgeBean leftEdge) {
-        this.leftEdge = leftEdge;
-    }
-
-    public EdgeBean getLeftUpEdge() {
-        return leftUpEdge;
-    }
-
-    public void setLeftUpEdge(EdgeBean leftUpEdge) {
-        this.leftUpEdge = leftUpEdge;
+    public void setEdges(HorizontalLinks<EdgeBean> edges) {
+        this.edges = edges;
     }
 }

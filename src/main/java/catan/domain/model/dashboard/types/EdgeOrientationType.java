@@ -1,7 +1,7 @@
 package catan.domain.model.dashboard.types;
 
 public enum EdgeOrientationType {
-    UP,
-    RIGHT_DOWN,
-    LEFT_DOWN
+    VERTICAL,       // position: |
+    BOTTOM_RIGHT,   // position: \
+    BOTTOM_LEFT     // position: /
 }
