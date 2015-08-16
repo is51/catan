@@ -129,4 +129,28 @@ public class NodeBean implements MapElement{
     public void setEdges(VerticalLinks<EdgeBean> edges) {
         this.edges = edges;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NodeBean)) return false;
+
+        NodeBean nodeBean = (NodeBean) o;
+
+        if (!game.equals(nodeBean.game)) return false;
+        if (!hexes.equals(nodeBean.hexes)) return false;
+        if (orientation != nodeBean.orientation) return false;
+        if (port != nodeBean.port) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = game.hashCode();
+        result = 31 * result + port.hashCode();
+        result = 31 * result + orientation.hashCode();
+        result = 31 * result + hexes.hashCode();
+        return result;
+    }
 }

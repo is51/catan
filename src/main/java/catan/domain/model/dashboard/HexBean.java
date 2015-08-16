@@ -138,4 +138,28 @@ public class HexBean implements MapElement{
     public void setEdges(HorizontalLinks<EdgeBean> edges) {
         this.edges = edges;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof HexBean)) return false;
+
+        HexBean hexBean = (HexBean) o;
+
+        if (dice != hexBean.dice) return false;
+        if (!coordinates.equals(hexBean.coordinates)) return false;
+        if (!game.equals(hexBean.game)) return false;
+        if (resourceType != hexBean.resourceType) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = game.hashCode();
+        result = 31 * result + coordinates.hashCode();
+        result = 31 * result + resourceType.hashCode();
+        result = 31 * result + dice;
+        return result;
+    }
 }

@@ -111,4 +111,28 @@ public class EdgeBean implements MapElement {
     public void setNodes(VerticalLinks<NodeBean> nodes) {
         this.nodes = nodes;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EdgeBean)) return false;
+
+        EdgeBean edgeBean = (EdgeBean) o;
+
+        if (!game.equals(edgeBean.game)) return false;
+        if (!hexes.equals(edgeBean.hexes)) return false;
+        if (!nodes.equals(edgeBean.nodes)) return false;
+        if (orientation != edgeBean.orientation) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = game.hashCode();
+        result = 31 * result + orientation.hashCode();
+        result = 31 * result + hexes.hashCode();
+        result = 31 * result + nodes.hashCode();
+        return result;
+    }
 }

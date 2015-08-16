@@ -54,26 +54,27 @@ public class Links<T> {
         this.bottomLeft = bottomLeft;
     }
 
-    public Integer getIdOfElement(T element) {
-        if (element == null) {
-            return null;
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Links)) return false;
 
-        if(element instanceof EdgeBean){
-            EdgeBean edge = (EdgeBean)element;
-            return edge.getId();
-        }
+        Links links = (Links) o;
 
-        if(element instanceof NodeBean){
-            NodeBean node = (NodeBean)element;
-            return node.getId();
-        }
+        if (bottomLeft != null ? !bottomLeft.equals(links.bottomLeft) : links.bottomLeft != null) return false;
+        if (bottomRight != null ? !bottomRight.equals(links.bottomRight) : links.bottomRight != null) return false;
+        if (topLeft != null ? !topLeft.equals(links.topLeft) : links.topLeft != null) return false;
+        if (topRight != null ? !topRight.equals(links.topRight) : links.topRight != null) return false;
 
-        if(element instanceof HexBean){
-            HexBean hex = (HexBean)element;
-            return hex.getId();
-        }
+        return true;
+    }
 
-        return null;
+    @Override
+    public int hashCode() {
+        int result = topLeft != null ? topLeft.hashCode() : 0;
+        result = 31 * result + (topRight != null ? topRight.hashCode() : 0);
+        result = 31 * result + (bottomRight != null ? bottomRight.hashCode() : 0);
+        result = 31 * result + (bottomLeft != null ? bottomLeft.hashCode() : 0);
+        return result;
     }
 }
