@@ -1,8 +1,9 @@
 package catan.services;
 
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.dashboard.types.NodePortType;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class RandomUtil {
@@ -23,42 +24,17 @@ public class RandomUtil {
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
     }
 
-    public HexType generateRandomHexType() {
-        int randomHexTypeId = (int) (rvg.randomValue() * 6);
-        switch (randomHexTypeId){
-            case 0:
-                return HexType.BRICK;
-            case 1:
-                return HexType.WOOD;
-            case 2:
-                return HexType.SHEEP;
-            case 3:
-                return HexType.WHEAT;
-            case 4:
-                return HexType.STONE;
-            default:
-                return HexType.EMPTY;
-        }
+    public HexType pullRandomHexType(List<HexType> possibleHexTypes) {
+        int randomHexTypeId = (int) (rvg.randomValue() * possibleHexTypes.size());
+
+        return possibleHexTypes.remove(randomHexTypeId);
     }
 
-    public NodePortType generateRandomNodePortType() {
-        int randomPortTypeId = (int) (1 + rvg.randomValue() * 6);
-        switch (randomPortTypeId){
-            case 1:
-                return NodePortType.BRICK;
-            case 2:
-                return NodePortType.WOOD;
-            case 3:
-                return NodePortType.SHEEP;
-            case 4:
-                return NodePortType.WHEAT;
-            case 5:
-                return NodePortType.STONE;
-            case 6:
-                return NodePortType.ANY;
-            default:
-                return NodePortType.NONE;
-        }
+    //TODO: add rule to avoid placing 6 and 8 dice numbers close to each other
+    public int pullRandomDiceNumber(List<Integer> possibleDiceNumbers) {
+        int randomDiceNumber = (int) (rvg.randomValue() * possibleDiceNumbers.size());
+
+        return possibleDiceNumbers.remove(randomDiceNumber);
     }
 
     public void setRvg(RandomValueGenerator rvg) {

@@ -59,7 +59,7 @@ public class MapUtilTest {
         Coordinates currentHexCoordinates = new Coordinates(0, -1);
 
         //when
-        NodeBean rightNeighbour = mapUtil.getCurrentNodeOfClockwiseNeighbourHex(tempCoordinatesToHexMap, NodePosition.TOP, currentHexCoordinates);
+        NodeBean rightNeighbour = mapUtil.getCurrentNodeOfRightNeighbourHex(tempCoordinatesToHexMap, NodePosition.TOP, currentHexCoordinates);
 
         //then
         assertNull("Right neighbour of TOP node that belongs to Hex with coordinates: (0, -1), should be null", rightNeighbour);

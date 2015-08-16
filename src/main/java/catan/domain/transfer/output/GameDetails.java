@@ -2,10 +2,12 @@ package catan.domain.transfer.output;
 
 import catan.domain.model.game.GameBean;
 import catan.domain.transfer.output.dashboard.MapDetails;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
 //TODO: move to catan.domain.transfer.output.game after pull request
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameDetails {
     private int gameId;
     private int creatorId;

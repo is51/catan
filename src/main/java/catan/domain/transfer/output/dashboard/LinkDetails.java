@@ -4,7 +4,9 @@ import catan.domain.model.dashboard.HorizontalLinks;
 import catan.domain.model.dashboard.Links;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.VerticalLinks;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LinkDetails {
 
     private Integer topLeftId;

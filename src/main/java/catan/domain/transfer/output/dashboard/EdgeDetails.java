@@ -1,7 +1,9 @@
 package catan.domain.transfer.output.dashboard;
 
 import catan.domain.model.dashboard.EdgeBean;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EdgeDetails {
     private Integer edgeId;
     private BuildingDetails building;
