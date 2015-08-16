@@ -46,28 +46,6 @@ public class UserSessionBean {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof UserSessionBean)) {
-            return false;
-        }
-
-        final UserSessionBean other = (UserSessionBean) o;
-
-        return new EqualsBuilder()
-                .append(token, other.token)
-                .append(user, other.user)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(token)
-                .append(user)
-                .toHashCode();
-    }
-
-    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }

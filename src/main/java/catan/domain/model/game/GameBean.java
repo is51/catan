@@ -164,44 +164,6 @@ public class GameBean {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof GameBean)) {
-            return false;
-        }
-
-        final GameBean other = (GameBean) o;
-
-        return new EqualsBuilder()
-                .append(gameId, other.gameId)
-                .append(creator, other.creator)
-                .append(privateGame, other.privateGame)
-                .append(privateCode, other.privateCode)
-                .append(dateCreated, other.dateCreated)
-                .append(dateStarted, other.dateStarted)
-                .append(status, other.status)
-                .append(minPlayers, other.minPlayers)
-                .append(maxPlayers, other.maxPlayers)
-                .append(targetVictoryPoints, other.targetVictoryPoints)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(gameId)
-                .append(creator)
-                .append(privateGame)
-                .append(privateCode)
-                .append(dateCreated)
-                .append(dateStarted)
-                .append(status)
-                .append(minPlayers)
-                .append(maxPlayers)
-                .append(targetVictoryPoints)
-                .toHashCode();
-    }
-
-    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
