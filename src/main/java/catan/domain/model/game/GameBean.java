@@ -23,6 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,14 +75,17 @@ public class GameBean {
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("coordinates ASC")
     private Set<HexBean> hexes = new HashSet<HexBean>();
 
     //TODO: think about removal of this set as it may be redundant
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private Set<EdgeBean> edges = new HashSet<EdgeBean>();
 
     //TODO: think about removal of this set as it may be redundant
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private Set<NodeBean> nodes = new HashSet<NodeBean>();
 
     public GameBean() {
