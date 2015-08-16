@@ -1,20 +1,38 @@
 'use strict';
 
 angular.module('catan')
-    .controller('GameController', ['$scope', '$stateParams', '$state', 'Remote', function($scope, $stateParams, $state, Remote) {
+    .controller('GameController', [
+            '$scope', '$stateParams', '$state', 'Remote', '$timeout', '$q',
+            function($scope, $stateParams, $state, Remote, $timeout, $q) {
 
-        $scope.gameDetails = null;
+        var GAME_ROOM_UPDATE_SECONDS = 5;
 
-        $scope.updateGameDetails = function() {
+        $scope.game = null;
+
+        $scope.updateGame = function() {
+
+            var deferred = $q.defer();
+
             Remote.game.details({gameId: $stateParams.gameId})
                 .then(function(response) {
-                    $scope.gameDetails = response.data;
+                    $scope.game = response.data;
+                    deferred.resolve();
                 }, function(response) {
                     alert('Getting Game Details Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                     $state.go("start");
+                    deferred.reject();
                 });
+
+            return deferred.promise;
         };
 
-        $scope.updateGameDetails();
+
+        (function updateGameAndSetTimeout() {
+            $scope.updateGame().then(function() {
+                $timeout(function() {
+                    updateGameAndSetTimeout();
+                }, GAME_ROOM_UPDATE_SECONDS * 1000);
+            });
+        })();
 
     }]);
