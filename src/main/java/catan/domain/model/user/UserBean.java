@@ -70,6 +70,30 @@ public class UserBean {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserBean)) return false;
+
+        UserBean userBean = (UserBean) o;
+
+        if (guest != userBean.guest) return false;
+        if (id != userBean.id) return false;
+        if (password != null ? !password.equals(userBean.password) : userBean.password != null) return false;
+        if (username != null ? !username.equals(userBean.username) : userBean.username != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (guest ? 1 : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
