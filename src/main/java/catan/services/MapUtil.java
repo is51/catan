@@ -145,7 +145,7 @@ public class MapUtil {
         //Populate relationship between node and hex and set orientation of node
         switch (nodePosition) {
             case TOP:
-                node.setOrientation(SINGLE_BOTTOM);  //TODO: move orientation set to hex setter
+                node.setOrientation(SINGLE_BOTTOM);
                 node.getHexes().setBottom(hex);
                 hex.getNodes().setTop(node);
                 break;

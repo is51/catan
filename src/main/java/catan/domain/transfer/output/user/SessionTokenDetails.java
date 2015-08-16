@@ -1,6 +1,5 @@
 package catan.domain.transfer.output.user;
 
-//TODO: move to catan.domain.transfer.output.user after pull request
 public class SessionTokenDetails {
     private String token;
 

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
-//TODO: move to catan.domain.transfer.output.game after pull request
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameDetails {
     private int gameId;
