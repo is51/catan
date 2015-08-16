@@ -7,6 +7,7 @@ public class GameUserDetails {
     private UserDetails user;
     private int colorId;
     private boolean ready;
+    private int moveOrder;
 
     public GameUserDetails() {
     }
@@ -15,6 +16,7 @@ public class GameUserDetails {
         this.user = new UserDetails(userBean.getUser());
         this.colorId = userBean.getColorId();
         this.ready = userBean.isReady();
+        this.moveOrder = userBean.getMoveOrder();
     }
 
     public UserDetails getUser() {
@@ -39,5 +41,13 @@ public class GameUserDetails {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    public int getMoveOrder() {
+        return moveOrder;
+    }
+
+    public void setMoveOrder(int moveOrder) {
+        this.moveOrder = moveOrder;
     }
 }
