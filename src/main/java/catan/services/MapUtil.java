@@ -50,8 +50,7 @@ public class MapUtil {
                 SHEEP, SHEEP, SHEEP, SHEEP,
                 WHEAT, WHEAT, WHEAT, WHEAT,
                 BRICK, BRICK, BRICK,
-                STONE, STONE, STONE,
-                EMPTY));
+                STONE, STONE, STONE));
 
         for (int x = -size; x <= size; x++) {
             for (int y = -size; y <= size; y++) {
@@ -203,9 +202,12 @@ public class MapUtil {
                 edge.getHexes().setBottomRight(innerHex);
 
                 innerHex.getNodes().getTopLeft().getEdges().setTopRight(edge);
-                innerHex.getNodes().getTopLeft().setPort(nodePort);
                 innerHex.getNodes().getTop().getEdges().setBottomLeft(edge);
-                innerHex.getNodes().getTop().setPort(nodePort);
+
+                if(nodePort != NodePortType.NONE){
+                    innerHex.getNodes().getTopLeft().setPort(nodePort);
+                    innerHex.getNodes().getTop().setPort(nodePort);
+                }
 
                 innerHex.getEdges().setTopLeft(edge);
                 break;
@@ -218,9 +220,12 @@ public class MapUtil {
                 edge.getHexes().setBottomLeft(innerHex);
 
                 innerHex.getNodes().getTop().getEdges().setBottomRight(edge);
-                innerHex.getNodes().getTop().setPort(nodePort);
                 innerHex.getNodes().getTopRight().getEdges().setTopLeft(edge);
-                innerHex.getNodes().getTopRight().setPort(nodePort);
+
+                if(nodePort != NodePortType.NONE){
+                    innerHex.getNodes().getTop().setPort(nodePort);
+                    innerHex.getNodes().getTopRight().setPort(nodePort);
+                }
 
                 innerHex.getEdges().setTopRight(edge);
                 break;
@@ -233,9 +238,12 @@ public class MapUtil {
                 edge.getHexes().setLeft(innerHex);
 
                 innerHex.getNodes().getTopRight().getEdges().setBottom(edge);
-                innerHex.getNodes().getTopRight().setPort(nodePort);
                 innerHex.getNodes().getBottomRight().getEdges().setTop(edge);
-                innerHex.getNodes().getBottomRight().setPort(nodePort);
+
+                if(nodePort != NodePortType.NONE){
+                    innerHex.getNodes().getTopRight().setPort(nodePort);
+                    innerHex.getNodes().getBottomRight().setPort(nodePort);
+                }
 
                 innerHex.getEdges().setRight(edge);
                 break;
@@ -248,9 +256,12 @@ public class MapUtil {
                 edge.getHexes().setTopLeft(innerHex);
 
                 innerHex.getNodes().getBottomRight().getEdges().setBottomLeft(edge);
-                innerHex.getNodes().getBottomRight().setPort(nodePort);
                 innerHex.getNodes().getBottom().getEdges().setTopRight(edge);
-                innerHex.getNodes().getBottom().setPort(nodePort);
+
+                if(nodePort != NodePortType.NONE){
+                    innerHex.getNodes().getBottomRight().setPort(nodePort);
+                    innerHex.getNodes().getBottom().setPort(nodePort);
+                }
 
                 innerHex.getEdges().setBottomRight(edge);
                 break;
@@ -263,9 +274,12 @@ public class MapUtil {
                 edge.getHexes().setTopRight(innerHex);
 
                 innerHex.getNodes().getBottom().getEdges().setTopLeft(edge);
-                innerHex.getNodes().getBottom().setPort(nodePort);
                 innerHex.getNodes().getBottomLeft().getEdges().setBottomRight(edge);
-                innerHex.getNodes().getBottomLeft().setPort(nodePort);
+
+                if(nodePort != NodePortType.NONE){
+                    innerHex.getNodes().getBottom().setPort(nodePort);
+                    innerHex.getNodes().getBottomLeft().setPort(nodePort);
+                }
 
                 innerHex.getEdges().setBottomLeft(edge);
                 break;
@@ -278,9 +292,12 @@ public class MapUtil {
                 edge.getHexes().setRight(innerHex);
 
                 innerHex.getNodes().getBottomLeft().getEdges().setTop(edge);
-                innerHex.getNodes().getBottomLeft().setPort(nodePort);
                 innerHex.getNodes().getTopLeft().getEdges().setBottom(edge);
-                innerHex.getNodes().getTopLeft().setPort(nodePort);
+
+                if(nodePort != NodePortType.NONE){
+                    innerHex.getNodes().getBottomLeft().setPort(nodePort);
+                    innerHex.getNodes().getTopLeft().setPort(nodePort);
+                }
 
                 innerHex.getEdges().setLeft(edge);
                 break;
