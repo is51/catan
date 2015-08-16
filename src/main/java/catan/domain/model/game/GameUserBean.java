@@ -27,10 +27,10 @@ public class GameUserBean {
     private int gameUserId;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", nullable = false, updatable = false)
     private UserBean user;
 
-    @Column(name = "COLOR_ID", unique = false, nullable = false)
+    @Column(name = "COLOR_ID", nullable = false, updatable = false)
     private int colorId;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -91,27 +91,23 @@ public class GameUserBean {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof GameUserBean)) {
-            return false;
-        }
-        final GameUserBean other = (GameUserBean) o;
+        if (this == o) return true;
+        if (!(o instanceof GameUserBean)) return false;
 
-        return new EqualsBuilder()
-                .append(gameUserId, other.gameUserId)
-                .append(user, other.user)
-                .append(colorId, other.colorId)
-                .append(ready, other.ready)
-                .isEquals();
+        GameUserBean that = (GameUserBean) o;
+
+        if (colorId != that.colorId) return false;
+        if (!user.equals(that.user)) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(gameUserId)
-                .append(user)
-                .append(colorId)
-                .append(ready)
-                .toHashCode();
+        int result = user.hashCode();
+        result = 31 * result + colorId;
+
+        return result;
     }
 
     @Override
