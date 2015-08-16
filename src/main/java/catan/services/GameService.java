@@ -2,7 +2,7 @@ package catan.services;
 
 import catan.domain.model.game.GameBean;
 import catan.domain.model.user.UserBean;
-import catan.exception.GameException;
+import catan.domain.exception.GameException;
 
 import java.util.List;
 

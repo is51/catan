@@ -1,4 +1,4 @@
-package catan.domain.transfer.output;
+package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameBean;
 import catan.domain.transfer.output.dashboard.MapDetails;

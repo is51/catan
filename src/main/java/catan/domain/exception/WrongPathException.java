@@ -1,4 +1,4 @@
-package catan.exception;
+package catan.domain.exception;
 
 public class WrongPathException extends Exception {
 }

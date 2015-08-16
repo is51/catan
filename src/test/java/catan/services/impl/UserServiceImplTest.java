@@ -3,7 +3,7 @@ package catan.services.impl;
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.domain.model.user.UserSessionBean;
-import catan.exception.UserException;
+import catan.domain.exception.UserException;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;

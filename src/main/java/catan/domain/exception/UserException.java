@@ -1,13 +1,13 @@
-package catan.exception;
+package catan.domain.exception;
 
-public class GameException extends Exception {
+public class UserException extends Exception {
     private String errorCode;
 
-    public GameException() {
+    public UserException() {
         super();
     }
 
-    public GameException(String errorCode) {
+    public UserException(String errorCode) {
         super(errorCode);
         this.errorCode = errorCode;
     }

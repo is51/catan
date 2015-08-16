@@ -1,4 +1,4 @@
-package catan.domain.transfer.output;
+package catan.domain.transfer.output.game;
 
 public class GameIdDetails {
     private int gameId;

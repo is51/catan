@@ -1,6 +1,6 @@
 package catan.services;
 
-import catan.exception.UserException;
+import catan.domain.exception.UserException;
 
 public interface UserService {
     String loginUser(String username, String password) throws UserException;

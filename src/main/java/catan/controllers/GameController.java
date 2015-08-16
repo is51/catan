@@ -2,11 +2,11 @@ package catan.controllers;
 
 import catan.domain.model.game.GameBean;
 import catan.domain.model.user.UserBean;
-import catan.domain.transfer.output.GameDetails;
-import catan.domain.transfer.output.GameIdDetails;
-import catan.exception.AuthenticationException;
-import catan.exception.GameException;
-import catan.exception.WrongPathException;
+import catan.domain.transfer.output.game.GameDetails;
+import catan.domain.transfer.output.game.GameIdDetails;
+import catan.domain.exception.AuthenticationException;
+import catan.domain.exception.GameException;
+import catan.domain.exception.WrongPathException;
 import catan.services.AuthenticationService;
 import catan.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;

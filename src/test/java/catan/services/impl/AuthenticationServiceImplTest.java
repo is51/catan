@@ -2,7 +2,7 @@ package catan.services.impl;
 
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
-import catan.exception.AuthenticationException;
+import catan.domain.exception.AuthenticationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
