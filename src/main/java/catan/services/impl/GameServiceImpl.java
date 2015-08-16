@@ -292,6 +292,11 @@ public class GameServiceImpl implements GameService {
         log.debug("<< All players is ready");
         log.debug("<< Starting game {}", game);
 
+        int moveOrder = 0;
+        for(GameUserBean gameUser : game.getGameUsers()){
+            gameUser.setMoveOrder(++moveOrder);
+        }
+
         game.setStatus(GameStatus.PLAYING);
         game.setDateStarted(new Date());
         gameDao.updateGame(game);
