@@ -9,8 +9,6 @@ import catan.domain.transfer.output.dashboard.EdgeDetails;
 import catan.domain.transfer.output.dashboard.HexDetails;
 import catan.domain.transfer.output.dashboard.NodeDetails;
 import catan.domain.transfer.output.game.GameUserDetails;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.CascadeType;
@@ -72,6 +70,7 @@ public class GameBean {
     private int targetVictoryPoints;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
