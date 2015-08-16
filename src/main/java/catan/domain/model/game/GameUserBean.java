@@ -27,6 +27,9 @@ public class GameUserBean {
     @Column(name = "READY", nullable = false)
     private boolean ready;
 
+    @Column(name = "MOVE_ORDER", unique = false, nullable = false)
+    private int moveOrder;
+
     public GameUserBean() {
     }
 
@@ -65,6 +68,14 @@ public class GameUserBean {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    public int getMoveOrder() {
+        return moveOrder;
+    }
+
+    public void setMoveOrder(int moveOrder) {
+        this.moveOrder = moveOrder;
     }
 
     @Override
