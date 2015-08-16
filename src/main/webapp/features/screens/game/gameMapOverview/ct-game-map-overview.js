@@ -1,6 +1,9 @@
 'use strict';
 
 angular.module('catan')
+
+        //TODO: that directive is a harsh shitcode... needs to be refactored
+
         .directive('ctGameMapOverview', [function() {
             return {
                 restrict: 'E',
@@ -9,7 +12,8 @@ angular.module('catan')
                 },
                 link: function(scope, element) {
 
-                    var map = generateMap(); //var map = scope.game.map
+                    var map = scope.game.map;
+                    linkEntities(map);
                     var canvas = angular.element('<div/>').addClass('canvas').appendTo(element);
                     drawMap(map, canvas);
                 }
@@ -76,6 +80,52 @@ angular.module('catan')
                 return map;
             }
 
+            function getEntityById(map, type, id) {
+                var index = (type === "hex") ? type + "es" : type + "s";
+                var i,
+                    l = map[index].length;
+                for (i = 0; i < l; i++) {
+                    if (map[index][i][type+"Id"] === id) {
+                        return map[index][i];
+                    }
+                }
+            }
+
+            function getPosition(where, what) {
+                for (var k in where) {
+                    if (where[k] === what) {
+                        return k;
+                    }
+                }
+            }
+
+            function linkEntitiesType(map, type, arr) {
+                var entity;
+                for (var k in arr) {
+                    entity = getEntityById(map, type, arr[k]);
+                    delete arr[k];
+                    arr[k.substr(0, k.length-2)] = entity;
+                }
+            }
+
+            function linkEntities(map) {
+                var i, l, k, entity;
+                for (i = 0, l = map.hexes.length; i < l; i++) {
+                    linkEntitiesType(map, "node", map.hexes[i].nodes);
+                    linkEntitiesType(map, "edge", map.hexes[i].edges);
+                }
+                for (i = 0, l = map.nodes.length; i < l; i++) {
+                    linkEntitiesType(map, "hex", map.nodes[i].hexes);
+                    linkEntitiesType(map, "edge", map.nodes[i].edges);
+                }
+                for (i = 0, l = map.edges.length; i < l; i++) {
+                    linkEntitiesType(map, "node", map.edges[i].nodes);
+                    linkEntitiesType(map, "hex", map.edges[i].hexes);
+                }
+
+                console.log(map);
+            }
+
             function drawMap(map, canvas) {
 
                 var HEX_WIDTH = 50;
@@ -94,7 +144,7 @@ angular.module('catan')
                         return y * HEX_HEIGHT;
                     },
                     getHexOfNode: function(item) {
-                        for (var k = 0, lk = item.hexes.length; k < lk; k++) {
+                        for (var k in item.hexes) {
                             if (item.hexes[k]) {
                                 return item.hexes[k];
                             }
@@ -102,22 +152,22 @@ angular.module('catan')
                     },
                     getPositionNodeX: function(item) {
                         var hex = this.getHexOfNode(item);
-                        var position = hex.nodes.indexOf(item);
+                        var position = getPosition(hex.nodes, item);
                         var hexX = this.getPositionX(hex.x, hex.y);
                         var x = hexX - Math.round(PORT_WIDTH/2);
 
-                        if (position === 1 || position === 4) { x += Math.round(HEX_WIDTH/2); }
-                        if (position === 2 || position === 3) { x += HEX_WIDTH; }
+                        if (position === "top" || position === "bottom") { x += Math.round(HEX_WIDTH/2); }
+                        if (position === "topRight" || position === "bottomRight") { x += HEX_WIDTH; }
 
                         return x;
                     },
                     getPositionNodeY: function(item) {
                         var hex = this.getHexOfNode(item);
-                        var position = hex.nodes.indexOf(item);
+                        var position = getPosition(hex.nodes, item);
                         var hexY = this.getPositionY(hex.x, hex.y);
                         var y = hexY - Math.round(PORT_HEIGHT/2);
 
-                        if (position === 3 || position === 4 || position === 5) { y += HEX_HEIGHT; }
+                        if (position === "bottomRight" || position === "bottom" || position === "bottomLeft") { y += HEX_HEIGHT; }
 
                         return y;
                     }
