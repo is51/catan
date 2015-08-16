@@ -1,10 +1,10 @@
 package catan.controllers;
 
-import catan.domain.transfer.output.ErrorDetails;
-import catan.exception.AuthenticationException;
-import catan.exception.GameException;
-import catan.exception.UserException;
-import catan.exception.WrongPathException;
+import catan.domain.transfer.output.common.ErrorDetails;
+import catan.domain.exception.AuthenticationException;
+import catan.domain.exception.GameException;
+import catan.domain.exception.UserException;
+import catan.domain.exception.WrongPathException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

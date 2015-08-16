@@ -2,7 +2,7 @@ package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
 import catan.domain.model.game.GameStatus;
-import catan.domain.transfer.output.GameDetails;
+import catan.domain.transfer.output.game.GameDetails;
 import catan.services.impl.GameServiceImpl;
 import org.junit.Before;
 import org.junit.Test;

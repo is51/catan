@@ -1,4 +1,4 @@
-package catan.domain.transfer.output;
+package catan.domain.transfer.output.user;
 
 import catan.domain.model.user.UserBean;
 

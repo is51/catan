@@ -3,7 +3,7 @@ package catan.services.impl;
 import catan.dao.UserDao;
 import catan.domain.model.user.UserBean;
 import catan.domain.model.user.UserSessionBean;
-import catan.exception.UserException;
+import catan.domain.exception.UserException;
 import catan.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

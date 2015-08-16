@@ -5,7 +5,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
-import catan.exception.GameException;
+import catan.domain.exception.GameException;
 import catan.services.RandomValueGeneratorMock;
 import org.junit.After;
 import org.junit.Before;

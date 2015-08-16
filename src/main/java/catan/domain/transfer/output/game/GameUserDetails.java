@@ -1,6 +1,7 @@
-package catan.domain.transfer.output;
+package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameUserBean;
+import catan.domain.transfer.output.user.UserDetails;
 
 public class GameUserDetails {
     private UserDetails user;

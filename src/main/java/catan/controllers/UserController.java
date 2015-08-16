@@ -1,10 +1,10 @@
 package catan.controllers;
 
 import catan.domain.model.user.UserBean;
-import catan.domain.transfer.output.SessionTokenDetails;
-import catan.domain.transfer.output.UserDetails;
-import catan.exception.AuthenticationException;
-import catan.exception.UserException;
+import catan.domain.transfer.output.user.SessionTokenDetails;
+import catan.domain.transfer.output.user.UserDetails;
+import catan.domain.exception.AuthenticationException;
+import catan.domain.exception.UserException;
 import catan.services.AuthenticationService;
 import catan.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

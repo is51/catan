@@ -1,4 +1,4 @@
-package catan.domain.transfer.output;
+package catan.domain.transfer.output.user;
 
 public class SessionTokenDetails {
     private String token;

@@ -1,7 +1,7 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
-import catan.domain.transfer.output.GameUserDetails;
+import catan.domain.transfer.output.game.GameUserDetails;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
