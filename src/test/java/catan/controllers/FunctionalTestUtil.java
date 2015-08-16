@@ -1,8 +1,11 @@
 package catan.controllers;
 
 import static com.jayway.restassured.RestAssured.given;
+import com.jayway.restassured.response.Response;
 
 public abstract class FunctionalTestUtil {
+    // TODO: remove checking of statusCode in each method. (Needs to be approved)
+
     public static final int SERVER_PORT = 8091;
     public static final String ACCEPT_CONTENT_TYPE = "application/json";
 
@@ -52,6 +55,24 @@ public abstract class FunctionalTestUtil {
                 .statusCode(200)
                 .extract()
                 .path("id");
+    }
+
+    protected Response registerAndLoginGuest(String username) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("username", username)
+                .when()
+                .post("/api/user/register/guest");
+    }
+
+    protected Response getUserDetails(String token) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token)
+                .when()
+                .post("/api/user/details");
     }
 
 }

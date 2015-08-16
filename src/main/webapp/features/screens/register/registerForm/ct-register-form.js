@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctRegisterForm', ['Auth', '$state', function(Auth, $state) {
+    .directive('ctRegisterForm', ['Auth', '$state', '$stateParams', function(Auth, $state, $stateParams) {
         return {
             restrict: 'E',
             scope: {},
@@ -16,8 +16,11 @@ angular.module('catan')
 
                             Auth.login(scope.data.username, scope.data.password)
                                 .then(function() {
-                                    alert('Successful registration');
-                                    $state.go('start');
+                                    if ($stateParams.onRegister) {
+                                        $stateParams.onRegister();
+                                    } else {
+                                        $state.go('start');
+                                    }
                                 }, function(response) {
                                     alert('Login error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                                 });

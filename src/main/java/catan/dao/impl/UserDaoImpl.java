@@ -18,6 +18,11 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
     }
 
     @Override
+    public void addNewSession(UserSessionBean newSession) {
+        persist(newSession);
+    }
+
+    @Override
     public UserBean getUserByUsername(String username) {
         Criteria criteria = getSession().createCriteria(UserBean.class);
         criteria.add(Restrictions.eq("username", username));
@@ -36,18 +41,15 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
     }
 
     @Override
-    public void allocateNewTokenToUser(String token, UserBean user) {
+    public void removeSessionByUser(UserBean user) {
         Query query = getSession().createQuery("DELETE FROM " + UserSessionBean.class.getSimpleName() + " AS userSession WHERE userSession.id in " +
-                "(SELECT userSession2.id FROM " + UserSessionBean.class.getName() + " AS userSession2 WHERE userSession2.user.username = :username)");
-        query.setString("username", user.getUsername());
+                "(SELECT userSession2.id FROM " + UserSessionBean.class.getName() + " AS userSession2 WHERE userSession2.user.id = :id)");
+        query.setInteger("id", user.getId());
         query.executeUpdate();
-
-        UserSessionBean userSession = new UserSessionBean(token, user);
-        persist(userSession);
     }
 
     @Override
-    public void removeSession(String token) {
+    public void removeSessionByToken(String token) {
         Query query = getSession().createQuery("DELETE FROM " + UserSessionBean.class.getSimpleName() + " AS userSession WHERE userSession.token = :token");
         query.setString("token", token);
         query.executeUpdate();

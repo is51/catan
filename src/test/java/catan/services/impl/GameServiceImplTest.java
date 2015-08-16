@@ -20,12 +20,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameServiceImplTest {
     public static final String USER_NAME1 = "userName1";
+    public static final String USER_NAME2 = "userName2";
     public static final String PASSWORD1 = "12345";
     public static final String PASSWORD2 = "67890";
 
@@ -49,7 +58,7 @@ public class GameServiceImplTest {
     }
 
     @Test
-    public void createNewGameSuccessful() throws GameException {
+    public void createNewPrivateGameSuccessful() throws GameException {
         // GIVEN
 
         //Should generate first privateCode KP8428
@@ -80,7 +89,7 @@ public class GameServiceImplTest {
 
         ArgumentCaptor<GameBean> gameBeanArgumentCaptor = ArgumentCaptor.forClass(GameBean.class);
 
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
         ArrayList<String> usedPrivateCodes = new ArrayList<String>();
@@ -116,9 +125,27 @@ public class GameServiceImplTest {
     }
 
     @Test
+    public void createNewPublicGameFailedWhenUserIsNotRegistered() throws GameException {
+        try {
+            // GIVEN
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, true);
+
+            // WHEN
+            GameBean game = gameService.createNewGame(user, false, "12");
+
+            fail("GameException with error code '" + GameServiceImpl.GUEST_NOT_PERMITTED_ERROR + "' should be thrown, but returned game " + game);
+        } catch (GameException e) {
+            // THEN
+            assertEquals(GameServiceImpl.GUEST_NOT_PERMITTED_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
     public void getListOfGamesCreatedBySuccessful() throws GameException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
         GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
@@ -186,10 +213,10 @@ public class GameServiceImplTest {
     @Test
     public void getListOfAllPublicGamesSuccessful() throws GameException {
         // GIVEN
-        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1, false);
         user1.setId((int) System.currentTimeMillis());
 
-        UserBean user2 = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false);
         user2.setId((int) System.currentTimeMillis());
 
         GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
@@ -249,14 +276,14 @@ public class GameServiceImplTest {
         assertNotNull(games.get(1).getGameUsers());
         assertEquals(1, games.get(1).getGameUsers().size());
         assertEquals(DEFAULT_TARGET_VICTORY_POINTS, games.get(1).getTargetVictoryPoints());
-        assertEquals(user2, games.get(0).getGameUsers().iterator().next().getUser());
+        assertEquals(user2, games.get(1).getGameUsers().iterator().next().getUser());
 
         assertTrue(games.get(0).getGameId() != games.get(1).getGameId());
     }
 
     @Test
     public void testSetReadyStatusSuccess() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
@@ -275,9 +302,11 @@ public class GameServiceImplTest {
         assertEquals(gameBean.isReady(), true);
     }
 
+    //TODO: add unit tests for join and leave games
+
     @Test
     public void testUnsetReadyStatusSuccess() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameUserBean gameUserBean = new GameUserBean(user, 1);
         gameUserBean.setReady(true);
@@ -301,7 +330,7 @@ public class GameServiceImplTest {
 
     @Test(expected = GameException.class)
     public void testSetReadyStatus_UserHaventJoinedGame() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game.setGameId(1);
@@ -313,7 +342,7 @@ public class GameServiceImplTest {
 
     @Test(expected = GameException.class)
     public void testSetReadyStatus_GameAlreadyStarted() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game.setGameId(1);
@@ -326,14 +355,14 @@ public class GameServiceImplTest {
 
     @Test
     public void testSetReadyStatus_UserIsAlreadyReady() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
         GameUserBean gameUserBean = new GameUserBean(user, 1);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
         game.getGameUsers().add(gameUserBean);
-        game.getGameUsers().add(new GameUserBean(new UserBean("user1", "pwd"), 2));
+        game.getGameUsers().add(new GameUserBean(new UserBean("user1", "pwd", false), 2));
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -347,9 +376,9 @@ public class GameServiceImplTest {
 
     @Test
     public void testSetReadyStatus_AllPlayersAreReady_GameShouldBeStarted() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd"), 2);
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2);
         gameUserBean1.setReady(true);
         GameUserBean gameUserBean2 = new GameUserBean(user, 1);
 
@@ -373,9 +402,9 @@ public class GameServiceImplTest {
 
     @Test
     public void testSetReadyStatus_ThereAreNotEnoughPlayers_GameShouldNotBeStarted() throws Exception {
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd"), 2);
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2);
         gameUserBean1.setReady(true);
         GameUserBean gameUserBean2 = new GameUserBean(user, 1);
 
