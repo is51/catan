@@ -2,8 +2,6 @@ package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.GameUserDetails;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
@@ -48,6 +46,7 @@ public class GameBean {
     private int targetVictoryPoints;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     public GameBean() {

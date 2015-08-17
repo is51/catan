@@ -156,14 +156,40 @@ public class StartGameTest extends GameTestUtil {
         int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
                 .path("gameId");
 
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
 
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         setUserReady(userToken1, gameId);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         setUserReady(userToken2, gameId);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         setUserReady(userToken3, gameId);
 
-        viewGame(userToken3, gameId)
+        viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
