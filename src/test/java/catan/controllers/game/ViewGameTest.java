@@ -21,6 +21,7 @@ public class ViewGameTest extends GameTestUtil {
     public static final String USER_PASSWORD_1 = "password1";
     public static final String USER_NAME_2 = "user2_ViewGameTest";
     public static final String USER_PASSWORD_2 = "password2";
+    public static final int DEFAULT_ROUND_MAP_SIZE = 2;
 
     private static boolean initialized = false;
 
@@ -53,7 +54,44 @@ public class ViewGameTest extends GameTestUtil {
                 .body("gameUsers.user.id", hasItems(userId))
                 .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
                 .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
-                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
+
+                .body("map.edges.edgeId", everyItem(greaterThan(0)))
+                .body("map.edges.orientation", everyItem(anyOf(equalTo("BOTTOM_RIGHT"),
+                        equalTo("VERTICAL"),
+                        equalTo("BOTTOM_LEFT"))))
+
+                .body("map.hexes.hexId", everyItem(greaterThan(0)))
+                .body("map.hexes.x", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
+                        .and(
+                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.y", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
+                        .and(
+                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.type", everyItem(anyOf(equalTo("BRICK"),
+                        equalTo("WOOD"),
+                        equalTo("SHEEP"),
+                        equalTo("WHEAT"),
+                        equalTo("STONE"),
+                        equalTo("EMPTY"))))
+                .body("map.hexes.dice", everyItem(both(
+                        greaterThanOrEqualTo(2))
+                        .and(
+                                lessThanOrEqualTo(12))))
+                .body("map.hexes.robbed", hasItem(true))
+
+                .body("map.nodes.nodeId", everyItem(greaterThan(0)))
+                .body("map.nodes.port", everyItem(anyOf(equalTo("BRICK"),
+                        equalTo("WOOD"),
+                        equalTo("SHEEP"),
+                        equalTo("WHEAT"),
+                        equalTo("STONE"),
+                        equalTo("NONE"),
+                        equalTo("ANY"))))
+                .body("map.nodes.orientation", everyItem(anyOf(equalTo("SINGLE_TOP"),
+                        equalTo("SINGLE_BOTTOM"))));
     }
 
     @Test
@@ -84,7 +122,44 @@ public class ViewGameTest extends GameTestUtil {
                 .body("gameUsers.user.id", hasItems(userId1, userId2))
                 .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
                 .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
-                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
+
+                .body("map.edges.edgeId", everyItem(greaterThan(0)))
+                .body("map.edges.orientation", everyItem(anyOf(equalTo("BOTTOM_RIGHT"),
+                        equalTo("VERTICAL"),
+                        equalTo("BOTTOM_LEFT"))))
+
+                .body("map.hexes.hexId", everyItem(greaterThan(0)))
+                .body("map.hexes.x", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
+                        .and(
+                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.y", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
+                        .and(
+                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.type", everyItem(anyOf(equalTo("BRICK"),
+                        equalTo("WOOD"),
+                        equalTo("SHEEP"),
+                        equalTo("WHEAT"),
+                        equalTo("STONE"),
+                        equalTo("EMPTY"))))
+                .body("map.hexes.dice", everyItem(both(
+                        greaterThanOrEqualTo(2))
+                        .and(
+                                lessThanOrEqualTo(12))))
+                .body("map.hexes.robbed", hasItem(true))
+
+                .body("map.nodes.nodeId", everyItem(greaterThan(0)))
+                .body("map.nodes.port", everyItem(anyOf(equalTo("BRICK"),
+                        equalTo("WOOD"),
+                        equalTo("SHEEP"),
+                        equalTo("WHEAT"),
+                        equalTo("STONE"),
+                        equalTo("NONE"),
+                        equalTo("ANY"))))
+                .body("map.nodes.orientation", everyItem(anyOf(equalTo("SINGLE_TOP"),
+                        equalTo("SINGLE_BOTTOM"))));
     }
 
     @Test
