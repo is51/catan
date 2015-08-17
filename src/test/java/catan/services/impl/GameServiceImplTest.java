@@ -49,7 +49,7 @@ public class GameServiceImplTest {
 
     @Before
     public void setUp() {
-        gameService.getPrivateCodeUtil().setRvg(rvg);
+        gameService.getRandomUtil().setRvg(rvg);
     }
 
     @After

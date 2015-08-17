@@ -7,7 +7,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.exception.GameException;
 import catan.services.GameService;
-import catan.services.PrivateCodeUtil;
+import catan.services.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class GameServiceImpl implements GameService {
 
     private GameDao gameDao;
 
-    private PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
+    private RandomUtil randomUtil = new RandomUtil();
 
     @Override
     synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
@@ -292,10 +292,7 @@ public class GameServiceImpl implements GameService {
         log.debug("<< All players is ready");
         log.debug("<< Starting game {}", game);
 
-        int moveOrder = 0;
-        for(GameUserBean gameUser : game.getGameUsers()){
-            gameUser.setMoveOrder(++moveOrder);
-        }
+        randomUtil.populatePlayersMoveOrderRandomly(game.getGameUsers());
 
         game.setStatus(GameStatus.PLAYING);
         game.setDateStarted(new Date());
@@ -340,7 +337,7 @@ public class GameServiceImpl implements GameService {
 
         while (numberOfDuplicates != -1) {
             int numberOfDigits = START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE + numberOfDuplicates / MAX_DUPLICATES_RATIO;
-            randomPrivateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
+            randomPrivateCode = randomUtil.generateRandomPrivateCode(numberOfDigits);
 
             if (usedCodes.contains(randomPrivateCode)) {
                 numberOfDuplicates++;
@@ -413,8 +410,8 @@ public class GameServiceImpl implements GameService {
         game.getGameUsers().add(newGameUser);
     }
 
-    public PrivateCodeUtil getPrivateCodeUtil() {
-        return privateCodeUtil;
+    public RandomUtil getRandomUtil() {
+        return randomUtil;
     }
 
     @Autowired
