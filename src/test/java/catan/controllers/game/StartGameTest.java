@@ -231,4 +231,51 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers.ready", everyItem(equalTo(true)));
     }
 
+    @Test
+    public void should_successfully_set_resources_to_zero_when_game_starts() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
+                .path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[0].resourceBrick", is(0))
+                .body("gameUsers[0].resourceWood", is(0))
+                .body("gameUsers[0].resourceSheep", is(0))
+                .body("gameUsers[0].resourceWheat", is(0))
+                .body("gameUsers[0].resourceStone", is(0))
+                .body("status", equalTo("PLAYING"));
+
+        viewGame(userToken2, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[1].resourceBrick", is(0))
+                .body("gameUsers[1].resourceWood", is(0))
+                .body("gameUsers[1].resourceSheep", is(0))
+                .body("gameUsers[1].resourceWheat", is(0))
+                .body("gameUsers[1].resourceStone", is(0))
+                .body("status", equalTo("PLAYING"));
+
+        viewGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[2].resourceBrick", is(0))
+                .body("gameUsers[2].resourceWood", is(0))
+                .body("gameUsers[2].resourceSheep", is(0))
+                .body("gameUsers[2].resourceWheat", is(0))
+                .body("gameUsers[2].resourceStone", is(0))
+                .body("status", equalTo("PLAYING"));
+    }
+
 }
