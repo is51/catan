@@ -5,15 +5,12 @@ angular.module('catan')
             return {
                 restrict: 'A',
                 scope: {
-                    game: '=',
-                    afterSet: '='
+                    game: '='
                 },
                 link: function(scope, element) {
 
-                    scope.$watch(function() {
-                        return isCurrentUserReady(scope.game);
-                    }, function(ready) {
-                        if (ready) {
+                    scope.$watch("game.isCurrentUserReady()", function(isReady) {
+                        if (isReady) {
                             element.addClass("btn-success");
                         } else {
                             element.removeClass("btn-success");
@@ -22,13 +19,12 @@ angular.module('catan')
 
                     element.on('click', function() {
 
-                        var apiCallName = (isCurrentUserReady(scope.game)) ? "notReady" : "ready";
+                        var apiCallName = (scope.game.isCurrentUserReady()) ? "notReady" : "ready";
 
-                        Remote.game[apiCallName]({gameId: scope.game.gameId})
+                        Remote.game[apiCallName]({gameId: scope.game.getId()})
                                 .then(function() {
-                                    if (scope.afterSet) {
-                                        scope.afterSet();
-                                    }
+                                    scope.game.load();
+
                                 }, function(response) {
                                     alert('Error: ' + ((response.data && response.data.errorCode) ? response.data.errorCode : 'unknown'));
                                 });
@@ -39,13 +35,4 @@ angular.module('catan')
                 }
             };
 
-            //TODO: Game service should be created for that
-            function isCurrentUserReady(game) {
-                for (var i in game.gameUsers) {
-                    if (game.gameUsers[i].user.id === User.get().id) {
-                        break;
-                    }
-                }
-                return game.gameUsers[i].ready;
-            }
         }]);

@@ -1,3 +1,3 @@
-<ct-game-room ng-if="game.status==='NEW'" game="game"></ct-game-room>
+<ct-game-room ng-if="game.isNew()" game="game"></ct-game-room>
 
-<ct-game-dashboard ng-if="game.status==='PLAYING'" game="game"></ct-game-dashboard>
+<ct-game-dashboard ng-if="game.isPlaying()" game="game"></ct-game-dashboard>

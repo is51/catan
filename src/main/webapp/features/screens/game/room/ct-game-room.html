@@ -1,18 +1,18 @@
 <div class="row">
 
-    <div ng-if="game">
+    <div ng-if="game.isLoaded()">
 
         <div class="col-xs-6">
-            <h1>Game #{{game.gameId}}</h1>
-            <div style="font-size: 2rem;">Created by User #{{game.creatorId}}</div>
+            <h1>Game #{{game.get().gameId}}</h1>
+            <div style="font-size: 2rem;">Created by User #{{game.get().creatorId}}</div>
             <div style="font-size: 1.2rem; line-height: 2.4rem;">
-                <span ng-show="game.privateGame"><span class="glyphicon glyphicon-eye-open"></span> Code: {{game.privateCode}}</span>
-                <span ng-hide="game.privateGame"><span class="glyphicon glyphicon-globe"></span> Public</span>
+                <span ng-show="game.get().privateGame"><span class="glyphicon glyphicon-eye-open"></span> Code: {{game.get().privateCode}}</span>
+                <span ng-hide="game.get().privateGame"><span class="glyphicon glyphicon-globe"></span> Public</span>
             </div>
-            <div style="font-size: 1.2rem; line-height: 2.4rem;">{{game.dateCreated | date : 'short'}}</div>
-            <div><span class="label label-warning">{{game.status}}</span></div>
+            <div style="font-size: 1.2rem; line-height: 2.4rem;">{{game.get().dateCreated | date : 'short'}}</div>
+            <div><span class="label label-warning">{{game.get().status}}</span></div>
             <div>&nbsp;</div>
-            <div>Target Victory Points: {{game.targetVictoryPoints}}</div>
+            <div>Target Victory Points: {{game.get().targetVictoryPoints}}</div>
 
         </div>
 
@@ -26,8 +26,13 @@
 
             <div>
 
-                <a ng-if="game.creatorId!==User.get().id" href="" ct-leave-game-button game="game" class="btn btn-danger">Leave Game</a>
-                <a ng-if="game.creatorId===User.get().id" href="" ct-cancel-game-button game="game" class="btn btn-danger">Cancel Game</a>
+                <a ng-if="!game.isCurrentUserCreator()" href="" ct-leave-game-button game="game" class="btn btn-danger">Leave Game</a>
+                <a ng-if="game.isCurrentUserCreator()" href="" ct-cancel-game-button game="game" class="btn btn-danger">Cancel Game</a>
+            </div>
+
+            <div>
+                <br>
+                <a href="" ct-ready-button game="game" class="btn btn-default">I'm Ready</a>
             </div>
         </div>
 

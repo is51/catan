@@ -33,9 +33,9 @@ angular.module('catan')
                 }
 
                 function joinPublicGame() {
-                    Remote.game.joinPublic({gameId: scope.game.gameId})
+                    Remote.game.joinPublic({gameId: scope.game.getId()})
                         .then(function() {
-                            $state.go('game', {gameId: scope.game.gameId});
+                            $state.go('game', {gameId: scope.game.getId()});
                         }, function(response) {
                             alert('Error: ' + ((response.data && response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });

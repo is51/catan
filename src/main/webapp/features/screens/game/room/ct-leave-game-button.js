@@ -10,7 +10,7 @@ angular.module('catan')
             link: function(scope, element) {
 
                 element.on('click', function() {
-                    Remote.game.leave({gameId: scope.game.gameId})
+                    Remote.game.leave({gameId: scope.game.getId()})
                         .then(function() {
                             $state.go("start");
                         }, function(response) {
