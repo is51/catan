@@ -1,8 +1,6 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
@@ -26,6 +24,9 @@ public class GameUserBean {
 
     @Column(name = "READY", nullable = false)
     private boolean ready;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private ResourcesBean resources = new ResourcesBean();
 
     public GameUserBean() {
     }
@@ -65,6 +66,14 @@ public class GameUserBean {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    public ResourcesBean getResources() {
+        return resources;
+    }
+
+    public void setResources(ResourcesBean resources) {
+        this.resources = resources;
     }
 
     @Override
