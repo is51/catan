@@ -8,16 +8,12 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
@@ -53,11 +49,6 @@ public class ViewGameTest extends GameTestUtil {
         int gameId = createNewGame(userToken1, false)
                 .path("gameId");
         int userId = getUserId(userToken1);
-        /*
-        List<String> listOfBrickHexes = Arrays.asList(
-                viewGame(userToken1, gameId)
-                        .path("map.hexes.find { it.@type == 'groceries' }.type"));
-         */
 
         viewGame(userToken1, gameId)
                 .then()
