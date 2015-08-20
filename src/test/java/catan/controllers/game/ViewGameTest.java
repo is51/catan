@@ -1,7 +1,6 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
-import catan.services.impl.GameServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +8,18 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -57,40 +67,42 @@ public class ViewGameTest extends GameTestUtil {
                 .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
 
                 .body("map.edges.edgeId", everyItem(greaterThan(0)))
-                .body("map.edges.orientation", everyItem(anyOf(equalTo("BOTTOM_RIGHT"),
+                .body("map.edges.orientation", everyItem(anyOf(
+                        equalTo("BOTTOM_RIGHT"),
                         equalTo("VERTICAL"),
                         equalTo("BOTTOM_LEFT"))))
 
                 .body("map.hexes.hexId", everyItem(greaterThan(0)))
                 .body("map.hexes.x", everyItem(both(
-                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
-                        .and(
-                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
                 .body("map.hexes.y", everyItem(both(
-                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
-                        .and(
-                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
-                .body("map.hexes.type", everyItem(anyOf(equalTo("BRICK"),
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.type", everyItem(anyOf(
+                        equalTo("BRICK"),
                         equalTo("WOOD"),
                         equalTo("SHEEP"),
                         equalTo("WHEAT"),
                         equalTo("STONE"),
                         equalTo("EMPTY"))))
                 .body("map.hexes.dice", everyItem(both(
-                        greaterThanOrEqualTo(2))
-                        .and(
-                                lessThanOrEqualTo(12))))
+                        greaterThanOrEqualTo(2)).and(
+                        lessThanOrEqualTo(12))))
                 .body("map.hexes.robbed", hasItem(true))
 
                 .body("map.nodes.nodeId", everyItem(greaterThan(0)))
-                .body("map.nodes.port", everyItem(anyOf(equalTo("BRICK"),
+                .body("map.nodes.port", everyItem(anyOf(
+                        equalTo("BRICK"),
                         equalTo("WOOD"),
                         equalTo("SHEEP"),
                         equalTo("WHEAT"),
                         equalTo("STONE"),
+                        equalTo("STONE"),
                         equalTo("NONE"),
                         equalTo("ANY"))))
-                .body("map.nodes.orientation", everyItem(anyOf(equalTo("SINGLE_TOP"),
+                .body("map.nodes.orientation", everyItem(anyOf(
+                        equalTo("SINGLE_TOP"),
                         equalTo("SINGLE_BOTTOM"))));
     }
 
@@ -131,34 +143,34 @@ public class ViewGameTest extends GameTestUtil {
 
                 .body("map.hexes.hexId", everyItem(greaterThan(0)))
                 .body("map.hexes.x", everyItem(both(
-                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
-                        .and(
-                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
                 .body("map.hexes.y", everyItem(both(
-                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE))
-                        .and(
-                                lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
-                .body("map.hexes.type", everyItem(anyOf(equalTo("BRICK"),
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.type", everyItem(anyOf(
+                        equalTo("BRICK"),
                         equalTo("WOOD"),
                         equalTo("SHEEP"),
                         equalTo("WHEAT"),
                         equalTo("STONE"),
                         equalTo("EMPTY"))))
                 .body("map.hexes.dice", everyItem(both(
-                        greaterThanOrEqualTo(2))
-                        .and(
-                                lessThanOrEqualTo(12))))
+                        greaterThanOrEqualTo(2)).and(
+                        lessThanOrEqualTo(12))))
                 .body("map.hexes.robbed", hasItem(true))
 
                 .body("map.nodes.nodeId", everyItem(greaterThan(0)))
-                .body("map.nodes.port", everyItem(anyOf(equalTo("BRICK"),
+                .body("map.nodes.port", everyItem(anyOf(
+                        equalTo("BRICK"),
                         equalTo("WOOD"),
                         equalTo("SHEEP"),
                         equalTo("WHEAT"),
                         equalTo("STONE"),
                         equalTo("NONE"),
                         equalTo("ANY"))))
-                .body("map.nodes.orientation", everyItem(anyOf(equalTo("SINGLE_TOP"),
+                .body("map.nodes.orientation", everyItem(anyOf(
+                        equalTo("SINGLE_TOP"),
                         equalTo("SINGLE_BOTTOM"))));
     }
 
