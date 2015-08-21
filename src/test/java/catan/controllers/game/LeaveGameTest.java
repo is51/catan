@@ -35,8 +35,7 @@ public class LeaveGameTest extends GameTestUtil {
     @Test
     public void should_successfully_leave_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
-                .path("gameId");
+        int gameId = createNewGame(userToken1, false).path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         joinPublicGame(userToken2, gameId);

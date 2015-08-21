@@ -27,7 +27,6 @@
         <hibernate.version>4.3.10.Final</hibernate.version>
         <hsqldb.version>2.3.3</hsqldb.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <log4j2.version>2.3</log4j2.version>
     </properties>
 
     <build>
@@ -127,17 +126,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jboss-logging</artifactId>
-                    <groupId>org.jboss.logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>3.3.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hsqldb</groupId>

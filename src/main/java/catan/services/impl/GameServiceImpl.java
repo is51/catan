@@ -2,12 +2,13 @@ package catan.services.impl;
 
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.exception.GameException;
 import catan.services.GameService;
-import catan.services.PrivateCodeUtil;
+import catan.services.MapUtil;
+import catan.services.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,12 @@ import java.util.List;
 @Transactional
 public class GameServiceImpl implements GameService {
     private Logger log = LoggerFactory.getLogger(GameService.class);
-
     public static final int MAX_DUPLICATES_RATIO = 5;
     public static final int START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE = 4;
-
     public static final int MIN_USERS = 3;
     public static final int MAX_USERS = 4;
     public static final int MIN_TARGET_VICTORY_POINTS = 2;
+    public static final int ROUND_MAP_SIZE = 2;
 
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String GAME_ALREADY_STARTED_ERROR = "GAME_ALREADY_STARTED";
@@ -44,8 +44,8 @@ public class GameServiceImpl implements GameService {
     public static final String GUEST_NOT_PERMITTED_ERROR = "GUEST_NOT_PERMITTED";
 
     private GameDao gameDao;
-
-    private PrivateCodeUtil privateCodeUtil = new PrivateCodeUtil();
+    private RandomUtil randomUtil;
+    private MapUtil mapUtil;
 
     @Override
     synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
@@ -68,10 +68,13 @@ public class GameServiceImpl implements GameService {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = privateGame ? createPrivateGame(creator, targetVictoryPoints) : createPublicGame(creator, targetVictoryPoints);
-        gameDao.addNewGame(game);
-
+        GameBean game = privateGame
+                ? createPrivateGame(creator, targetVictoryPoints)
+                : createPublicGame(creator, targetVictoryPoints);
         addUserToGame(game, creator);
+        mapUtil.generateNewRoundGameMap(game, ROUND_MAP_SIZE);
+
+        gameDao.addNewGame(game);
 
         log.debug("Game '" + game + "' successfully created with creator " + creator);
 
@@ -143,6 +146,7 @@ public class GameServiceImpl implements GameService {
         }
 
         addUserToGame(game, user);
+        gameDao.updateGame(game);
 
         log.debug("User " + user + " successfully joined game " + game);
 
@@ -236,7 +240,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     synchronized public void updateGameUserStatus(UserBean user, String gameId, boolean readyForGame) throws GameException {
-        log.debug("Setting status ready for user {} for game {}", user, gameId );
+        log.debug("Setting status ready for user {} for game {}", user, gameId);
         checkParameters(user, gameId);
 
         GameBean game = getGameBean(gameId, ERROR_CODE_ERROR);
@@ -278,7 +282,7 @@ public class GameServiceImpl implements GameService {
 
         if (game.getMinPlayers() > game.getGameUsers().size()) {
             log.info("There are not enough players to start game {}. " +
-                    "Game will start when players count will be {}, current count is {}",
+                            "Game will start when players count will be {}, current count is {}",
                     game, game.getMaxPlayers(), game.getGameUsers().size());
             return;
         }
@@ -296,6 +300,7 @@ public class GameServiceImpl implements GameService {
         game.setDateStarted(new Date());
         gameDao.updateGame(game);
     }
+
 
     private void checkParameters(UserBean user, String gameId) throws GameException {
         if (user == null) {
@@ -335,7 +340,7 @@ public class GameServiceImpl implements GameService {
 
         while (numberOfDuplicates != -1) {
             int numberOfDigits = START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE + numberOfDuplicates / MAX_DUPLICATES_RATIO;
-            randomPrivateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
+            randomPrivateCode = randomUtil.generateRandomPrivateCode(numberOfDigits);
 
             if (usedCodes.contains(randomPrivateCode)) {
                 numberOfDuplicates++;
@@ -402,18 +407,26 @@ public class GameServiceImpl implements GameService {
             colorId++;
         }
 
-        GameUserBean newGameUser = new GameUserBean(userBean, colorId);
-        gameDao.addNewGameUser(newGameUser);
-
+        GameUserBean newGameUser = new GameUserBean(userBean, colorId, game);
         game.getGameUsers().add(newGameUser);
     }
 
-    public PrivateCodeUtil getPrivateCodeUtil() {
-        return privateCodeUtil;
+    public RandomUtil getRandomUtil() {
+        return randomUtil;
     }
 
     @Autowired
     public void setGameDao(GameDao gameDao) {
         this.gameDao = gameDao;
+    }
+
+    @Autowired
+    public void setRandomUtil(RandomUtil randomUtil) {
+        this.randomUtil = randomUtil;
+    }
+
+    @Autowired
+    public void setMapUtil(MapUtil mapUtil) {
+        this.mapUtil = mapUtil;
     }
 }

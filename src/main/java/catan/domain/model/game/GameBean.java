@@ -1,11 +1,35 @@
 package catan.domain.model.game;
 
+import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.HexBean;
+import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
+import catan.domain.transfer.output.dashboard.EdgeDetails;
+import catan.domain.transfer.output.dashboard.HexDetails;
+import catan.domain.transfer.output.dashboard.NodeDetails;
 import catan.domain.transfer.output.game.GameUserDetails;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
@@ -14,6 +38,7 @@ import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 public class GameBean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "GAME_ID", unique = true, nullable = false)
     private int gameId;
 
     @ManyToOne
@@ -45,9 +70,23 @@ public class GameBean {
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("coordinates ASC")
+    private Set<HexBean> hexes = new HashSet<HexBean>();
+
+    //TODO: think about removal of this set as it may be redundant
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
+    private Set<EdgeBean> edges = new HashSet<EdgeBean>();
+
+    //TODO: think about removal of this set as it may be redundant
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
+    private Set<NodeBean> nodes = new HashSet<NodeBean>();
 
     public GameBean() {
     }
@@ -162,6 +201,30 @@ public class GameBean {
         this.targetVictoryPoints = targetVictoryPoints;
     }
 
+    public Set<EdgeBean> getEdges() {
+        return edges;
+    }
+
+    public void setEdges(Set<EdgeBean> edges) {
+        this.edges = edges;
+    }
+
+    public Set<HexBean> getHexes() {
+        return hexes;
+    }
+
+    public void setHexes(Set<HexBean> hexes) {
+        this.hexes = hexes;
+    }
+
+    public Set<NodeBean> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(Set<NodeBean> nodes) {
+        this.nodes = nodes;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
@@ -175,5 +238,35 @@ public class GameBean {
         }
 
         return gameUsers;
+    }
+
+    public List<HexDetails> getHexDetails() {
+        List<HexDetails> hexesDetails = new ArrayList<HexDetails>();
+
+        for (HexBean hex : this.hexes) {
+            hexesDetails.add(new HexDetails(hex));
+        }
+
+        return hexesDetails;
+    }
+
+    public List<NodeDetails> getNodeDetails() {
+        List<NodeDetails> nodesDetails = new ArrayList<NodeDetails>();
+
+        for (NodeBean node : this.nodes) {
+            nodesDetails.add(new NodeDetails(node));
+        }
+
+        return nodesDetails;
+    }
+
+    public List<EdgeDetails> getEdgeDetails() {
+        List<EdgeDetails> edgesDetails = new ArrayList<EdgeDetails>();
+
+        for (EdgeBean edge : this.edges) {
+            edgesDetails.add(new EdgeDetails(edge));
+        }
+
+        return edgesDetails;
     }
 }
