@@ -49,9 +49,9 @@ public class GameServiceImpl implements GameService {
 
     @Override
     synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
-        log.debug(">> Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + inputTargetVictoryPoints + " ...");
+        log.debug("Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + inputTargetVictoryPoints + " ...");
         if (creator == null) {
-            log.debug("<< Cannot create new game due to creator is empty");
+            log.debug("Cannot create new game due to creator is empty");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
@@ -59,12 +59,12 @@ public class GameServiceImpl implements GameService {
         try {
             targetVictoryPoints = Integer.parseInt(inputTargetVictoryPoints);
         } catch (Exception e) {
-            log.debug("<< Cannot create game with non-integer format of victory points");
+            log.debug("Cannot create game with non-integer format of victory points");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         if (targetVictoryPoints < MIN_TARGET_VICTORY_POINTS) {
-            log.debug("<< Cannot create game with less than " + MIN_TARGET_VICTORY_POINTS + " victory points");
+            log.debug("Cannot create game with less than " + MIN_TARGET_VICTORY_POINTS + " victory points");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
@@ -73,40 +73,40 @@ public class GameServiceImpl implements GameService {
 
         addUserToGame(game, creator);
 
-        log.debug("<< Game '" + game + "' successfully created with creator " + creator);
+        log.debug("Game '" + game + "' successfully created with creator " + creator);
 
         return game;
     }
 
     @Override
     public List<GameBean> getListOfGamesWithJoinedUser(UserBean user) throws GameException {
-        log.debug(">> Getting list of games joined by " + user + " ...");
+        log.debug("Getting list of games joined by " + user + " ...");
         if (user == null) {
-            log.debug("<< Cannot get list of games due to user is empty");
+            log.debug("Cannot get list of games due to user is empty");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         List<GameBean> games = gameDao.getGamesWithJoinedUser(user.getId());
 
-        log.debug("<< " + games.size() + " games joined by " + user + " successfully retrieved");
+        log.debug("" + games.size() + " games joined by " + user + " successfully retrieved");
 
         return games;
     }
 
     @Override
     public List<GameBean> getListOfAllPublicGames() {
-        log.debug(">> Getting list of all public games ...");
+        log.debug("Getting list of all public games ...");
 
         List<GameBean> games = gameDao.getAllNewPublicGames();
 
-        log.debug("<< " + games.size() + " games successfully retrieved");
+        log.debug("" + games.size() + " games successfully retrieved");
 
         return games;
     }
 
     @Override
     synchronized public GameBean joinGameByIdentifier(UserBean user, String gameId, boolean privateGame) throws GameException {
-        log.debug(">> Join user " + user + " to "
+        log.debug("Join user " + user + " to "
                 + (privateGame ? "private" : "public") + " game with "
                 + (privateGame ? "privateCode" : "id") + " '" + gameId + "' ...");
         checkParameters(user, gameId);
@@ -115,7 +115,7 @@ public class GameServiceImpl implements GameService {
 
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().getId() == user.getId()) {
-                log.debug("<< User " + user + " already joined to this game");
+                log.debug("User " + user + " already joined to this game");
                 throw new GameException(ALREADY_JOINED_ERROR);
             }
         }
@@ -123,74 +123,74 @@ public class GameServiceImpl implements GameService {
         if (!GameStatus.NEW.equals(game.getStatus())) {
             switch (game.getStatus()) {
                 case PLAYING:
-                    log.debug("<< Cannot join to game that is already started");
+                    log.debug("Cannot join to game that is already started");
                     throw new GameException(GAME_ALREADY_STARTED_ERROR);
                 case FINISHED:
-                    log.debug("<< Cannot join to game that is finished");
+                    log.debug("Cannot join to game that is finished");
                     throw new GameException(GAME_FINISHED_ERROR);
                 case CANCELLED:
-                    log.debug("<< Cannot join to game that is cancelled");
+                    log.debug("Cannot join to game that is cancelled");
                     throw new GameException(GAME_CANCELED_ERROR);
                 default:
-                    log.debug("<< Invalid game status");
+                    log.debug("Invalid game status");
                     throw new GameException(ERROR_CODE_ERROR);
             }
         }
 
         if (game.getGameUsers().size() == game.getMaxPlayers()) {
-            log.debug("<< Number of players is already up to limit");
+            log.debug("Number of players is already up to limit");
             throw new GameException(TOO_MANY_PLAYERS_ERROR);
         }
 
         addUserToGame(game, user);
 
-        log.debug("<< User " + user + " successfully joined game " + game);
+        log.debug("User " + user + " successfully joined game " + game);
 
         return game;
     }
 
     @Override
     public GameBean getGameByGameIdWithJoinedUser(UserBean user, String gameId) throws GameException {
-        log.debug(">> Getting game by gameId '" + gameId + "' for user " + user + " ...");
+        log.debug("Getting game by gameId '" + gameId + "' for user " + user + " ...");
         checkParameters(user, gameId);
 
         GameBean game = getGameBean(gameId, GAME_IS_NOT_FOUND_ERROR);
 
         if (GameStatus.CANCELLED.equals(game.getStatus())) {
-            log.debug("<< Game details cannot be retrieved when game status is CANCELLED");
+            log.debug("Game details cannot be retrieved when game status is CANCELLED");
             throw new GameException(GAME_CANCELED_ERROR);
         }
 
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().getId() == user.getId()) {
-                log.debug("<< Game " + game + " with joined user " + user + " successfully found ");
+                log.debug("Game " + game + " with joined user " + user + " successfully found ");
                 return game;
             }
         }
 
-        log.debug("<< User " + user + " is not joined to game " + game);
+        log.debug("User " + user + " is not joined to game " + game);
         throw new GameException(USER_IS_NOT_JOINED_ERROR);
     }
 
     @Override
     public void leaveGame(UserBean user, String gameId) throws GameException {
-        log.debug(">> Leaving user " + user + " from game with gameId '" + gameId + "' ...");
+        log.debug("Leaving user " + user + " from game with gameId '" + gameId + "' ...");
         checkParameters(user, gameId);
 
         GameBean game = getGameBean(gameId, ERROR_CODE_ERROR);
 
         if (GameStatus.PLAYING.equals(game.getStatus())) {
-            log.debug("<< Game already started");
+            log.debug("Game already started");
             throw new GameException(GAME_HAS_ALREADY_STARTED_ERROR);
         }
 
         if (!GameStatus.NEW.equals(game.getStatus())) {
-            log.debug("<< Game can be leaved only when it is in status NEW");
+            log.debug("Game can be leaved only when it is in status NEW");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         if (user.getId() == game.getCreator().getId()) {
-            log.debug("<< Creator can't leave his own game");
+            log.debug("Creator can't leave his own game");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
@@ -201,29 +201,29 @@ public class GameServiceImpl implements GameService {
             if (gameUser.getUser().getId() == user.getId()) {
                 it.remove();
                 gameDao.updateGame(game);
-                log.debug("<< User " + user + " successfully left the game " + game);
+                log.debug("User " + user + " successfully left the game " + game);
                 return;
             }
         }
 
-        log.debug("<< User " + user + " is not joined to game " + game);
+        log.debug("User " + user + " is not joined to game " + game);
         throw new GameException(ERROR_CODE_ERROR);
     }
 
     @Override
     public void cancelGame(UserBean user, String gameId) throws GameException {
-        log.debug(">> Canceling game with gameId '" + gameId + "' ...");
+        log.debug("Canceling game with gameId '" + gameId + "' ...");
         checkParameters(user, gameId);
 
         GameBean game = getGameBean(gameId, ERROR_CODE_ERROR);
 
         if (!GameStatus.NEW.equals(game.getStatus())) {
-            log.debug("<< Game can be cancelled only when it is in status NEW");
+            log.debug("Game can be cancelled only when it is in status NEW");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         if (user.getId() != game.getCreator().getId()) {
-            log.debug("<< Only creator can cancel the game");
+            log.debug("Only creator can cancel the game");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
@@ -231,18 +231,18 @@ public class GameServiceImpl implements GameService {
         game.setStatus(GameStatus.CANCELLED);
         gameDao.updateGame(game);
 
-        log.debug("<< Game " + game + " successfully cancelled");
+        log.debug("Game " + game + " successfully cancelled");
     }
 
     @Override
     synchronized public void updateGameUserStatus(UserBean user, String gameId, boolean readyForGame) throws GameException {
-        log.debug(">> Setting status ready for user {} for game {}", user, gameId );
+        log.debug("Setting status ready for user {} for game {}", user, gameId );
         checkParameters(user, gameId);
 
         GameBean game = getGameBean(gameId, ERROR_CODE_ERROR);
 
         if (!GameStatus.NEW.equals(game.getStatus())) {
-            log.debug("<< User can set ready status only for game with NEW status, current status is {}", game.getStatus());
+            log.debug("User can set ready status only for game with NEW status, current status is {}", game.getStatus());
             throw new GameException(ERROR_CODE_ERROR);
         }
 
@@ -256,28 +256,28 @@ public class GameServiceImpl implements GameService {
 
         //TODO: Think about throwing exception in case when gameUser not found.
         if (gameUserBean == null) {
-            log.debug("<< User can set ready status only for joined game {}", game.getStatus());
+            log.debug("User can set ready status only for joined game {}", game.getStatus());
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         if (gameUserBean.isReady() == readyForGame) {
-            log.debug("<< User {} already set ready status for game , skipping {}", user, game);
+            log.debug("User {} already set ready status for game , skipping {}", user, game);
             return;
         }
 
         gameUserBean.setReady(readyForGame);
         gameDao.updateGameUser(gameUserBean);
 
-        log.debug("<< User {} successfully updated status to ready for game {}", user, game);
+        log.debug("User {} successfully updated status to ready for game {}", user, game);
 
         startGame(game);
     }
 
     private void startGame(GameBean game) {
-        log.debug("<< Checking if game {} can be started (all players is ready)", game);
+        log.debug("Checking if game {} can be started (all players is ready)", game);
 
         if (game.getMinPlayers() > game.getGameUsers().size()) {
-            log.info("<< There are not enough players to start game {}. " +
+            log.info("There are not enough players to start game {}. " +
                     "Game will start when players count will be {}, current count is {}",
                     game, game.getMaxPlayers(), game.getGameUsers().size());
             return;
@@ -289,8 +289,8 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        log.debug("<< All players is ready");
-        log.debug("<< Starting game {}", game);
+        log.debug("All players is ready");
+        log.debug("Starting game {}", game);
 
         game.setStatus(GameStatus.PLAYING);
         game.setDateStarted(new Date());
@@ -299,12 +299,12 @@ public class GameServiceImpl implements GameService {
 
     private void checkParameters(UserBean user, String gameId) throws GameException {
         if (user == null) {
-            log.debug("<< User should not be empty");
+            log.debug("User should not be empty");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         if (gameId == null || gameId.trim().length() == 0) {
-            log.debug("<< Cannot get game with empty gameId");
+            log.debug("Cannot get game with empty gameId");
             throw new GameException(ERROR_CODE_ERROR);
         }
     }
@@ -314,13 +314,13 @@ public class GameServiceImpl implements GameService {
         try {
             gameId = Integer.parseInt(gameIdString);
         } catch (Exception e) {
-            log.debug("<< Cannot convert gameId to integer value");
+            log.debug("Cannot convert gameId to integer value");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         GameBean game = gameDao.getGameByGameId(gameId);
         if (game == null) {
-            log.debug("<< Game with such game id doesn't exists");
+            log.debug("Game with such game id doesn't exists");
             throw new GameException(errorCodeToReturn);
         }
 
@@ -356,7 +356,7 @@ public class GameServiceImpl implements GameService {
 
     private GameBean createPublicGame(UserBean creator, int targetVictoryPoints) throws GameException {
         if (creator.isGuest()) {
-            log.debug("<< Guest user cannot create new public games");
+            log.debug("Guest user cannot create new public games");
             throw new GameException(GUEST_NOT_PERMITTED_ERROR);
         }
 
@@ -372,7 +372,7 @@ public class GameServiceImpl implements GameService {
     private GameBean findPrivateGame(String privateCode) throws GameException {
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {
-            log.debug("<< Game with such private code doesn't exists");
+            log.debug("Game with such private code doesn't exists");
             throw new GameException(INVALID_CODE_ERROR);
         }
 
@@ -383,7 +383,7 @@ public class GameServiceImpl implements GameService {
         GameBean game = getGameBean(gameIdentifier, ERROR_CODE_ERROR);
 
         if (game.isPrivateGame()) {
-            log.debug("<< Game with id '" + game.getGameId() + "' is private," +
+            log.debug("Game with id '" + game.getGameId() + "' is private," +
                     " but join public game was initiated");
             throw new GameException(ERROR_CODE_ERROR);
         }
