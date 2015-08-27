@@ -7,6 +7,7 @@ public class GameUserDetails {
     private UserDetails user;
     private int colorId;
     private boolean ready;
+    private ResourcesDetails resources;
 
     public GameUserDetails() {
     }
@@ -15,6 +16,7 @@ public class GameUserDetails {
         this.user = new UserDetails(userBean.getUser());
         this.colorId = userBean.getColorId();
         this.ready = userBean.isReady();
+        this.resources = new ResourcesDetails(userBean.getResources());
     }
 
     public UserDetails getUser() {
@@ -39,5 +41,13 @@ public class GameUserDetails {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    public ResourcesDetails getResources() {
+        return resources;
+    }
+
+    public void setResources(ResourcesDetails resources) {
+        this.resources = resources;
     }
 }
