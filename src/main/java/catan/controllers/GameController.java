@@ -46,12 +46,19 @@ public class GameController {
                                             @RequestParam(value = "token", required = false) String token) throws AuthenticationException, GameException, WrongPathException {
 
         List<GameBean> games;
+        UserBean user;
+        int userId = 0;
         switch (GameListType.fromValue(gameListType)) {
             case CURRENT:
-                UserBean user = authenticationService.authenticateUserByToken(token);
+                user = authenticationService.authenticateUserByToken(token);
+                userId = user.getId();
                 games = gameService.getListOfGamesWithJoinedUser(user);
                 break;
             case PUBLIC:
+                try {
+                    user = authenticationService.authenticateUserByToken(token);
+                    userId = user.getId();
+                } catch (Exception e) {}
                 games = gameService.getListOfAllPublicGames();
                 break;
             case UNKNOWN:
@@ -61,7 +68,7 @@ public class GameController {
 
         List<GameDetails> gamesToReturn = new ArrayList<GameDetails>();
         for (GameBean game : games) {
-            gamesToReturn.add(new GameDetails(game));
+            gamesToReturn.add(new GameDetails(game, userId));
         }
 
         return gamesToReturn;
@@ -95,8 +102,9 @@ public class GameController {
                                       @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
         GameBean game = gameService.getGameByGameIdWithJoinedUser(user, gameId);
+        int userId = user.getId();
 
-        return new GameDetails(game);
+        return new GameDetails(game, userId);
     }
 
     @RequestMapping(value = "leave",

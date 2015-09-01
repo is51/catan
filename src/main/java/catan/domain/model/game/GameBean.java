@@ -167,11 +167,11 @@ public class GameBean {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
-    public List<GameUserDetails> getGameUserDetails() {
+    public List<GameUserDetails> getGameUserDetails(int userId) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
         for (GameUserBean gameUser : this.gameUsers) {
-            gameUsers.add(new GameUserDetails(gameUser));
+            gameUsers.add(new GameUserDetails(gameUser, userId));
         }
 
         return gameUsers;

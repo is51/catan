@@ -20,7 +20,7 @@ public class GameDetails {
     public GameDetails() {
     }
 
-    public GameDetails(GameBean game) {
+    public GameDetails(GameBean game, int userId) {
         this.gameId = game.getGameId();
         this.creatorId = game.getCreator().getId();
         this.privateGame = game.isPrivateGame();
@@ -28,7 +28,7 @@ public class GameDetails {
         this.dateCreated = game.getDateCreated().getTime();
         this.dateStarted = game.getDateStarted() != null ? game.getDateStarted().getTime() : 0;
         this.status = game.getStatus().toString();
-        this.gameUsers = game.getGameUserDetails();
+        this.gameUsers = game.getGameUserDetails(userId);
         this.minPlayers = game.getMinPlayers();
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
