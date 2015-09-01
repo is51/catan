@@ -4,6 +4,7 @@ import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.ResourcesBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.exception.GameException;
 import catan.services.GameService;
@@ -288,8 +289,13 @@ public class GameServiceImpl implements GameService {
                 return;
             }
         }
-
         log.debug("<< All players is ready");
+
+        log.debug("<< Setting resources to zero");
+        for (GameUserBean userBean : game.getGameUsers()) {
+            userBean.setResources(new ResourcesBean(0, 0, 0, 0, 0));
+        }
+
         log.debug("<< Starting game {}", game);
 
         game.setStatus(GameStatus.PLAYING);
