@@ -29,6 +29,14 @@
                 <a ng-if="gameDetails.creatorId!==User.get().id" href="" ct-leave-game-button game="gameDetails" class="btn btn-danger">Leave Game</a>
                 <a ng-if="gameDetails.creatorId===User.get().id" href="" ct-cancel-game-button game="gameDetails" class="btn btn-danger">Cancel Game</a>
             </div>
+
+            <div>
+                <br>
+                <a href="" ct-ready-button game="gameDetails" after-set="updateGameDetails" class="btn btn-default">I'm Ready</a>
+            </div>
+
+
+            <ct-game-map-overview game="gameDetails"></ct-game-map-overview>
         </div>
 
 

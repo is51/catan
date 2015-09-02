@@ -1,9 +1,12 @@
 package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameBean;
+import catan.domain.transfer.output.dashboard.MapDetails;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameDetails {
     private int gameId;
     private int creatorId;
@@ -16,6 +19,7 @@ public class GameDetails {
     private int minPlayers;
     private int maxPlayers;
     private int targetVictoryPoints;
+    private MapDetails map;
 
     public GameDetails() {
     }
@@ -32,6 +36,7 @@ public class GameDetails {
         this.minPlayers = game.getMinPlayers();
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
+        this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
     }
 
     public int getGameId() {
@@ -120,5 +125,13 @@ public class GameDetails {
 
     public void setTargetVictoryPoints(int targetVictoryPoints) {
         this.targetVictoryPoints = targetVictoryPoints;
+    }
+
+    public MapDetails getMap() {
+        return map;
+    }
+
+    public void setMap(MapDetails map) {
+        this.map = map;
     }
 }

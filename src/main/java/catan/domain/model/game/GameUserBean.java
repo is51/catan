@@ -5,7 +5,15 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
@@ -15,6 +23,7 @@ public class GameUserBean {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "GAME_USER_ID", unique = true, nullable = false)
     private int gameUserId;
 
     @ManyToOne
@@ -23,6 +32,10 @@ public class GameUserBean {
 
     @Column(name = "COLOR_ID", nullable = false, updatable = false)
     private int colorId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "GAME_ID", nullable = false)
+    private GameBean game;
 
     @Column(name = "READY", nullable = false)
     private boolean ready;
@@ -33,9 +46,10 @@ public class GameUserBean {
     public GameUserBean() {
     }
 
-    public GameUserBean(UserBean user, int colorId) {
+    public GameUserBean(UserBean user, int colorId, GameBean game) {
         this.user = user;
         this.colorId = colorId;
+        this.game = game;
     }
 
     public int getGameUserId() {
@@ -60,6 +74,14 @@ public class GameUserBean {
 
     public void setColorId(int colorId) {
         this.colorId = colorId;
+    }
+
+    public GameBean getGame() {
+        return game;
+    }
+
+    public void setGame(GameBean game) {
+        this.game = game;
     }
 
     public boolean isReady() {

@@ -1,7 +1,6 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
-import catan.domain.model.game.GameStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +8,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 
@@ -156,14 +154,40 @@ public class StartGameTest extends GameTestUtil {
         int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
                 .path("gameId");
 
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
 
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         setUserReady(userToken1, gameId);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         setUserReady(userToken2, gameId);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("NEW"))
+                .body("dateStarted", equalTo(0));
+
         setUserReady(userToken3, gameId);
 
-        viewGame(userToken3, gameId)
+        viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
