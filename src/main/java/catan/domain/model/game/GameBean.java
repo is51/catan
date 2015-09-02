@@ -70,6 +70,10 @@ public class GameBean {
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
 
+    @ManyToOne
+    @JoinColumn(name = "ACTIVE_PLAYER_ID")
+    private UserBean activePlayer;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
@@ -199,6 +203,14 @@ public class GameBean {
 
     public void setTargetVictoryPoints(int targetVictoryPoints) {
         this.targetVictoryPoints = targetVictoryPoints;
+    }
+
+    public UserBean getActivePlayer() {
+        return activePlayer;
+    }
+
+    public void setActivePlayer(UserBean activePlayer) {
+        this.activePlayer = activePlayer;
     }
 
     public Set<EdgeBean> getEdges() {
