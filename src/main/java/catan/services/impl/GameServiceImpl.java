@@ -299,6 +299,7 @@ public class GameServiceImpl implements GameService {
 
         randomUtil.populatePlayersMoveOrderRandomly(game.getGameUsers());
 
+        game.setCurrentMove(1);
         game.setStatus(GameStatus.PLAYING);
         game.setDateStarted(new Date());
         gameDao.updateGame(game);

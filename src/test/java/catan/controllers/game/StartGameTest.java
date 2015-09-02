@@ -274,4 +274,31 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers.moveOrder", everyItem(is(0)));
     }
 
+    @Test
+    public void should_successfully_set_active_player_when_game_started() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
+                .path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        viewGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", nullValue());
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        viewGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", equalTo(1));
+    }
+
 }
