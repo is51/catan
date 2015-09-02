@@ -53,7 +53,6 @@ public class GameServiceImplTest {
 
     @Before
     public void setUp() {
-        //gameService.getRandomUtil().setRvg(rvg);
         RandomUtil randomUtil = new RandomUtil();
         randomUtil.setRvg(rvg);
 
