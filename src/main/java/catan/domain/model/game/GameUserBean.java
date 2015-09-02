@@ -3,6 +3,7 @@ package catan.domain.model.game;
 import catan.domain.model.user.UserBean;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

@@ -10,7 +10,6 @@ import catan.domain.exception.GameException;
 import catan.services.GameService;
 import catan.services.RandomUtil;
 import catan.services.MapUtil;
-import catan.services.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
