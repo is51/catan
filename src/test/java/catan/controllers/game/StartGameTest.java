@@ -229,4 +229,49 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers.ready", everyItem(equalTo(true)));
     }
 
+    @Test
+    public void should_successfully_set_move_order_to_players_when_game_starts() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
+                .path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        viewGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers.moveOrder", everyItem(both(
+                        greaterThan(0))
+                        .and(
+                                lessThanOrEqualTo(TEMPORARY_MAX_PLAYERS))))
+                .body("gameUsers.moveOrder[0]", not(isOneOf("gameUsers.moveOrder[1]", "gameUsers.moveOrder[2]")))
+                .body("gameUsers.moveOrder[1]", not(equalTo("gameUsers.moveOrder[2]")));
+    }
+
+    @Test
+    public void should_successfully_run_if_move_order_is_null_before_game_starts() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
+                .path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        viewGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers.moveOrder", everyItem(is(0)));
+    }
+
 }
