@@ -7,6 +7,7 @@ import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.exception.GameException;
 import catan.services.GameService;
+import catan.services.RandomUtil;
 import catan.services.MapUtil;
 import catan.services.RandomUtil;
 import org.slf4j.Logger;
@@ -295,6 +296,8 @@ public class GameServiceImpl implements GameService {
 
         log.debug("All players is ready");
         log.debug("Starting game {}", game);
+
+        randomUtil.populatePlayersMoveOrderRandomly(game.getGameUsers());
 
         game.setStatus(GameStatus.PLAYING);
         game.setDateStarted(new Date());

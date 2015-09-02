@@ -1,9 +1,12 @@
 package catan.services;
 
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.game.GameUserBean;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class RandomUtil {
@@ -22,6 +25,20 @@ public class RandomUtil {
 
 
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
+    }
+
+    public void populatePlayersMoveOrderRandomly(Set<GameUserBean> players) {
+        List<Integer> moveOrderSequence = new ArrayList<Integer>();
+        for (int i = 1; i <= players.size(); i++) {
+            moveOrderSequence.add(i);
+        }
+
+        for (GameUserBean gameUser : players) {
+            int randomMoveOrderId = (int) (rvg.randomValue() * moveOrderSequence.size());
+            Integer moveOrder = moveOrderSequence.remove(randomMoveOrderId);
+
+            gameUser.setMoveOrder(moveOrder);
+        }
     }
 
     public HexType pullRandomHexType(List<HexType> possibleHexTypes) {
