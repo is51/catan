@@ -1,7 +1,6 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
-import catan.services.impl.GameServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,8 +8,18 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.*;
-
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.hasSize;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
@@ -21,6 +30,7 @@ public class ViewGameTest extends GameTestUtil {
     public static final String USER_PASSWORD_1 = "password1";
     public static final String USER_NAME_2 = "user2_ViewGameTest";
     public static final String USER_PASSWORD_2 = "password2";
+    public static final int DEFAULT_ROUND_MAP_SIZE = 2;
 
     private static boolean initialized = false;
 
@@ -46,14 +56,64 @@ public class ViewGameTest extends GameTestUtil {
                 .body("gameId", greaterThan(0))
                 .body("creatorId", equalTo(userId))
                 .body("dateCreated", is(both(
-                        greaterThan(System.currentTimeMillis() - 60000))
-                        .and(
-                                lessThanOrEqualTo(System.currentTimeMillis()))))
+                        greaterThan(System.currentTimeMillis() - 60000)).and(
+                        lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
                 .body("gameUsers.user.id", hasItems(userId))
                 .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
                 .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
-                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
+
+                .body("map.edges.edgeId", everyItem(greaterThan(0)))
+                .body("map.edges.orientation", everyItem(anyOf(
+                        equalTo("BOTTOM_RIGHT"),
+                        equalTo("VERTICAL"),
+                        equalTo("BOTTOM_LEFT"))))
+
+                .body("map.hexes.hexId", everyItem(greaterThan(0)))
+                .body("map.hexes.x", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.y", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.type.findAll {it == 'BRICK'}", hasSize(3))
+                .body("map.hexes.type.findAll {it == 'WOOD'}", hasSize(4))
+                .body("map.hexes.type.findAll {it == 'SHEEP'}", hasSize(4))
+                .body("map.hexes.type.findAll {it == 'WHEAT'}", hasSize(4))
+                .body("map.hexes.type.findAll {it == 'STONE'}", hasSize(3))
+                .body("map.hexes.type.findAll {it == 'EMPTY'}", hasSize(1))
+                .body("map.hexes.dice.findAll {it == 2}", hasSize(1))
+                .body("map.hexes.dice.findAll {it == 3}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 4}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 5}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 6}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 7}", hasSize(1))
+                .body("map.hexes.dice.findAll {it == 8}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 9}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 10}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 11}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 12}", hasSize(1))
+                .body("map.hexes.robbed.findAll {it == true}", hasSize(1))
+
+                .body("map.nodes.nodeId", everyItem(greaterThan(0)))
+                .body("map.nodes.port.findAll {it == 'BRICK'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'WOOD'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'SHEEP'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'WHEAT'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'STONE'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'ANY'}", hasSize(8))
+                .body("map.nodes.port", everyItem(anyOf(
+                        equalTo("BRICK"),
+                        equalTo("WOOD"),
+                        equalTo("SHEEP"),
+                        equalTo("WHEAT"),
+                        equalTo("STONE"),
+                        equalTo("NONE"),
+                        equalTo("ANY"))))
+                .body("map.nodes.orientation", everyItem(anyOf(
+                        equalTo("SINGLE_TOP"),
+                        equalTo("SINGLE_BOTTOM"))));
     }
 
     @Test
@@ -73,18 +133,67 @@ public class ViewGameTest extends GameTestUtil {
                 .statusCode(200)
                 .body("gameId", greaterThan(0))
                 .body("creatorId", is(both(
-                        greaterThan(0))
-                        .and(
-                                not(equalTo(userId2)))))
+                        greaterThan(0)).and(
+                        not(equalTo(userId2)))))
                 .body("dateCreated", is(both(
-                        greaterThan(System.currentTimeMillis() - 60000))
-                        .and(
-                                lessThanOrEqualTo(System.currentTimeMillis()))))
+                        greaterThan(System.currentTimeMillis() - 60000)).and(
+                        lessThanOrEqualTo(System.currentTimeMillis()))))
                 .body("status", not(equalTo(isEmptyString())))
                 .body("gameUsers.user.id", hasItems(userId1, userId2))
                 .body("targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
                 .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
-                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
+                .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
+
+                .body("map.edges.edgeId", everyItem(greaterThan(0)))
+                .body("map.edges.orientation", everyItem(anyOf(
+                        equalTo("BOTTOM_RIGHT"),
+                        equalTo("VERTICAL"),
+                        equalTo("BOTTOM_LEFT"))))
+
+                .body("map.hexes.hexId", everyItem(greaterThan(0)))
+                .body("map.hexes.x", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.y", everyItem(both(
+                        greaterThanOrEqualTo(-DEFAULT_ROUND_MAP_SIZE)).and(
+                        lessThanOrEqualTo(DEFAULT_ROUND_MAP_SIZE))))
+                .body("map.hexes.type.findAll {it == 'BRICK'}", hasSize(3))
+                .body("map.hexes.type.findAll {it == 'WOOD'}", hasSize(4))
+                .body("map.hexes.type.findAll {it == 'SHEEP'}", hasSize(4))
+                .body("map.hexes.type.findAll {it == 'WHEAT'}", hasSize(4))
+                .body("map.hexes.type.findAll {it == 'STONE'}", hasSize(3))
+                .body("map.hexes.type.findAll {it == 'EMPTY'}", hasSize(1))
+                .body("map.hexes.dice.findAll {it == 2}", hasSize(1))
+                .body("map.hexes.dice.findAll {it == 3}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 4}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 5}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 6}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 7}", hasSize(1))
+                .body("map.hexes.dice.findAll {it == 8}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 9}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 10}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 11}", hasSize(2))
+                .body("map.hexes.dice.findAll {it == 12}", hasSize(1))
+                .body("map.hexes.robbed.findAll {it == true}", hasSize(1))
+
+                .body("map.nodes.nodeId", everyItem(greaterThan(0)))
+                .body("map.nodes.port.findAll {it == 'BRICK'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'WOOD'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'SHEEP'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'WHEAT'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'STONE'}", hasSize(2))
+                .body("map.nodes.port.findAll {it == 'ANY'}", hasSize(8))
+                .body("map.nodes.port", everyItem(anyOf(
+                        equalTo("BRICK"),
+                        equalTo("WOOD"),
+                        equalTo("SHEEP"),
+                        equalTo("WHEAT"),
+                        equalTo("STONE"),
+                        equalTo("NONE"),
+                        equalTo("ANY"))))
+                .body("map.nodes.orientation", everyItem(anyOf(
+                        equalTo("SINGLE_TOP"),
+                        equalTo("SINGLE_BOTTOM"))));
     }
 
     @Test

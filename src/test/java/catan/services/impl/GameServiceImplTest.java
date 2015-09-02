@@ -2,9 +2,11 @@ package catan.services.impl;
 
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameStatus;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
+import catan.services.MapUtil;
+import catan.services.RandomUtil;
 import catan.domain.exception.GameException;
 import catan.services.RandomValueGeneratorMock;
 import org.junit.After;
@@ -42,6 +44,8 @@ public class GameServiceImplTest {
 
     @Mock
     private GameDao gameDao;
+    @Mock
+    private MapUtil mapUtil;
     @InjectMocks
     private GameServiceImpl gameService;
 
@@ -49,7 +53,10 @@ public class GameServiceImplTest {
 
     @Before
     public void setUp() {
-        gameService.getPrivateCodeUtil().setRvg(rvg);
+        RandomUtil randomUtil = new RandomUtil();
+        randomUtil.setRvg(rvg);
+
+        gameService.setRandomUtil(randomUtil);
     }
 
     @After
@@ -101,8 +108,8 @@ public class GameServiceImplTest {
         GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS));
 
         // THEN
-        verify(gameDao, times(1)).addNewGameUser(any(GameUserBean.class));
         verify(gameDao, times(1)).addNewGame(gameBeanArgumentCaptor.capture());
+        verify(mapUtil, times(1)).generateNewRoundGameMap(game, GameServiceImpl.ROUND_MAP_SIZE);
 
         assertNotNull(game);
         assertNotNull(game.getGameId());
@@ -154,8 +161,8 @@ public class GameServiceImplTest {
         GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game2.setGameId(2);
 
-        GameUserBean gameUser1 = new GameUserBean(user, 1);
-        GameUserBean gameUser2 = new GameUserBean(user, 1);
+        GameUserBean gameUser1 = new GameUserBean(user, 1, game1);
+        GameUserBean gameUser2 = new GameUserBean(user, 1, game2);
         game1.getGameUsers().add(gameUser1);
         game2.getGameUsers().add(gameUser2);
 
@@ -225,8 +232,8 @@ public class GameServiceImplTest {
         GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game2.setGameId(2);
 
-        GameUserBean gameUser1 = new GameUserBean(user1, 1);
-        GameUserBean gameUser2 = new GameUserBean(user2, 1);
+        GameUserBean gameUser1 = new GameUserBean(user1, 1, game1);
+        GameUserBean gameUser2 = new GameUserBean(user2, 1, game2);
         game1.getGameUsers().add(gameUser1);
         game2.getGameUsers().add(gameUser2);
 
@@ -287,7 +294,7 @@ public class GameServiceImplTest {
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
-        game.getGameUsers().add(new GameUserBean(user, 1));
+        game.getGameUsers().add(new GameUserBean(user, 1, game));
 
         ArgumentCaptor<GameUserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(GameUserBean.class);
 
@@ -308,11 +315,11 @@ public class GameServiceImplTest {
     public void testUnsetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean = new GameUserBean(user, 1);
-        gameUserBean.setReady(true);
-
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
+
+        GameUserBean gameUserBean = new GameUserBean(user, 1, game);
+        gameUserBean.setReady(true);
         game.getGameUsers().add(gameUserBean);
 
         ArgumentCaptor<GameUserBean> gameUserBeanCaptor = ArgumentCaptor.forClass(GameUserBean.class);
@@ -346,7 +353,7 @@ public class GameServiceImplTest {
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
         game.setGameId(1);
-        game.getGameUsers().add(new GameUserBean(user, 1));
+        game.getGameUsers().add(new GameUserBean(user, 1, game));
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -357,12 +364,12 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_UserIsAlreadyReady() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean = new GameUserBean(user, 1);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
+        GameUserBean gameUserBean = new GameUserBean(user, 1, game);
         game.getGameUsers().add(gameUserBean);
-        game.getGameUsers().add(new GameUserBean(new UserBean("user1", "pwd", false), 2));
+        game.getGameUsers().add(new GameUserBean(new UserBean("user1", "pwd", false), 2, game));
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -378,12 +385,12 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_AllPlayersAreReady_GameShouldBeStarted() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2);
-        gameUserBean1.setReady(true);
-        GameUserBean gameUserBean2 = new GameUserBean(user, 1);
-
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 2, 4, 12);
         game.setGameId(1);
+
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2, game);
+        gameUserBean1.setReady(true);
+        GameUserBean gameUserBean2 = new GameUserBean(user, 1, game);
         game.getGameUsers().add(gameUserBean1);
         game.getGameUsers().add(gameUserBean2);
 
@@ -404,12 +411,13 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_ThereAreNotEnoughPlayers_GameShouldNotBeStarted() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2);
-        gameUserBean1.setReady(true);
-        GameUserBean gameUserBean2 = new GameUserBean(user, 1);
 
         GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
         game.setGameId(1);
+
+        GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2, game);
+        gameUserBean1.setReady(true);
+        GameUserBean gameUserBean2 = new GameUserBean(user, 1, game);
         game.getGameUsers().add(gameUserBean1);
         game.getGameUsers().add(gameUserBean2);
 

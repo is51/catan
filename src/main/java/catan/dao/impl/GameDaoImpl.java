@@ -3,7 +3,7 @@ package catan.dao.impl;
 import catan.dao.AbstractDao;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameStatus;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import org.hibernate.Criteria;
@@ -19,11 +19,6 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     @Override
     public void addNewGame(GameBean newGame) {
         persist(newGame);
-    }
-
-    @Override
-    public void addNewGameUser(GameUserBean newGameUser) {
-        persist(newGameUser);
     }
 
     @Override
@@ -46,11 +41,11 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     public List<GameBean> getGamesByCreatorId(int creatorId) {
         Query query = getSession().createQuery(
                 "SELECT game " +
-                "FROM " + GameBean.class.getSimpleName() + " AS game " +
-                "WHERE game.creator.id in (" +
-                    "SELECT user.id " +
-                    "FROM " + UserBean.class.getName() + " AS user " +
-                    "WHERE user.id = :creatorId)");
+                        "FROM " + GameBean.class.getSimpleName() + " AS game " +
+                        "WHERE game.creator.id in (" +
+                        "SELECT user.id " +
+                        "FROM " + UserBean.class.getName() + " AS user " +
+                        "WHERE user.id = :creatorId)");
         query.setString("creatorId", String.valueOf(creatorId));
 
         //noinspection unchecked
