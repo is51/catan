@@ -70,9 +70,8 @@ public class GameBean {
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
 
-    @ManyToOne
-    @JoinColumn(name = "ACTIVE_PLAYER_ID")
-    private UserBean activePlayer;
+    @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
+    private Integer currentMove;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
@@ -205,12 +204,12 @@ public class GameBean {
         this.targetVictoryPoints = targetVictoryPoints;
     }
 
-    public UserBean getActivePlayer() {
-        return activePlayer;
+    public Integer getCurrentMove() {
+        return currentMove;
     }
 
-    public void setActivePlayer(UserBean activePlayer) {
-        this.activePlayer = activePlayer;
+    public void setCurrentMove(Integer currentMove) {
+        this.currentMove = currentMove;
     }
 
     public Set<EdgeBean> getEdges() {
