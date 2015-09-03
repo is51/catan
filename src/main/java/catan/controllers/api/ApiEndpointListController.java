@@ -163,7 +163,7 @@ public class ApiEndpointListController {
 
                 if (parameter.getParameterAnnotation(RequestParam.class) != null) {
                     content.append("<label>" + parameter.getParameterAnnotation(RequestParam.class).value()
-                            + ":</label><input type=\"text\"  class=\"replaceAction\" name=\""
+                            + ":</label><input type=\"text\" name=\""
                             + parameter.getParameterAnnotation(RequestParam.class).value() + "\"> <span>(" + parameter.getParameterType().getName() + ")</span><br/>");
                 }
             }
