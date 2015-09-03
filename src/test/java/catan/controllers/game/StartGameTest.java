@@ -310,6 +310,18 @@ public class StartGameTest extends GameTestUtil {
         int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
                 .path("gameId");
 
+        // Check that user already has resources when game is not started.
+        // Maybe it should be changed to populate resources just before game is started
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[0].resources.brick", is(0))
+                .body("gameUsers[0].resources.wood", is(0))
+                .body("gameUsers[0].resources.sheep", is(0))
+                .body("gameUsers[0].resources.wheat", is(0))
+                .body("gameUsers[0].resources.stone", is(0))
+                .body("status", equalTo("NEW"));
+
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
 
@@ -339,7 +351,6 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers[1].resources.wheat", is(0))
                 .body("gameUsers[1].resources.stone", is(0))
                 .body("gameUsers[2].resources", nullValue())
-
                 .body("status", equalTo("PLAYING"));
 
         viewGame(userToken3, gameId)
