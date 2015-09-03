@@ -241,11 +241,11 @@ public class GameBean {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
-    public List<GameUserDetails> getGameUserDetails(int userId) {
+    public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
         for (GameUserBean gameUser : this.gameUsers) {
-            gameUsers.add(new GameUserDetails(gameUser, userId));
+            gameUsers.add(new GameUserDetails(gameUser, detailsRequesterId));
         }
 
         return gameUsers;

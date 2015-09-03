@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
@@ -42,16 +43,17 @@ public class GameUserBean {
     @Column(name = "MOVE_ORDER", unique = false, nullable = false)
     private int moveOrder;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private ResourcesBean resources = new ResourcesBean();
 
     public GameUserBean() {
     }
 
-    public GameUserBean(UserBean user, int colorId, GameBean game) {
+    public GameUserBean(UserBean user, int colorId, GameBean game, ResourcesBean resources) {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
+        this.resources = resources;
     }
 
     public int getGameUserId() {

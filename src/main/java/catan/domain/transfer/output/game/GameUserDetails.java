@@ -13,12 +13,12 @@ public class GameUserDetails {
     public GameUserDetails() {
     }
 
-    public GameUserDetails(GameUserBean userBean, int userId) {
+    public GameUserDetails(GameUserBean userBean, int detailsRequesterId) {
         this.user = new UserDetails(userBean.getUser());
         this.colorId = userBean.getColorId();
         this.ready = userBean.isReady();
         this.moveOrder = userBean.getMoveOrder();
-        if (user.getId() == userId) {
+        if (user.getId() == detailsRequesterId) {
             this.resources = new ResourcesDetails(userBean.getResources());
         }
     }

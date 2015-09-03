@@ -46,19 +46,12 @@ public class GameController {
                                             @RequestParam(value = "token", required = false) String token) throws AuthenticationException, GameException, WrongPathException {
 
         List<GameBean> games;
-        UserBean user;
-        int userId = 0;
         switch (GameListType.fromValue(gameListType)) {
             case CURRENT:
-                user = authenticationService.authenticateUserByToken(token);
-                userId = user.getId();
+                UserBean user = authenticationService.authenticateUserByToken(token);
                 games = gameService.getListOfGamesWithJoinedUser(user);
                 break;
             case PUBLIC:
-                try {
-                    user = authenticationService.authenticateUserByToken(token);
-                    userId = user.getId();
-                } catch (Exception e) {}
                 games = gameService.getListOfAllPublicGames();
                 break;
             case UNKNOWN:
@@ -68,7 +61,7 @@ public class GameController {
 
         List<GameDetails> gamesToReturn = new ArrayList<GameDetails>();
         for (GameBean game : games) {
-            gamesToReturn.add(new GameDetails(game, userId));
+            gamesToReturn.add(new GameDetails(game, 0));
         }
 
         return gamesToReturn;
@@ -100,11 +93,10 @@ public class GameController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GameDetails getGameDetails(@RequestParam(value = "token", required = false) String token,
                                       @RequestParam("gameId") String gameId) throws AuthenticationException, GameException {
-        UserBean user = authenticationService.authenticateUserByToken(token);
-        GameBean game = gameService.getGameByGameIdWithJoinedUser(user, gameId);
-        int userId = user.getId();
+        UserBean detailsRequester = authenticationService.authenticateUserByToken(token);
+        GameBean game = gameService.getGameByGameIdWithJoinedUser(detailsRequester, gameId);
 
-        return new GameDetails(game, userId);
+        return new GameDetails(game, detailsRequester.getId());
     }
 
     @RequestMapping(value = "leave",

@@ -294,12 +294,6 @@ public class GameServiceImpl implements GameService {
             }
         }
         log.debug("All players is ready");
-
-        log.debug("Setting resources to zero");
-        for (GameUserBean userBean : game.getGameUsers()) {
-            userBean.setResources(new ResourcesBean(0, 0, 0, 0, 0));
-        }
-
         log.debug("Starting game {}", game);
 
         randomUtil.populatePlayersMoveOrderRandomly(game.getGameUsers());
@@ -415,7 +409,7 @@ public class GameServiceImpl implements GameService {
             colorId++;
         }
 
-        GameUserBean newGameUser = new GameUserBean(userBean, colorId, game);
+        GameUserBean newGameUser = new GameUserBean(userBean, colorId, game, new ResourcesBean(0, 0, 0, 0, 0));
         game.getGameUsers().add(newGameUser);
     }
 
