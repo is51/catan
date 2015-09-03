@@ -301,4 +301,69 @@ public class StartGameTest extends GameTestUtil {
                 .body("currentMove", equalTo(1));
     }
 
+    @Test
+    public void should_successfully_set_resources_to_zero_when_game_starts() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
+                .path("gameId");
+
+        // Check that user already has resources when game is not started.
+        // Maybe it should be changed to populate resources just before game is started
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[0].resources.brick", is(0))
+                .body("gameUsers[0].resources.wood", is(0))
+                .body("gameUsers[0].resources.sheep", is(0))
+                .body("gameUsers[0].resources.wheat", is(0))
+                .body("gameUsers[0].resources.stone", is(0))
+                .body("status", equalTo("NEW"));
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[0].resources.brick", is(0))
+                .body("gameUsers[0].resources.wood", is(0))
+                .body("gameUsers[0].resources.sheep", is(0))
+                .body("gameUsers[0].resources.wheat", is(0))
+                .body("gameUsers[0].resources.stone", is(0))
+                .body("gameUsers[1].resources", nullValue())
+                .body("gameUsers[2].resources", nullValue())
+                .body("status", equalTo("PLAYING"));
+
+        viewGame(userToken2, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[0].resources", nullValue())
+                .body("gameUsers[1].resources.brick", is(0))
+                .body("gameUsers[1].resources.wood", is(0))
+                .body("gameUsers[1].resources.sheep", is(0))
+                .body("gameUsers[1].resources.wheat", is(0))
+                .body("gameUsers[1].resources.stone", is(0))
+                .body("gameUsers[2].resources", nullValue())
+                .body("status", equalTo("PLAYING"));
+
+        viewGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[0].resources", nullValue())
+                .body("gameUsers[1].resources", nullValue())
+                .body("gameUsers[2].resources.brick", is(0))
+                .body("gameUsers[2].resources.wood", is(0))
+                .body("gameUsers[2].resources.sheep", is(0))
+                .body("gameUsers[2].resources.wheat", is(0))
+                .body("gameUsers[2].resources.stone", is(0))
+                .body("status", equalTo("PLAYING"));
+    }
+
 }

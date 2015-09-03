@@ -8,15 +8,19 @@ public class GameUserDetails {
     private int colorId;
     private boolean ready;
     private int moveOrder;
+    private ResourcesDetails resources;
 
     public GameUserDetails() {
     }
 
-    public GameUserDetails(GameUserBean userBean) {
+    public GameUserDetails(GameUserBean userBean, int detailsRequesterId) {
         this.user = new UserDetails(userBean.getUser());
         this.colorId = userBean.getColorId();
         this.ready = userBean.isReady();
         this.moveOrder = userBean.getMoveOrder();
+        if (user.getId() == detailsRequesterId) {
+            this.resources = new ResourcesDetails(userBean.getResources());
+        }
     }
 
     public UserDetails getUser() {
@@ -49,5 +53,13 @@ public class GameUserDetails {
 
     public void setMoveOrder(int moveOrder) {
         this.moveOrder = moveOrder;
+    }
+
+    public ResourcesDetails getResources() {
+        return resources;
+    }
+
+    public void setResources(ResourcesDetails resources) {
+        this.resources = resources;
     }
 }

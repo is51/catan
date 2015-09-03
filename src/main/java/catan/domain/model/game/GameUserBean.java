@@ -1,11 +1,10 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,6 +42,9 @@ public class GameUserBean {
     @Column(name = "MOVE_ORDER", unique = false, nullable = false)
     private int moveOrder;
 
+    @Embedded
+    private ResourcesBean resources;
+
     public GameUserBean() {
     }
 
@@ -50,6 +52,7 @@ public class GameUserBean {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
+        this.resources = new ResourcesBean(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -98,6 +101,14 @@ public class GameUserBean {
 
     public void setMoveOrder(int moveOrder) {
         this.moveOrder = moveOrder;
+    }
+
+    public ResourcesBean getResources() {
+        return resources;
+    }
+
+    public void setResources(ResourcesBean resources) {
+        this.resources = resources;
     }
 
     @Override
