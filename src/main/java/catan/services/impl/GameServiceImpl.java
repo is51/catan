@@ -409,7 +409,7 @@ public class GameServiceImpl implements GameService {
             colorId++;
         }
 
-        GameUserBean newGameUser = new GameUserBean(userBean, colorId, game, new ResourcesBean(0, 0, 0, 0, 0));
+        GameUserBean newGameUser = new GameUserBean(userBean, colorId, game);
         game.getGameUsers().add(newGameUser);
     }
 

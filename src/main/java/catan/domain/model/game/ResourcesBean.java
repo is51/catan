@@ -5,14 +5,8 @@ import javax.persistence.*;
 
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-@Entity
-@Table(name = "RESOURCES")
+@Embeddable
 public class ResourcesBean {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "RESOURCES_ID", unique = true, nullable = false)
-    private int resourcesId;
 
     @Column(name = "BRICK", nullable = false)
     private int brick;
@@ -38,14 +32,6 @@ public class ResourcesBean {
         this.sheep = sheep;
         this.wheat = wheat;
         this.stone = stone;
-    }
-
-    public int getResourcesId() {
-        return resourcesId;
-    }
-
-    public void setResourcesId(int resourcesId) {
-        this.resourcesId = resourcesId;
     }
 
     public int getBrick() {

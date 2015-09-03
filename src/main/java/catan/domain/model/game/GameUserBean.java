@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,17 +44,17 @@ public class GameUserBean {
     @Column(name = "MOVE_ORDER", unique = false, nullable = false)
     private int moveOrder;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Embedded
     private ResourcesBean resources = new ResourcesBean();
 
     public GameUserBean() {
     }
 
-    public GameUserBean(UserBean user, int colorId, GameBean game, ResourcesBean resources) {
+    public GameUserBean(UserBean user, int colorId, GameBean game) {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
-        this.resources = resources;
+        this.resources = new ResourcesBean(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
