@@ -1,8 +1,10 @@
-package catan.services;
+package catan.services.util.map;
 
 import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.services.util.random.RandomValueGeneratorMock;
+import catan.services.util.random.RandomUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

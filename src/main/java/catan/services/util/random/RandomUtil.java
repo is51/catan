@@ -1,4 +1,4 @@
-package catan.services;
+package catan.services.util.random;
 
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameUserBean;

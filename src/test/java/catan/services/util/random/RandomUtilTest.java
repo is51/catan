@@ -1,4 +1,4 @@
-package catan.services;
+package catan.services.util.random;
 
 import org.junit.Before;
 import org.junit.Test;
