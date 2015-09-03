@@ -43,7 +43,7 @@ public class GameUserBean {
     private int moveOrder;
 
     @Embedded
-    private ResourcesBean resources = new ResourcesBean();
+    private ResourcesBean resources;
 
     public GameUserBean() {
     }
