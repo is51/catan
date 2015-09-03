@@ -1,7 +1,8 @@
 package catan.domain.model.game;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
