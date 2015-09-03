@@ -1,4 +1,4 @@
-package catan.services;
+package catan.services.util.map;
 
 import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.EdgeBean;
@@ -7,6 +7,7 @@ import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
+import catan.services.util.random.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,6 @@ import static catan.domain.model.dashboard.types.EdgeOrientationType.BOTTOM_LEFT
 import static catan.domain.model.dashboard.types.EdgeOrientationType.BOTTOM_RIGHT;
 import static catan.domain.model.dashboard.types.EdgeOrientationType.VERTICAL;
 import static catan.domain.model.dashboard.types.HexType.BRICK;
-import static catan.domain.model.dashboard.types.HexType.EMPTY;
 import static catan.domain.model.dashboard.types.HexType.SHEEP;
 import static catan.domain.model.dashboard.types.HexType.STONE;
 import static catan.domain.model.dashboard.types.HexType.WHEAT;

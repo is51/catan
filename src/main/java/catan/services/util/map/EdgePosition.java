@@ -1,4 +1,4 @@
-package catan.services;
+package catan.services.util.map;
 
 public enum EdgePosition {
     TOP_LEFT(0, -1),

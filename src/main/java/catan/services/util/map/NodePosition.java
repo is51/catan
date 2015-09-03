@@ -1,4 +1,4 @@
-package catan.services;
+package catan.services.util.map;
 
 public enum NodePosition {
     TOP(0, -1, 1, -1),

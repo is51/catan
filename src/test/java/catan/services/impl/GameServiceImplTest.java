@@ -5,10 +5,11 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
-import catan.services.MapUtil;
-import catan.services.RandomUtil;
+import catan.services.util.game.GameUtil;
+import catan.services.util.map.MapUtil;
+import catan.services.util.random.RandomUtil;
 import catan.domain.exception.GameException;
-import catan.services.RandomValueGeneratorMock;
+import catan.services.util.random.RandomValueGeneratorMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,8 @@ public class GameServiceImplTest {
     private MapUtil mapUtil;
     @InjectMocks
     private GameServiceImpl gameService;
+    @InjectMocks
+    private GameUtil gameUtil;
 
     private RandomValueGeneratorMock rvg = new RandomValueGeneratorMock();
 
@@ -56,7 +59,10 @@ public class GameServiceImplTest {
         RandomUtil randomUtil = new RandomUtil();
         randomUtil.setRvg(rvg);
 
+        gameUtil.setRandomUtil(randomUtil);
+
         gameService.setRandomUtil(randomUtil);
+        gameService.setGameUtil(gameUtil);
     }
 
     @After
