@@ -1,0 +1,32 @@
+<!-- Tabs  -->
+<section class="tab">
+    <ul class="nav nav-pills">
+        <li ng-class="{ active: tab.isActive(1) }">
+            <a href ng-click="tab.setActive(1)">Description</a></li>
+        <li ng-class="{ active: tab.isActive(2) }">
+            <a href ng-click="tab.setActive(2)">Specs</a></li>
+        <li ng-class="{ active: tab.isActive(3) }">
+            <a href ng-click="tab.setActive(3)">Reviews</a></li>
+    </ul>
+    <div ng-show="tab.isActive(1)">
+        <h4>Description</h4>
+        <blockquote>{{game.description}}</blockquote>
+    </div>
+    <div ng-show="tab.isActive(2)">
+        <h4>Specs</h4>
+        <blockquote>Developers: {{game.developers}}</blockquote>
+    </div>
+    <div ng-show="tab.isActive(3)">
+        <h4>Reviews</h4>
+        <ul>
+            <li ng-repeat="review in game.reviews">
+                <blockquote>
+                    <b>{{review.stars}} Stars</b><br><br>
+                    {{review.text}}
+                    <br><i>by: {{review.author}} </i>
+                </blockquote>
+            </li>
+        </ul>
+        <add-new-review-form></add-new-review-form>
+    </div>
+</section>
