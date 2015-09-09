@@ -1,5 +1,5 @@
 (function () {
-    angular.module("shop-http", [])
+    angular.module("shop")
             .factory("communicator", ['$http', '$log', function ($http, $log) {
                 return {
                     getAllGames: function (populateMethodWithoutLostContext, contextOfController) {

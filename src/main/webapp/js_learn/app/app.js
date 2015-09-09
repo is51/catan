@@ -1,5 +1,5 @@
 (function () {
-    angular.module('shop', ['shop-http', 'shop-games']);
+    angular.module('shop', ['shop-games']);
 
     angular.module('shop')
             .controller("StoreController", ["communicator", function (communicator) {

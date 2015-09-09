@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html ng-app="shop">
 <head>
-    <link rel="stylesheet" type="text/css" href="vendor/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="app/vendor/bootstrap.min.css"/>
 </head>
 <body class="list-group" ng-controller="StoreController as store">
 <header>
     <h1 class="text-center">Developed Games</h1>
 </header>
-<script src="vendor/angular.min.js"></script>
-<script src="app.js"></script>
-<script src="games.js"></script>
-<script src="communicator.js"></script>
+<script src="app/vendor/angular.min.js"></script>
+<script src="app/app.js"></script>
+<script src="app/games.js"></script>
+<script src="app/services/communicator.js"></script>
 <div class="list-group-item" ng-repeat="game in store.games">
     <game-title></game-title>
     <image-gallery></image-gallery>
