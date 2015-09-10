@@ -1,5 +1,5 @@
 (function(){
-    app.module("shop-games")
+    angular.module("shop-games")
             .directive("gameTitle", function(){
                 return {
                     restrict: "E",
