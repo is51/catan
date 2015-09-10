@@ -3,6 +3,8 @@ package catan.domain.model.dashboard;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import java.util.Arrays;
+import java.util.List;
 
 @MappedSuperclass
 public class Links<T> {
@@ -52,6 +54,10 @@ public class Links<T> {
 
     public void setBottomLeft(T bottomLeft) {
         this.bottomLeft = bottomLeft;
+    }
+
+    public List<T> all() {
+        return Arrays.asList(topLeft, topRight, bottomRight, bottomLeft);
     }
 
     @Override

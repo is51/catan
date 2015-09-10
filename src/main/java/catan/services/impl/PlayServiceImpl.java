@@ -5,6 +5,7 @@ import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -29,6 +30,8 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public void buildRoad(UserBean user, String gameId, String edgeIdString) throws PlayException, GameException {
+        log.debug("User {} tries to build road at edge {} of game id {}",
+                user == null ? "<EMPTY>" : user.getUsername(), edgeIdString, gameId);
         //TODO: move to common validation method
         if (user == null) {
             log.debug("User should not be empty");
@@ -54,35 +57,56 @@ public class PlayServiceImpl implements PlayService {
         }
 
         GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
-        for (EdgeBean edge : game.getEdges()) {
-            if (edge.getId() == edgeId) {
 
-                //TODO: move to util method and refactor all other places
-                GameUserBean gameUserBean = null;
-                for (GameUserBean gameUser : game.getGameUsers()) {
-                    if (gameUser.getUser().equals(user)) {
-                        gameUserBean = gameUser;
-                        break;
-                    }
-                }
-
-                if (gameUserBean == null) {
-                    log.debug("User is not joined to game id specified %s", gameId);
-                    throw new PlayException(ERROR_CODE_ERROR);
-                }
-
-                //TODO: add validation to avoid adding roads according to catan rules
-                Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
-                building.setBuilt(EdgeBuiltType.ROAD);
-                building.setBuildingOwner(gameUserBean);
-
-                edge.setBuilding(building);
-
-                gameDao.updateGame(game);
+        //TODO: move to util method and refactor all other places
+        GameUserBean gameUserBean = null;
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().equals(user)) {
+                gameUserBean = gameUser;
                 break;
             }
         }
-        //TODO: add logs
+
+        if (gameUserBean == null) {
+            log.debug("User is not joined to game id specified %s", gameId);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        EdgeBean edgeToBuildOn = null;
+        for (EdgeBean edge : game.getEdges()) {
+            if (edge.getId() == edgeId) {
+                edgeToBuildOn = edge;
+            }
+        }
+
+        if (edgeToBuildOn == null) {
+            log.debug("Cannot build road on edgeId {} that does not belong to game {}", edgeId, gameId);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (edgeToBuildOn.getBuilding() != null) {
+            log.debug("Cannot build road on this edge as it already has building on it");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        for (NodeBean node : edgeToBuildOn.getNodes().all()) {
+            if (node == null) {
+                continue;
+            }
+            if (node.getBuilding() == null) {
+                //TODO: add logic
+            }
+        }
+
+
+        Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
+        building.setBuilt(EdgeBuiltType.ROAD);
+        building.setBuildingOwner(gameUserBean);
+
+        edgeToBuildOn.setBuilding(building);
+
+        gameDao.updateGame(game);
+
     }
 
     @Autowired
