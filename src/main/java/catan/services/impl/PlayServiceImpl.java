@@ -29,16 +29,16 @@ public class PlayServiceImpl implements PlayService {
     private GameUtil gameUtil;
 
     @Override
-    public void buildRoad(UserBean user, String gameId, String edgeIdString) throws PlayException, GameException {
+    public void buildRoad(UserBean user, String gameIdString, String edgeIdString) throws PlayException, GameException {
         log.debug("User {} tries to build road at edge {} of game id {}",
-                user == null ? "<EMPTY>" : user.getUsername(), edgeIdString, gameId);
+                user == null ? "<EMPTY>" : user.getUsername(), edgeIdString, gameIdString);
         //TODO: move to common validation method
         if (user == null) {
             log.debug("User should not be empty");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        if (gameId == null || gameId.trim().length() == 0) {
+        if (gameIdString == null || gameIdString.trim().length() == 0) {
             log.debug("Cannot get game with empty gameId");
             throw new GameException(ERROR_CODE_ERROR);
         }
@@ -56,7 +56,7 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
 
         //TODO: move to util method and refactor all other places
         GameUserBean gameUserBean = null;
@@ -68,7 +68,7 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (gameUserBean == null) {
-            log.debug("User is not joined to game id specified %s", gameId);
+            log.debug("User is not joined to game id specified %s", gameIdString);
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
@@ -80,7 +80,7 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (edgeToBuildOn == null) {
-            log.debug("Cannot build road on edgeId {} that does not belong to game {}", edgeId, gameId);
+            log.debug("Cannot build road on edgeId {} that does not belong to game {}", edgeId, gameIdString);
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
@@ -89,24 +89,43 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
+        boolean hasNeighbourEdge = false;
+        boolean hasNeighbourNode = false;
+
         for (NodeBean node : edgeToBuildOn.getNodes().all()) {
             if (node == null) {
                 continue;
             }
+
             if (node.getBuilding() == null) {
-                //TODO: add logic
+                for (EdgeBean neighbourEdge : node.getEdges().all()) {
+                    if (neighbourEdge == null || neighbourEdge.equals(edgeToBuildOn)) {
+                        continue;
+                    }
+
+                    if (neighbourEdge.getBuilding() != null && neighbourEdge.getBuilding().getBuildingOwner().getUser().equals(user)) {
+                        hasNeighbourEdge = true;
+                    }
+                }
+            } else {
+                if (node.getBuilding().getBuildingOwner().getUser().equals(user)) {
+                    hasNeighbourNode = true;
+                } else {
+                    log.debug("Cannot build road close to settles that don't belong to user");
+                    throw new PlayException(ERROR_CODE_ERROR);
+                }
             }
         }
 
+        if (hasNeighbourEdge || hasNeighbourNode) {
+            Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
+            building.setBuilt(EdgeBuiltType.ROAD);
+            building.setBuildingOwner(gameUserBean);
 
-        Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
-        building.setBuilt(EdgeBuiltType.ROAD);
-        building.setBuildingOwner(gameUserBean);
+            edgeToBuildOn.setBuilding(building);
 
-        edgeToBuildOn.setBuilding(building);
-
-        gameDao.updateGame(game);
-
+            gameDao.updateGame(game);
+        }
     }
 
     @Autowired
