@@ -3,6 +3,7 @@ package catan.domain.model.dashboard;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,7 +58,13 @@ public class Links<T> {
     }
 
     public List<T> all() {
-        return Arrays.asList(topLeft, topRight, bottomRight, bottomLeft);
+        List<T> allElements = new ArrayList<T>();
+        allElements.add(topLeft);
+        allElements.add(topRight);
+        allElements.add(bottomRight);
+        allElements.add(bottomLeft);
+
+        return allElements;
     }
 
     @Override

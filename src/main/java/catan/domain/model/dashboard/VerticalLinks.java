@@ -35,8 +35,9 @@ public class VerticalLinks<T> extends Links<T>{
 
     @Override
     public List<T> all() {
-        List<T> allElements = Arrays.asList(top, bottom);
-        allElements.addAll(super.all());
+        List<T> allElements = super.all();
+        allElements.add(top);
+        allElements.add(bottom);
 
         return allElements;
     }

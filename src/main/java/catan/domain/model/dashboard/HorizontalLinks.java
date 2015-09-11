@@ -35,8 +35,9 @@ public class HorizontalLinks<T> extends Links<T>{
 
     @Override
     public List<T> all() {
-        List<T> allElements = Arrays.asList(right, left);
-        allElements.addAll(super.all());
+        List<T> allElements = super.all();
+        allElements.add(right);
+        allElements.add(left);
 
         return allElements;
     }
