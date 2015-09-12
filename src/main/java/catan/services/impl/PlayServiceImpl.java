@@ -89,8 +89,8 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        boolean hasNeighbourEdge = false;
-        boolean hasNeighbourNode = false;
+        boolean nearNeighbourRoad = false;
+        boolean nearNeighbourSettlement = false;
 
         for (NodeBean node : edgeToBuildOn.getNodes().all()) {
             if (node == null) {
@@ -104,12 +104,12 @@ public class PlayServiceImpl implements PlayService {
                     }
 
                     if (neighbourEdge.getBuilding() != null && neighbourEdge.getBuilding().getBuildingOwner().getUser().equals(user)) {
-                        hasNeighbourEdge = true;
+                        nearNeighbourRoad = true;
                     }
                 }
             } else {
                 if (node.getBuilding().getBuildingOwner().getUser().equals(user)) {
-                    hasNeighbourNode = true;
+                    nearNeighbourSettlement = true;
                 } else {
                     log.debug("Cannot build road close to settles that don't belong to user");
                     throw new PlayException(ERROR_CODE_ERROR);
@@ -117,7 +117,7 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        if (!hasNeighbourEdge && !hasNeighbourNode) {
+        if (!nearNeighbourRoad && !nearNeighbourSettlement) {
             log.debug("Cannot build road close to settles that don't belong to user");
             throw new PlayException(ERROR_CODE_ERROR);
         }
