@@ -11,12 +11,6 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
-import catan.services.GameService;
-import catan.services.PlayService;
-import catan.services.util.game.GameUtil;
-import catan.services.util.map.MapUtil;
-import catan.services.util.random.RandomUtil;
-import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import org.slf4j.Logger;
@@ -24,10 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 @Service("playService")
 @Transactional
@@ -64,6 +54,10 @@ public class PlayServiceImpl implements PlayService {
         }
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        if (game.getStatus() != GameStatus.PLAYING) {
+            log.debug("Cannot build road in not playing game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
 
         //TODO: move to util method and refactor all other places
         GameUserBean gameUserBean = null;
