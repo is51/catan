@@ -7,20 +7,13 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
-import catan.services.GameService;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
-import catan.services.util.map.MapUtil;
-import catan.services.util.random.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 @Service("playService")
 @Transactional
@@ -43,6 +36,10 @@ public class PlayServiceImpl implements PlayService {
         }
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        if (game.getStatus() != GameStatus.PLAYING) {
+            log.debug("Cannot end turn of not playing game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
 
         //TODO: move to util method and refactor all other places
         GameUserBean gameUserBean = null;
@@ -58,7 +55,7 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        if(!game.getCurrentMove().equals(gameUserBean.getMoveOrder())){
+        if (!game.getCurrentMove().equals(gameUserBean.getMoveOrder())) {
             log.debug("It is not current turn of user {}", user.getUsername());
             throw new PlayException(ERROR_CODE_ERROR);
         }
@@ -71,7 +68,7 @@ public class PlayServiceImpl implements PlayService {
 
     private void giveCurrentMoveToNextPlayer(GameBean game) {
         int nextMove = 1;
-        if(!game.getCurrentMove().equals(game.getGameUsers().size())){
+        if (!game.getCurrentMove().equals(game.getGameUsers().size())) {
             nextMove = game.getCurrentMove() + 1;
         }
 
