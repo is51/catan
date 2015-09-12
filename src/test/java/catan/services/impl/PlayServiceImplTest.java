@@ -72,6 +72,39 @@ public class PlayServiceImplTest {
 
     }
 
+    @Test
+    public void shouldChangeCurrentMoveFromFirstPlayerToSecondWhenFirstPlayerEndsHisTurnCorrectly() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        playService.endTurn(gameUser1.getUser(), "1");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(game.getCurrentMove());
+        assertEquals(game.getCurrentMove().intValue(), gameUser2.getMoveOrder());
+    }
+
+    @Test
+    public void shouldFailWhenFirstPlayerTriesToEndTurnWhenCurrentMoveBelongsToSecondPlayer() throws GameException, PlayException {
+        try {
+            //GIVEN
+            game.setCurrentMove(gameUser2.getMoveOrder());
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+            // WHEN
+            playService.endTurn(gameUser1.getUser(), "1");
+            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
 
     private void buildClearTriangleMap() {
         // GIVEN
