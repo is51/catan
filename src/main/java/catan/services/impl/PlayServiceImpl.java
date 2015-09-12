@@ -9,6 +9,13 @@ import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStatus;
+import catan.domain.model.user.UserBean;
+import catan.services.GameService;
+import catan.services.PlayService;
+import catan.services.util.game.GameUtil;
+import catan.services.util.map.MapUtil;
+import catan.services.util.random.RandomUtil;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
@@ -17,6 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 @Service("playService")
 @Transactional
@@ -38,10 +49,6 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        if (gameIdString == null || gameIdString.trim().length() == 0) {
-            log.debug("Cannot get game with empty gameId");
-            throw new GameException(ERROR_CODE_ERROR);
-        }
 
         int edgeId;
         try {
@@ -140,4 +147,6 @@ public class PlayServiceImpl implements PlayService {
     public void setGameUtil(GameUtil gameUtil) {
         this.gameUtil = gameUtil;
     }
+
+
 }
