@@ -3,12 +3,15 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
+import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.EdgeOrientationType;
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
@@ -29,6 +32,9 @@ import java.util.Date;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
@@ -50,8 +56,10 @@ public class PlayServiceImplTest {
     @InjectMocks
     private GameUtil gameUtil;
     private GameBean game;
-    private UserBean user1;
-    private UserBean user2;
+    private HexBean hex_0_0;
+    private HexBean hex_1_0;
+    private GameUserBean gameUser1;
+    private GameUserBean gameUser2;
 
     @Before
     public void setUp() {
@@ -65,12 +73,97 @@ public class PlayServiceImplTest {
     }
 
     @Test
+    public void shouldPassWhenBuildingRoadNearOwnNeighbourCity() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_1_0);
+        assertNotNull(hex_1_0.getEdges().getTopLeft());
+        assertNotNull(hex_1_0.getEdges().getTopLeft().getBuilding());
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldPassWhenBuildingRoadNearOwnNeighbourRoad() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_1_0);
+        assertNotNull(hex_1_0.getEdges().getTopLeft());
+        assertNotNull(hex_1_0.getEdges().getTopLeft().getBuilding());
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldFailWhenPassedEdgeIdIsWrong() throws GameException, PlayException {
+        try {
+            // WHEN
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildRoad(gameUser1.getUser(), "1", "16");
+            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
     public void shouldFailWhenBuildRoadNotNearOwnNeighbourCityOrRoad() throws GameException, PlayException {
         try {
             // WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildRoad(user1, "1", "7");
-            fail("playService with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            playService.buildRoad(gameUser1.getUser(), "1", "7");
+            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenBuildRoadNearNotOwnNeighbourCity() throws GameException, PlayException {
+        try {
+            // WHEN
+            hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
+
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildRoad(gameUser1.getUser(), "1", "7");
+            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenBuildRoadOnExistingRoad() throws GameException, PlayException {
+        try {
+            // WHEN
+            hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildRoad(gameUser1.getUser(), "1", "7");
+            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
@@ -83,19 +176,19 @@ public class PlayServiceImplTest {
         // GIVEN
         game = new GameBean();
 
-        user1 = new UserBean(USER_NAME1, PASSWORD1, false);
-        user2 = new UserBean(USER_NAME2, PASSWORD2, false);
+        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1, false);
+        UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false);
         UserBean user3 = new UserBean(USER_NAME3, PASSWORD3, false);
         UserBean user4 = new UserBean(USER_NAME4, PASSWORD4, false);
 
-        GameUserBean gameUser1 = new GameUserBean(user1, 1, game);
-        GameUserBean gameUser2 = new GameUserBean(user2, 2, game);
+        gameUser1 = new GameUserBean(user1, 1, game);
+        gameUser2 = new GameUserBean(user2, 2, game);
         GameUserBean gameUser3 = new GameUserBean(user3, 3, game);
         GameUserBean gameUser4 = new GameUserBean(user4, 4, game);
 
-        HexBean hex_0_0 = new HexBean(game, new Coordinates(0, 0), HexType.BRICK, 2, false); //top-left
-        HexBean hex_1_0 = new HexBean(game, new Coordinates(1, 0), HexType.WOOD, 10, false); //top-right
-        HexBean hex_0_1 = new HexBean(game, new Coordinates(0, 1), HexType.STONE, 11, true); //bottom-central
+        hex_0_0 = new HexBean(game, new Coordinates(0, 0), HexType.BRICK, 2, false);
+        hex_1_0 = new HexBean(game, new Coordinates(1, 0), HexType.WOOD, 10, false);
+        HexBean hex_0_1 = new HexBean(game, new Coordinates(0, 1), HexType.STONE, 11, true);
 
         NodeBean node_1_1 = new NodeBean(game, NodePortType.ANY);
         NodeBean node_1_2 = new NodeBean(game, NodePortType.NONE);
@@ -103,15 +196,10 @@ public class PlayServiceImplTest {
         NodeBean node_1_4 = new NodeBean(game, NodePortType.NONE);
         NodeBean node_1_5 = new NodeBean(game, NodePortType.NONE);
         NodeBean node_1_6 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_2_1 = new NodeBean(game, NodePortType.NONE);
         NodeBean node_2_2 = new NodeBean(game, NodePortType.NONE);
         NodeBean node_2_3 = new NodeBean(game, NodePortType.STONE);
         NodeBean node_2_4 = new NodeBean(game, NodePortType.NONE);
         NodeBean node_2_5 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_2_6 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_3_1 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_3_2 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_3_3 = new NodeBean(game, NodePortType.NONE);
         NodeBean node_3_4 = new NodeBean(game, NodePortType.NONE);
         NodeBean node_3_5 = new NodeBean(game, NodePortType.WOOD);
         NodeBean node_3_6 = new NodeBean(game, NodePortType.NONE);
@@ -127,9 +215,6 @@ public class PlayServiceImplTest {
         EdgeBean edge_2_3 = new EdgeBean(game);
         EdgeBean edge_2_4 = new EdgeBean(game);
         EdgeBean edge_2_5 = new EdgeBean(game);
-        EdgeBean edge_2_6 = new EdgeBean(game);
-        EdgeBean edge_3_1 = new EdgeBean(game);
-        EdgeBean edge_3_2 = new EdgeBean(game);
         EdgeBean edge_3_3 = new EdgeBean(game);
         EdgeBean edge_3_4 = new EdgeBean(game);
         EdgeBean edge_3_5 = new EdgeBean(game);
@@ -156,23 +241,31 @@ public class PlayServiceImplTest {
         gameUser4.setMoveOrder(4);
         gameUser4.setReady(true);
 
+
         //
         //   / \ / \
         //  |0,0|1,0|
-        //   \ / \ /
-        //    |0,1|
-        //     \ /
+        //   \ / \ /                    2.          7.
+        //    |0,1|                    /   \       /   \
+        //     \ /                    /1   2\     /7   8\
+        //                        1. /       \ .3/       \ .8
+        //       2                 |           |           |
+        //    1 / \ 3              |6  (0,0)  3|   (1,0)  9|
+        //     |   |               |           |           |
+        //    6 \ / 4             6' \       / '4\       / '9
+        //       5                    \5   4/     \11 10/
+        //                             \   /       \   /
+        //     1/ \2                    5'           '10
+        //    6|   |3                    |           |
+        //     5\ /4                     |15 (0,1) 12|
+        //                               |           |
+        //                             13' \       / '11
+        //                                  \14 13/
+        //                                   \   /
+        //                                     '12
         //
-        //       2
-        //    1 / \ 3
-        //     |   |
-        //    6 \ / 4
-        //       5
         //
-        //     1/ \2
-        //    6|   |3
-        //     5\ /4
-        //
+
 
         hex_0_0.setId(1);
         hex_0_0.getNodes().setTopLeft(node_1_1);
@@ -188,27 +281,27 @@ public class PlayServiceImplTest {
         hex_0_0.getEdges().setBottomLeft(edge_1_5);
         hex_0_0.getEdges().setLeft(edge_1_6);
         hex_1_0.setId(2);
-        hex_1_0.getNodes().setTopLeft(node_2_1);
+        hex_1_0.getNodes().setTopLeft(node_1_3);
         hex_1_0.getNodes().setTop(node_2_2);
         hex_1_0.getNodes().setTopRight(node_2_3);
         hex_1_0.getNodes().setBottomRight(node_2_4);
         hex_1_0.getNodes().setBottom(node_2_5);
-        hex_1_0.getNodes().setBottomLeft(node_2_6);
+        hex_1_0.getNodes().setBottomLeft(node_1_4);
         hex_1_0.getEdges().setTopLeft(edge_2_1);
         hex_1_0.getEdges().setTopRight(edge_2_2);
         hex_1_0.getEdges().setRight(edge_2_3);
         hex_1_0.getEdges().setBottomRight(edge_2_4);
         hex_1_0.getEdges().setBottomLeft(edge_2_5);
-        hex_1_0.getEdges().setLeft(edge_2_6);
+        hex_1_0.getEdges().setLeft(edge_1_3);
         hex_0_1.setId(3);
-        hex_0_1.getNodes().setTopLeft(node_3_1);
-        hex_0_1.getNodes().setTop(node_3_2);
-        hex_0_1.getNodes().setTopRight(node_3_3);
+        hex_0_1.getNodes().setTopLeft(node_1_5);
+        hex_0_1.getNodes().setTop(node_1_4);
+        hex_0_1.getNodes().setTopRight(node_2_5);
         hex_0_1.getNodes().setBottomRight(node_3_4);
         hex_0_1.getNodes().setBottom(node_3_5);
         hex_0_1.getNodes().setBottomLeft(node_3_6);
-        hex_0_1.getEdges().setTopLeft(edge_3_1);
-        hex_0_1.getEdges().setTopRight(edge_3_2);
+        hex_0_1.getEdges().setTopLeft(edge_1_4);
+        hex_0_1.getEdges().setTopRight(edge_2_5);
         hex_0_1.getEdges().setRight(edge_3_3);
         hex_0_1.getEdges().setBottomRight(edge_3_4);
         hex_0_1.getEdges().setBottomLeft(edge_3_5);
@@ -256,83 +349,45 @@ public class PlayServiceImplTest {
         node_1_6.getEdges().setTop(edge_1_6);
 
         // Nodes of Hex 1,0
-        node_2_1.setId(7);
-        node_2_1.setOrientation(NodeOrientationType.SINGLE_TOP);
-        node_2_1.getHexes().setBottomRight(hex_1_0);
-        node_2_1.getHexes().setBottomLeft(hex_0_1);
-        node_2_1.getEdges().setTopRight(edge_2_1);
-        node_2_1.getEdges().setBottom(edge_2_6);
-
-        node_2_2.setId(8);
+        node_2_2.setId(7);
         node_2_2.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
         node_2_2.getHexes().setBottom(hex_1_0);
         node_2_2.getEdges().setBottomLeft(edge_2_1);
         node_2_2.getEdges().setBottomRight(edge_2_2);
 
-        node_2_3.setId(9);
+        node_2_3.setId(8);
         node_2_3.setOrientation(NodeOrientationType.SINGLE_TOP);
         node_2_3.getHexes().setBottomLeft(hex_1_0);
         node_2_3.getEdges().setTopLeft(edge_2_2);
         node_2_3.getEdges().setBottom(edge_2_3);
 
-        node_2_4.setId(10);
+        node_2_4.setId(9);
         node_2_4.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
         node_2_4.getHexes().setTopLeft(hex_1_0);
         node_2_4.getEdges().setTop(edge_2_3);
         node_2_4.getEdges().setBottomLeft(edge_2_4);
 
-        node_2_5.setId(11);
+        node_2_5.setId(10);
         node_2_5.setOrientation(NodeOrientationType.SINGLE_TOP);
         node_2_5.getHexes().setTop(hex_1_0);
         node_2_5.getHexes().setBottomLeft(hex_0_1);
         node_2_5.getEdges().setTopRight(edge_2_4);
         node_2_5.getEdges().setTopLeft(edge_2_5);
 
-        node_2_6.setId(12);
-        node_2_6.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
-        node_2_6.getHexes().setTopRight(hex_1_0);
-        node_2_6.getHexes().setTopLeft(hex_0_0);
-        node_2_6.getHexes().setBottom(hex_0_1);
-        node_2_6.getHexes().setTopRight(hex_1_0);
-        node_2_6.getEdges().setBottomRight(edge_2_5);
-        node_2_6.getEdges().setTop(edge_2_6);
-
         // Nodes of Hex 0,1
-        node_3_1.setId(13);
-        node_3_1.setOrientation(NodeOrientationType.SINGLE_TOP);
-        node_3_1.getHexes().setBottomRight(hex_0_1);
-        node_3_1.getHexes().setTop(hex_0_0);
-        node_3_1.getEdges().setTopRight(edge_3_1);
-        node_3_1.getEdges().setBottom(edge_3_6);
-
-        node_3_2.setId(14);
-        node_3_2.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
-        node_3_2.getHexes().setBottom(hex_0_1);
-        node_3_2.getHexes().setTopLeft(hex_0_0);
-        node_3_2.getHexes().setTopRight(hex_1_0);
-        node_3_2.getEdges().setBottomLeft(edge_3_1);
-        node_3_2.getEdges().setBottomRight(edge_3_2);
-
-        node_3_3.setId(15);
-        node_3_3.setOrientation(NodeOrientationType.SINGLE_TOP);
-        node_3_3.getHexes().setBottomLeft(hex_0_1);
-        node_3_3.getHexes().setTop(hex_1_0);
-        node_3_3.getEdges().setTopLeft(edge_3_2);
-        node_3_3.getEdges().setBottom(edge_3_3);
-
-        node_3_4.setId(16);
+        node_3_4.setId(11);
         node_3_4.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
         node_3_4.getHexes().setTopLeft(hex_0_1);
         node_3_4.getEdges().setTop(edge_3_3);
         node_3_4.getEdges().setBottomLeft(edge_3_4);
 
-        node_3_5.setId(17);
+        node_3_5.setId(12);
         node_3_5.setOrientation(NodeOrientationType.SINGLE_TOP);
         node_3_5.getHexes().setTop(hex_0_1);
         node_3_5.getEdges().setTopRight(edge_3_4);
         node_3_5.getEdges().setTopLeft(edge_3_5);
 
-        node_3_6.setId(18);
+        node_3_6.setId(13);
         node_3_6.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
         node_3_6.getHexes().setTopRight(hex_0_1);
         node_3_6.getEdges().setBottomRight(edge_3_5);
@@ -381,7 +436,7 @@ public class PlayServiceImplTest {
         edge_2_1.setId(7);
         edge_2_1.setOrientation(EdgeOrientationType.BOTTOM_LEFT);
         edge_2_1.getHexes().setBottomRight(hex_1_0);
-        edge_2_1.getNodes().setBottomLeft(node_2_1);
+        edge_2_1.getNodes().setBottomLeft(node_1_3);
         edge_2_1.getNodes().setTopRight(node_2_2);
 
         edge_2_2.setId(8);
@@ -407,53 +462,32 @@ public class PlayServiceImplTest {
         edge_2_5.getHexes().setTopRight(hex_1_0);
         edge_2_5.getHexes().setBottomLeft(hex_0_1);
         edge_2_5.getNodes().setBottomRight(node_2_5);
-        edge_2_5.getNodes().setTopLeft(node_2_6);
-
-        edge_2_6.setId(12);
-        edge_2_6.setOrientation(EdgeOrientationType.VERTICAL);
-        edge_2_6.getHexes().setRight(hex_1_0);
-        edge_2_3.getHexes().setLeft(hex_0_0);
-        edge_2_6.getNodes().setBottom(node_2_6);
-        edge_2_6.getNodes().setTop(node_2_1);
+        edge_2_5.getNodes().setTopLeft(node_1_4);
 
         // Edges of Hex 0,1
-        edge_3_1.setId(13);
-        edge_3_1.setOrientation(EdgeOrientationType.BOTTOM_LEFT);
-        edge_3_1.getHexes().setTopLeft(hex_0_0);
-        edge_3_1.getHexes().setBottomRight(hex_0_1);
-        edge_3_1.getNodes().setBottomLeft(node_2_1);
-        edge_3_1.getNodes().setTopRight(node_2_2);
-
-        edge_3_2.setId(14);
-        edge_3_2.setOrientation(EdgeOrientationType.BOTTOM_RIGHT);
-        edge_3_2.getHexes().setTopRight(hex_1_0);
-        edge_3_2.getHexes().setBottomLeft(hex_0_1);
-        edge_3_2.getNodes().setTopLeft(node_2_2);
-        edge_3_2.getNodes().setBottomRight(node_2_3);
-
-        edge_3_3.setId(15);
+        edge_3_3.setId(12);
         edge_3_3.setOrientation(EdgeOrientationType.VERTICAL);
         edge_3_3.getHexes().setLeft(hex_0_1);
         edge_3_3.getNodes().setTop(node_2_3);
         edge_3_3.getNodes().setBottom(node_2_4);
 
-        edge_3_4.setId(16);
+        edge_3_4.setId(13);
         edge_3_4.setOrientation(EdgeOrientationType.BOTTOM_LEFT);
         edge_3_4.getHexes().setTopLeft(hex_0_1);
         edge_3_4.getNodes().setTopRight(node_2_4);
         edge_3_4.getNodes().setBottomLeft(node_2_5);
 
-        edge_3_5.setId(17);
+        edge_3_5.setId(14);
         edge_3_5.setOrientation(EdgeOrientationType.BOTTOM_RIGHT);
         edge_3_5.getHexes().setTopRight(hex_0_1);
         edge_3_5.getNodes().setBottomRight(node_2_5);
-        edge_3_5.getNodes().setTopLeft(node_2_6);
+        edge_3_5.getNodes().setTopLeft(node_1_4);
 
-        edge_3_6.setId(18);
+        edge_3_6.setId(15);
         edge_3_6.setOrientation(EdgeOrientationType.VERTICAL);
         edge_3_6.getHexes().setRight(hex_0_1);
-        edge_3_6.getNodes().setBottom(node_2_6);
-        edge_3_6.getNodes().setTop(node_2_1);
+        edge_3_6.getNodes().setBottom(node_1_4);
+        edge_3_6.getNodes().setTop(node_1_3);
 
         game.setGameId(1);
         game.setCreator(user1);
@@ -470,11 +504,11 @@ public class PlayServiceImplTest {
                 hex_0_0, hex_1_0, hex_0_1));
         game.getNodes().addAll(Arrays.asList(
                 node_1_1, node_1_2, node_1_3, node_1_4, node_1_5, node_1_6,
-                node_2_1, node_2_2, node_2_3, node_2_4, node_2_5, node_2_6,
-                node_3_1, node_3_2, node_3_3, node_3_4, node_3_5, node_3_6));
+                node_2_2, node_2_3, node_2_4, node_2_5,
+                node_3_4, node_3_5, node_3_6));
         game.getEdges().addAll(Arrays.asList(
                 edge_1_1, edge_1_2, edge_1_3, edge_1_4, edge_1_5, edge_1_6,
-                edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5, edge_2_6,
-                edge_3_1, edge_3_2, edge_3_3, edge_3_4, edge_3_5, edge_3_6));
+                edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5,
+                edge_3_3, edge_3_4, edge_3_5, edge_3_6));
     }
 }

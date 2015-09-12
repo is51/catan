@@ -117,15 +117,18 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        if (hasNeighbourEdge || hasNeighbourNode) {
-            Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
-            building.setBuilt(EdgeBuiltType.ROAD);
-            building.setBuildingOwner(gameUserBean);
-
-            edgeToBuildOn.setBuilding(building);
-
-            gameDao.updateGame(game);
+        if (!hasNeighbourEdge && !hasNeighbourNode) {
+            log.debug("Cannot build road close to settles that don't belong to user");
+            throw new PlayException(ERROR_CODE_ERROR);
         }
+
+        Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
+        building.setBuilt(EdgeBuiltType.ROAD);
+        building.setBuildingOwner(gameUserBean);
+
+        edgeToBuildOn.setBuilding(building);
+
+        gameDao.updateGame(game);
     }
 
     @Autowired
