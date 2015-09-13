@@ -43,6 +43,9 @@ public class GameUserBean {
     private int moveOrder;
 
     @Embedded
+    private AchievementsBean achievements;
+
+    @Embedded
     private ResourcesBean resources;
 
     public GameUserBean() {
@@ -52,6 +55,7 @@ public class GameUserBean {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
+        this.achievements = new AchievementsBean(0, 0, 0, 0, 0);
         this.resources = new ResourcesBean(0, 0, 0, 0, 0);
     }
 
@@ -101,6 +105,14 @@ public class GameUserBean {
 
     public void setMoveOrder(int moveOrder) {
         this.moveOrder = moveOrder;
+    }
+
+    public AchievementsBean getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(AchievementsBean achievements) {
+        this.achievements = achievements;
     }
 
     public ResourcesBean getResources() {

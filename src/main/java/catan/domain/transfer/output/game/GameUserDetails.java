@@ -8,9 +8,11 @@ public class GameUserDetails {
     private int colorId;
     private boolean ready;
     private int moveOrder;
+    private AchievementsDetails achievements;
     private ResourcesDetails resources;
 
     public GameUserDetails() {
+
     }
 
     public GameUserDetails(GameUserBean userBean, int detailsRequesterId) {
@@ -19,6 +21,7 @@ public class GameUserDetails {
         this.ready = userBean.isReady();
         this.moveOrder = userBean.getMoveOrder();
         if (user.getId() == detailsRequesterId) {
+            this.achievements = new AchievementsDetails(userBean.getAchievements());
             this.resources = new ResourcesDetails(userBean.getResources());
         }
     }
@@ -53,6 +56,14 @@ public class GameUserDetails {
 
     public void setMoveOrder(int moveOrder) {
         this.moveOrder = moveOrder;
+    }
+
+    public AchievementsDetails getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(AchievementsDetails achievements) {
+        this.achievements = achievements;
     }
 
     public ResourcesDetails getResources() {
