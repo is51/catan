@@ -20,8 +20,9 @@ public class GameUserDetails {
         this.colorId = userBean.getColorId();
         this.ready = userBean.isReady();
         this.moveOrder = userBean.getMoveOrder();
+        this.achievements = new AchievementsDetails(userBean.getAchievements());
+
         if (user.getId() == detailsRequesterId) {
-            this.achievements = new AchievementsDetails(userBean.getAchievements());
             this.resources = new ResourcesDetails(userBean.getResources());
         }
     }
