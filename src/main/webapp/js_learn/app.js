@@ -9,18 +9,18 @@
                 $stateProvider
                         .state('home', {
                             url: '/',
-                            templateUrl: 'home.html'
+                            templateUrl: 'app/screens/home/home.html'
                         })
 
                         .state('store', {
                             url: '/store/with/list/of/games',
-                            templateUrl: 'app/directives/storeGames/store-games.html',
+                            templateUrl: 'app/screens/store/store-games.html',
                             controller: "StoreGamesController"
                         })
 
                         .state('game-details', {
                             url: '/store/details/of/game/{gameId}',
-                            templateUrl: 'app/directives/singleGameView/single-game-view.html',
+                            templateUrl: 'app/screens/store/singleGameView/single-game-view.html',
                             controller: "SingleGameViewController"
                         })
 

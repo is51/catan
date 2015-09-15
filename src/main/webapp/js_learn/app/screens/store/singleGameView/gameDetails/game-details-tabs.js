@@ -3,7 +3,7 @@
             .directive("gameDetailsTabs", function () {
                 return {
                     restrict: 'E',
-                    templateUrl: "app/directives/gameDetails/game-details-tabs.html",
+                    templateUrl: "app/screens/store/singleGameView/gameDetails/game-details-tabs.html",
                     controllerAs: "tab",
                     controller: function () {
                         this.active = 1;

@@ -4,7 +4,7 @@
             .directive("addNewReviewForm", function () {
                 return {
                     restrict: 'E',
-                    templateUrl: "app/directives/addNewReviewForm/add-new-review-form.html",
+                    templateUrl: "app/screens/store/singleGameView/gameDetails/addNewReviewForm/add-new-review-form.html",
                     controllerAs: "reviewCtrl",
                     controller: function () {
                         this.review = {};

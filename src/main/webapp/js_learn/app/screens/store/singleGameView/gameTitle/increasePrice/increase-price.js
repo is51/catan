@@ -14,6 +14,7 @@
                             if (scope.game != undefined) {
                                 if (!set) {
                                     scope.updatedPrice = scope.game.price;
+                                    set = true;
                                 }
 
                                 scope.updatedPrice += Math.random();

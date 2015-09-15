@@ -3,7 +3,7 @@
             .directive("gameTitle", function(){
                 return {
                     restrict: "E",
-                    templateUrl: "app/directives/gameTitle/game-title.html"
+                    templateUrl: "app/screens/store/singleGameView/gameTitle/game-title.html"
                 }
             });
 })();

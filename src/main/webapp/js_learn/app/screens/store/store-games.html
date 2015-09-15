@@ -4,6 +4,6 @@
 
 <div class = "list-group">
     <div class="list-group-item" ng-repeat="game in games">
-        <game-title></game-title>
+        <a ui-sref="game-details({gameId: game.id})">{{game.name}}</a> - {{game.price | currency}}
     </div>
 </div>

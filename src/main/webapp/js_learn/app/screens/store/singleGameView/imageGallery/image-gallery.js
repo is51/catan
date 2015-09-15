@@ -4,7 +4,7 @@
             .directive("imageGallery", function () {
                 return {
                     restrict: 'E',
-                    templateUrl: "app/directives/imageGallery/image-gallery.html",
+                    templateUrl: "app/screens/store/singleGameView/imageGallery/image-gallery.html",
                     controllerAs: "gallery",
                     controller: function () {
                         this.current = 0;
