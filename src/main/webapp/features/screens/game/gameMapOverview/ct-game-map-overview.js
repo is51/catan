@@ -12,7 +12,7 @@ angular.module('catan')
                 },
                 link: function(scope, element) {
 
-                    var map = scope.game.map;
+                    var map = scope.game.get().map;
                     linkEntities(map);
                     var canvas = angular.element('<div/>').addClass('canvas').appendTo(element);
                     drawMap(map, canvas);
