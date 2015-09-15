@@ -1,9 +1,12 @@
 package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameBean;
+import catan.domain.transfer.output.dashboard.MapDetails;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameDetails {
     private int gameId;
     private int creatorId;
@@ -16,11 +19,13 @@ public class GameDetails {
     private int minPlayers;
     private int maxPlayers;
     private int targetVictoryPoints;
+    private Integer currentMove;
+    private MapDetails map;
 
     public GameDetails() {
     }
 
-    public GameDetails(GameBean game) {
+    public GameDetails(GameBean game, int detailsRequesterId) {
         this.gameId = game.getGameId();
         this.creatorId = game.getCreator().getId();
         this.privateGame = game.isPrivateGame();
@@ -28,10 +33,12 @@ public class GameDetails {
         this.dateCreated = game.getDateCreated().getTime();
         this.dateStarted = game.getDateStarted() != null ? game.getDateStarted().getTime() : 0;
         this.status = game.getStatus().toString();
-        this.gameUsers = game.getGameUserDetails();
+        this.gameUsers = game.getGameUserDetails(detailsRequesterId);
         this.minPlayers = game.getMinPlayers();
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
+        this.currentMove = game.getCurrentMove();
+        this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
     }
 
     public int getGameId() {
@@ -120,5 +127,21 @@ public class GameDetails {
 
     public void setTargetVictoryPoints(int targetVictoryPoints) {
         this.targetVictoryPoints = targetVictoryPoints;
+    }
+
+    public Integer getCurrentMove() {
+        return currentMove;
+    }
+
+    public void setCurrentMove(Integer currentMove) {
+        this.currentMove = currentMove;
+    }
+
+    public MapDetails getMap() {
+        return map;
+    }
+
+    public void setMap(MapDetails map) {
+        this.map = map;
     }
 }

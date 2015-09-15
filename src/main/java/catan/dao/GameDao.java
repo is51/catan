@@ -8,8 +8,6 @@ import java.util.List;
 public interface GameDao {
     void addNewGame(GameBean newGame);
 
-    void addNewGameUser(GameUserBean newGameUser);
-
     GameBean getGameByGameId(int gameId);
 
     GameBean getGameByPrivateCode(String privateCode);

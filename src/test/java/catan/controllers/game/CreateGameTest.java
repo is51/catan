@@ -1,7 +1,7 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
-import catan.domain.model.game.GameStatus;
+import catan.domain.model.game.types.GameStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

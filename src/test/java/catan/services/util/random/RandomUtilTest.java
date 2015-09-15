@@ -1,4 +1,4 @@
-package catan.services;
+package catan.services.util.random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,16 +7,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 
-public class PrivateCodeUtilTest {
-    PrivateCodeUtil privateCodeUtil;
+public class RandomUtilTest {
+    RandomUtil randomUtil;
     RandomValueGeneratorMock rvg;
 
     @Before
     public void setUp() {
         rvg = new RandomValueGeneratorMock();
 
-        privateCodeUtil = new PrivateCodeUtil();
-        privateCodeUtil.setRvg(rvg);
+        randomUtil = new RandomUtil();
+        randomUtil.setRvg(rvg);
     }
 
     @Test
@@ -27,7 +27,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0.0);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "AA1000");
@@ -41,7 +41,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "ZA1000");
@@ -55,7 +55,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "AZ1000");
@@ -69,7 +69,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0.99999999999);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "AA9999");
@@ -83,7 +83,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0.99999999999);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "AZ9999");
@@ -97,7 +97,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0.99999999999);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "ZA9999");
@@ -111,7 +111,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "ZZ1000");
@@ -125,7 +125,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0.99999999999);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertEquals(privateCode, "ZZ9999");
@@ -140,7 +140,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0.99999999999);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
+        String privateCode = randomUtil.generateRandomPrivateCode(numberOfDigits);
 
         //Then
         assertEquals(privateCode, "ZZ99999");
@@ -155,7 +155,7 @@ public class PrivateCodeUtilTest {
         rvg.setNextGeneratedValue(0.99999999999);
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(numberOfDigits);
+        String privateCode = randomUtil.generateRandomPrivateCode(numberOfDigits);
 
         //Then
         assertEquals(privateCode, "ZZ999");
@@ -166,7 +166,7 @@ public class PrivateCodeUtilTest {
         //Given
 
         //When
-        String privateCode = privateCodeUtil.generateRandomPrivateCode(4);
+        String privateCode = randomUtil.generateRandomPrivateCode(4);
 
         //Then
         assertThat(privateCode.length(), equalTo(6));
