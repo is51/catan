@@ -9,6 +9,7 @@ public class GameUserDetails {
     private boolean ready;
     private int moveOrder;
     private ResourcesDetails resources;
+    private DevelopmentCardsDetails developmentCards;
 
     public GameUserDetails() {
     }
@@ -20,6 +21,7 @@ public class GameUserDetails {
         this.moveOrder = userBean.getMoveOrder();
         if (user.getId() == detailsRequesterId) {
             this.resources = new ResourcesDetails(userBean.getResources());
+            this.developmentCards = new DevelopmentCardsDetails(userBean.getDevelopmentCards());
         }
     }
 
@@ -61,5 +63,13 @@ public class GameUserDetails {
 
     public void setResources(ResourcesDetails resources) {
         this.resources = resources;
+    }
+
+    public DevelopmentCardsDetails getDevelopmentCards() {
+        return developmentCards;
+    }
+
+    public void setDevelopmentCards(DevelopmentCardsDetails developmentCards) {
+        this.developmentCards = developmentCards;
     }
 }
