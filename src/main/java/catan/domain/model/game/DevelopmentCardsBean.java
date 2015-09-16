@@ -10,19 +10,19 @@ import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 @Embeddable
 public class DevelopmentCardsBean {
 
-    @Column(name = "KNIGHT", nullable = false)
+    @Column(name = "DEV_CARD_KNIGHT", nullable = false)
     private int knight;
 
-    @Column(name = "VICTORY_POINT", nullable = false)
+    @Column(name = "DEV_CARD_VICTORY_POINT", nullable = false)
     private int victoryPoint;
 
-    @Column(name = "ROAD_BUILDING", nullable = false)
+    @Column(name = "DEV_CARD_ROAD_BUILDING", nullable = false)
     private int roadBuilding;
 
-    @Column(name = "MONOPOLY", nullable = false)
+    @Column(name = "DEV_CARD_MONOPOLY", nullable = false)
     private int monopoly;
 
-    @Column(name = "YEAR_OF_PLENTY", nullable = false)
+    @Column(name = "DEV_CARD_YEAR_OF_PLENTY", nullable = false)
     private int yearOfPlenty;
 
     public DevelopmentCardsBean() {
