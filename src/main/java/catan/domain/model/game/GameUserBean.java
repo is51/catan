@@ -48,6 +48,9 @@ public class GameUserBean {
     @Embedded
     private ResourcesBean resources;
 
+    @Embedded
+    private DevelopmentCardsBean developmentCards;
+
     public GameUserBean() {
     }
 
@@ -57,6 +60,7 @@ public class GameUserBean {
         this.game = game;
         this.achievements = new AchievementsBean(0, 0, 0, 0, 0);
         this.resources = new ResourcesBean(0, 0, 0, 0, 0);
+        this.developmentCards = new DevelopmentCardsBean(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -121,6 +125,14 @@ public class GameUserBean {
 
     public void setResources(ResourcesBean resources) {
         this.resources = resources;
+    }
+
+    public DevelopmentCardsBean getDevelopmentCards() {
+        return developmentCards;
+    }
+
+    public void setDevelopmentCards(DevelopmentCardsBean developmentCards) {
+        this.developmentCards = developmentCards;
     }
 
     @Override
