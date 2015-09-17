@@ -9,19 +9,19 @@ import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 @Embeddable
 public class ResourcesBean {
 
-    @Column(name = "BRICK", nullable = false)
+    @Column(name = "RESOURCE_BRICK", nullable = false)
     private int brick;
 
-    @Column(name = "WOOD", nullable = false)
+    @Column(name = "RESOURCE_WOOD", nullable = false)
     private int wood;
 
-    @Column(name = "SHEEP", nullable = false)
+    @Column(name = "RESOURCE_SHEEP", nullable = false)
     private int sheep;
 
-    @Column(name = "WHEAT", nullable = false)
+    @Column(name = "RESOURCE_WHEAT", nullable = false)
     private int wheat;
 
-    @Column(name = "STONE", nullable = false)
+    @Column(name = "RESOURCE_STONE", nullable = false)
     private int stone;
 
     public ResourcesBean() {
