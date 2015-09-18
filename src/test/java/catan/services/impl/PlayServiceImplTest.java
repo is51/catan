@@ -188,9 +188,10 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldFailWhenBuildRoadNearNotOwnNeighbourCity() {
+    public void shouldFailWhenBuildRoadNearOwnNeighbourRoadButAlsoNearNotOwnNeighbourCity() {
         try {
             // WHEN
+            hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);

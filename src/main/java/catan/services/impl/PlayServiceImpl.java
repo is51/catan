@@ -106,11 +106,13 @@ public class PlayServiceImpl implements PlayService {
 
                     if (neighbourEdge.getBuilding() != null && neighbourEdge.getBuilding().getBuildingOwner().getUser().equals(user)) {
                         nearNeighbourRoad = true;
+                        break;
                     }
                 }
             } else {
                 if (node.getBuilding().getBuildingOwner().getUser().equals(user)) {
                     nearNeighbourSettlement = true;
+                    break;
                 } else {
                     log.debug("Cannot build road close to settles that don't belong to user");
                     throw new PlayException(ERROR_CODE_ERROR);
