@@ -108,12 +108,11 @@ public class GameUtil {
 
 
     public void startGame(GameBean game) {
-        log.debug("Checking if game {} can be started (all players is ready)", game);
+        log.debug("Checking if game can be started (all players should be ready), game details: ", game);
 
         if (game.getMinPlayers() > game.getGameUsers().size()) {
-            log.info("There are not enough players to start game {}. " +
-                            "Game will start when players count will be {}, current count is {}",
-                    game, game.getMaxPlayers(), game.getGameUsers().size());
+            log.info("There are not enough players to start game {}. Game will start when players count will be {}, current count is {}",
+                    game.getGameId(), game.getMaxPlayers(), game.getGameUsers().size());
             return;
         }
 
