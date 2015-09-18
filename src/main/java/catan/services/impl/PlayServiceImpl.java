@@ -119,7 +119,7 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (!nearNeighbourRoad && !nearNeighbourSettlement) {
-            log.debug("Cannot build road close to settles that don't belong to user");
+            log.debug("Cannot build that doesn't have neighbour road or settlers that belongs to this player ");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 

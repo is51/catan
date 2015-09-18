@@ -37,7 +37,7 @@ public class BuildRoadTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_build_road_on_empty_edge() {
+    public void should_successfully_build_road_on_empty_edge_if_has_neighbour_settlement_that_belongs_to_this_player() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
@@ -72,6 +72,11 @@ public class BuildRoadTest extends PlayTestUtil {
                 .body("building.built", equalTo("ROAD"));
                 //TODO: check if there is a settlement on node that belong to edge or if there is another road with mutual node
         */
+    }
+
+    @Test
+    public void should_successfully_build_road_on_empty_edge_if_has_neighbour_road_that_belongs_to_this_player() {
+        //TODO:IMPLEMENT
     }
 
     @Test
@@ -153,5 +158,11 @@ public class BuildRoadTest extends PlayTestUtil {
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
          */
+    }
+
+
+    @Test
+    public void should_fail_if_edge_has_connection_to_neighbour_road_but_opposite_node_has_building_that_belongs_to_another_player() {
+        //TODO: IMPLEMENT
     }
 }
