@@ -45,6 +45,9 @@ public class GameUserBean {
     @Embedded
     private ResourcesBean resources;
 
+    @Embedded
+    private DevelopmentCardsBean developmentCards;
+
     public GameUserBean() {
     }
 
@@ -53,6 +56,7 @@ public class GameUserBean {
         this.colorId = colorId;
         this.game = game;
         this.resources = new ResourcesBean(0, 0, 0, 0, 0);
+        this.developmentCards = new DevelopmentCardsBean(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -111,6 +115,14 @@ public class GameUserBean {
         this.resources = resources;
     }
 
+    public DevelopmentCardsBean getDevelopmentCards() {
+        return developmentCards;
+    }
+
+    public void setDevelopmentCards(DevelopmentCardsBean developmentCards) {
+        this.developmentCards = developmentCards;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -134,6 +146,13 @@ public class GameUserBean {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
+        return "GameUser [" +
+                "gameUserId:" + gameUserId +
+                ", user:" + user.getUsername() +
+                ", colorId: " + colorId +
+                ", gameId: " + game.getGameId() +
+                ", ready: " + ready +
+                ", moveOrder: " + moveOrder +
+               "]";
     }
 }

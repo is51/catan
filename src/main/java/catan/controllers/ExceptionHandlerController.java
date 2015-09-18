@@ -1,5 +1,6 @@
 package catan.controllers;
 
+import catan.domain.exception.PlayException;
 import catan.domain.transfer.output.common.ErrorDetails;
 import catan.domain.exception.AuthenticationException;
 import catan.domain.exception.GameException;
@@ -42,6 +43,15 @@ public class ExceptionHandlerController {
     @ExceptionHandler(GameException.class)
     @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ErrorDetails> handleGameExceptions(GameException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorDetails details = new ErrorDetails(e.getErrorCode());
+
+        return new ResponseEntity<ErrorDetails>(details, status);
+    }
+
+    @ExceptionHandler(PlayException.class)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ErrorDetails> handlePlayExceptions(PlayException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ErrorDetails details = new ErrorDetails(e.getErrorCode());
 

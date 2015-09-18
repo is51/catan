@@ -236,11 +236,6 @@ public class GameBean {
         this.nodes = nodes;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
-    }
-
     public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
@@ -279,5 +274,45 @@ public class GameBean {
         }
 
         return edgesDetails;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        for(GameUserBean gameUser : gameUsers){
+            if(sb.length() > 2){
+                sb.append(",");
+            }
+            sb.append("\n\t\t\t");
+            sb.append(gameUser.toString());
+        }
+        sb.append("\n" +
+                "\t\t]");
+        return "\n\tGame [ " +
+                "\n" +
+                "\t\tid: " + gameId +
+                ", \n" +
+                "\t\tcreator: " + creator +
+                ", \n" +
+                "\t\tprivateGame: " + privateGame + (privateGame ? (", privateCode: '" + privateCode + '\'') : "") +
+                ", \n" +
+                "\t\tdateCreated: " + dateCreated +
+                ", \n" +
+                "\t\tdateStarted: " + dateStarted +
+                ", \n" +
+                "\t\tstatus: " + status +
+                ", \n" +
+                "\t\tminPlayers: " + minPlayers +
+                ", \n" +
+                "\t\tmaxPlayers: " + maxPlayers +
+                ", \n" +
+                "\t\ttargetVictoryPoints: " + targetVictoryPoints +
+                ", \n" +
+                "\t\tcurrentMove: " + currentMove +
+                ", \n" +
+                "\t\tgameUsers: " + sb.toString() +
+                " \n" +
+                "\t]\n";
     }
 }
