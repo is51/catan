@@ -1,6 +1,7 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
+import catan.config.RequestResponseLogger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +13,9 @@ import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//Add it if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = {ApplicationConfig.class})
 @WebIntegrationTest("server.port:8091")
 public class StartGameTest extends GameTestUtil {
 

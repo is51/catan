@@ -158,6 +158,13 @@ public class GameUserBean {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
+        return "GameUser [" +
+                "gameUserId:" + gameUserId +
+                ", user:" + user.getUsername() +
+                ", colorId: " + colorId +
+                ", gameId: " + game.getGameId() +
+                ", ready: " + ready +
+                ", moveOrder: " + moveOrder +
+               "]";
     }
 }
