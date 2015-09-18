@@ -3,15 +3,12 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
-import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
-import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.EdgeOrientationType;
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
@@ -32,9 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +65,57 @@ public class PlayServiceImplTest {
     @After
     public void tearDown() {
 
+    }
+
+    @Test
+    public void shouldChangeCurrentMoveFromFirstPlayerToSecondWhenFirstPlayerEndsHisTurnCorrectly() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        playService.endTurn(gameUser1.getUser(), "1");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(game.getCurrentMove());
+        assertEquals(game.getCurrentMove().intValue(), gameUser2.getMoveOrder());
+    }
+
+    @Test
+    public void shouldFailWhenFirstPlayerTriesToEndTurnWhenCurrentMoveBelongsToSecondPlayer() {
+        try {
+            //GIVEN
+            game.setCurrentMove(gameUser2.getMoveOrder());
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+            // WHEN
+            playService.endTurn(gameUser1.getUser(), "1");
+            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenEndTurnOfNotPlayingGame() {
+        try {
+            //GIVEN
+            game.setStatus(GameStatus.NEW);
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+            // WHEN
+            playService.endTurn(gameUser1.getUser(), "1");
+            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (GameException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
     }
 
 
