@@ -387,6 +387,11 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers[1].developmentCards.yearOfPlenty", is(0))
                 .body("gameUsers[2].resources", nullValue())
                 .body("gameUsers[2].developmentCards", nullValue())
+                .body("gameUsers.achievements.displayVictoryPoints", everyItem(is(0)))
+                .body("gameUsers.achievements.totalResources", everyItem(is(0)))
+                .body("gameUsers.achievements.totalCards", everyItem(is(0)))
+                .body("gameUsers.achievements.totalUsedKnights", everyItem(is(0)))
+                .body("gameUsers.achievements.longestWayLength", everyItem(is(0)))
                 .body("status", equalTo("PLAYING"));
 
         viewGame(userToken3, gameId)
@@ -406,6 +411,11 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers[2].developmentCards.roadBuilding", is(0))
                 .body("gameUsers[2].developmentCards.monopoly", is(0))
                 .body("gameUsers[2].developmentCards.yearOfPlenty", is(0))
+                .body("gameUsers.achievements.displayVictoryPoints", everyItem(is(0)))
+                .body("gameUsers.achievements.totalResources", everyItem(is(0)))
+                .body("gameUsers.achievements.totalCards", everyItem(is(0)))
+                .body("gameUsers.achievements.totalUsedKnights", everyItem(is(0)))
+                .body("gameUsers.achievements.longestWayLength", everyItem(is(0)))
                 .body("status", equalTo("PLAYING"));
     }
 }
