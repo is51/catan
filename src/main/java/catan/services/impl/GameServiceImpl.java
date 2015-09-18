@@ -65,7 +65,7 @@ public class GameServiceImpl implements GameService {
         mapUtil.generateNewRoundGameMap(game, ROUND_MAP_SIZE);
         gameDao.addNewGame(game);
 
-        log.debug("Game '" + game + "' successfully created with creator " + creator);
+        log.debug("New game successfully created, {}", game);
         return game;
     }
 
@@ -95,7 +95,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     synchronized public GameBean joinGameByIdentifier(UserBean user, String gameId, boolean privateGame) throws GameException {
-        log.debug("Join user " + user + " to "
+        log.debug("Join " + user + " to "
                 + (privateGame ? "private" : "public") + " game with "
                 + (privateGame ? "privateCode" : "id") + " '" + gameId + "' ...");
         checkParameters(user, gameId);
@@ -129,13 +129,13 @@ public class GameServiceImpl implements GameService {
         gameUtil.addUserToGame(game, user);
         gameDao.updateGame(game);
 
-        log.debug("User " + user + " successfully joined game " + game);
+        log.debug(user + " successfully joined game " + game);
         return game;
     }
 
     @Override
     public GameBean getGameByGameIdWithJoinedUser(UserBean user, String gameId) throws GameException {
-        log.debug("Getting game by gameId '" + gameId + "' for user " + user + " ...");
+        log.debug("Getting game by gameId '" + gameId + "' for " + user + " ...");
         checkParameters(user, gameId);
 
         GameBean game = gameUtil.getGameById(gameId, GAME_IS_NOT_FOUND_ERROR);
@@ -147,18 +147,18 @@ public class GameServiceImpl implements GameService {
 
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().getId() == user.getId()) {
-                log.debug("Game " + game + " with joined user " + user + " successfully found ");
+                log.debug("Successfully found game that is joined by user specified, " + game);
                 return game;
             }
         }
 
-        log.debug("User " + user + " is not joined to game " + game);
+        log.debug(user + " is not joined to " + game);
         throw new GameException(USER_IS_NOT_JOINED_ERROR);
     }
 
     @Override
     public void leaveGame(UserBean user, String gameId) throws GameException {
-        log.debug("Leaving user " + user + " from game with gameId '" + gameId + "' ...");
+        log.debug("Leaving " + user + " from game with gameId '" + gameId + "' ...");
         checkParameters(user, gameId);
 
         GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
@@ -185,12 +185,12 @@ public class GameServiceImpl implements GameService {
             if (gameUser.getUser().getId() == user.getId()) {
                 it.remove();
                 gameDao.updateGame(game);
-                log.debug("User " + user + " successfully left the game " + game);
+                log.debug(user + " successfully left the " + game);
                 return;
             }
         }
 
-        log.debug("User " + user + " is not joined to game " + game);
+        log.debug( user + " is not joined to " + game);
         throw new GameException(ERROR_CODE_ERROR);
     }
 
@@ -215,7 +215,7 @@ public class GameServiceImpl implements GameService {
         game.setStatus(GameStatus.CANCELLED);
         gameDao.updateGame(game);
 
-        log.debug("Game " + game + " successfully cancelled");
+        log.debug("Successfully cancelled " + game);
     }
 
     @Override
@@ -245,14 +245,14 @@ public class GameServiceImpl implements GameService {
         }
 
         if (gameUserBean.isReady() == readyForGame) {
-            log.debug("User {} already set ready status for game , skipping {}", user, game);
+            log.debug("{} already set ready status for game , skipping, {}", user, game);
             return;
         }
 
         gameUserBean.setReady(readyForGame);
         gameDao.updateGameUser(gameUserBean);
 
-        log.debug("User {} successfully updated status to ready for game {}", user, game);
+        log.debug("{} successfully updated status to ready for {}", user, game);
 
         gameUtil.startGame(game);
     }

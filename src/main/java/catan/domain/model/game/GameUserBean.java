@@ -43,7 +43,13 @@ public class GameUserBean {
     private int moveOrder;
 
     @Embedded
+    private AchievementsBean achievements;
+
+    @Embedded
     private ResourcesBean resources;
+
+    @Embedded
+    private DevelopmentCardsBean developmentCards;
 
     public GameUserBean() {
     }
@@ -52,7 +58,9 @@ public class GameUserBean {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
+        this.achievements = new AchievementsBean(0, 0, 0, 0, 0);
         this.resources = new ResourcesBean(0, 0, 0, 0, 0);
+        this.developmentCards = new DevelopmentCardsBean(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -103,12 +111,28 @@ public class GameUserBean {
         this.moveOrder = moveOrder;
     }
 
+    public AchievementsBean getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(AchievementsBean achievements) {
+        this.achievements = achievements;
+    }
+
     public ResourcesBean getResources() {
         return resources;
     }
 
     public void setResources(ResourcesBean resources) {
         this.resources = resources;
+    }
+
+    public DevelopmentCardsBean getDevelopmentCards() {
+        return developmentCards;
+    }
+
+    public void setDevelopmentCards(DevelopmentCardsBean developmentCards) {
+        this.developmentCards = developmentCards;
     }
 
     @Override
@@ -134,6 +158,13 @@ public class GameUserBean {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
+        return "GameUser [" +
+                "gameUserId:" + gameUserId +
+                ", user:" + user.getUsername() +
+                ", colorId: " + colorId +
+                ", gameId: " + game.getGameId() +
+                ", ready: " + ready +
+                ", moveOrder: " + moveOrder +
+               "]";
     }
 }

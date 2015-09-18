@@ -3,6 +3,8 @@ package catan.domain.model.dashboard;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Arrays;
+import java.util.List;
 
 @Embeddable
 public class VerticalLinks<T> extends Links<T>{
@@ -29,6 +31,15 @@ public class VerticalLinks<T> extends Links<T>{
 
     public void setBottom(T bottom) {
         this.bottom = bottom;
+    }
+
+    @Override
+    public List<T> all() {
+        List<T> allElements = super.all();
+        allElements.add(top);
+        allElements.add(bottom);
+
+        return allElements;
     }
 
     @Override

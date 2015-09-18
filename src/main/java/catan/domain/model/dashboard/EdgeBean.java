@@ -30,7 +30,7 @@ public class EdgeBean implements MapElement {
     private GameBean game;
 
     @Embedded
-    private Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
+    private Building<EdgeBuiltType> building;
 
     @Column(name = "ORIENTATION", unique = false, nullable = false)
     private EdgeOrientationType orientation;
