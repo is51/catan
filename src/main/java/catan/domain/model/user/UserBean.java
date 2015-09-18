@@ -96,6 +96,9 @@ public class UserBean {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
+        return "User [ " +
+                "id:" + id +
+                ", username: '" + username + '\'' +
+                " ] ";
     }
 }
