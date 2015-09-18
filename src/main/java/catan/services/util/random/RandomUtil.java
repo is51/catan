@@ -27,6 +27,7 @@ public class RandomUtil {
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
     }
 
+    //TODO: move population to GameUtil, this util should only return random values
     public void populatePlayersMoveOrderRandomly(Set<GameUserBean> players) {
         List<Integer> moveOrderSequence = new ArrayList<Integer>();
         for (int i = 1; i <= players.size(); i++) {

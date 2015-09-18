@@ -32,6 +32,16 @@ public class PlayController {
         playService.buildRoad(user, gameId, edgeId);
     }
 
+    @RequestMapping(value = "end-turn",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void endTurn(@RequestParam(value = "token", required = false) String token,
+                        @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        playService.endTurn(user, gameId);
+    }
+
     @Autowired
     public void setPlayService(PlayService playService) {
         this.playService = playService;
