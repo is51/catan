@@ -51,7 +51,7 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (gameUserBean == null) {
-            log.debug("User is not joined to game with specified id %s", gameIdString);
+            log.debug("User is not joined to game with specified id {}", gameIdString);
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
