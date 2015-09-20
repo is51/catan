@@ -1,6 +1,7 @@
 package catan.controllers.game;
 
 import catan.config.ApplicationConfig;
+import catan.config.RequestResponseLogger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +13,9 @@ import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//Add it if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = {ApplicationConfig.class})
 @WebIntegrationTest("server.port:8091")
 public class StartGameTest extends GameTestUtil {
 
@@ -302,7 +305,7 @@ public class StartGameTest extends GameTestUtil {
     }
 
     @Test
-    public void should_successfully_set_resources_to_zero_when_game_starts() {
+    public void should_successfully_set_resources_and_development_cards_to_zero_when_game_starts() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
@@ -310,17 +313,31 @@ public class StartGameTest extends GameTestUtil {
         int gameId = createNewGame(userToken1, false) // set here minPlayers = 3 when that feature is available
                 .path("gameId");
 
-        // Check that user already has resources when game is not started.
+        // Check that user already has resources and dev cards when game is not started.
         // Maybe it should be changed to populate resources just before game is started
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("gameUsers[0].resources.brick", is(0))
-                .body("gameUsers[0].resources.wood", is(0))
-                .body("gameUsers[0].resources.sheep", is(0))
-                .body("gameUsers[0].resources.wheat", is(0))
-                .body("gameUsers[0].resources.stone", is(0))
-                .body("status", equalTo("NEW"));
+                .body("status", equalTo("NEW"))
+                .rootPath("gameUsers[0].resources")
+                .body("brick", is(0))
+                .body("wood", is(0))
+                .body("sheep", is(0))
+                .body("wheat", is(0))
+                .body("stone", is(0))
+                .rootPath("gameUsers[0].developmentCards")
+                .body("knight", is(0))
+                .body("victoryPoint", is(0))
+                .body("roadBuilding", is(0))
+                .body("monopoly", is(0))
+                .body("yearOfPlenty", is(0))
+                .rootPath("gameUsers[0].achievements")
+                .body("displayVictoryPoints", is(0))
+                .body("totalResources", is(0))
+                .body("totalCards", is(0))
+                .body("totalUsedKnights", is(0))
+                .body("longestWayLength", is(0));
+
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
@@ -337,33 +354,68 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers[0].resources.sheep", is(0))
                 .body("gameUsers[0].resources.wheat", is(0))
                 .body("gameUsers[0].resources.stone", is(0))
+                .body("gameUsers[0].developmentCards.knight", is(0))
+                .body("gameUsers[0].developmentCards.victoryPoint", is(0))
+                .body("gameUsers[0].developmentCards.roadBuilding", is(0))
+                .body("gameUsers[0].developmentCards.monopoly", is(0))
+                .body("gameUsers[0].developmentCards.yearOfPlenty", is(0))
                 .body("gameUsers[1].resources", nullValue())
+                .body("gameUsers[1].developmentCards", nullValue())
                 .body("gameUsers[2].resources", nullValue())
+                .body("gameUsers[2].developmentCards", nullValue())
+                .body("gameUsers.achievements.displayVictoryPoints", everyItem(is(0)))
+                .body("gameUsers.achievements.totalResources", everyItem(is(0)))
+                .body("gameUsers.achievements.totalCards", everyItem(is(0)))
+                .body("gameUsers.achievements.totalUsedKnights", everyItem(is(0)))
+                .body("gameUsers.achievements.longestWayLength", everyItem(is(0)))
                 .body("status", equalTo("PLAYING"));
 
         viewGame(userToken2, gameId)
                 .then()
                 .statusCode(200)
                 .body("gameUsers[0].resources", nullValue())
+                .body("gameUsers[0].developmentCards", nullValue())
                 .body("gameUsers[1].resources.brick", is(0))
                 .body("gameUsers[1].resources.wood", is(0))
                 .body("gameUsers[1].resources.sheep", is(0))
                 .body("gameUsers[1].resources.wheat", is(0))
                 .body("gameUsers[1].resources.stone", is(0))
+                .body("gameUsers[1].developmentCards.knight", is(0))
+                .body("gameUsers[1].developmentCards.victoryPoint", is(0))
+                .body("gameUsers[1].developmentCards.roadBuilding", is(0))
+                .body("gameUsers[1].developmentCards.monopoly", is(0))
+                .body("gameUsers[1].developmentCards.yearOfPlenty", is(0))
                 .body("gameUsers[2].resources", nullValue())
+                .body("gameUsers[2].developmentCards", nullValue())
+                .body("gameUsers.achievements.displayVictoryPoints", everyItem(is(0)))
+                .body("gameUsers.achievements.totalResources", everyItem(is(0)))
+                .body("gameUsers.achievements.totalCards", everyItem(is(0)))
+                .body("gameUsers.achievements.totalUsedKnights", everyItem(is(0)))
+                .body("gameUsers.achievements.longestWayLength", everyItem(is(0)))
                 .body("status", equalTo("PLAYING"));
 
         viewGame(userToken3, gameId)
                 .then()
                 .statusCode(200)
                 .body("gameUsers[0].resources", nullValue())
+                .body("gameUsers[0].developmentCards", nullValue())
                 .body("gameUsers[1].resources", nullValue())
+                .body("gameUsers[1].developmentCards", nullValue())
                 .body("gameUsers[2].resources.brick", is(0))
                 .body("gameUsers[2].resources.wood", is(0))
                 .body("gameUsers[2].resources.sheep", is(0))
                 .body("gameUsers[2].resources.wheat", is(0))
                 .body("gameUsers[2].resources.stone", is(0))
+                .body("gameUsers[2].developmentCards.knight", is(0))
+                .body("gameUsers[2].developmentCards.victoryPoint", is(0))
+                .body("gameUsers[2].developmentCards.roadBuilding", is(0))
+                .body("gameUsers[2].developmentCards.monopoly", is(0))
+                .body("gameUsers[2].developmentCards.yearOfPlenty", is(0))
+                .body("gameUsers.achievements.displayVictoryPoints", everyItem(is(0)))
+                .body("gameUsers.achievements.totalResources", everyItem(is(0)))
+                .body("gameUsers.achievements.totalCards", everyItem(is(0)))
+                .body("gameUsers.achievements.totalUsedKnights", everyItem(is(0)))
+                .body("gameUsers.achievements.longestWayLength", everyItem(is(0)))
                 .body("status", equalTo("PLAYING"));
     }
-
 }

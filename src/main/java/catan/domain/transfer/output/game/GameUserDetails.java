@@ -8,9 +8,12 @@ public class GameUserDetails {
     private int colorId;
     private boolean ready;
     private int moveOrder;
+    private AchievementsDetails achievements;
     private ResourcesDetails resources;
+    private DevelopmentCardsDetails developmentCards;
 
     public GameUserDetails() {
+
     }
 
     public GameUserDetails(GameUserBean userBean, int detailsRequesterId) {
@@ -18,8 +21,11 @@ public class GameUserDetails {
         this.colorId = userBean.getColorId();
         this.ready = userBean.isReady();
         this.moveOrder = userBean.getMoveOrder();
+        this.achievements = new AchievementsDetails(userBean.getAchievements());
+
         if (user.getId() == detailsRequesterId) {
             this.resources = new ResourcesDetails(userBean.getResources());
+            this.developmentCards = new DevelopmentCardsDetails(userBean.getDevelopmentCards());
         }
     }
 
@@ -55,11 +61,27 @@ public class GameUserDetails {
         this.moveOrder = moveOrder;
     }
 
+    public AchievementsDetails getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(AchievementsDetails achievements) {
+        this.achievements = achievements;
+    }
+
     public ResourcesDetails getResources() {
         return resources;
     }
 
     public void setResources(ResourcesDetails resources) {
         this.resources = resources;
+    }
+
+    public DevelopmentCardsDetails getDevelopmentCards() {
+        return developmentCards;
+    }
+
+    public void setDevelopmentCards(DevelopmentCardsDetails developmentCards) {
+        this.developmentCards = developmentCards;
     }
 }
