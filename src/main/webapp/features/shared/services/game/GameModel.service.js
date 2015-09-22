@@ -1,95 +1,42 @@
 'use strict';
 
 angular.module('catan')
-        .factory('GameModel', ['$q', 'Remote', 'User', '$timeout', function ($q, Remote, User, $timeout) {
+        .factory('GameModel', ['User', function (User) {
 
             var GAME_PRIMARY_KEY = "gameId";
 
-            var STATUS_NOT_LOADED = 0,
-                STATUS_LOADED = 1;
+            return function(data) {
 
-            return function(idOrDetails) {
+                angular.copy(data, this);
 
-                var id,
-                    status = STATUS_NOT_LOADED,
-                    details = {},
-                    updatingTimeout = null;
+                this.getId = function() {
+                    return this[GAME_PRIMARY_KEY];
+                };
 
-                if (typeof idOrDetails === "number") {
-                    id = idOrDetails;
-                } else if (typeof idOrDetails === "object") {
-                    id = idOrDetails[GAME_PRIMARY_KEY];
-                    details = idOrDetails;
-                    status = STATUS_LOADED;
-                }
+                this.isNew = function() {
+                    return this.status === "NEW";
+                };
 
-                return {
-                    isLoaded: function() {
-                        return status === STATUS_LOADED;
-                    },
-                    load: function() {
-                        var deferred = $q.defer();
+                this.isPlaying = function() {
+                    return this.status === "PLAYING";
+                };
 
-                        Remote.game.details({gameId: id}).then(function(response) {
-                            details = response.data;
-                            status = STATUS_LOADED;
-                            deferred.resolve();
-                        }, function() {
-                            deferred.reject();
-                        });
+                this.isCurrentUserCreator = function() {
+                    return this.creatorId === User.get().id;
+                };
 
-                        return deferred.promise;
-                    },
-                    startUpdating: function(delay, onEverySuccess, onEveryError) {
-                        var self = this;
-                        this.stopUpdating();
-
-                        (function runTimeout() {
-                            updatingTimeout = $timeout(function() {
-                                self.load().then(function() {
-                                    if (onEverySuccess) {
-                                        onEverySuccess();
-                                    }
-                                    runTimeout();
-                                }, function() {
-                                    if (onEveryError) {
-                                        onEveryError();
-                                    }
-                                    runTimeout();
-                                });
-                            }, delay);
-                        })();
-                    },
-                    stopUpdating: function() {
-                        $timeout.cancel(updatingTimeout);
-                    },
-                    get: function() {
-                        return details;
-                    },
-                    getId: function() {
-                        return id;
-                    },
-                    isNew: function() {
-                        return details.status === "NEW";
-                    },
-                    isPlaying: function() {
-                        return details.status === "PLAYING";
-                    },
-                    isCurrentUserCreator: function() {
-                        return details.creatorId === User.get().id;
-                    },
-                    getCurrentUser: function() {
-                        for (var i in details.gameUsers) {
-                            if (details.gameUsers[i].user.id === User.get().id) {
-                                return details.gameUsers[i];
-                            }
+                this.getCurrentUser = function() {
+                    for (var i in this.gameUsers) {
+                        if (this.gameUsers[i].user.id === User.get().id) {
+                            return this.gameUsers[i];
                         }
-                        return false;
-                    },
-                    isCurrentUserReady: function() {
-                        var user = this.getCurrentUser();
-                        return (user) ? user.ready : undefined;
                     }
+                    return null;
+                };
+
+                this.isCurrentUserReady = function() {
+                    var user = this.getCurrentUser();
+                    return (user) ? user.ready : false;
                 };
             };
         }]);

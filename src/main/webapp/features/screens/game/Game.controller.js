@@ -8,20 +8,23 @@ angular.module('catan')
 
         var GAME_UPDATE_DELAY = 5000;
 
-        $scope.game = Game(+$stateParams.gameId);
+        $scope.game = null;
 
-        $scope.game.load()
-            .then(null, function() {
+        Game.findById(+$stateParams.gameId)
+            .then(function(game) {
+                $scope.game = game;
+
+                Game.startRefreshing($scope.game, GAME_UPDATE_DELAY, null, function() {
+                    alert('Getting Game Details Error. Probably there is a connection problem');
+                });
+
+            }, function() {
                 alert('Getting Game Details Error');
                 $state.go("start");
             });
 
-        $scope.game.startUpdating(GAME_UPDATE_DELAY, null, function() {
-            alert('Getting Game Details Error. Probably there is a connection problem');
-        });
-
         $scope.$on("$destroy", function() {
-            $scope.game.stopUpdating();
+            Game.stopRefreshing();
         });
 
     }]);

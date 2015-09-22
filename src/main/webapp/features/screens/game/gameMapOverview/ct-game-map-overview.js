@@ -12,7 +12,7 @@ angular.module('catan')
                 },
                 link: function(scope, element) {
 
-                    var map = scope.game.get().map;
+                    var map = scope.game.map;
                     linkEntities(map);
                     var canvas = angular.element('<div/>').addClass('canvas').appendTo(element);
                     drawMap(map, canvas);
@@ -123,7 +123,7 @@ angular.module('catan')
                     linkEntitiesType(map, "hex", map.edges[i].hexes);
                 }
 
-                console.log(map);
+                //console.log(map);
             }
 
             function drawMap(map, canvas) {

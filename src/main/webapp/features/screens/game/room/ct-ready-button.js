@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctReadyButton', ['$state', 'Remote', 'User', function($state, Remote, User) {
+        .directive('ctReadyButton', ['$state', 'Remote', 'User', 'Game', function($state, Remote, User, Game) {
             return {
                 restrict: 'A',
                 scope: {
@@ -23,7 +23,7 @@ angular.module('catan')
 
                         Remote.game[apiCallName]({gameId: scope.game.getId()})
                                 .then(function() {
-                                    scope.game.load();
+                                    Game.refresh(scope.game);
 
                                 }, function(response) {
                                     alert('Error: ' + ((response.data && response.data.errorCode) ? response.data.errorCode : 'unknown'));

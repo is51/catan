@@ -9,12 +9,10 @@ angular.module('catan')
             },
             templateUrl: "/features/shared/directives/gamesList/ct-games-list.html",
             link: function(scope) {
-                var methodForGettingGames = (scope.typeOfGames === 'CURRENT') ? 'findCurrent' : 'findPublic';
-
                 scope.items = null;
 
                 scope.update = function() {
-                    Game[methodForGettingGames]()
+                    Game.findAllByType(scope.typeOfGames)
                             .then(function(items) {
                                 scope.items = items;
                             }, function(response) {
