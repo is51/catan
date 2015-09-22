@@ -123,7 +123,7 @@ angular.module('catan')
                     linkEntitiesType(map, "hex", map.edges[i].hexes);
                 }
 
-                console.log(map);
+                //console.log(map);
             }
 
             function drawMap(map, canvas) {

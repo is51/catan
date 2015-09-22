@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctLeaveGameButton', ['$state', 'Remote', function($state, Remote) {
+    .directive('ctCancelGameButton', ['$state', 'Remote', function($state, Remote) {
         return {
             restrict: 'A',
             scope: {
@@ -10,7 +10,7 @@ angular.module('catan')
             link: function(scope, element) {
 
                 element.on('click', function() {
-                    Remote.game.leave({gameId: scope.game.gameId})
+                    Remote.game.cancel({gameId: scope.game.getId()})
                         .then(function() {
                             $state.go("start");
                         }, function(response) {
