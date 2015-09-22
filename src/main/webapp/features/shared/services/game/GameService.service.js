@@ -1,13 +1,13 @@
 'use strict';
 
 angular.module('catan')
-        .factory('Game', ['GameModel', '$q', 'Remote', '$timeout', function (GameModel, $q, Remote, $timeout) {
+        .factory('GameService', ['GameModel', '$q', 'Remote', '$timeout', function (GameModel, $q, Remote, $timeout) {
 
             var updatingTimeout = null;
 
-            var Game = {};
+            var GameService = {};
 
-            Game.findById = function(id) {
+            GameService.findById = function(id) {
                 var deferred = $q.defer();
 
                 Remote.game.details({gameId: id}).then(function(response) {
@@ -20,13 +20,13 @@ angular.module('catan')
                 return deferred.promise;
             };
 
-            Game.findAllByType = function(type) {
+            GameService.findAllByType = function(type) {
                 // type can be "PUBLIC" or "CURRENT"
                 var remoteMethodName = (type === 'CURRENT') ? 'listCurrent' : 'listPublic';
                 return this.findAllByRemoteService("game", remoteMethodName);
             };
 
-            Game.findAllByRemoteService = function(remoteGroup, remoteRequest) {
+            GameService.findAllByRemoteService = function(remoteGroup, remoteRequest) {
                 var deferred = $q.defer();
 
                 Remote[remoteGroup][remoteRequest]()
@@ -47,7 +47,7 @@ angular.module('catan')
 
 
 
-            Game.refresh = function(game) {
+            GameService.refresh = function(game) {
                 var deferred = $q.defer();
 
                 Remote.game.details({gameId: game.getId()}).then(function(response) {
@@ -61,7 +61,7 @@ angular.module('catan')
                 return deferred.promise;
             };
 
-            Game.startRefreshing = function(game, delay, onEverySuccess, onEveryError) {
+            GameService.startRefreshing = function(game, delay, onEverySuccess, onEveryError) {
                 var self = this;
                 this.stopRefreshing();
 
@@ -82,9 +82,9 @@ angular.module('catan')
                 })();
             };
 
-            Game.stopRefreshing = function() {
+            GameService.stopRefreshing = function() {
                 $timeout.cancel(updatingTimeout);
             };
 
-            return Game;
+            return GameService;
         }]);

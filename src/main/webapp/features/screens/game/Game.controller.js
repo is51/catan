@@ -2,19 +2,19 @@
 
 angular.module('catan')
     .controller('GameController', [
-            '$scope', '$stateParams', '$state', 'Game',
-            function($scope, $stateParams, $state, Game)
+            '$scope', '$stateParams', '$state', 'GameService',
+            function($scope, $stateParams, $state, GameService)
     {
 
         var GAME_UPDATE_DELAY = 5000;
 
         $scope.game = null;
 
-        Game.findById(+$stateParams.gameId)
+        GameService.findById(+$stateParams.gameId)
             .then(function(game) {
                 $scope.game = game;
 
-                Game.startRefreshing($scope.game, GAME_UPDATE_DELAY, null, function() {
+                    GameService.startRefreshing($scope.game, GAME_UPDATE_DELAY, null, function() {
                     alert('Getting Game Details Error. Probably there is a connection problem');
                 });
 
@@ -24,7 +24,7 @@ angular.module('catan')
             });
 
         $scope.$on("$destroy", function() {
-            Game.stopRefreshing();
+            GameService.stopRefreshing();
         });
 
     }]);

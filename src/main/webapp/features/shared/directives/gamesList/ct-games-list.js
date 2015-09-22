@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctGamesList', ['Remote', 'Game', function(Remote, Game) {
+    .directive('ctGamesList', ['Remote', 'GameService', function(Remote, GameService) {
         return {
             restrict: 'E',
             scope: {
@@ -12,7 +12,7 @@ angular.module('catan')
                 scope.items = null;
 
                 scope.update = function() {
-                    Game.findAllByType(scope.typeOfGames)
+                    GameService.findAllByType(scope.typeOfGames)
                             .then(function(items) {
                                 scope.items = items;
                             }, function(response) {
