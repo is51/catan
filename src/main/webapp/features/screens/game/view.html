@@ -1,3 +1,7 @@
-<ct-game-room ng-if="game.isNew()" game="game"></ct-game-room>
+<div ng-id="game">
 
-<ct-game-dashboard ng-if="game.isPlaying()" game="game"></ct-game-dashboard>
+    <ct-game-room ng-if="game.isNew()" game="game"></ct-game-room>
+
+    <ct-game-dashboard ng-if="game.isPlaying()" game="game"></ct-game-dashboard>
+
+</div>
