@@ -7,6 +7,7 @@ import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.EdgeBuiltType;
+import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
@@ -38,7 +39,6 @@ public class PlayServiceImpl implements PlayService {
             log.debug("User should not be empty");
             throw new PlayException(ERROR_CODE_ERROR);
         }
-
 
         int edgeId;
         try {
@@ -133,7 +133,61 @@ public class PlayServiceImpl implements PlayService {
 
         gameDao.updateGame(game);
     }
-    
+
+    @Override
+    public void buildSettlement(UserBean user, String gameIdString, String nodeIdString) throws PlayException, GameException {
+        log.debug("User {} tries to build settlement at node {} of game id {}",
+                user == null ? "<EMPTY>" : user.getUsername(), nodeIdString, gameIdString);
+        if (user == null) {
+            log.debug("User should not be empty");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        int nodeId;
+        try {
+            nodeId = Integer.parseInt(nodeIdString);
+        } catch (Exception e) {
+            log.debug("Cannot convert nodeId to integer value");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+
+        GameUserBean gameUserBean = null;
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().equals(user)) {
+                gameUserBean = gameUser;
+                break;
+            }
+        }
+
+        if (gameUserBean == null) {
+            log.debug("User is not joined to game {}", gameIdString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        NodeBean nodeToBuildOn = null;
+        for (NodeBean node : game.getNodes()) {
+            if (node.getId() == nodeId) {
+                nodeToBuildOn = node;
+            }
+        }
+
+        if (nodeToBuildOn == null) {
+            log.debug("Cannot build settlement on nodeId {} that does not belong to game {}", nodeId, gameIdString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        Building<NodeBuiltType> building = new Building<NodeBuiltType>();
+        building.setBuilt(NodeBuiltType.SETTLEMENT);
+        building.setBuildingOwner(gameUserBean);
+
+        nodeToBuildOn.setBuilding(building);
+
+        gameDao.updateGame(game);
+
+    }
+
     @Override
     public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
         log.debug("User {} tries to end his turn of game id {}",
