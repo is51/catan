@@ -5,7 +5,7 @@
 
     <table ng-if="items&&items.length" class="table table-condensed table-striped">
         <tr ng-repeat="item in items">
-            <td>#{{item.gameId}}</td>
+            <td>#{{item.getId()}}</td>
             <td style="font-size: 1.2rem; line-height: 2.4rem;">User #{{item.creatorId}}</td>
             <td style="font-size: 1.2rem; line-height: 2.4rem; white-space: nowrap">
                 <span ng-show="item.privateGame"><span class="glyphicon glyphicon-eye-open"></span> {{item.privateCode}}</span>
@@ -17,7 +17,7 @@
                 <ct-players-list game="item"></ct-players-list>
             </td>
             <td>
-                <a ng-if="typeOfGames==='CURRENT'" ui-sref="game({gameId: item.gameId})" class="btn btn-xs btn-default">Resume</a>
+                <a ng-if="typeOfGames==='CURRENT'" ui-sref="game({gameId: item.getId()})" class="btn btn-xs btn-default">Resume</a>
                 <a ng-if="typeOfGames==='PUBLIC'" href="" ct-join-public-game-button game="item" class="btn btn-xs btn-default">Join</a>
             </td>
         </tr>

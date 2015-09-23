@@ -1,20 +1,30 @@
 'use strict';
 
 angular.module('catan')
-    .controller('GameController', ['$scope', '$stateParams', '$state', 'Remote', function($scope, $stateParams, $state, Remote) {
+    .controller('GameController', [
+            '$scope', '$stateParams', '$state', 'GameService',
+            function($scope, $stateParams, $state, GameService)
+    {
 
-        $scope.gameDetails = null;
+        var GAME_UPDATE_DELAY = 5000;
 
-        $scope.updateGameDetails = function() {
-            Remote.game.details({gameId: $stateParams.gameId})
-                .then(function(response) {
-                    $scope.gameDetails = response.data;
-                }, function(response) {
-                    alert('Getting Game Details Error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
-                    $state.go("start");
+        $scope.game = null;
+
+        GameService.findById(+$stateParams.gameId)
+            .then(function(game) {
+                $scope.game = game;
+
+                    GameService.startRefreshing($scope.game, GAME_UPDATE_DELAY, null, function() {
+                    alert('Getting Game Details Error. Probably there is a connection problem');
                 });
-        };
 
-        $scope.updateGameDetails();
+            }, function() {
+                alert('Getting Game Details Error');
+                $state.go("start");
+            });
+
+        $scope.$on("$destroy", function() {
+            GameService.stopRefreshing();
+        });
 
     }]);

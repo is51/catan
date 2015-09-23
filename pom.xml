@@ -42,7 +42,7 @@
 
         <finalName>IT-nizator server</finalName>
         <plugins>
-            <!-- The following block can potentially be used instead of maven war plugin and tomcat7 plugin-->
+            <!--  The following block can potentially be used instead of maven war plugin and tomcat7 plugin-->
             <!-- <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
