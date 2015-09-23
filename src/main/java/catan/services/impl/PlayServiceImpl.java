@@ -145,6 +145,11 @@ public class PlayServiceImpl implements PlayService {
 
         int nodeId;
         try {
+            if (nodeIdString == null || nodeIdString.trim().length() == 0) {
+                log.debug("Cannot build settlement on empty nodeId");
+                throw new PlayException(ERROR_CODE_ERROR);
+            }
+
             nodeId = Integer.parseInt(nodeIdString);
         } catch (Exception e) {
             log.debug("Cannot convert nodeId to integer value");
@@ -152,6 +157,10 @@ public class PlayServiceImpl implements PlayService {
         }
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        if (game.getStatus() != GameStatus.PLAYING) {
+            log.debug("Cannot build settlement in not playing game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
 
         GameUserBean gameUserBean = null;
         for (GameUserBean gameUser : game.getGameUsers()) {
@@ -175,6 +184,40 @@ public class PlayServiceImpl implements PlayService {
 
         if (nodeToBuildOn == null) {
             log.debug("Cannot build settlement on nodeId {} that does not belong to game {}", nodeId, gameIdString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (nodeToBuildOn.getBuilding() != null) {
+            log.debug("Cannot build settlement on this node as it already has building on it");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        UserBean opponent = null;
+        boolean nearNeighbourRoad = false;
+        for (EdgeBean edge : nodeToBuildOn.getEdges().all()) {
+            if (edge != null) {
+                if (edge.getBuilding() != null) {
+                    UserBean buildingOwner = edge.getBuilding().getBuildingOwner().getUser();
+                    if (buildingOwner.equals(user)) {
+                        nearNeighbourRoad = true;
+                    } else {
+                        if (buildingOwner.equals(opponent)) {
+                            log.debug("Cannot build settlement on opponents' ways");
+                            throw new PlayException(ERROR_CODE_ERROR);
+                        } else opponent = buildingOwner;
+                    }
+                }
+                for (NodeBean node : edge.getNodes().all()) {
+                    if (node != null && node != nodeToBuildOn && node.getBuilding() != null) {
+                        log.debug("Cannot build settlement close to other settlements");
+                        throw new PlayException(ERROR_CODE_ERROR);
+                    }
+                }
+            }
+        }
+
+        if (!nearNeighbourRoad) {
+            log.debug("Cannot build settlement without any connections with player's roads");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
