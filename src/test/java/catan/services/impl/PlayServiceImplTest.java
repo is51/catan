@@ -272,8 +272,10 @@ public class PlayServiceImplTest {
         }
     }
 
+    /*
+    //TODO: uncomment and complete this test after preparation status implementation
     @Test
-    public void shouldFailWhenBuildingSettlementNotNearOwnNeighbourRoad() {
+    public void shouldFailWhenBuildingSettlementNotNearOwnNeighbourRoadWhenGameStatusIsNotPreparing() {
         try {
             // WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -286,6 +288,7 @@ public class PlayServiceImplTest {
             fail("No other exceptions should be thrown");
         }
     }
+    */
 
     @Test
     public void shouldFailWhenBuildingSettlementOnAnotherSettlement() {

@@ -154,18 +154,24 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .body("errorCode", equalTo("ERROR"));
     }
 
+    /*
     @Test
-    public void should_fail_if_try_to_build_settlement_and_there_are_no_neighbour_roads_that_belongs_to_this_player() {
+    public void should_fail_if_try_to_build_settlement_and_there_are_no_neighbour_roads_that_belongs_to_this_player_when_game_status_is_not_preparation() {
         //TODO: IMPLEMENT
     }
+    */
 
+    /*
     @Test
     public void should_fail_if_try_to_build_settlement_if_two_of_three_neighbour_roads_belongs_to_other_player() {
         //TODO: IMPLEMENT
     }
+    */
 
+    /*
     @Test
     public void should_fail_if_node_does_not_belong_to_this_game() {
         //TODO: IMPLEMENT
     }
+    */
 }
