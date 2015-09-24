@@ -216,10 +216,12 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        if (!nearNeighbourRoad) {
+        /*
+        if (!nearNeighbourRoad) { //TODO: add checking if game status is not "preparing" and uncomment this part
             log.debug("Cannot build settlement without any connections with player's roads");
             throw new PlayException(ERROR_CODE_ERROR);
         }
+        */
 
         Building<NodeBuiltType> building = new Building<NodeBuiltType>();
         building.setBuilt(NodeBuiltType.SETTLEMENT);

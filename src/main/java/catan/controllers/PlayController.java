@@ -36,8 +36,8 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void buildSettlement(@RequestParam(value = "token", required = false) String token,
-                          @RequestParam("gameId") String gameId,
-                          @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
+                                @RequestParam("gameId") String gameId,
+                                @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         playService.buildSettlement(user, gameId, nodeId);
