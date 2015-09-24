@@ -18,11 +18,11 @@ import static org.hamcrest.Matchers.nullValue;
 @WebIntegrationTest("server.port:8091")
 public class BuildSettlementTest extends PlayTestUtil {
 
-    public static final String USER_NAME_1 = "user1_StartGameTest";
+    public static final String USER_NAME_1 = "user1_BuildSettlementTest";
     public static final String USER_PASSWORD_1 = "password1";
-    public static final String USER_NAME_2 = "user2_StartGameTest";
+    public static final String USER_NAME_2 = "user2_BuildSettlementTest";
     public static final String USER_PASSWORD_2 = "password2";
-    public static final String USER_NAME_3 = "user3_StartGameTest";
+    public static final String USER_NAME_3 = "user3_BuildSettlementTest";
     public static final String USER_PASSWORD_3 = "password3";
 
     private static boolean initialized = false;
@@ -44,10 +44,8 @@ public class BuildSettlementTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int node_id = viewGame(userToken1, gameId).path("map.nodes[0].nodeId");
-        //TODO: need to fetch gameUserId from JSON, but now it is not returned
-        //int gameUser_1_Id = viewGame(userToken1, gameId).path("gameUsers[0].id");
-
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.nodes[0].nodeId");
+        int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
@@ -59,15 +57,19 @@ public class BuildSettlementTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.nodes[0].nodeId", is(node_id))
+                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
                 .body("map.nodes[0].building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
-        buildSettlement(userToken1, gameId, node_id)
+        buildSettlement(userToken1, gameId, nodeIdToBuild)
+                .then()
+                .statusCode(200);
+
+        viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.nodes[0].nodeId", is(node_id))
-                .body("map.nodes[0].building.ownerGameUserId", is(1))   //need to compare with gameUser_1_Id, when it will be available
+                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
+                .body("map.nodes[0].building.ownerGameUserId", is(gameUserId1))
                 .body("map.nodes[0].building.built", equalTo("SETTLEMENT"))
                 .body("status", equalTo("PLAYING"));
     }
@@ -79,9 +81,8 @@ public class BuildSettlementTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int node_id = viewGame(userToken1, gameId).path("map.nodes[0].nodeId");
-        //TODO: need to fetch gameUserId from JSON, but now it is not returned
-        //int gameUser_1_Id = viewGame(userToken1, gameId).path("gameUsers[0].id");
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.nodes[0].nodeId");
+        int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
@@ -93,19 +94,23 @@ public class BuildSettlementTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.nodes[0].nodeId", is(node_id))
+                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
                 .body("map.nodes[0].building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
-        buildSettlement(userToken1, gameId, node_id)
+        buildSettlement(userToken1, gameId, nodeIdToBuild)
+                .then()
+                .statusCode(200);
+
+        viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.nodes[0].nodeId", is(node_id))
-                .body("map.nodes[0].building.ownerGameUserId", is(1))   //need to compare with gameUser_1_Id, when it will be available
+                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
+                .body("map.nodes[0].building.buildingOwner.user.id", is(gameUserId1))
                 .body("map.nodes[0].building.built", equalTo("SETTLEMENT"))
                 .body("status", equalTo("PLAYING"));
 
-        buildSettlement(userToken2, gameId, node_id)
+        buildSettlement(userToken2, gameId, nodeIdToBuild)
                 .then()
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
@@ -138,6 +143,10 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .body("status", equalTo("PLAYING"));
 
         buildSettlement(userToken1, gameId, node_id)
+                .then()
+                .statusCode(200);
+
+        viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
                 .body("map.nodes[0].nodeId", is(node_id))
