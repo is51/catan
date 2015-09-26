@@ -11,6 +11,10 @@ angular.module('catan')
                 link: function(scope) {
                     scope.gameUsers = usersSortedByMoveOrderCurrentUserFirst(scope.game);
 
+                    scope.isActive = function(gameUser) {
+                        return scope.game.currentMove === gameUser.moveOrder;
+                    };
+
                     function usersSortedByMoveOrderCurrentUserFirst(game) {
                         var currentGameUser = game.getCurrentUser();
                         var usersCount = game.gameUsers.length;
