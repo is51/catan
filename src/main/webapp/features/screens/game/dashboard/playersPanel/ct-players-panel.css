@@ -44,6 +44,11 @@ ct-players-panel .player .avatar {
     opacity: 0.5;
 }
 
+ct-players-panel .player.active .avatar {
+    font-size: 22px;
+    line-height: 22px;
+}
+
 ct-players-panel .player .victory-points {
     font-size: 12px;
 
@@ -55,4 +60,8 @@ ct-players-panel .player .achievements {
     width: 26px;
     font-size: 10px;
     line-height: 11px;
+}
+
+ct-players-panel .player.active .achievements {
+    padding-top: 4px;
 }
