@@ -7,8 +7,9 @@ ct-players-panel {
 ct-players-panel .player {
     width: 86px;
     height: 54px;
-    padding: 3px 5px;
+    padding: 2px 3px;
     margin-bottom: 2px;
+    color: #fff;
 }
 
 ct-players-panel .player.active {
@@ -32,11 +33,35 @@ ct-players-panel .player.color-4 {
     background: #0f5;
 }
 
-ct-players-panel .player span {
-    font-size: 24px;
-    color: #fff;
+ct-players-panel .player .name {
+    font-size: 13px;
 }
 
-ct-players-panel .player.active span {
-    font-size: 32px;
+ct-players-panel .player .avatar {
+    font-size: 16px;
+    line-height: 16px;
+    color: #000;
+    opacity: 0.5;
+}
+
+ct-players-panel .player.active .avatar {
+    font-size: 22px;
+    line-height: 22px;
+}
+
+ct-players-panel .player .victory-points {
+    font-size: 12px;
+
+}
+
+ct-players-panel .player .achievements {
+    padding-top: 1px;
+    float: right;
+    width: 26px;
+    font-size: 10px;
+    line-height: 11px;
+}
+
+ct-players-panel .player.active .achievements {
+    padding-top: 4px;
 }
