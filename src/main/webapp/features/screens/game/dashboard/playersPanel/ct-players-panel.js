@@ -13,19 +13,12 @@ angular.module('catan')
 
                     function usersSortedByMoveOrderCurrentUserFirst(game) {
                         var currentGameUser = game.getCurrentUser();
-                        var absMoveOrders = {};
-
-                        for (var i in game.gameUsers) {
-                            var iUser = game.gameUsers[i];
-                            if (iUser === currentGameUser || iUser.moveOrder > currentGameUser.moveOrder) {
-                                absMoveOrders[iUser.user.id] = iUser.moveOrder;
-                            } else {
-                                absMoveOrders[iUser.user.id] = iUser.moveOrder + game.gameUsers.length;
-                            }
-                        }
+                        var usersCount = game.gameUsers.length;
 
                         return game.gameUsers.sort(function(a, b) {
-                            return absMoveOrders[a.user.id] - absMoveOrders[b.user.id];
+                            var aMoveOrder = a.moveOrder + ((a !== currentGameUser && a.moveOrder < currentGameUser.moveOrder) ? usersCount : 0);
+                            var bMoveOrder = b.moveOrder + ((b !== currentGameUser && b.moveOrder < currentGameUser.moveOrder) ? usersCount : 0);
+                            return aMoveOrder - bMoveOrder;
                         });
                     }
                 }
