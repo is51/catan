@@ -4,7 +4,7 @@ ct-players-panel {
     left: 0;
 }
 
-ct-players-panel > .player {
+ct-players-panel .player {
     width: 86px;
     height: 54px;
     padding: 2px 3px;
@@ -12,19 +12,24 @@ ct-players-panel > .player {
     color: #fff;
 }
 
-ct-players-panel > .player.color-1 {
+ct-players-panel .player.active {
+    width: 105px;
+    height: 62px;
+}
+
+ct-players-panel .player.color-1 {
     background: #f50;
 }
 
-ct-players-panel > .player.color-2 {
+ct-players-panel .player.color-2 {
     background: #55f;
 }
 
-ct-players-panel > .player.color-3 {
+ct-players-panel .player.color-3 {
     background: #dc0;
 }
 
-ct-players-panel > .player.color-4 {
+ct-players-panel .player.color-4 {
     background: #0f5;
 }
 

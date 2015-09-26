@@ -1,4 +1,4 @@
-<div ng-repeat="gameUser in gameUsers" class="player color-{{gameUser.colorId}}">
+<div ng-repeat="gameUser in gameUsers" class="player color-{{gameUser.colorId}}" ng-class="{'active': isActive(gameUser)}">
 
     <div class="achievements">
         <span class="glyphicon glyphicon-inbox"></span> {{gameUser.achievements.totalResources}}<br>
