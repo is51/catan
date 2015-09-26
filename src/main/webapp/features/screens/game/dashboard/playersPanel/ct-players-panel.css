@@ -4,30 +4,39 @@ ct-players-panel {
     left: 0;
 }
 
-ct-players-panel > .player {
+ct-players-panel .player {
     width: 86px;
     height: 54px;
     padding: 3px 5px;
     margin-bottom: 2px;
 }
 
-ct-players-panel > .player.color-1 {
+ct-players-panel .player.active {
+    width: 105px;
+    height: 62px;
+}
+
+ct-players-panel .player.color-1 {
     background: #f50;
 }
 
-ct-players-panel > .player.color-2 {
+ct-players-panel .player.color-2 {
     background: #55f;
 }
 
-ct-players-panel > .player.color-3 {
+ct-players-panel .player.color-3 {
     background: #dc0;
 }
 
-ct-players-panel > .player.color-4 {
+ct-players-panel .player.color-4 {
     background: #0f5;
 }
 
-ct-players-panel > .player span {
+ct-players-panel .player span {
     font-size: 24px;
     color: #fff;
+}
+
+ct-players-panel .player.active span {
+    font-size: 32px;
 }
