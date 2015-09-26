@@ -121,7 +121,7 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (!nearNeighbourRoad && !nearNeighbourSettlement) {
-            log.debug("Cannot build that doesn't have neighbour road or settlers that belongs to this player ");
+            log.debug("Cannot build road that doesn't have neighbour road or settlement that belongs to this player ");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
@@ -132,6 +132,8 @@ public class PlayServiceImpl implements PlayService {
         edgeToBuildOn.setBuilding(building);
 
         gameDao.updateGame(game);
+
+        log.debug("User {} successfully built {} at edge {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), edgeId, gameIdString);
     }
 
     @Override
@@ -231,6 +233,7 @@ public class PlayServiceImpl implements PlayService {
 
         gameDao.updateGame(game);
 
+        log.debug("User {} successfully built {} at node {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), nodeId, gameIdString);
     }
 
     @Override
