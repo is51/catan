@@ -7,6 +7,7 @@ import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.EdgeBuiltType;
+import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
@@ -38,7 +39,6 @@ public class PlayServiceImpl implements PlayService {
             log.debug("User should not be empty");
             throw new PlayException(ERROR_CODE_ERROR);
         }
-
 
         int edgeId;
         try {
@@ -121,7 +121,7 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (!nearNeighbourRoad && !nearNeighbourSettlement) {
-            log.debug("Cannot build that doesn't have neighbour road or settlers that belongs to this player ");
+            log.debug("Cannot build road that doesn't have neighbour road or settlement that belongs to this player ");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
@@ -132,8 +132,110 @@ public class PlayServiceImpl implements PlayService {
         edgeToBuildOn.setBuilding(building);
 
         gameDao.updateGame(game);
+
+        log.debug("User {} successfully built {} at edge {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), edgeId, gameIdString);
     }
-    
+
+    @Override
+    public void buildSettlement(UserBean user, String gameIdString, String nodeIdString) throws PlayException, GameException {
+        log.debug("User {} tries to build settlement at node {} of game id {}",
+                user == null ? "<EMPTY>" : user.getUsername(), nodeIdString, gameIdString);
+        if (user == null) {
+            log.debug("User should not be empty");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        int nodeId;
+        try {
+            if (nodeIdString == null || nodeIdString.trim().length() == 0) {
+                log.debug("Cannot build settlement on empty nodeId");
+                throw new PlayException(ERROR_CODE_ERROR);
+            }
+
+            nodeId = Integer.parseInt(nodeIdString);
+        } catch (Exception e) {
+            log.debug("Cannot convert nodeId to integer value");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        if (game.getStatus() != GameStatus.PLAYING) {
+            log.debug("Cannot build settlement in not playing game");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        GameUserBean gameUserBean = null;
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().equals(user)) {
+                gameUserBean = gameUser;
+                break;
+            }
+        }
+
+        if (gameUserBean == null) {
+            log.debug("User is not joined to game {}", gameIdString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        NodeBean nodeToBuildOn = null;
+        for (NodeBean node : game.getNodes()) {
+            if (node.getId() == nodeId) {
+                nodeToBuildOn = node;
+            }
+        }
+
+        if (nodeToBuildOn == null) {
+            log.debug("Cannot build settlement on nodeId {} that does not belong to game {}", nodeId, gameIdString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (nodeToBuildOn.getBuilding() != null) {
+            log.debug("Cannot build settlement on this node as it already has building on it");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        UserBean opponent = null;
+        boolean nearNeighbourRoad = false;
+        for (EdgeBean edge : nodeToBuildOn.getEdges().all()) {
+            if (edge != null) {
+                if (edge.getBuilding() != null) {
+                    UserBean buildingOwner = edge.getBuilding().getBuildingOwner().getUser();
+                    if (buildingOwner.equals(user)) {
+                        nearNeighbourRoad = true;
+                    } else {
+                        if (buildingOwner.equals(opponent)) {
+                            log.debug("Cannot build settlement on opponents' ways");
+                            throw new PlayException(ERROR_CODE_ERROR);
+                        } else opponent = buildingOwner;
+                    }
+                }
+                for (NodeBean node : edge.getNodes().all()) {
+                    if (node != null && node != nodeToBuildOn && node.getBuilding() != null) {
+                        log.debug("Cannot build settlement close to other settlements");
+                        throw new PlayException(ERROR_CODE_ERROR);
+                    }
+                }
+            }
+        }
+
+        /*
+        if (!nearNeighbourRoad) { //TODO: add checking if game status is not "preparing" and uncomment this part
+            log.debug("Cannot build settlement without any connections with player's roads");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+        */
+
+        Building<NodeBuiltType> building = new Building<NodeBuiltType>();
+        building.setBuilt(NodeBuiltType.SETTLEMENT);
+        building.setBuildingOwner(gameUserBean);
+
+        nodeToBuildOn.setBuilding(building);
+
+        gameDao.updateGame(game);
+
+        log.debug("User {} successfully built {} at node {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), nodeId, gameIdString);
+    }
+
     @Override
     public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
         log.debug("User {} tries to end his turn of game id {}",

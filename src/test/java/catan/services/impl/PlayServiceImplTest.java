@@ -239,6 +239,127 @@ public class PlayServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldPassWhenBuildingSettlementNearOwnNeighbourRoad() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_0_0);
+        assertNotNull(hex_0_0.getNodes().getTopRight());
+        assertNotNull(hex_0_0.getNodes().getTopRight().getBuilding());
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuilt(), NodeBuiltType.SETTLEMENT);
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldFailWhenPassedNodeIdIsWrong() {
+        try {
+            // WHEN
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildSettlement(gameUser1.getUser(), "1", "14");
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    /*
+    //TODO: uncomment and complete this test after preparation status implementation
+    @Test
+    public void shouldFailWhenBuildingSettlementNotNearOwnNeighbourRoadWhenGameStatusIsNotPreparing() {
+        try {
+            // WHEN
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+    */
+
+    @Test
+    public void shouldFailWhenBuildingSettlementOnAnotherSettlement() {
+        try {
+            // WHEN
+            hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenBuildingSettlementTooCloseToOtherSettlements() {
+        try {
+            // WHEN
+            hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildSettlement(gameUser1.getUser(), "1", "4");
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenBuildingSettlementOnTheWayOfOtherPlayerButNearOwnNeighbourRoad() {
+        try {
+            // WHEN
+            hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+            hex_0_0.getEdges().getRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+            hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenBuildSettlementAndGameIsNotPlaying() {
+        try {
+            // WHEN
+            game.setStatus(GameStatus.NEW);
+
+            when(gameDao.getGameByGameId(1)).thenReturn(game);
+            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+            fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (GameException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
     private void buildClearTriangleMap() {
         // GIVEN
         game = new GameBean();

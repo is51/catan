@@ -32,6 +32,17 @@ public class PlayController {
         playService.buildRoad(user, gameId, edgeId);
     }
 
+    @RequestMapping(value = "build/settlement",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void buildSettlement(@RequestParam(value = "token", required = false) String token,
+                                @RequestParam("gameId") String gameId,
+                                @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        playService.buildSettlement(user, gameId, nodeId);
+    }
+
     @RequestMapping(value = "end-turn",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)

@@ -4,6 +4,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.transfer.output.user.UserDetails;
 
 public class GameUserDetails {
+    private int id;
     private UserDetails user;
     private int colorId;
     private boolean ready;
@@ -16,17 +17,26 @@ public class GameUserDetails {
 
     }
 
-    public GameUserDetails(GameUserBean userBean, int detailsRequesterId) {
-        this.user = new UserDetails(userBean.getUser());
-        this.colorId = userBean.getColorId();
-        this.ready = userBean.isReady();
-        this.moveOrder = userBean.getMoveOrder();
-        this.achievements = new AchievementsDetails(userBean.getAchievements());
+    public GameUserDetails(GameUserBean gameUserBean, int detailsRequesterId) {
+        this.id = gameUserBean.getGameUserId();
+        this.user = new UserDetails(gameUserBean.getUser());
+        this.colorId = gameUserBean.getColorId();
+        this.ready = gameUserBean.isReady();
+        this.moveOrder = gameUserBean.getMoveOrder();
+        this.achievements = new AchievementsDetails(gameUserBean.getAchievements());
 
         if (user.getId() == detailsRequesterId) {
-            this.resources = new ResourcesDetails(userBean.getResources());
-            this.developmentCards = new DevelopmentCardsDetails(userBean.getDevelopmentCards());
+            this.resources = new ResourcesDetails(gameUserBean.getResources());
+            this.developmentCards = new DevelopmentCardsDetails(gameUserBean.getDevelopmentCards());
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public UserDetails getUser() {
