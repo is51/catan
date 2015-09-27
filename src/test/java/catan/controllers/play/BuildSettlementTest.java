@@ -142,7 +142,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("map.hexes[0].nodes.topLeftId", is(nodeIdToBuildFirst))
-                .body("map.nodes.find {it.nodeId = " + nodeIdToBuildFirst + "}.building", nullValue())
+                .body("map.nodes.find {it.nodeId == " + nodeIdToBuildFirst + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
         buildSettlement(userToken1, gameId, nodeIdToBuildFirst)
@@ -199,7 +199,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("map.hexes[0].nodes.topLeftId", is(nodeIdToBuildFirstSettlement))
-                .body("map.nodes.find {it.nodeId = " + nodeIdToBuildFirstSettlement + "}.building", nullValue())
+                .body("map.nodes.find {it.nodeId == " + nodeIdToBuildFirstSettlement + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
         buildSettlement(userToken1, gameId, nodeIdToBuildFirstSettlement)
