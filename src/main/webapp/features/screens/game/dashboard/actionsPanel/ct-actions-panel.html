@@ -1,5 +1,5 @@
 <div style="padding-left: 250px; padding-top: 180px;" class="row">
     <span class="col-xs-4">
-        <a  href="" ng-click="endTurn()" class="btn btn-default btn-xs btn-block btn-sq" ng-class="{'disabled': !endTurnEnabled()}">End turn</a>
+        <button class="btn btn-default btn-xs btn-block btn-sq" ng-click="endTurn()" ng-disabled="!game.isCurrentUserMove()">End turn</button>
     </span>
 </div>

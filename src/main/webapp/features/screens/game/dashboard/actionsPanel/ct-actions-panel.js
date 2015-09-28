@@ -9,12 +9,6 @@ angular.module('catan')
                 },
                 templateUrl: "/features/screens/game/dashboard/actionsPanel/ct-actions-panel.html",
                 link: function(scope) {
-                    //TODD: think about rename method, ti return false as default
-                    scope.endTurnEnabled = function() {
-                        //TODO: move logic to gameModel
-                        return scope.game.currentMove === scope.game.getCurrentUser().moveOrder;
-                    };
-
                     scope.endTurn = function() {
                         PlayService.endTurn(scope.game)
                                 .then(function() {
