@@ -1,5 +1,3 @@
-<div style="padding-left: 250px; padding-top: 180px;" class="row">
-    <span class="col-xs-4">
-        <button class="btn btn-default btn-xs btn-block btn-sq" ng-click="endTurn()" ng-disabled="!game.isCurrentUserMove()">End turn</button>
-    </span>
-</div>
+<button ng-click="endTurn()" ng-disabled="!game.isCurrentUserMove()">
+    <span class="glyphicon glyphicon-hourglass"></span><br>End turn
+</button>
