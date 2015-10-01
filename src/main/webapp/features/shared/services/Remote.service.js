@@ -11,10 +11,12 @@ angular.module('catan')
         return {
             setDefault: function(params) {
                 defaultParams = params;
+                return this;
             },
 
             setGroup: function(group, params) {
                 groupParams[group] = params;
+                return this;
             },
 
             setRequest: function (group, name, params) {
@@ -31,6 +33,8 @@ angular.module('catan')
                     finalParams.data = data;
                     return http(finalParams);
                 };
+
+                return this;
             },
 
             $get: ['$http', function($http) {
