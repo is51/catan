@@ -111,7 +111,7 @@ public class GameServiceImplTest {
         when(gameDao.getUsedActiveGamePrivateCodes()).thenReturn(usedPrivateCodes);
 
         // WHEN
-        GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS));
+        GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS), "");
 
         // THEN
         verify(gameDao, times(1)).addNewGame(gameBeanArgumentCaptor.capture());
@@ -144,7 +144,7 @@ public class GameServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1, true);
 
             // WHEN
-            GameBean game = gameService.createNewGame(user, false, "12");
+            GameBean game = gameService.createNewGame(user, false, "12", "");
 
             fail("GameException with error code '" + GameServiceImpl.GUEST_NOT_PERMITTED_ERROR + "' should be thrown, but returned game " + game);
         } catch (GameException e) {

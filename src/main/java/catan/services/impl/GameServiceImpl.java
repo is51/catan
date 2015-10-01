@@ -49,8 +49,8 @@ public class GameServiceImpl implements GameService {
     private MapUtil mapUtil;
 
     @Override
-    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
-        log.debug("Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + inputTargetVictoryPoints + " ...");
+    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints, String preparationBuildingsSet) throws GameException {
+        log.debug("Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + inputTargetVictoryPoints + ", preparation building set: " + preparationBuildingsSet + " ...");
         if (creator == null) {
             log.debug("Cannot create new game due to creator is empty");
             throw new GameException(ERROR_CODE_ERROR);
