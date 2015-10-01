@@ -92,6 +92,8 @@ angular.module('catan', [
         RemoteProvider.setRequest('game', 'cancel', { url: '/api/game/cancel'});
         RemoteProvider.setRequest('game', 'ready', { url: '/api/game/ready'});
         RemoteProvider.setRequest('game', 'notReady', { url: '/api/game/not-ready'});
+
+        RemoteProvider.setRequest('play', 'endTurn', { url: '/api/play/end-turn'});
     }])
 
     .run(['$rootScope', 'User', function($rootScope, User) {
