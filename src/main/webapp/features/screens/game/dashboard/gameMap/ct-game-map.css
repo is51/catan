@@ -1,0 +1,52 @@
+ct-game-map {
+    position: absolute;
+    left: 120px;
+    top: 100px;
+}
+
+ct-game-map .canvas {
+    position: relative;
+}
+
+ct-game-map .canvas .hex {
+    position: absolute;
+    border-radius: 3px;
+}
+
+ct-game-map .canvas .hex > .dice {
+    position: absolute;
+    text-align: center;
+}
+
+ct-game-map .canvas .node {
+    position: absolute;
+    border-radius: 5px;
+}
+
+ct-game-map .canvas .brick {
+    background-color: #e16a17;
+}
+
+ct-game-map .canvas .wood {
+    background-color: #40b22f;
+}
+
+ct-game-map .canvas .sheep {
+    background-color: #4bec38;
+}
+
+ct-game-map .canvas .wheat {
+    background-color: #ecd320;
+}
+
+ct-game-map .canvas .stone {
+    background-color: #8e6f36;
+}
+
+ct-game-map .canvas .empty {
+    background-color: #cbd771;
+}
+
+ct-game-map .canvas .any {
+    background-color: #cbd771;
+}
