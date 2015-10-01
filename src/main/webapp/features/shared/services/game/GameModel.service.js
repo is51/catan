@@ -5,27 +5,23 @@ angular.module('catan')
 
             var GAME_PRIMARY_KEY = "gameId";
 
-            return function(data) {
+            return function (data) {
 
                 angular.copy(data, this);
 
-                this.getId = function() {
+                this.getId = function () {
                     return this[GAME_PRIMARY_KEY];
                 };
 
-                this.isNew = function() {
+                this.isNew = function () {
                     return this.status === "NEW";
                 };
 
-                this.isPlaying = function() {
+                this.isPlaying = function () {
                     return this.status === "PLAYING";
                 };
 
-                this.isCurrentUserCreator = function() {
-                    return this.creatorId === User.get().id;
-                };
-
-                this.getCurrentUser = function() {
+                this.getCurrentUser = function () {
                     for (var i in this.gameUsers) {
                         if (this.gameUsers[i].user.id === User.get().id) {
                             return this.gameUsers[i];
@@ -34,9 +30,18 @@ angular.module('catan')
                     return null;
                 };
 
-                this.isCurrentUserReady = function() {
+                this.isCurrentUserCreator = function () {
+                    return this.creatorId === User.get().id;
+                };
+
+                this.isCurrentUserReady = function () {
                     var user = this.getCurrentUser();
                     return (user) ? user.ready : false;
                 };
+
+                this.isCurrentUserMove = function () {
+                    return this.currentMove === this.getCurrentUser().moveOrder;
+                };
+
             };
         }]);
