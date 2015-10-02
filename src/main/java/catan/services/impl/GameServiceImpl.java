@@ -296,7 +296,8 @@ public class GameServiceImpl implements GameService {
                 GameStatus.NEW,
                 MIN_USERS,
                 MAX_USERS,
-                targetVictoryPoints);
+                targetVictoryPoints,
+                initialBuildingsSet);
     }
 
     private GameBean createPublicGame(UserBean creator, int targetVictoryPoints, String initialBuildingsSet) throws GameException {
@@ -311,7 +312,8 @@ public class GameServiceImpl implements GameService {
                 GameStatus.NEW,
                 MIN_USERS,
                 MAX_USERS,
-                targetVictoryPoints);
+                targetVictoryPoints,
+                initialBuildingsSet);
     }
 
     @Autowired

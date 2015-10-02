@@ -161,10 +161,10 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user, 1, game1);
@@ -232,10 +232,10 @@ public class GameServiceImplTest {
         UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false);
         user2.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user1, 1, game1);
@@ -298,7 +298,7 @@ public class GameServiceImplTest {
     public void testSetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game.setGameId(1);
         game.getGameUsers().add(new GameUserBean(user, 1, game));
 
@@ -321,7 +321,7 @@ public class GameServiceImplTest {
     public void testUnsetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game.setGameId(1);
 
         GameUserBean gameUserBean = new GameUserBean(user, 1, game);
@@ -345,7 +345,7 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_UserHaventJoinedGame() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game.setGameId(1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -357,7 +357,7 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_GameAlreadyStarted() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, DEFAULT_TARGET_VICTORY_POINTS, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game.setGameId(1);
         game.getGameUsers().add(new GameUserBean(user, 1, game));
 
@@ -371,7 +371,7 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game.setGameId(1);
         GameUserBean gameUserBean = new GameUserBean(user, 1, game);
         game.getGameUsers().add(gameUserBean);
@@ -391,7 +391,7 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_AllPlayersAreReady_GameShouldBeStarted() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 2, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 2, 4, 12, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game.setGameId(1);
 
         GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2, game);
@@ -418,7 +418,7 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12, "[[CITY], [SETTLEMENT, SETTLEMENT], [ROAD, ROAD, ROAD]]");
         game.setGameId(1);
 
         GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2, game);

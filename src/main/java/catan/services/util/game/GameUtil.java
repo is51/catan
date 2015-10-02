@@ -31,7 +31,7 @@ public class GameUtil {
     private GameDao gameDao;
     private RandomUtil randomUtil;
 
-    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<>();
+    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>> ();
 
     static{
         initialBuildingsSetsMap.put(1, Arrays.asList(
