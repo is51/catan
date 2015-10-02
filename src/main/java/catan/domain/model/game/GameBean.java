@@ -60,7 +60,7 @@ public class GameBean {
     private GameStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "GAME_STAGE", unique = false, nullable = false)
+    @Column(name = "GAME_STAGE", unique = false)
     private GameStage stage;
 
     @Column(name = "PREPARATION_CYCLE", unique = false, nullable = true)

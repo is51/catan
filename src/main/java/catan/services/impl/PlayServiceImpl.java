@@ -14,6 +14,7 @@ import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.EndTurnUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class PlayServiceImpl implements PlayService {
 
     private GameDao gameDao;
     private GameUtil gameUtil;
+    private EndTurnUtil endTurnUtil;
 
     @Override
     public void buildRoad(UserBean user, String gameIdString, String edgeIdString) throws PlayException, GameException {
@@ -271,19 +273,11 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        //TODO: think about naming of method and namings of fields related to moveOrder and turn
-        giveCurrentMoveToNextPlayer(game);
+        endTurnUtil.calculateNextMove(game);
+        //TODO: endTurnUtil.updatePreparationCycleWhenCurrentFinished(game);
+        //TODO: endTurnUtil.updateStageWhenCurrentFinished(game);
 
         gameDao.updateGame(game);
-    }
-
-    private void giveCurrentMoveToNextPlayer(GameBean game) {
-        int nextMove = 1;
-        if (!game.getCurrentMove().equals(game.getGameUsers().size())) {
-            nextMove = game.getCurrentMove() + 1;
-        }
-
-        game.setCurrentMove(nextMove);
     }
 
     @Autowired
@@ -296,5 +290,8 @@ public class PlayServiceImpl implements PlayService {
         this.gameUtil = gameUtil;
     }
 
-
+    @Autowired
+    public void setEndTurnUtil(EndTurnUtil endTurnUtil) {
+        this.endTurnUtil = endTurnUtil;
+    }
 }
