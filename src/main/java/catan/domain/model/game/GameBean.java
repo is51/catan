@@ -3,6 +3,7 @@ package catan.domain.model.game;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.dashboard.EdgeDetails;
@@ -60,6 +61,10 @@ public class GameBean {
     @Enumerated(EnumType.STRING)
     @Column(name = "GAME_STATUS", unique = false, nullable = false)
     private GameStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "GAME_STAGE", unique = false, nullable = false)
+    private GameStage stage;
 
     @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
     private int minPlayers;
@@ -170,6 +175,14 @@ public class GameBean {
 
     public void setStatus(GameStatus status) {
         this.status = status;
+    }
+
+    public GameStage getStage() {
+        return stage;
+    }
+
+    public void setStage(GameStage stage) {
+        this.stage = stage;
     }
 
     public int getMinPlayers() {
@@ -303,6 +316,8 @@ public class GameBean {
                 ", \n" +
                 "\t\tstatus: " + status +
                 ", \n" +
+                "\t\tstatus: " + stage +
+                "\n" +
                 "\t\tminPlayers: " + minPlayers +
                 ", \n" +
                 "\t\tmaxPlayers: " + maxPlayers +
