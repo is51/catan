@@ -10,7 +10,6 @@ import catan.domain.transfer.output.dashboard.EdgeDetails;
 import catan.domain.transfer.output.dashboard.HexDetails;
 import catan.domain.transfer.output.dashboard.NodeDetails;
 import catan.domain.transfer.output.game.GameUserDetails;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,8 +30,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "GAME")
@@ -65,6 +62,9 @@ public class GameBean {
     @Enumerated(EnumType.STRING)
     @Column(name = "GAME_STAGE", unique = false, nullable = false)
     private GameStage stage;
+
+    @Column(name = "PREPARATION_CYCLE", unique = false, nullable = true)
+    private Integer preparationCycle;
 
     @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
     private int minPlayers;
@@ -185,6 +185,14 @@ public class GameBean {
         this.stage = stage;
     }
 
+    public Integer getPreparationCycle() {
+        return preparationCycle;
+    }
+
+    public void setPreparationCycle(Integer preparationCycle) {
+        this.preparationCycle = preparationCycle;
+    }
+
     public int getMinPlayers() {
         return minPlayers;
     }
@@ -293,8 +301,8 @@ public class GameBean {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[ ");
-        for(GameUserBean gameUser : gameUsers){
-            if(sb.length() > 2){
+        for (GameUserBean gameUser : gameUsers) {
+            if (sb.length() > 2) {
                 sb.append(",");
             }
             sb.append("\n\t\t\t");
