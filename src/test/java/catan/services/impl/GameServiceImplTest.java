@@ -3,6 +3,7 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
@@ -409,8 +410,16 @@ public class GameServiceImplTest {
         verify(gameDao, times(1)).updateGameUser(any(GameUserBean.class));
         verify(gameDao, times(1)).updateGame(gameBeanCaptor.capture());
 
-        assertEquals(gameBeanCaptor.getValue().getStatus(), GameStatus.PLAYING);
-        assertNotNull(gameBeanCaptor.getValue().getDateStarted());
+        GameBean expectedGame = gameBeanCaptor.getValue();
+
+        assertEquals(expectedGame.getCurrentMove(), new Integer(1));
+        assertEquals(expectedGame.getStatus(), GameStatus.PLAYING);
+        assertEquals(expectedGame.getStage(), GameStage.PREPARATION);
+        assertEquals(expectedGame.getPreparationCycle(), new Integer(1));
+        assertNotNull(expectedGame.getDateStarted());
+        for(GameUserBean gameUser : expectedGame.getGameUsers()){
+            assertTrue(gameUser.getMoveOrder() > 0);
+        }
     }
 
     @Test

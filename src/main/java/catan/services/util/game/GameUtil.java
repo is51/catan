@@ -4,6 +4,7 @@ import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.random.RandomUtil;
@@ -129,6 +130,8 @@ public class GameUtil {
 
         game.setCurrentMove(1);
         game.setStatus(GameStatus.PLAYING);
+        game.setStage(GameStage.PREPARATION);
+        game.setPreparationCycle(1);
         game.setDateStarted(new Date());
 
         gameDao.updateGame(game);
