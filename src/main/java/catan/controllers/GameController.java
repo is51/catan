@@ -33,9 +33,9 @@ public class GameController {
     public GameIdDetails createNewGame(@RequestParam(value = "token", required = false) String token,
                                        @RequestParam(value = "privateGame") boolean privateGame,
                                        @RequestParam(value = "targetVictoryPoints") String targetVictoryPoints,
-                                       @RequestParam(value = "preparationBuildingsSet") String preparationBuildingsSet) throws AuthenticationException, GameException {
+                                       @RequestParam(value = "initialBuildingsSetId") String initialBuildingsSetId) throws AuthenticationException, GameException {
         UserBean user = authenticationService.authenticateUserByToken(token);
-        GameBean createdGame = gameService.createNewGame(user, privateGame, targetVictoryPoints, preparationBuildingsSet);
+        GameBean createdGame = gameService.createNewGame(user, privateGame, targetVictoryPoints, initialBuildingsSetId);
 
         return new GameIdDetails(createdGame.getGameId());
     }
