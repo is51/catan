@@ -273,7 +273,7 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        endTurnUtil.calculateNextMove(game);
+        endTurnUtil.calculateAndSetNextMove(game);
         //TODO: endTurnUtil.updatePreparationCycleWhenCurrentFinished(game);
         //TODO: endTurnUtil.updateStageWhenCurrentFinished(game);
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class EndTurnUtil {
     private Logger log = LoggerFactory.getLogger(EndTurnUtil.class);
 
-    public void calculateNextMove(GameBean game) {
+    public void calculateAndSetNextMove(GameBean game) {
         Integer nextMoveNumber = null;
         switch (game.getStage()) {
             case PREPARATION:
