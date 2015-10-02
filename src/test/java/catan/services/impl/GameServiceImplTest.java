@@ -42,6 +42,7 @@ public class GameServiceImplTest {
     public static final String PASSWORD2 = "67890";
 
     public static final int DEFAULT_TARGET_VICTORY_POINTS = 12;
+    public static final int DEFAULT_INITIAL_BUILDINGS_SET_ID = 1;
 
     @Mock
     private GameDao gameDao;
@@ -111,7 +112,7 @@ public class GameServiceImplTest {
         when(gameDao.getUsedActiveGamePrivateCodes()).thenReturn(usedPrivateCodes);
 
         // WHEN
-        GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS), "");
+        GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS), Integer.toString(DEFAULT_INITIAL_BUILDINGS_SET_ID));
 
         // THEN
         verify(gameDao, times(1)).addNewGame(gameBeanArgumentCaptor.capture());
@@ -144,7 +145,7 @@ public class GameServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1, true);
 
             // WHEN
-            GameBean game = gameService.createNewGame(user, false, "12", "");
+            GameBean game = gameService.createNewGame(user, false, "12", Integer.toString(DEFAULT_INITIAL_BUILDINGS_SET_ID));
 
             fail("GameException with error code '" + GameServiceImpl.GUEST_NOT_PERMITTED_ERROR + "' should be thrown, but returned game " + game);
         } catch (GameException e) {

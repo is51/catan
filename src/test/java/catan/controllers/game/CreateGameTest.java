@@ -101,7 +101,12 @@ public class CreateGameTest extends GameTestUtil {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("privateGame", true, "targetVictoryPoints", DEFAULT_TARGET_VICTORY_POINTS) // 'privateGame' is mandatory, 'token' is not mandatory
+                .parameters("privateGame",    // 'privateGame' is mandatory, 'token' is not mandatory
+                            true,
+                            "targetVictoryPoints",
+                            DEFAULT_TARGET_VICTORY_POINTS,
+                            "initialBuildingsSetId",
+                            DEFAULT_INITIAL_BUILDINGS_SET_ID)
                 .when()
                 .post(URL_CREATE_NEW_GAME)
                 .then()
@@ -120,6 +125,16 @@ public class CreateGameTest extends GameTestUtil {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
         createNewGame(userToken, false, MIN_TARGET_VICTORY_POINTS - 1)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+    }
+
+    @Test
+    public void should_fail_when_initial_buildings_set_is_not_exist() {
+        String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
+
+        createNewGame(userToken, false, DEFAULT_TARGET_VICTORY_POINTS, -1)
                 .then()
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));

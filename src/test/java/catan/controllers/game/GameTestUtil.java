@@ -19,18 +19,23 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
     public static final String URL_SET_USER_NOT_READY = "/api/game/not-ready";
 
     public static final int DEFAULT_TARGET_VICTORY_POINTS = 12;
+    public static final int DEFAULT_INITIAL_BUILDINGS_SET_ID = 1;
     public static final int TEMPORARY_MIN_PLAYERS = 3;
     public static final int TEMPORARY_MAX_PLAYERS = 4;
 
     protected Response createNewGame(String token, boolean privateGame) {
-        return createNewGame(token, privateGame, DEFAULT_TARGET_VICTORY_POINTS);
+        return createNewGame(token, privateGame, DEFAULT_TARGET_VICTORY_POINTS, DEFAULT_INITIAL_BUILDINGS_SET_ID);
     }
 
     protected Response createNewGame(String token, boolean privateGame, int targetVictoryPoints) {
+        return createNewGame(token, privateGame, targetVictoryPoints, DEFAULT_INITIAL_BUILDINGS_SET_ID);
+    }
+
+    protected Response createNewGame(String token, boolean privateGame, int targetVictoryPoints, int initialBuildingsSetId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "privateGame", privateGame, "targetVictoryPoints", targetVictoryPoints)
+                .parameters("token", token, "privateGame", privateGame, "targetVictoryPoints", targetVictoryPoints, "initialBuildingsSetId", initialBuildingsSetId)
                 .when()
                 .post(URL_CREATE_NEW_GAME);
     }
