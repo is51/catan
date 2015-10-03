@@ -1,7 +1,7 @@
 ct-game-map {
     position: absolute;
-    left: 120px;
-    top: 100px;
+    left: 324px;
+    top: 190px;
 }
 
 ct-game-map .canvas {
@@ -10,18 +10,108 @@ ct-game-map .canvas {
 
 ct-game-map .canvas .hex {
     position: absolute;
-    border-radius: 3px;
 }
 
-ct-game-map .canvas .hex > .dice {
+ct-game-map .canvas .hex > .inner {
+    position: absolute;
+    border-radius: 5px;
+    border: 2px solid #fff;
+}
+
+ct-game-map .canvas .hex > .inner > .dice {
     position: absolute;
     text-align: center;
+    font-size: 14px;
+    line-height: 38px;
 }
 
 ct-game-map .canvas .node {
     position: absolute;
-    border-radius: 5px;
 }
+
+ct-game-map .canvas .node > .inner {
+    position: absolute;
+    text-align: center;
+}
+
+ct-game-map .canvas .node.none > .inner {
+    width: 12px;
+    height: 12px;
+    left: -6px;
+    top: -6px;
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid #000;
+    opacity: 0;
+}
+
+ct-game-map .canvas .node.none:hover > .inner {
+    opacity: 1;
+}
+
+ct-game-map .canvas .node.settlement > .inner {
+    width: 16px;
+    height: 16px;
+    left: -8px;
+    top: -8px;
+    border-radius: 8px;
+    background: #fff;
+    border: 2px solid #000;
+    font-size: 10px;
+    line-height: 12px;
+}
+
+ct-game-map .canvas .node.city > .inner {
+    width: 22px;
+    height: 22px;
+    left: -11px;
+    top: -11px;
+    border-radius: 11px;
+    background: #fff;
+    border: 2px solid #000;
+    font-size: 13px;
+}
+
+
+ct-game-map .canvas .edge {
+    position: absolute;
+}
+
+ct-game-map .canvas .edge > .inner {
+    position: absolute;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid #000;
+    opacity: 0;
+}
+
+ct-game-map .canvas .edge:hover > .inner {
+    opacity: 1;
+}
+
+ct-game-map .canvas .edge.vertical > .inner {
+    width: 6px;
+    height: 42px;
+    left: -3px;
+    top: -21px;
+    border-top: none;
+    border-bottom: none;
+}
+
+ct-game-map .canvas .edge.horizontal > .inner {
+    width: 40px;
+    height: 6px;
+    left: -20px;
+    top: -3px;
+    border-left: none;
+    border-right: none;
+}
+
+ct-game-map .canvas .edge.road > .inner {
+    opacity: 1;
+    background: #fff;
+}
+
 
 ct-game-map .canvas .brick {
     background-color: #e16a17;
@@ -49,4 +139,20 @@ ct-game-map .canvas .empty {
 
 ct-game-map .canvas .any {
     background-color: #cbd771;
+}
+
+ct-game-map .canvas .color-1 {
+    background: #f50 !important;
+}
+
+ct-game-map .canvas .color-2 {
+    background: #55f !important;
+}
+
+ct-game-map .canvas .color-3 {
+    background: #dc0 !important;
+}
+
+ct-game-map .canvas .color-4 {
+    background: #0f5 !important;
 }

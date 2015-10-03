@@ -43,5 +43,14 @@ angular.module('catan')
                     return this.currentMove === this.getCurrentUser().moveOrder;
                 };
 
+                this.getGameUser = function(gameUserId) {
+                    for (var i in this.gameUsers) {
+                        if (this.gameUsers[i].id === gameUserId) {
+                            return this.gameUsers[i];
+                        }
+                    }
+                    return null;
+                }
+
             };
         }]);

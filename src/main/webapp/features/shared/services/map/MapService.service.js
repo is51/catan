@@ -27,6 +27,32 @@ angular.module('catan')
                 return map;
             };
 
+            MapService.getFirstHexOfNode = function(node) {
+                for (var k in node.hexes) {
+                    if (node.hexes[k]) {
+                        return node.hexes[k];
+                    }
+                }
+                return null;
+            };
+
+            MapService.getFirstHexOfEdge = function(edge) {
+                for (var k in edge.hexes) {
+                    if (edge.hexes[k]) {
+                        return edge.hexes[k];
+                    }
+                }
+                return null;
+            };
+
+            MapService.getObjectPosition = function(where, what) {
+                for (var k in where) {
+                    if (where[k] === what) {
+                        return k;
+                    }
+                }
+            }
+
             return MapService;
 
             function linkEntitiesByType(map, type, arr) {
