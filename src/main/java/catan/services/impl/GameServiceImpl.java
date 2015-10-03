@@ -1,15 +1,15 @@
 package catan.services.impl;
 
 import catan.dao.GameDao;
+import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
-import catan.domain.exception.GameException;
 import catan.services.GameService;
 import catan.services.util.game.GameUtil;
-import catan.services.util.random.RandomUtil;
 import catan.services.util.map.MapUtil;
+import catan.services.util.random.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +32,15 @@ public class GameServiceImpl implements GameService {
     public static final int ROUND_MAP_SIZE = 2;
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String GAME_ALREADY_STARTED_ERROR = "GAME_ALREADY_STARTED";
+    public static final String GAME_FINISHED_ERROR = "GAME_FINISHED";
+    public static final String GAME_CANCELED_ERROR = "GAME_CANCELED";
     public static final String TOO_MANY_PLAYERS_ERROR = "TOO_MANY_PLAYERS";
     public static final String ALREADY_JOINED_ERROR = "ALREADY_JOINED";
     public static final String INVALID_CODE_ERROR = "INVALID_CODE";
     public static final String GAME_IS_NOT_FOUND_ERROR = "GAME_IS_NOT_FOUND";
     public static final String USER_IS_NOT_JOINED_ERROR = "USER_IS_NOT_JOINED";
+    public static final String GAME_HAS_ALREADY_STARTED_ERROR = "GAME_HAS_ALREADY_STARTED";
     public static final String GUEST_NOT_PERMITTED_ERROR = "GUEST_NOT_PERMITTED";
 
     private GameDao gameDao;
@@ -45,15 +49,18 @@ public class GameServiceImpl implements GameService {
     private MapUtil mapUtil;
 
     @Override
-    synchronized public GameBean createNewGame(UserBean creator, boolean privateGame, String inputTargetVictoryPoints) throws GameException {
-        log.debug("Creating new " + (privateGame ? "private" : "public") + " game, creator: " + creator + ", victory points: " + inputTargetVictoryPoints + " ...");
-
+    synchronized public GameBean createNewGame(UserBean creator, boolean isPrivateGame, String inputTargetVictoryPoints, String initialBuildingsSetId) throws GameException {
+        log.debug("Creating new {} game, creator: {}, victory points: {}, initial building set id: {} ...",
+                isPrivateGame ? "private" : "public", creator, inputTargetVictoryPoints, initialBuildingsSetId);
+        
         validateUserNotEmpty(creator);
 
         int targetVictoryPoints = gameUtil.toValidVictoryPoints(inputTargetVictoryPoints);
-        GameBean game = privateGame
-                ? createPrivateGame(creator, targetVictoryPoints)
-                : createPublicGame(creator, targetVictoryPoints);
+        String initialBuildingsSet = gameUtil.toValidInitialBuildingsSet(initialBuildingsSetId);
+
+        GameBean game = isPrivateGame
+                ? createPrivateGame(creator, targetVictoryPoints, initialBuildingsSet)
+                : createPublicGame(creator, targetVictoryPoints, initialBuildingsSet);
 
         gameUtil.addUserToGame(game, creator);
         mapUtil.generateNewRoundGameMap(game, ROUND_MAP_SIZE);
@@ -153,7 +160,7 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        log.debug( user + " is not joined to " + game);
+        log.debug(user + " is not joined to " + game);
         throw new GameException(ERROR_CODE_ERROR);
     }
 
@@ -274,7 +281,7 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private GameBean createPrivateGame(UserBean creator, int targetVictoryPoints) {
+    private GameBean createPrivateGame(UserBean creator, int targetVictoryPoints, String initialBuildingsSet) {
         List<String> usedCodes = gameDao.getUsedActiveGamePrivateCodes();
 
         String randomPrivateCode = null;
@@ -298,10 +305,11 @@ public class GameServiceImpl implements GameService {
                 GameStatus.NEW,
                 MIN_USERS,
                 MAX_USERS,
-                targetVictoryPoints);
+                targetVictoryPoints,
+                initialBuildingsSet);
     }
 
-    private GameBean createPublicGame(UserBean creator, int targetVictoryPoints) throws GameException {
+    private GameBean createPublicGame(UserBean creator, int targetVictoryPoints, String initialBuildingsSet) throws GameException {
         if (creator.isGuest()) {
             log.debug("Guest user cannot create new public games");
             throw new GameException(GUEST_NOT_PERMITTED_ERROR);
@@ -313,7 +321,8 @@ public class GameServiceImpl implements GameService {
                 GameStatus.NEW,
                 MIN_USERS,
                 MAX_USERS,
-                targetVictoryPoints);
+                targetVictoryPoints,
+                initialBuildingsSet);
     }
 
     @Autowired
