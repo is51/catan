@@ -274,6 +274,8 @@ public class PlayServiceImpl implements PlayService {
         //TODO: think about naming of method and namings of fields related to moveOrder and turn
         giveCurrentMoveToNextPlayer(game);
 
+        //TODO: in Preparation mode set to 1, in Main mode ignore this field
+        game.setCurrentCycleBuildingNumber(1);
         gameDao.updateGame(game);
     }
 
