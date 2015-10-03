@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static catan.services.impl.GameServiceImpl.ALREADY_JOINED_ERROR;
 import static catan.services.impl.GameServiceImpl.ERROR_CODE_ERROR;
@@ -27,6 +30,18 @@ public class GameUtil {
 
     private GameDao gameDao;
     private RandomUtil randomUtil;
+
+    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>> ();
+
+    static{
+        initialBuildingsSetsMap.put(1, Arrays.asList(
+                Arrays.asList("SETTLEMENT", "ROAD"),
+                Arrays.asList("SETTLEMENT", "ROAD")));
+        initialBuildingsSetsMap.put(2, Arrays.asList(
+                Arrays.asList("CITY"),
+                Arrays.asList("SETTLEMENT", "SETTLEMENT"),
+                Arrays.asList("ROAD", "ROAD", "ROAD")));
+    }
 
     public int toValidVictoryPoints(String inputTargetVictoryPoints) throws GameException {
         int targetVictoryPoints;
@@ -42,6 +57,24 @@ public class GameUtil {
             throw new GameException(ERROR_CODE_ERROR);
         }
         return targetVictoryPoints;
+    }
+
+    public String toValidInitialBuildingsSet(String inputInitialBuildingsSetId) throws GameException {
+        int initialBuildingsSetId;
+        try {
+            initialBuildingsSetId = Integer.parseInt(inputInitialBuildingsSetId);
+        } catch (Exception e) {
+            log.debug("Cannot create game with non-integer format of InitialBuildingsSetId");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        List<List<String>> buildingsSet = initialBuildingsSetsMap.get(initialBuildingsSetId);
+        if (buildingsSet == null) {
+            log.debug("Cannot create game with unknown initialBuildingsSetId");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        return buildingsSet.toString();
     }
 
     public GameBean getGameById(String gameIdString, String errorCodeToReturnIfNotFound) throws GameException {
