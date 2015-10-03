@@ -70,6 +70,9 @@ public class GameBean {
     @Column(name = "INITIAL_BUILDINGS_SET", unique = false, nullable = false)
     private String initialBuildingsSet;
 
+    @Column(name = "CURRENT_CYCLE_BUILDING_NUMBER", unique = false, nullable = true)
+    private String currentCycleBuildingNumber;
+
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
 
@@ -212,6 +215,14 @@ public class GameBean {
 
     public void setInitialBuildingsSet(String initialBuildingsSet) {
         this.initialBuildingsSet = initialBuildingsSet;
+    }
+
+    public String getCurrentCycleBuildingNumber() {
+        return currentCycleBuildingNumber;
+    }
+
+    public void setCurrentCycleBuildingNumber(String currentCycleBuildingNumber) {
+        this.currentCycleBuildingNumber = currentCycleBuildingNumber;
     }
 
     public Integer getCurrentMove() {
