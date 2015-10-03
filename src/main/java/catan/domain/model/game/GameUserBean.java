@@ -42,6 +42,9 @@ public class GameUserBean {
     @Column(name = "MOVE_ORDER", unique = false, nullable = false)
     private int moveOrder;
 
+    @Column(name = "AVAILABLE_ACTIONS", unique = false, nullable = true)
+    private String availableActions;
+
     @Embedded
     private AchievementsBean achievements;
 
@@ -109,6 +112,14 @@ public class GameUserBean {
 
     public void setMoveOrder(int moveOrder) {
         this.moveOrder = moveOrder;
+    }
+
+    public String getAvailableActions() {
+        return availableActions;
+    }
+
+    public void setAvailableActions(String availableActions) {
+        this.availableActions = availableActions;
     }
 
     public AchievementsBean getAchievements() {
