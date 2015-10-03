@@ -1,3 +1,6 @@
+<button ng-disabled="!game.isCurrentUserMove()">
+    <span class="glyphicon glyphicon-shopping-cart"></span><br>Build
+</button>
 <button ng-click="endTurn()" ng-disabled="!game.isCurrentUserMove()">
     <span class="glyphicon glyphicon-hourglass"></span><br>End turn
 </button>
