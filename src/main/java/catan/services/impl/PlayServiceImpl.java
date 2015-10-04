@@ -10,6 +10,7 @@ import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
@@ -20,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("playService")
 @Transactional
@@ -240,6 +243,7 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
+
         log.debug("User {} tries to end his turn of game id {}",
                 user == null ? "<EMPTY>" : user.getUsername(), gameIdString);
         //TODO: move to common validation method
@@ -272,6 +276,22 @@ public class PlayServiceImpl implements PlayService {
             log.debug("It is not current turn of user {}", user.getUsername());
             throw new PlayException(ERROR_CODE_ERROR);
         }
+
+        List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+
+        //next part needs to be refactored
+
+        if (game.getStage().equals(GameStage.PREPARATION)) {
+            if ((game.getCurrentMove() == 1 && game.getPreparationCycle() % 2 == 0) ||
+                 game.getCurrentMove() == game.getGameUsers().size() && game.getPreparationCycle() % 2 > 0) {
+                if (game.getPreparationCycle() == initialBuildingsSet.size()) {
+                    game.setStage(GameStage.MAIN);
+                } else {
+                    game.setPreparationCycle(game.getPreparationCycle() + 1);
+                }
+            }
+        }
+
 
         endTurnUtil.calculateAndSetNextMove(game);
         //TODO: endTurnUtil.updatePreparationCycleWhenCurrentFinished(game);

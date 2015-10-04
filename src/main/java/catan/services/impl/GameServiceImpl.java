@@ -32,15 +32,11 @@ public class GameServiceImpl implements GameService {
     public static final int ROUND_MAP_SIZE = 2;
 
     public static final String ERROR_CODE_ERROR = "ERROR";
-    public static final String GAME_ALREADY_STARTED_ERROR = "GAME_ALREADY_STARTED";
-    public static final String GAME_FINISHED_ERROR = "GAME_FINISHED";
-    public static final String GAME_CANCELED_ERROR = "GAME_CANCELED";
     public static final String TOO_MANY_PLAYERS_ERROR = "TOO_MANY_PLAYERS";
     public static final String ALREADY_JOINED_ERROR = "ALREADY_JOINED";
     public static final String INVALID_CODE_ERROR = "INVALID_CODE";
     public static final String GAME_IS_NOT_FOUND_ERROR = "GAME_IS_NOT_FOUND";
     public static final String USER_IS_NOT_JOINED_ERROR = "USER_IS_NOT_JOINED";
-    public static final String GAME_HAS_ALREADY_STARTED_ERROR = "GAME_HAS_ALREADY_STARTED";
     public static final String GUEST_NOT_PERMITTED_ERROR = "GUEST_NOT_PERMITTED";
 
     private GameDao gameDao;

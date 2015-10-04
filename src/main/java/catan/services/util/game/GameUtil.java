@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +64,7 @@ public class GameUtil {
 
     public String toValidInitialBuildingsSet(String inputInitialBuildingsSetId) throws GameException {
         int initialBuildingsSetId;
+        Gson gson = new Gson();
         try {
             initialBuildingsSetId = Integer.parseInt(inputInitialBuildingsSetId);
         } catch (Exception e) {
@@ -75,7 +78,7 @@ public class GameUtil {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        return buildingsSet.toString();
+        return gson.toJson(buildingsSet, new TypeToken<List<List<String>>>(){}.getType());
     }
 
     public GameBean getGameById(String gameIdString, String errorCodeToReturnIfNotFound) throws GameException {
@@ -168,6 +171,11 @@ public class GameUtil {
         game.setDateStarted(new Date());
 
         gameDao.updateGame(game);
+    }
+
+    public List<List<String>> getInitialBuildingsSetFromJson(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, new TypeToken<List<List<String>>>(){}.getType());
     }
 
     @Autowired
