@@ -51,7 +51,7 @@ angular.module('catan')
                         return k;
                     }
                 }
-            }
+            };
 
             return MapService;
 

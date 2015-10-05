@@ -10,6 +10,8 @@ ct-game-map .canvas {
 
 ct-game-map .canvas .hex {
     position: absolute;
+    width: 0;
+    height: 0;
 }
 
 ct-game-map .canvas .hex > .inner {
@@ -27,14 +29,21 @@ ct-game-map .canvas .hex > .inner > .dice {
 
 ct-game-map .canvas .node {
     position: absolute;
+    width: 0;
+    height: 0;
 }
 
-ct-game-map .canvas .node > .inner {
+ct-game-map .canvas .building {
     position: absolute;
-    text-align: center;
+    width: 0;
+    height: 0;
 }
 
-ct-game-map .canvas .node.none > .inner {
+ct-game-map .canvas .building > .inner {
+    position: absolute;
+}
+
+ct-game-map .canvas .building.none-node > .inner {
     width: 12px;
     height: 12px;
     left: -6px;
@@ -45,11 +54,11 @@ ct-game-map .canvas .node.none > .inner {
     opacity: 0;
 }
 
-ct-game-map .canvas .node.none:hover > .inner {
+ct-game-map .canvas .building.none-node:hover > .inner {
     opacity: 1;
 }
 
-ct-game-map .canvas .node.settlement > .inner {
+ct-game-map .canvas .building.settlement > .inner {
     width: 16px;
     height: 16px;
     left: -8px;
@@ -59,9 +68,10 @@ ct-game-map .canvas .node.settlement > .inner {
     border: 2px solid #000;
     font-size: 10px;
     line-height: 12px;
+    text-align: center;
 }
 
-ct-game-map .canvas .node.city > .inner {
+ct-game-map .canvas .building.city > .inner {
     width: 22px;
     height: 22px;
     left: -11px;
@@ -70,14 +80,18 @@ ct-game-map .canvas .node.city > .inner {
     background: #fff;
     border: 2px solid #000;
     font-size: 13px;
+    line-height: 19px;
+    text-align: center;
 }
-
 
 ct-game-map .canvas .edge {
     position: absolute;
+    width: 0;
+    height: 0;
 }
 
-ct-game-map .canvas .edge > .inner {
+ct-game-map .canvas .none-edge > .inner,
+ct-game-map .canvas .road > .inner{
     position: absolute;
     border-radius: 2px;
     background: #fff;
@@ -85,11 +99,12 @@ ct-game-map .canvas .edge > .inner {
     opacity: 0;
 }
 
-ct-game-map .canvas .edge:hover > .inner {
+ct-game-map .canvas .none-edge:hover > .inner {
     opacity: 1;
 }
 
-ct-game-map .canvas .edge.vertical > .inner {
+ct-game-map .canvas .none-edge.vertical > .inner,
+ct-game-map .canvas .road.vertical > .inner  {
     width: 6px;
     height: 42px;
     left: -3px;
@@ -98,7 +113,8 @@ ct-game-map .canvas .edge.vertical > .inner {
     border-bottom: none;
 }
 
-ct-game-map .canvas .edge.horizontal > .inner {
+ct-game-map .canvas .none-edge.horizontal > .inner,
+ct-game-map .canvas .road.horizontal > .inner {
     width: 40px;
     height: 6px;
     left: -20px;
@@ -107,11 +123,47 @@ ct-game-map .canvas .edge.horizontal > .inner {
     border-right: none;
 }
 
-ct-game-map .canvas .edge.road > .inner {
+ct-game-map .canvas .road > .inner {
     opacity: 1;
     background: #fff;
 }
 
+ct-game-map .canvas .port {
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: 0;
+    left: 0;
+}
+
+ct-game-map .canvas .port.offset-left {
+    left: -12px;
+}
+
+ct-game-map .canvas .port.offset-right {
+    left: 12px;
+}
+
+ct-game-map .canvas .port.offset-top {
+    top: -12px;
+}
+
+ct-game-map .canvas .port.offset-bottom {
+    top: 12px;
+}
+
+ct-game-map .canvas .port > .inner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: -10px;
+    top: -10px;
+    text-align: center;
+}
+
+ct-game-map .canvas .port .glyphicon-plane {
+    transform: rotate(60deg);
+}
 
 ct-game-map .canvas .brick {
     background-color: #e16a17;
@@ -139,6 +191,34 @@ ct-game-map .canvas .empty {
 
 ct-game-map .canvas .any {
     background-color: #cbd771;
+}
+
+ct-game-map .canvas .brick-color {
+    color: #e16a17;
+}
+
+ct-game-map .canvas .wood-color {
+    color: #40b22f;
+}
+
+ct-game-map .canvas .sheep-color {
+    color: #4bec38;
+}
+
+ct-game-map .canvas .wheat-color {
+    color: #ecd320;
+}
+
+ct-game-map .canvas .stone-color {
+    color: #8e6f36;
+}
+
+ct-game-map .canvas .empty-color {
+    color: #cbd771;
+}
+
+ct-game-map .canvas .any-color {
+    color: #cbd771;
 }
 
 ct-game-map .canvas .color-1 {
