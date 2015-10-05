@@ -1,30 +1,12 @@
 package catan.services.util.play;
 
 import catan.domain.model.game.GameBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EndTurnUtil {
-    private Logger log = LoggerFactory.getLogger(EndTurnUtil.class);
 
-    public void calculateAndSetNextMove(GameBean game) {
-        Integer nextMoveNumber = null;
-        switch (game.getStage()) {
-            case PREPARATION:
-                nextMoveNumber = getNextMoveInPreparationStage(game);
-                break;
-            case MAIN:
-                nextMoveNumber = getNextMoveInMainStage(game);
-                break;
-        }
-        log.debug("Next move order calculated in {} stage is: {}", game.getStage(), nextMoveNumber);
-
-        game.setCurrentMove(nextMoveNumber);
-    }
-
-    private Integer getNextMoveInPreparationStage(GameBean game) {
+    public Integer getNextMoveInPreparationStage(GameBean game) {
         Integer currentMove = game.getCurrentMove();
 
         if(game.getPreparationCycle() % 2 > 0){
@@ -34,7 +16,7 @@ public class EndTurnUtil {
         }
     }
 
-    private Integer getNextMoveInMainStage(GameBean game) {
+    public Integer getNextMoveInMainStage(GameBean game) {
         return game.getCurrentMove().equals(game.getGameUsers().size())
                 ? 1
                 : game.getCurrentMove() + 1;

@@ -337,7 +337,7 @@ public class GameBean {
                 "\n" +
                 "\t\tstatus: " + status +
                 "\n" +
-                "\t\tstatus: " + stage +
+                "\t\tstage: " + stage +
                 "\n" +
                 "\t\tminPlayers: " + minPlayers +
                 "\n" +

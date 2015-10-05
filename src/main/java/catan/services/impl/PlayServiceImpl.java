@@ -223,8 +223,8 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        /*
-        if (!nearNeighbourRoad) { //TODO: add checking if game status is not "preparing" and uncomment this part
+        /* TODO: uncomment this part when preparation development would be done
+        if (!nearNeighbourRoad && !game.getStage().equals(GameStage.PREPARATION)) {
             log.debug("Cannot build settlement without any connections with player's roads");
             throw new PlayException(ERROR_CODE_ERROR);
         }
@@ -243,6 +243,9 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
+        Integer nextMoveNumber = null;
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
 
         log.debug("User {} tries to end his turn of game id {}",
                 user == null ? "<EMPTY>" : user.getUsername(), gameIdString);
@@ -252,7 +255,6 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         if (game.getStatus() != GameStatus.PLAYING) {
             log.debug("Cannot end turn of not playing game");
             throw new GameException(ERROR_CODE_ERROR);
@@ -277,25 +279,34 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+        //something is wrong
 
-        //next part needs to be refactored
-
-        if (game.getStage().equals(GameStage.PREPARATION)) {
-            if ((game.getCurrentMove() == 1 && game.getPreparationCycle() % 2 == 0) ||
-                 game.getCurrentMove() == game.getGameUsers().size() && game.getPreparationCycle() % 2 > 0) {
-                if (game.getPreparationCycle() == initialBuildingsSet.size()) {
-                    game.setStage(GameStage.MAIN);
-                } else {
-                    game.setPreparationCycle(game.getPreparationCycle() + 1);
+        switch (game.getStage()) {
+            case PREPARATION:
+                Integer preparationCycle = game.getPreparationCycle();
+                if ((game.getCurrentMove() == 1 && preparationCycle % 2 == 0) ||
+                        game.getCurrentMove() == game.getGameUsers().size() && preparationCycle % 2 > 0) {
+                    if (preparationCycle == initialBuildingsSet.size()) {
+                        game.setStage(GameStage.MAIN);
+                        log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
+                        nextMoveNumber = 1;
+                    } else {
+                        nextMoveNumber = endTurnUtil.getNextMoveInPreparationStage(game);
+                        game.setPreparationCycle(preparationCycle + 1);
+                        log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), initialBuildingsSet.size());
+                    }
                 }
-            }
+                break;
+            case MAIN:
+                nextMoveNumber = endTurnUtil.getNextMoveInMainStage(game);
+                break;
+            default:
+                log.debug("Cannot recognize current game stage: {}", game.getStage());
+                throw new PlayException(ERROR_CODE_ERROR);
         }
 
-
-        endTurnUtil.calculateAndSetNextMove(game);
-        //TODO: endTurnUtil.updatePreparationCycleWhenCurrentFinished(game);
-        //TODO: endTurnUtil.updateStageWhenCurrentFinished(game);
+        log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
+        game.setCurrentMove(nextMoveNumber);
 
         gameDao.updateGame(game);
     }
