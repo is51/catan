@@ -279,13 +279,10 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        //something is wrong
-
         switch (game.getStage()) {
             case PREPARATION:
                 Integer preparationCycle = game.getPreparationCycle();
-                if ((game.getCurrentMove() == 1 && preparationCycle % 2 == 0) ||
-                        game.getCurrentMove() == game.getGameUsers().size() && preparationCycle % 2 > 0) {
+                if ((isFirstMove(game) && !isOddCycle(preparationCycle)) || isLastMove(game) && isOddCycle(preparationCycle)) {
                     if (preparationCycle == initialBuildingsSet.size()) {
                         game.setStage(GameStage.MAIN);
                         log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
@@ -295,6 +292,8 @@ public class PlayServiceImpl implements PlayService {
                         game.setPreparationCycle(preparationCycle + 1);
                         log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), initialBuildingsSet.size());
                     }
+                } else {
+                    nextMoveNumber = endTurnUtil.getNextMoveInPreparationStage(game);
                 }
                 break;
             case MAIN:
@@ -309,6 +308,18 @@ public class PlayServiceImpl implements PlayService {
         game.setCurrentMove(nextMoveNumber);
 
         gameDao.updateGame(game);
+    }
+
+    private boolean isOddCycle(Integer preparationCycle) {
+        return preparationCycle % 2 > 0;
+    }
+
+    private boolean isFirstMove(GameBean game) {
+        return game.getCurrentMove() == 1;
+    }
+
+    private boolean isLastMove(GameBean game) {
+        return game.getCurrentMove() == game.getGameUsers().size();
     }
 
     @Autowired

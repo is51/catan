@@ -339,6 +339,8 @@ public class GameBean {
                 "\n" +
                 "\t\tstage: " + stage +
                 "\n" +
+                "\t\tpreparationCycle: " + preparationCycle +
+                "\n" +
                 "\t\tminPlayers: " + minPlayers +
                 "\n" +
                 "\t\tmaxPlayers: " + maxPlayers +
