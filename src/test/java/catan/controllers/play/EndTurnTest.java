@@ -81,15 +81,18 @@ public class EndTurnTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("currentMove", is(1))
-                .body("status", equalTo("PLAYING"));
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(1));
 
         endTurn(userTokenOfActivePlayer, gameId);
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
                 .body("currentMove", is(2))
-                .body("status", equalTo("PLAYING"));
-
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(1));
     }
 
     @Test
@@ -184,6 +187,120 @@ public class EndTurnTest extends PlayTestUtil {
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
 
+    }
+
+
+    @Test
+    public void should_successfully_change_preparationCycle_and_game_stage() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int userId1 = getUserId(userToken1);
+        int userId2 = getUserId(userToken2);
+        int userId3 = getUserId(userToken3);
+
+        int gameId = createNewGame(userToken1, false, 12, 1).path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        int[] userIdsSortedByMoveOrder = new int[3];
+
+        int moveOrderOfUser1 = viewGame(userToken1, gameId).path("gameUsers[0].moveOrder");
+        int moveOrderOfUser2 = viewGame(userToken1, gameId).path("gameUsers[1].moveOrder");
+        int moveOrderOfUser3 = viewGame(userToken1, gameId).path("gameUsers[2].moveOrder");
+
+        userIdsSortedByMoveOrder[moveOrderOfUser1-1] = viewGame(userToken1, gameId).path("gameUsers[0].user.id");
+        userIdsSortedByMoveOrder[moveOrderOfUser2-1] = viewGame(userToken1, gameId).path("gameUsers[1].user.id");
+        userIdsSortedByMoveOrder[moveOrderOfUser3-1] = viewGame(userToken1, gameId).path("gameUsers[2].user.id");
+
+        String[] userTokensSortedByMoveOrder = new String[3];
+
+        for (int i = 0; i < 3; i++) {
+            if (userIdsSortedByMoveOrder[i] == userId1) {
+                userTokensSortedByMoveOrder[i] = userToken1;
+            } else
+                if (userIdsSortedByMoveOrder[i] == userId2) {
+                    userTokensSortedByMoveOrder[i] = userToken2;
+                } else
+                    if (userIdsSortedByMoveOrder[i] == userId3) {
+                        userTokensSortedByMoveOrder[i] = userToken3;
+                    }
+        }
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(1))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(1));
+
+        endTurn(userTokensSortedByMoveOrder[0], gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(2))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(1));
+
+        endTurn(userTokensSortedByMoveOrder[1], gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(3))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(1));
+
+        endTurn(userTokensSortedByMoveOrder[2], gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(3))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(2));
+
+        endTurn(userTokensSortedByMoveOrder[2], gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(2))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(2));
+
+        endTurn(userTokensSortedByMoveOrder[1], gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(1))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(2));
+
+        endTurn(userTokensSortedByMoveOrder[0], gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(1))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("MAIN"));
+
+        endTurn(userTokensSortedByMoveOrder[0], gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(2))
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("MAIN"));
     }
 
 }

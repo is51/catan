@@ -418,4 +418,28 @@ public class StartGameTest extends GameTestUtil {
                 .body("gameUsers.achievements.longestWayLength", everyItem(is(0)))
                 .body("status", equalTo("PLAYING"));
     }
+
+    @Test
+    public void should_successfully_set_stage_and_preparationCycle_when_game_starts() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int gameId = createNewGame(userToken1, false)
+                .path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        viewGame(userToken3, gameId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("PLAYING"))
+                .body("stage", equalTo("PREPARATION"))
+                .body("preparationCycle", is(1));
+    }
 }
