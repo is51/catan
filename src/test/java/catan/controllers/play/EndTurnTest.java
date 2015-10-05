@@ -62,6 +62,61 @@ public class EndTurnTest extends PlayTestUtil {
         int moveOrderOfUser2 = viewGame(userToken1, gameId).path("gameUsers[1].moveOrder");
         int moveOrderOfUser3 = viewGame(userToken1, gameId).path("gameUsers[2].moveOrder");
 
+        userIdsSortedByMoveOrder[moveOrderOfUser1 - 1] = viewGame(userToken1, gameId).path("gameUsers[0].user.id");
+        userIdsSortedByMoveOrder[moveOrderOfUser2 - 1] = viewGame(userToken1, gameId).path("gameUsers[1].user.id");
+        userIdsSortedByMoveOrder[moveOrderOfUser3 - 1] = viewGame(userToken1, gameId).path("gameUsers[2].user.id");
+
+        String userTokenOfFirstPlayer = "";
+
+        if (userIdsSortedByMoveOrder[0] == userId1) {
+            userTokenOfFirstPlayer = userToken1;
+        } else
+            if (userIdsSortedByMoveOrder[0] == userId2) {
+                userTokenOfFirstPlayer = userToken2;
+            } else
+                if (userIdsSortedByMoveOrder[0] == userId3) {
+                    userTokenOfFirstPlayer = userToken3;
+                }
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(1))
+                .body("status", equalTo("PLAYING"));
+
+        endTurn(userTokenOfFirstPlayer, gameId);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", is(2))
+                .body("status", equalTo("PLAYING"));
+    }
+
+    @Test
+    public void should_successfully_end_turn_in_different_stages_and_preparationCycles() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int userId1 = getUserId(userToken1);
+        int userId2 = getUserId(userToken2);
+        int userId3 = getUserId(userToken3);
+
+        int gameId = createNewGame(userToken1, false, 12, 1).path("gameId");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        int[] userIdsSortedByMoveOrder = new int[3];
+
+        int moveOrderOfUser1 = viewGame(userToken1, gameId).path("gameUsers[0].moveOrder");
+        int moveOrderOfUser2 = viewGame(userToken1, gameId).path("gameUsers[1].moveOrder");
+        int moveOrderOfUser3 = viewGame(userToken1, gameId).path("gameUsers[2].moveOrder");
+
         userIdsSortedByMoveOrder[moveOrderOfUser1-1] = viewGame(userToken1, gameId).path("gameUsers[0].user.id");
         userIdsSortedByMoveOrder[moveOrderOfUser2-1] = viewGame(userToken1, gameId).path("gameUsers[1].user.id");
         userIdsSortedByMoveOrder[moveOrderOfUser3-1] = viewGame(userToken1, gameId).path("gameUsers[2].user.id");
@@ -72,12 +127,12 @@ public class EndTurnTest extends PlayTestUtil {
             if (userIdsSortedByMoveOrder[i] == userId1) {
                 userTokensSortedByMoveOrder[i] = userToken1;
             } else
-            if (userIdsSortedByMoveOrder[i] == userId2) {
-                userTokensSortedByMoveOrder[i] = userToken2;
-            } else
-            if (userIdsSortedByMoveOrder[i] == userId3) {
-                userTokensSortedByMoveOrder[i] = userToken3;
-            }
+                if (userIdsSortedByMoveOrder[i] == userId2) {
+                    userTokensSortedByMoveOrder[i] = userToken2;
+                } else
+                    if (userIdsSortedByMoveOrder[i] == userId3) {
+                        userTokensSortedByMoveOrder[i] = userToken3;
+                    }
         }
 
         viewGame(userToken1, gameId)
@@ -86,6 +141,7 @@ public class EndTurnTest extends PlayTestUtil {
                 .body("currentMove", is(1))
                 .body("status", equalTo("PLAYING"));
 
+        //Players are ending their turns in preparation stage and first cycle
         endTurn(userTokensSortedByMoveOrder[0], gameId);
         viewGame(userToken1, gameId)
                 .then()
@@ -100,6 +156,7 @@ public class EndTurnTest extends PlayTestUtil {
                 .body("currentMove", is(3))
                 .body("status", equalTo("PLAYING"));
 
+        //Last player tries to end his turn in preparation stage and first cycle
         endTurn(userTokensSortedByMoveOrder[2], gameId);
         viewGame(userToken1, gameId)
                 .then()
@@ -107,6 +164,7 @@ public class EndTurnTest extends PlayTestUtil {
                 .body("currentMove", is(3))
                 .body("status", equalTo("PLAYING"));
 
+        //Last player tries to end his turn again in preparation stage while cycle increased by 1
         endTurn(userTokensSortedByMoveOrder[2], gameId);
         viewGame(userToken1, gameId)
                 .then()
@@ -121,6 +179,7 @@ public class EndTurnTest extends PlayTestUtil {
                 .body("currentMove", is(1))
                 .body("status", equalTo("PLAYING"));
 
+        //First player tries to end his turn in preparation stage and second cycle. Game stage would change to MAIN
         endTurn(userTokensSortedByMoveOrder[0], gameId);
         viewGame(userToken1, gameId)
                 .then()
@@ -128,6 +187,7 @@ public class EndTurnTest extends PlayTestUtil {
                 .body("currentMove", is(1))
                 .body("status", equalTo("PLAYING"));
 
+        //First player tries to end his turn in main stage
         endTurn(userTokensSortedByMoveOrder[0], gameId);
         viewGame(userToken1, gameId)
                 .then()
@@ -142,6 +202,7 @@ public class EndTurnTest extends PlayTestUtil {
                 .body("currentMove", is(3))
                 .body("status", equalTo("PLAYING"));
 
+        //Last player tries to end his turn in main stage
         endTurn(userTokensSortedByMoveOrder[2], gameId);
         viewGame(userToken1, gameId)
                 .then()

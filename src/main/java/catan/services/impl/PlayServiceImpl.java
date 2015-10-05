@@ -285,6 +285,7 @@ public class PlayServiceImpl implements PlayService {
                 if (isFirstMove(game) && !isOddCycle(preparationCycle) || isLastMove(game) && isOddCycle(preparationCycle)) {
                     if (preparationCycle == initialBuildingsSet.size()) {
                         game.setStage(GameStage.MAIN);
+                        game.setPreparationCycle(null);
                         log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
                         nextMoveNumber = 1;
                     } else {
