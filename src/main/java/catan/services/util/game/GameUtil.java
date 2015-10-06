@@ -52,12 +52,12 @@ public class GameUtil {
         try {
             targetVictoryPoints = Integer.parseInt(inputTargetVictoryPoints);
         } catch (Exception e) {
-            log.debug("Cannot create game with non-integer format of victory points");
+            log.error("Cannot create game with non-integer format of victory points");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         if (targetVictoryPoints < MIN_TARGET_VICTORY_POINTS) {
-            log.debug("Cannot create game with less than " + MIN_TARGET_VICTORY_POINTS + " victory points");
+            log.error("Cannot create game with less than " + MIN_TARGET_VICTORY_POINTS + " victory points");
             throw new GameException(ERROR_CODE_ERROR);
         }
         return targetVictoryPoints;
@@ -68,13 +68,13 @@ public class GameUtil {
         try {
             initialBuildingsSetId = Integer.parseInt(inputInitialBuildingsSetId);
         } catch (Exception e) {
-            log.debug("Cannot create game with non-integer format of InitialBuildingsSetId");
+            log.error("Cannot create game with non-integer format of InitialBuildingsSetId");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         List<List<String>> buildingsSet = initialBuildingsSetsMap.get(initialBuildingsSetId);
         if (buildingsSet == null) {
-            log.debug("Cannot create game with unknown initialBuildingsSetId");
+            log.error("Cannot create game with unknown initialBuildingsSetId");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
@@ -87,13 +87,13 @@ public class GameUtil {
         try {
             gameId = Integer.parseInt(gameIdString);
         } catch (Exception e) {
-            log.debug("Cannot convert gameId to integer value");
+            log.error("Cannot convert gameId to integer value");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         GameBean game = gameDao.getGameByGameId(gameId);
         if (game == null) {
-            log.debug("Game with such game id doesn't exists");
+            log.error("Game with such game id doesn't exists");
             throw new GameException(errorCodeToReturnIfNotFound);
         }
 
@@ -103,7 +103,7 @@ public class GameUtil {
     public GameBean findPrivateGame(String privateCode) throws GameException {
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {
-            log.debug("Game with such private code doesn't exists");
+            log.error("Game with such private code doesn't exists");
             throw new GameException(INVALID_CODE_ERROR);
         }
 
@@ -114,7 +114,7 @@ public class GameUtil {
         GameBean game = getGameById(gameIdentifier, ERROR_CODE_ERROR);
 
         if (game.isPrivateGame()) {
-            log.debug("Game with id '" + game.getGameId() + "' is private," +
+            log.error("Game with id '" + game.getGameId() + "' is private," +
                     " but join public game was initiated");
             throw new GameException(ERROR_CODE_ERROR);
         }
@@ -125,7 +125,7 @@ public class GameUtil {
     public void addUserToGame(GameBean game, UserBean user) throws GameException {
         for (GameUserBean alreadyJoinedGameUser : game.getGameUsers()) {
             if (alreadyJoinedGameUser.getUser().getId() == user.getId()) {
-                log.debug("User " + user + " already joined to this game");
+                log.error("User " + user + " already joined to this game");
                 throw new GameException(ALREADY_JOINED_ERROR);
             }
         }
@@ -146,7 +146,7 @@ public class GameUtil {
 
 
     public void startGame(GameBean game) {
-        log.debug("Checking if game can be started (all players should be ready), game details: ", game);
+        log.info("Checking if game can be started (all players should be ready)");
 
         if (game.getMinPlayers() > game.getGameUsers().size()) {
             log.info("There are not enough players to start game {}. Game will start when players count will be {}, current count is {}",
@@ -156,12 +156,12 @@ public class GameUtil {
 
         for (GameUserBean userBean : game.getGameUsers()) {
             if (!userBean.isReady()) {
+                log.info("Cannot start game as not all players are ready, players: {}", game.getGameUsers());
                 return;
             }
         }
 
-        log.debug("All players are ready");
-        log.debug("Starting game {}", game);
+        log.info("All players are ready, starting {}", game);
 
         randomUtil.populatePlayersMoveOrderRandomly(game.getGameUsers());
 
