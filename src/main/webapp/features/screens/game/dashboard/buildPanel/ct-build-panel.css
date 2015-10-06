@@ -1,0 +1,11 @@
+ct-build-panel {
+
+}
+
+ct-build-panel .content {
+    top: 30%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    background: #fff;
+}

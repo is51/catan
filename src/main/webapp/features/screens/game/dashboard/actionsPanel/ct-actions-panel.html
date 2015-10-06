@@ -1,7 +1,10 @@
-<button ng-disabled="!game.isActionGroupEnabledForCurrentUser('BUILD')">
+<!-- TODO: remove "false&&" after Available Actions become working -->
+
+<button ng-click="build()" ng-disabled="false&&!game.isActionGroupEnabledForCurrentUser('BUILD')">
     <span class="glyphicon glyphicon-shopping-cart"></span><br>
     Build
 </button>
+
 <button ng-click="endTurn()" ng-disabled="!game.isActionEnabledForCurrentUser('END_TURN')">
     <span class="glyphicon glyphicon-hourglass"></span><br>
     End turn
