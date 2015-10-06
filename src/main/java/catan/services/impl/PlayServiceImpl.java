@@ -10,15 +10,19 @@ import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.EndTurnUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("playService")
 @Transactional
@@ -29,6 +33,7 @@ public class PlayServiceImpl implements PlayService {
 
     private GameDao gameDao;
     private GameUtil gameUtil;
+    private EndTurnUtil endTurnUtil;
 
     @Override
     public void buildRoad(UserBean user, String gameIdString, String edgeIdString) throws PlayException, GameException {
@@ -218,8 +223,8 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        /*
-        if (!nearNeighbourRoad) { //TODO: add checking if game status is not "preparing" and uncomment this part
+        /* TODO: uncomment this part when preparation development would be done
+        if (!nearNeighbourRoad && !game.getStage().equals(GameStage.PREPARATION)) {
             log.debug("Cannot build settlement without any connections with player's roads");
             throw new PlayException(ERROR_CODE_ERROR);
         }
@@ -238,6 +243,10 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
+        Integer nextMoveNumber = null;
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+
         log.debug("User {} tries to end his turn of game id {}",
                 user == null ? "<EMPTY>" : user.getUsername(), gameIdString);
         //TODO: move to common validation method
@@ -246,7 +255,6 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         if (game.getStatus() != GameStatus.PLAYING) {
             log.debug("Cannot end turn of not playing game");
             throw new GameException(ERROR_CODE_ERROR);
@@ -271,19 +279,48 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        //TODO: think about naming of method and namings of fields related to moveOrder and turn
-        giveCurrentMoveToNextPlayer(game);
+        switch (game.getStage()) {
+            case PREPARATION:
+                Integer preparationCycle = game.getPreparationCycle();
+                if (isFirstMove(game) && !isOddCycle(preparationCycle) || isLastMove(game) && isOddCycle(preparationCycle)) {
+                    if (preparationCycle == initialBuildingsSet.size()) {
+                        game.setStage(GameStage.MAIN);
+                        game.setPreparationCycle(null);
+                        log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
+                        nextMoveNumber = 1;
+                    } else {
+                        nextMoveNumber = endTurnUtil.getNextMoveInPreparationStage(game);
+                        game.setPreparationCycle(preparationCycle + 1);
+                        log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), initialBuildingsSet.size());
+                    }
+                } else {
+                    nextMoveNumber = endTurnUtil.getNextMoveInPreparationStage(game);
+                }
+                break;
+            case MAIN:
+                nextMoveNumber = endTurnUtil.getNextMoveInMainStage(game);
+                break;
+            default:
+                log.debug("Cannot recognize current game stage: {}", game.getStage());
+                throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
+        game.setCurrentMove(nextMoveNumber);
 
         gameDao.updateGame(game);
     }
 
-    private void giveCurrentMoveToNextPlayer(GameBean game) {
-        int nextMove = 1;
-        if (!game.getCurrentMove().equals(game.getGameUsers().size())) {
-            nextMove = game.getCurrentMove() + 1;
-        }
+    private boolean isOddCycle(Integer preparationCycle) {
+        return preparationCycle % 2 > 0;
+    }
 
-        game.setCurrentMove(nextMove);
+    private boolean isFirstMove(GameBean game) {
+        return game.getCurrentMove() == 1;
+    }
+
+    private boolean isLastMove(GameBean game) {
+        return game.getCurrentMove() == game.getGameUsers().size();
     }
 
     @Autowired
@@ -296,5 +333,8 @@ public class PlayServiceImpl implements PlayService {
         this.gameUtil = gameUtil;
     }
 
-
+    @Autowired
+    public void setEndTurnUtil(EndTurnUtil endTurnUtil) {
+        this.endTurnUtil = endTurnUtil;
+    }
 }

@@ -50,12 +50,12 @@ public class CancelGameTest extends GameTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("GAME_CANCELED"));
+                .body("errorCode", equalTo("ERROR"));
 
         viewGame(userToken2, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("GAME_CANCELED"));
+                .body("errorCode", equalTo("ERROR"));
     }
 
     @Test

@@ -16,9 +16,11 @@ import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.EndTurnUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +55,8 @@ public class PlayServiceImplTest {
     private PlayServiceImpl playService;
     @InjectMocks
     private GameUtil gameUtil;
+    @InjectMocks
+    private EndTurnUtil endTurnUtil;
     private GameBean game;
     private HexBean hex_0_0;
     private HexBean hex_1_0;
@@ -62,6 +66,7 @@ public class PlayServiceImplTest {
     @Before
     public void setUp() {
         playService.setGameUtil(gameUtil);
+        playService.setEndTurnUtil(endTurnUtil);
         buildClearTriangleMap();
     }
 
@@ -680,6 +685,8 @@ public class PlayServiceImplTest {
         game.setGameId(1);
         game.setCreator(user1);
         game.setStatus(GameStatus.PLAYING);
+        game.setStage(GameStage.PREPARATION);
+        game.setPreparationCycle(1);
         game.setCurrentMove(1);
         game.setDateCreated(new Date());
         game.setDateStarted(new Date());
