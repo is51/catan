@@ -8,12 +8,12 @@ import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.random.RandomUtil;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,9 +34,10 @@ public class GameUtil {
     private GameDao gameDao;
     private RandomUtil randomUtil;
 
-    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>> ();
+    private static final Gson GSON = new Gson();
+    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>>();
 
-    static{
+    static {
         initialBuildingsSetsMap.put(1, Arrays.asList(
                 Arrays.asList("SETTLEMENT", "ROAD"),
                 Arrays.asList("SETTLEMENT", "ROAD")));
@@ -64,7 +65,6 @@ public class GameUtil {
 
     public String toValidInitialBuildingsSet(String inputInitialBuildingsSetId) throws GameException {
         int initialBuildingsSetId;
-        Gson gson = new Gson();
         try {
             initialBuildingsSetId = Integer.parseInt(inputInitialBuildingsSetId);
         } catch (Exception e) {
@@ -78,7 +78,8 @@ public class GameUtil {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        return gson.toJson(buildingsSet, new TypeToken<List<List<String>>>(){}.getType());
+        return GSON.toJson(buildingsSet, new TypeToken<List<List<String>>>() {
+        }.getType());
     }
 
     public GameBean getGameById(String gameIdString, String errorCodeToReturnIfNotFound) throws GameException {
@@ -174,8 +175,8 @@ public class GameUtil {
     }
 
     public List<List<String>> getInitialBuildingsSetFromJson(String json) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, new TypeToken<List<List<String>>>(){}.getType());
+        return GSON.fromJson(json, new TypeToken<List<List<String>>>() {
+        }.getType());
     }
 
     @Autowired

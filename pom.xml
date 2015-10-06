@@ -140,6 +140,11 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>1.7.1</version>
+        </dependency>
 
         <!-- __________________ -->
         <!--                    -->
@@ -158,11 +163,6 @@
             <artifactId>rest-assured</artifactId>
             <version>2.4.1</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>1.7.1</version>
         </dependency>
     </dependencies>
 </project>
