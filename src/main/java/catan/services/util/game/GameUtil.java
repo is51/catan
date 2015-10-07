@@ -4,9 +4,12 @@ import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.random.RandomUtil;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +34,10 @@ public class GameUtil {
     private GameDao gameDao;
     private RandomUtil randomUtil;
 
-    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>> ();
+    private static final Gson GSON = new Gson();
+    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>>();
 
-    static{
+    static {
         initialBuildingsSetsMap.put(1, Arrays.asList(
                 Arrays.asList("SETTLEMENT", "ROAD"),
                 Arrays.asList("SETTLEMENT", "ROAD")));
@@ -48,12 +52,12 @@ public class GameUtil {
         try {
             targetVictoryPoints = Integer.parseInt(inputTargetVictoryPoints);
         } catch (Exception e) {
-            log.debug("Cannot create game with non-integer format of victory points");
+            log.error("Cannot create game with non-integer format of victory points");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         if (targetVictoryPoints < MIN_TARGET_VICTORY_POINTS) {
-            log.debug("Cannot create game with less than " + MIN_TARGET_VICTORY_POINTS + " victory points");
+            log.error("Cannot create game with less than " + MIN_TARGET_VICTORY_POINTS + " victory points");
             throw new GameException(ERROR_CODE_ERROR);
         }
         return targetVictoryPoints;
@@ -64,17 +68,18 @@ public class GameUtil {
         try {
             initialBuildingsSetId = Integer.parseInt(inputInitialBuildingsSetId);
         } catch (Exception e) {
-            log.debug("Cannot create game with non-integer format of InitialBuildingsSetId");
+            log.error("Cannot create game with non-integer format of InitialBuildingsSetId");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         List<List<String>> buildingsSet = initialBuildingsSetsMap.get(initialBuildingsSetId);
         if (buildingsSet == null) {
-            log.debug("Cannot create game with unknown initialBuildingsSetId");
+            log.error("Cannot create game with unknown initialBuildingsSetId");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        return buildingsSet.toString();
+        return GSON.toJson(buildingsSet, new TypeToken<List<List<String>>>() {
+        }.getType());
     }
 
     public GameBean getGameById(String gameIdString, String errorCodeToReturnIfNotFound) throws GameException {
@@ -82,13 +87,13 @@ public class GameUtil {
         try {
             gameId = Integer.parseInt(gameIdString);
         } catch (Exception e) {
-            log.debug("Cannot convert gameId to integer value");
+            log.error("Cannot convert gameId to integer value");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
         GameBean game = gameDao.getGameByGameId(gameId);
         if (game == null) {
-            log.debug("Game with such game id doesn't exists");
+            log.error("Game with such game id doesn't exists");
             throw new GameException(errorCodeToReturnIfNotFound);
         }
 
@@ -98,7 +103,7 @@ public class GameUtil {
     public GameBean findPrivateGame(String privateCode) throws GameException {
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {
-            log.debug("Game with such private code doesn't exists");
+            log.error("Game with such private code doesn't exists");
             throw new GameException(INVALID_CODE_ERROR);
         }
 
@@ -109,7 +114,7 @@ public class GameUtil {
         GameBean game = getGameById(gameIdentifier, ERROR_CODE_ERROR);
 
         if (game.isPrivateGame()) {
-            log.debug("Game with id '" + game.getGameId() + "' is private," +
+            log.error("Game with id '" + game.getGameId() + "' is private," +
                     " but join public game was initiated");
             throw new GameException(ERROR_CODE_ERROR);
         }
@@ -120,7 +125,7 @@ public class GameUtil {
     public void addUserToGame(GameBean game, UserBean user) throws GameException {
         for (GameUserBean alreadyJoinedGameUser : game.getGameUsers()) {
             if (alreadyJoinedGameUser.getUser().getId() == user.getId()) {
-                log.debug("User " + user + " already joined to this game");
+                log.error("User " + user + " already joined to this game");
                 throw new GameException(ALREADY_JOINED_ERROR);
             }
         }
@@ -141,7 +146,7 @@ public class GameUtil {
 
 
     public void startGame(GameBean game) {
-        log.debug("Checking if game can be started (all players should be ready), game details: ", game);
+        log.info("Checking if game can be started (all players should be ready)");
 
         if (game.getMinPlayers() > game.getGameUsers().size()) {
             log.info("There are not enough players to start game {}. Game will start when players count will be {}, current count is {}",
@@ -151,20 +156,27 @@ public class GameUtil {
 
         for (GameUserBean userBean : game.getGameUsers()) {
             if (!userBean.isReady()) {
+                log.info("Cannot start game as not all players are ready, players: {}", game.getGameUsers());
                 return;
             }
         }
 
-        log.debug("All players are ready");
-        log.debug("Starting game {}", game);
+        log.info("All players are ready, starting {}", game);
 
         randomUtil.populatePlayersMoveOrderRandomly(game.getGameUsers());
 
         game.setCurrentMove(1);
         game.setStatus(GameStatus.PLAYING);
+        game.setStage(GameStage.PREPARATION);
+        game.setPreparationCycle(1);
         game.setDateStarted(new Date());
 
         gameDao.updateGame(game);
+    }
+
+    public List<List<String>> getInitialBuildingsSetFromJson(String json) {
+        return GSON.fromJson(json, new TypeToken<List<List<String>>>() {
+        }.getType());
     }
 
     @Autowired

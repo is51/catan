@@ -89,12 +89,6 @@ public class JoinGameTest extends GameTestUtil {
     }
 
     /*@Test
-    public void should_fails_when_user_joins_public_game_if_game_has_already_started() {
-        //TODO: should_fails_when_user_joins_public_game_if_game_has_already_started
-        //needs to be written when game starting is implemented
-    }*/
-
-    /*@Test
     public void should_fails_when_user_joins_public_game_if_game_is_finished() {
         //TODO: should_fails_when_user_joins_public_game_if_game_is_finished
         //needs to be written when game finishing is implemented
@@ -112,7 +106,7 @@ public class JoinGameTest extends GameTestUtil {
         joinPublicGame(userToken2, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("GAME_CANCELED"));
+                .body("errorCode", equalTo("ERROR"));
     }
 
     @Test
