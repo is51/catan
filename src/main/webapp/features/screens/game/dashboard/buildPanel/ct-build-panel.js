@@ -9,9 +9,19 @@ angular.module('catan')
                     game: "="
                 },
                 templateUrl: "/features/screens/game/dashboard/buildPanel/ct-build-panel.html",
-                link: function(scope, element) {
+                link: function(scope) {
 
-                    //TODO: implement actions of building button here (see example in ct-actions-panel)
+                    scope.buildSettlement = function() {
+                        alert('Not implemented yet!');
+                    };
+
+                    scope.buildCity = function() {
+                        alert('Not implemented yet!');
+                    };
+
+                    scope.buildRoad = function() {
+                        alert('Not implemented yet!');
+                    };
 
                 }
             };

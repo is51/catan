@@ -3,9 +3,22 @@
     <div class="ct-modal-bg" ct-modal-close></div>
     <div class="ct-modal-content content">
 
-        build panel
+        <button ng-click="buildSettlement()" ng-disabled="!game.isActionEnabledForCurrentUser('BUILD_SETTLEMENT')">
+            <span class="glyphicon glyphicon-compressed"></span><br>
+            Settlement
+        </button>
 
-        <!-- TODO: add build buttons here -->
+        <button ng-click="buildCity()" ng-disabled="!game.isActionEnabledForCurrentUser('BUILD_CITY')">
+            <span class="glyphicon glyphicon-calendar"></span><br>
+            City
+        </button>
+
+        <br>
+
+        <button ng-click="buildRoad()" ng-disabled="!game.isActionEnabledForCurrentUser('BUILD_ROAD')">
+            <span class="glyphicon glyphicon-road"></span><br>
+            Road
+        </button>
 
     </div>
 

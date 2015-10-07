@@ -1,6 +1,4 @@
-<!-- TODO: remove "false&&" after Available Actions become working -->
-
-<button ng-click="build()" ng-disabled="false&&!game.isActionGroupEnabledForCurrentUser('BUILD')">
+<button ng-click="build()" ng-disabled="!game.isActionGroupEnabledForCurrentUser('BUILD')">
     <span class="glyphicon glyphicon-shopping-cart"></span><br>
     Build
 </button>

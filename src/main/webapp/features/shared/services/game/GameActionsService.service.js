@@ -5,10 +5,9 @@ angular.module('catan')
 
             // If these calculations takes too much time, it should be refactored - do calculations once when game.details is received
 
-            // TODO: maybe this config should be moved to app.js
+            // TODO: maybe(!) this config should be moved to app.js
             var actionGroups = {
-                "BUILD": ["BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_SOMETHING"],
-                "BUILD_SOMETHING": ["BUILD_SOME_1", "BUILD_SOME_2"]
+                "BUILD": ["BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD"]
             };
 
             function getRelatedActions(actionGroupCode) {

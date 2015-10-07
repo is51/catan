@@ -14,6 +14,12 @@ body {
     background: radial-gradient(#f7f7f7, #e0e0e0); /* Standard syntax */
 }
 
+textarea:focus,
+input:focus,
+button:focus {
+    outline: 0;
+}
+
 ui-view {
     background: #fff;
 
