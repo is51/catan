@@ -98,6 +98,8 @@ angular.module('catan')
 
             MapDrawService.drawMap = function(canvas, game, map) {
 
+                canvas.empty();
+
                 var i, l;
 
                 for (i = 0, l = map.hexes.length; i < l; i++) {
@@ -165,6 +167,10 @@ angular.module('catan')
                         .css('top', coords.y)
                         .appendTo(canvas);
 
+                if (node.port !== "NONE") {
+                    this.drawPort(elem, DrawHelper.getPortOffset(node), node.port);
+                }
+
                 if (node.building) {
 
                     var colorId = game.getGameUser(node.building.ownerGameUserId).colorId;
@@ -177,10 +183,6 @@ angular.module('catan')
                     }
                 } else {
                     this.drawEmptyNode(elem, {x: 0, y: 0});
-                }
-
-                if (node.port !== "NONE") {
-                    this.drawPort(elem, DrawHelper.getPortOffset(node), node.port);
                 }
             };
 
