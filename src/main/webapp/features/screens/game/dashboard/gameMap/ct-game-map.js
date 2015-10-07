@@ -9,7 +9,10 @@ angular.module('catan')
                     game: '='
                 },
                 link: function(scope, element) {
-                    var canvas = angular.element('<div/>').addClass('canvas').appendTo(element);
+
+                    var canvas = angular.element('<div/>')
+                            .addClass('canvas')
+                            .appendTo(element);
 
                     // TODO: $watchCollection is slowly. Probably some updateDate should be created and watched
 
