@@ -15,9 +15,11 @@
         <Logger name="org.hibernate.cache" level="INFO"/>
         <Logger name="org.hibernate.hql.internal.ast.AST" level="INFO"/>
         <Logger name="org.springframework" level="INFO"/>
-        <logger name="org.springframework.boot.context.web.ErrorPageFilter" level="OFF"/>
+        <logger name="org.springframework.boot.context.web.ErrorPageFilter" level="OFF" />
 
-        <Root level="debug">
+        <logger name="catan.config.RequestResponseLogger" level="OFF" />
+
+        <Root level="info">
             <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>

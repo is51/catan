@@ -3,13 +3,13 @@ package catan.domain.model.game;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.dashboard.EdgeDetails;
 import catan.domain.transfer.output.dashboard.HexDetails;
 import catan.domain.transfer.output.dashboard.NodeDetails;
 import catan.domain.transfer.output.game.GameUserDetails;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,8 +30,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "GAME")
@@ -61,6 +59,13 @@ public class GameBean {
     @Column(name = "GAME_STATUS", unique = false, nullable = false)
     private GameStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "GAME_STAGE", unique = false)
+    private GameStage stage;
+
+    @Column(name = "PREPARATION_CYCLE", unique = false, nullable = true)
+    private Integer preparationCycle;
+
     @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
     private int minPlayers;
 
@@ -69,6 +74,9 @@ public class GameBean {
 
     @Column(name = "TARGET_VICTORY_POINTS", unique = false, nullable = false)
     private int targetVictoryPoints;
+
+    @Column(name = "INITIAL_BUILDINGS_SET", unique = false, nullable = false)
+    private String initialBuildingsSet;
 
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
@@ -94,7 +102,7 @@ public class GameBean {
     public GameBean() {
     }
 
-    public GameBean(UserBean creator, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints) {
+    public GameBean(UserBean creator, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints, String initialBuildingsSet) {
         this.creator = creator;
         this.privateGame = false;
         this.dateCreated = dateCreated;
@@ -102,9 +110,10 @@ public class GameBean {
         this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
+        this.initialBuildingsSet = initialBuildingsSet;
     }
 
-    public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints) {
+    public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints, String initialBuildingsSet) {
         this.creator = creator;
         this.privateGame = true;
         this.privateCode = privateCode;
@@ -113,6 +122,7 @@ public class GameBean {
         this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
+        this.initialBuildingsSet = initialBuildingsSet;
     }
 
     public int getGameId() {
@@ -172,6 +182,22 @@ public class GameBean {
         this.status = status;
     }
 
+    public GameStage getStage() {
+        return stage;
+    }
+
+    public void setStage(GameStage stage) {
+        this.stage = stage;
+    }
+
+    public Integer getPreparationCycle() {
+        return preparationCycle;
+    }
+
+    public void setPreparationCycle(Integer preparationCycle) {
+        this.preparationCycle = preparationCycle;
+    }
+
     public int getMinPlayers() {
         return minPlayers;
     }
@@ -202,6 +228,14 @@ public class GameBean {
 
     public void setTargetVictoryPoints(int targetVictoryPoints) {
         this.targetVictoryPoints = targetVictoryPoints;
+    }
+
+    public String getInitialBuildingsSet() {
+        return initialBuildingsSet;
+    }
+
+    public void setInitialBuildingsSet(String initialBuildingsSet) {
+        this.initialBuildingsSet = initialBuildingsSet;
     }
 
     public Integer getCurrentMove() {
@@ -280,8 +314,8 @@ public class GameBean {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[ ");
-        for(GameUserBean gameUser : gameUsers){
-            if(sb.length() > 2){
+        for (GameUserBean gameUser : gameUsers) {
+            if (sb.length() > 2) {
                 sb.append(",");
             }
             sb.append("\n\t\t\t");
@@ -292,27 +326,33 @@ public class GameBean {
         return "\n\tGame [ " +
                 "\n" +
                 "\t\tid: " + gameId +
-                ", \n" +
+                "\n" +
                 "\t\tcreator: " + creator +
-                ", \n" +
+                "\n" +
                 "\t\tprivateGame: " + privateGame + (privateGame ? (", privateCode: '" + privateCode + '\'') : "") +
-                ", \n" +
+                "\n" +
                 "\t\tdateCreated: " + dateCreated +
-                ", \n" +
+                "\n" +
                 "\t\tdateStarted: " + dateStarted +
-                ", \n" +
+                "\n" +
                 "\t\tstatus: " + status +
-                ", \n" +
+                "\n" +
+                "\t\tstage: " + stage +
+                "\n" +
+                "\t\tpreparationCycle: " + preparationCycle +
+                "\n" +
                 "\t\tminPlayers: " + minPlayers +
-                ", \n" +
+                "\n" +
                 "\t\tmaxPlayers: " + maxPlayers +
-                ", \n" +
+                "\n" +
                 "\t\ttargetVictoryPoints: " + targetVictoryPoints +
-                ", \n" +
+                "\n" +
+                "\t\tinitialBuildingsSet: " + initialBuildingsSet +
+                "\n" +
                 "\t\tcurrentMove: " + currentMove +
-                ", \n" +
+                "\n" +
                 "\t\tgameUsers: " + sb.toString() +
-                " \n" +
+                "\n" +
                 "\t]\n";
     }
 }

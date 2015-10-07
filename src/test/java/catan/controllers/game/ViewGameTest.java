@@ -245,6 +245,6 @@ public class ViewGameTest extends GameTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("GAME_CANCELED"));
+                .body("errorCode", equalTo("ERROR"));
     }
 }

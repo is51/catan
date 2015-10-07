@@ -21,13 +21,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public UserBean authenticateUserByToken(String token) throws AuthenticationException {
         log.debug("Search user with allocated token '" + token + "' ...");
         if (token == null || token.trim().length() == 0) {
-            log.debug("User with empty token cannot be found in system");
+            log.error("User with empty token cannot be found in system");
             throw new AuthenticationException();
         }
 
         UserBean user = userDao.getUserByToken(token);
         if (user == null) {
-            log.debug("User with allocated token '" + token + "' not found in system");
+            log.error("User with allocated token '" + token + "' not found in system");
             throw new AuthenticationException();
         }
 
