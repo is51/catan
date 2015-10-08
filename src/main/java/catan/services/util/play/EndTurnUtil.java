@@ -2,6 +2,8 @@ package catan.services.util.play;
 
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.types.GameStage;
+import catan.services.util.game.GameUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +14,14 @@ import java.util.List;
 public class EndTurnUtil {
     private Logger log = LoggerFactory.getLogger(EndTurnUtil.class);
 
-    public Integer endTurnImplInPreparationStage(GameBean game, List<List<String>> initialBuildingsSet) {
+    private GameUtil gameUtil;
+
+    public Integer endTurnImplInPreparationStage(GameBean game) {
         Integer nextMoveNumber;
+        List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
         Integer preparationCycle = game.getPreparationCycle();
         game.setCurrentCycleBuildingNumber(1);
-        if (isFirstMove(game) && !isOddCycle(preparationCycle) || isLastMove(game) && isOddCycle(preparationCycle)) {
+        if (isCycleFinished(game, preparationCycle)) {
             if (preparationCycle == initialBuildingsSet.size()) {
                 game.setStage(GameStage.MAIN);
                 game.setPreparationCycle(null);
@@ -39,7 +44,7 @@ public class EndTurnUtil {
                 : game.getCurrentMove() + 1;
     }
 
-    public Integer getNextMoveInPreparationStage(GameBean game) {
+    private Integer getNextMoveInPreparationStage(GameBean game) {
         Integer currentMove = game.getCurrentMove();
 
         if(game.getPreparationCycle() % 2 > 0){
@@ -49,15 +54,24 @@ public class EndTurnUtil {
         }
     }
 
+    private boolean isCycleFinished(GameBean game, Integer preparationCycle) {
+        return isFirstPlayer(game) && !isOddCycle(preparationCycle) || isLastPlayer(game) && isOddCycle(preparationCycle);
+    }
+
     private boolean isOddCycle(Integer preparationCycle) {
         return preparationCycle % 2 > 0;
     }
 
-    private boolean isFirstMove(GameBean game) {
+    private boolean isFirstPlayer(GameBean game) {
         return game.getCurrentMove() == 1;
     }
 
-    private boolean isLastMove(GameBean game) {
+    private boolean isLastPlayer(GameBean game) {
         return game.getCurrentMove() == game.getGameUsers().size();
+    }
+
+    @Autowired
+    public void setGameUtil(GameUtil gameUtil) {
+        this.gameUtil = gameUtil;
     }
 }

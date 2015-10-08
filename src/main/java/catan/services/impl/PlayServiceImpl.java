@@ -208,7 +208,6 @@ public class PlayServiceImpl implements PlayService {
     public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
         Integer nextMoveNumber;
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
 
         log.debug("User {} tries to end his turn of game id {}",user == null ? "<EMPTY>" : user.getUsername(), gameIdString);
 
@@ -223,7 +222,7 @@ public class PlayServiceImpl implements PlayService {
 
         switch (game.getStage()) {
             case PREPARATION:
-                nextMoveNumber = endTurnUtil.endTurnImplInPreparationStage(game, initialBuildingsSet);
+                nextMoveNumber = endTurnUtil.endTurnImplInPreparationStage(game);
                 break;
             case MAIN:
                 nextMoveNumber = endTurnUtil.endTurnImplInMainStage(game);
