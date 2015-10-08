@@ -9,8 +9,8 @@ public class NodeDetails {
     private String port;
     private BuildingDetails building;
     private String orientation;
-    private LinkDetails hexes;
-    private LinkDetails edges;
+    private LinkIdsDetails hexIds;
+    private LinkIdsDetails edgeIds;
 
     public NodeDetails() {
     }
@@ -20,8 +20,8 @@ public class NodeDetails {
         this.port = node.getPort().name();
         this.orientation = node.getOrientation().name();
         this.building = node.getBuilding() != null ? new BuildingDetails(node.getBuilding()) : null;
-        this.hexes = new LinkDetails(node.getHexes());
-        this.edges = new LinkDetails(node.getEdges());
+        this.hexIds = new LinkIdsDetails(node.getHexes());
+        this.edgeIds = new LinkIdsDetails(node.getEdges());
     }
 
     public Integer getNodeId() {
@@ -56,19 +56,19 @@ public class NodeDetails {
         this.orientation = orientation;
     }
 
-    public LinkDetails getHexes() {
-        return hexes;
+    public LinkIdsDetails getHexIds() {
+        return hexIds;
     }
 
-    public void setHexes(LinkDetails hexes) {
-        this.hexes = hexes;
+    public void setHexIds(LinkIdsDetails hexIds) {
+        this.hexIds = hexIds;
     }
 
-    public LinkDetails getEdges() {
-        return edges;
+    public LinkIdsDetails getEdgeIds() {
+        return edgeIds;
     }
 
-    public void setEdges(LinkDetails edges) {
-        this.edges = edges;
+    public void setEdgeIds(LinkIdsDetails edgeIds) {
+        this.edgeIds = edgeIds;
     }
 }
