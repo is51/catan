@@ -51,7 +51,7 @@ angular.module('catan')
                 var deferred = $q.defer();
 
                 Remote.game.details({gameId: game.getId()}).then(function(response) {
-                    angular.extend(game, response.data);
+                    angular.merge(game, response.data);
 
                     deferred.resolve();
                 }, function() {

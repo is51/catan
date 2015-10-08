@@ -2,7 +2,7 @@
 
 angular.module('catan')
 
-        .directive('ctGameMap', ['MapService', 'MapDrawService', function(MapService, MapDrawService) {
+        .directive('ctGameMap', ['DrawMapService', function(DrawMapService) {
             return {
                 restrict: 'E',
                 scope: {
@@ -18,14 +18,8 @@ angular.module('catan')
 
                     // TODO: Separate drawing of static and dynamic objects. And update only dynamic objects
 
-                    // TODO: Rework updating of game!
-                    // Because linkEntities is run every game's update, but it is always the same.
-                    // (probably skip updating of static objects of map, or store linked object separately)
-                    // (move linkEntities to game model/service)
-
                     scope.$watchCollection("game", function(game) {
-                        MapService.linkEntities(game.map);
-                        MapDrawService.drawMap(canvas, game, game.map);
+                        DrawMapService.drawMap(canvas, game, game.map);
                     });
 
                 }

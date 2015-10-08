@@ -12,6 +12,8 @@ angular.module('catan')
                 },
                 link: function(scope, element) {
 
+                    return; //TODO: fix game-map-overview
+
                     var map = scope.game.map;
                     linkEntities(map);
                     var canvas = angular.element('<div/>').addClass('canvas').appendTo(element);

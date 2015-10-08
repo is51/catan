@@ -1,12 +1,35 @@
 'use strict';
 
 angular.module('catan')
-        .factory('MapDrawService', ['MapService', function (MapService) {
+        .factory('DrawMapService', [function () {
 
             var HEX_WIDTH = 78;
             var HEX_HEIGHT = 40;
 
             var DrawHelper = {
+                getFirstHexOfNode: function(node) {
+                    for (var k in node.hexes) {
+                        if (node.hexes[k]) {
+                            return node.hexes[k];
+                        }
+                    }
+                    return null;
+                },
+                getFirstHexOfEdge: function(edge) {
+                    for (var k in edge.hexes) {
+                        if (edge.hexes[k]) {
+                            return edge.hexes[k];
+                        }
+                    }
+                    return null;
+                },
+                getObjectPosition: function(where, what) {
+                    for (var k in where) {
+                        if (where[k] === what) {
+                            return k;
+                        }
+                    }
+                },
                 getHexCoords: function (hex) {
                     return {
                         x: hex.x * HEX_WIDTH + hex.y * HEX_WIDTH / 2,
@@ -14,8 +37,8 @@ angular.module('catan')
                     }
                 },
                 getNodeCoords: function (node) {
-                    var hex = MapService.getFirstHexOfNode(node);
-                    var position = MapService.getObjectPosition(hex.nodes, node);
+                    var hex = DrawHelper.getFirstHexOfNode(node);
+                    var position = DrawHelper.getObjectPosition(hex.nodes, node);
                     var hexCoords = this.getHexCoords(hex);
 
                     var x = hexCoords.x;
@@ -29,8 +52,8 @@ angular.module('catan')
                     return {x: x, y: y}
                 },
                 getEdgeCoords: function (edge) {
-                    var hex = MapService.getFirstHexOfEdge(edge);
-                    var position = MapService.getObjectPosition(hex.edges, edge);
+                    var hex = DrawHelper.getFirstHexOfEdge(edge);
+                    var position = DrawHelper.getObjectPosition(hex.edges, edge);
                     var hexCoords = this.getHexCoords(hex);
 
                     var x = hexCoords.x;
@@ -94,9 +117,9 @@ angular.module('catan')
                 }
             };
 
-            var MapDrawService = {};
+            var DrawMapService = {};
 
-            MapDrawService.drawMap = function(canvas, game, map) {
+            DrawMapService.drawMap = function(canvas, game, map) {
 
                 canvas.empty();
 
@@ -130,7 +153,7 @@ angular.module('catan')
                 }
             };
 
-            MapDrawService.drawHex = function(canvas, game, coords, hex) {
+            DrawMapService.drawHex = function(canvas, game, coords, hex) {
                 var ROBBED_TEXT = angular.element('<span/>', {'class':'glyphicon glyphicon-fire'});
 
                 var elem = angular.element('<div/>')
@@ -160,7 +183,7 @@ angular.module('catan')
                 }
             };
 
-            MapDrawService.drawNode = function(canvas, game, coords, node) {
+            DrawMapService.drawNode = function(canvas, game, coords, node) {
                 var elem = angular.element('<div/>')
                         .addClass('node')
                         .css('left', coords.x)
@@ -186,12 +209,12 @@ angular.module('catan')
                 }
             };
 
-            MapDrawService.drawEmptyNode = function(canvas, coords) {
+            DrawMapService.drawEmptyNode = function(canvas, coords) {
                 var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
                 elem.root.addClass('none-node');
             };
 
-            MapDrawService.drawSettlement = function(canvas, coords, colorId) {
+            DrawMapService.drawSettlement = function(canvas, coords, colorId) {
                 var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
                 elem.root.addClass('settlement');
                 elem.inner
@@ -199,7 +222,7 @@ angular.module('catan')
                         .html("S");
             };
 
-            MapDrawService.drawCity = function(canvas, coords, colorId) {
+            DrawMapService.drawCity = function(canvas, coords, colorId) {
                 var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
                 elem.root.addClass('city');
                 elem.inner
@@ -207,7 +230,7 @@ angular.module('catan')
                         .html("C");
             };
 
-            MapDrawService.drawPort = function(canvas, offset, type) {
+            DrawMapService.drawPort = function(canvas, offset, type) {
                 var PORT_TEXT = angular.element('<span/>', {'class':'glyphicon glyphicon-plane'});
 
                 var root = angular.element('<div/>')
@@ -229,7 +252,7 @@ angular.module('catan')
                         .appendTo(root);
             };
 
-            MapDrawService.drawEdge = function(canvas, game, coords, edge) {
+            DrawMapService.drawEdge = function(canvas, game, coords, edge) {
                 var elem = angular.element('<div/>')
                         .addClass('edge')
                         .css('left', coords.x)
@@ -246,14 +269,14 @@ angular.module('catan')
                 }
             };
 
-            MapDrawService.drawEmptyEdge = function (canvas, coords, orientation) {
+            DrawMapService.drawEmptyEdge = function (canvas, coords, orientation) {
                 var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
                 elem.root
                         .addClass('none-edge')
                         .addClass(orientation);
             };
 
-            MapDrawService.drawRoad = function (canvas, coords, orientation, colorId) {
+            DrawMapService.drawRoad = function (canvas, coords, orientation, colorId) {
                 var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
                 elem.root
                         .addClass('road')
@@ -262,5 +285,5 @@ angular.module('catan')
                         .addClass('color-' + colorId);
             };
 
-            return MapDrawService;
+            return DrawMapService;
         }]);
