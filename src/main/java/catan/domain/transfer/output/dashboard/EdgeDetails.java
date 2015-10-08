@@ -8,8 +8,8 @@ public class EdgeDetails {
     private Integer edgeId;
     private BuildingDetails building;
     private String orientation;
-    private LinkIdsDetails hexIds;
-    private LinkIdsDetails nodeIds;
+    private LinkIdsDetails hexesIds;
+    private LinkIdsDetails nodesIds;
 
     public EdgeDetails() {
     }
@@ -18,8 +18,8 @@ public class EdgeDetails {
         this.edgeId = edge.getId();
         this.orientation = edge.getOrientation().name();
         this.building = edge.getBuilding() != null ? new BuildingDetails(edge.getBuilding()) : null;
-        this.hexIds = new LinkIdsDetails(edge.getHexes());
-        this.nodeIds = new LinkIdsDetails(edge.getNodes());
+        this.hexesIds = new LinkIdsDetails(edge.getHexes());
+        this.nodesIds = new LinkIdsDetails(edge.getNodes());
     }
 
     public Integer getEdgeId() {
@@ -46,19 +46,19 @@ public class EdgeDetails {
         this.orientation = orientation;
     }
 
-    public LinkIdsDetails getHexIds() {
-        return hexIds;
+    public LinkIdsDetails getHexesIds() {
+        return hexesIds;
     }
 
-    public void setHexIds(LinkIdsDetails hexIds) {
-        this.hexIds = hexIds;
+    public void setHexesIds(LinkIdsDetails hexesIds) {
+        this.hexesIds = hexesIds;
     }
 
-    public LinkIdsDetails getNodeIds() {
-        return nodeIds;
+    public LinkIdsDetails getNodesIds() {
+        return nodesIds;
     }
 
-    public void setNodeIds(LinkIdsDetails nodeIds) {
-        this.nodeIds = nodeIds;
+    public void setNodesIds(LinkIdsDetails nodesIds) {
+        this.nodesIds = nodesIds;
     }
 }

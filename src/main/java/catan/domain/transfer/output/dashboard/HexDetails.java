@@ -11,8 +11,8 @@ public class HexDetails {
     private String type;
     private Integer dice;
     private boolean robbed;
-    private LinkIdsDetails edgeIds;
-    private LinkIdsDetails nodeIds;
+    private LinkIdsDetails edgesIds;
+    private LinkIdsDetails nodesIds;
 
     public HexDetails() {
     }
@@ -24,8 +24,8 @@ public class HexDetails {
         this.type = hex.getResourceType().name();
         this.dice = hex.getDice();
         this.robbed = hex.isRobbed();
-        this.edgeIds = new LinkIdsDetails(hex.getEdges());
-        this.nodeIds = new LinkIdsDetails(hex.getNodes());
+        this.edgesIds = new LinkIdsDetails(hex.getEdges());
+        this.nodesIds = new LinkIdsDetails(hex.getNodes());
     }
 
     public Integer getHexId() {
@@ -76,20 +76,20 @@ public class HexDetails {
         this.robbed = robbed;
     }
 
-    public LinkIdsDetails getEdgeIds() {
-        return edgeIds;
+    public LinkIdsDetails getEdgesIds() {
+        return edgesIds;
     }
 
-    public void setEdgeIds(LinkIdsDetails edgeIds) {
-        this.edgeIds = edgeIds;
+    public void setEdgesIds(LinkIdsDetails edgesIds) {
+        this.edgesIds = edgesIds;
     }
 
-    public LinkIdsDetails getNodeIds() {
-        return nodeIds;
+    public LinkIdsDetails getNodesIds() {
+        return nodesIds;
     }
 
-    public void setNodeIds(LinkIdsDetails nodeIds) {
-        this.nodeIds = nodeIds;
+    public void setNodesIds(LinkIdsDetails nodesIds) {
+        this.nodesIds = nodesIds;
     }
 }
 
