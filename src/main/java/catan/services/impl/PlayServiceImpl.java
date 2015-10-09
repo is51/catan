@@ -38,19 +38,7 @@ public class PlayServiceImpl implements PlayService {
                 user == null ? "<EMPTY>" : user.getUsername(), edgeIdString, gameIdString);
 
         validateUserNotEmpty(user);
-
-        int edgeId;
-        try {
-            if (edgeIdString == null || edgeIdString.trim().length() == 0) {
-                log.debug("Cannot build road on empty edgeId");
-                throw new PlayException(ERROR_CODE_ERROR);
-            }
-
-            edgeId = Integer.parseInt(edgeIdString);
-        } catch (Exception e) {
-            log.debug("Cannot convert edgeId to integer value");
-            throw new PlayException(ERROR_CODE_ERROR);
-        }
+        int edgeId = validateIdIsInteger(edgeIdString);
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         validateGameStatus(game, GameStatus.PLAYING);
@@ -126,18 +114,7 @@ public class PlayServiceImpl implements PlayService {
                 user == null ? "<EMPTY>" : user.getUsername(), nodeIdString, gameIdString);
         validateUserNotEmpty(user);
 
-        int nodeId;
-        try {
-            if (nodeIdString == null || nodeIdString.trim().length() == 0) {
-                log.debug("Cannot build settlement on empty nodeId");
-                throw new PlayException(ERROR_CODE_ERROR);
-            }
-
-            nodeId = Integer.parseInt(nodeIdString);
-        } catch (Exception e) {
-            log.debug("Cannot convert nodeId to integer value");
-            throw new PlayException(ERROR_CODE_ERROR);
-        }
+        int nodeId = validateIdIsInteger(nodeIdString);
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         validateGameStatus(game, GameStatus.PLAYING);
@@ -258,6 +235,19 @@ public class PlayServiceImpl implements PlayService {
         }
 
         return gameUserBean;
+    }
+
+    private Integer validateIdIsInteger(String idString) throws PlayException {
+        try {
+            if (idString == null || idString.trim().length() == 0) {
+                log.debug("Requested object Id cannot be empty");
+                throw new PlayException(ERROR_CODE_ERROR);
+            }
+            return Integer.parseInt(idString);
+        } catch (Exception e) {
+            log.debug("Cannot convert object Id to integer value");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
     }
 
     private void validateGameStatus(GameBean game, GameStatus expectedStatus) throws GameException {
