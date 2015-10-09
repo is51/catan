@@ -19,17 +19,17 @@ public class EndTurnUtil {
     public Integer endTurnImplInPreparationStage(GameBean game) {
         Integer nextMoveNumber;
         List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-        Integer preparationCycle = game.getPreparationCycle();
         game.setCurrentCycleBuildingNumber(1);
-        if (isCycleFinished(game, preparationCycle)) {
-            if (preparationCycle == initialBuildingsSet.size()) {
+        if (isCycleFinished(game)) {
+            if (isLastCycle(game, initialBuildingsSet.size())) {
                 game.setStage(GameStage.MAIN);
                 game.setPreparationCycle(null);
+                game.setCurrentCycleBuildingNumber(0);
                 log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
                 nextMoveNumber = 1;
             } else {
                 nextMoveNumber = getNextMoveInPreparationStage(game);
-                game.setPreparationCycle(preparationCycle + 1);
+                game.setPreparationCycle(game.getPreparationCycle() + 1);
                 log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), initialBuildingsSet.size());
             }
         } else {
@@ -54,8 +54,13 @@ public class EndTurnUtil {
         }
     }
 
-    private boolean isCycleFinished(GameBean game, Integer preparationCycle) {
+    private boolean isCycleFinished(GameBean game) {
+        Integer preparationCycle = game.getPreparationCycle();
         return isFirstPlayer(game) && !isOddCycle(preparationCycle) || isLastPlayer(game) && isOddCycle(preparationCycle);
+    }
+
+    private boolean isLastCycle(GameBean game, Integer initialBuildingsSet) {
+        return game.getPreparationCycle().equals(initialBuildingsSet);
     }
 
     private boolean isOddCycle(Integer preparationCycle) {

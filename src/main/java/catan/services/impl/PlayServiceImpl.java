@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service("playService")
 @Transactional
 public class PlayServiceImpl implements PlayService {
@@ -229,7 +227,7 @@ public class PlayServiceImpl implements PlayService {
                 break;
             default:
                 log.debug("Cannot recognize current game stage: {}", game.getStage());
-                throw new PlayException(ERROR_CODE_ERROR);
+                throw new GameException(ERROR_CODE_ERROR);
         }
 
         log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
@@ -264,7 +262,7 @@ public class PlayServiceImpl implements PlayService {
 
     private void validateGameStatus(GameBean game, GameStatus expectedStatus) throws GameException {
         if (game.getStatus() != expectedStatus) {
-            log.debug("Cannot end turn of not playing game");
+            log.debug("User cannot do this action in current game status: {} instead of {}", game.getStatus(), expectedStatus);
             throw new GameException(ERROR_CODE_ERROR);
         }
     }
