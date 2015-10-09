@@ -19,7 +19,6 @@ public class EndTurnUtil {
     public Integer endTurnImplInPreparationStage(GameBean game) {
         Integer nextMoveNumber;
         List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-        game.setCurrentCycleBuildingNumber(1);
         if (isCycleFinished(game)) {
             if (isLastCycle(game, initialBuildingsSet.size())) {
                 game.setStage(GameStage.MAIN);

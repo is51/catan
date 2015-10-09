@@ -10,6 +10,7 @@ import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
@@ -20,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("playService")
 @Transactional
@@ -102,7 +105,8 @@ public class PlayServiceImpl implements PlayService {
         building.setBuildingOwner(gameUserBean);
 
         edgeToBuildOn.setBuilding(building);
-
+        updateCurrentCycleBuildingNumber(game);
+        //TODO: calculate and generate next available actions here
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built {} at edge {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), edgeId, gameIdString);
@@ -173,7 +177,8 @@ public class PlayServiceImpl implements PlayService {
         building.setBuildingOwner(gameUserBean);
 
         nodeToBuildOn.setBuilding(building);
-
+        updateCurrentCycleBuildingNumber(game);
+        //TODO: calculate and generate next available actions here
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built {} at node {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), nodeId, gameIdString);
@@ -209,8 +214,20 @@ public class PlayServiceImpl implements PlayService {
 
         log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
         game.setCurrentMove(nextMoveNumber);
-
+        updateCurrentCycleBuildingNumber(game);
+        //TODO: calculate and generate next available actions here
         gameDao.updateGame(game);
+    }
+
+    private void updateCurrentCycleBuildingNumber (GameBean game) {
+        if (game.getStage().equals(GameStage.PREPARATION)) {
+            List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+            if (game.getCurrentCycleBuildingNumber() > initialBuildingsSet.get(game.getPreparationCycle() - 1).size()) {
+                game.setCurrentCycleBuildingNumber(1);
+            } else {
+                game.setCurrentCycleBuildingNumber(game.getCurrentCycleBuildingNumber() + 1);
+            }
+        }
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {
