@@ -101,19 +101,6 @@ angular.module('catan')
                     }
 
                     return {x: x, y: y};
-                },
-                createBuildingByTemplate: function(canvas, coords) {
-                    var root = angular.element('<div/>')
-                            .addClass('building')
-                            .css('left', coords.x)
-                            .css('top', coords.y)
-                            .appendTo(canvas);
-
-                    var inner = angular.element('<div/>')
-                            .addClass('inner')
-                            .appendTo(root);
-
-                    return {root: root, inner: inner};
                 }
             };
 
@@ -123,34 +110,19 @@ angular.module('catan')
 
                 canvas.empty();
 
-                var i, l;
+                var that = this;
 
-                for (i = 0, l = map.hexes.length; i < l; i++) {
-                    this.drawHex(
-                            canvas,
-                            game,
-                            DrawHelper.getHexCoords(map.hexes[i]),
-                            map.hexes[i]
-                    );
-                }
+                map.hexes.forEach(function(hex) {
+                    that.drawHex(canvas, game, DrawHelper.getHexCoords(hex), hex);
+                });
 
-                for (i = 0, l = map.edges.length; i < l; i++) {
-                    this.drawEdge(
-                            canvas,
-                            game,
-                            DrawHelper.getEdgeCoords(map.edges[i]),
-                            map.edges[i]
-                    );
-                }
+                map.edges.forEach(function(edge) {
+                    that.drawEdge(canvas, game, DrawHelper.getEdgeCoords(edge), edge);
+                });
 
-                for (i = 0, l = map.nodes.length; i < l; i++) {
-                    this.drawNode(
-                            canvas,
-                            game,
-                            DrawHelper.getNodeCoords(map.nodes[i]),
-                            map.nodes[i]
-                    );
-                }
+                map.nodes.forEach(function(node) {
+                    that.drawNode(canvas, game, DrawHelper.getNodeCoords(node), node);
+                });
             };
 
             DrawMapService.drawHex = function(canvas, game, coords, hex) {
@@ -210,12 +182,12 @@ angular.module('catan')
             };
 
             DrawMapService.drawEmptyNode = function(canvas, coords) {
-                var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
+                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
                 elem.root.addClass('none-node');
             };
 
             DrawMapService.drawSettlement = function(canvas, coords, colorId) {
-                var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
+                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
                 elem.root.addClass('settlement');
                 elem.inner
                         .addClass('color-' + colorId)
@@ -223,7 +195,7 @@ angular.module('catan')
             };
 
             DrawMapService.drawCity = function(canvas, coords, colorId) {
-                var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
+                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
                 elem.root.addClass('city');
                 elem.inner
                         .addClass('color-' + colorId)
@@ -270,19 +242,33 @@ angular.module('catan')
             };
 
             DrawMapService.drawEmptyEdge = function (canvas, coords, orientation) {
-                var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
+                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
                 elem.root
                         .addClass('none-edge')
                         .addClass(orientation);
             };
 
             DrawMapService.drawRoad = function (canvas, coords, orientation, colorId) {
-                var elem = DrawHelper.createBuildingByTemplate(canvas, coords);
+                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
                 elem.root
                         .addClass('road')
                         .addClass(orientation);
                 elem.inner
                         .addClass('color-' + colorId);
+            };
+
+            DrawMapService.createBlankTemplateOfBuilding = function(canvas, coords) {
+                var root = angular.element('<div/>')
+                        .addClass('building')
+                        .css('left', coords.x)
+                        .css('top', coords.y)
+                        .appendTo(canvas);
+
+                var inner = angular.element('<div/>')
+                        .addClass('inner')
+                        .appendTo(root);
+
+                return {root: root, inner: inner};
             };
 
             return DrawMapService;
