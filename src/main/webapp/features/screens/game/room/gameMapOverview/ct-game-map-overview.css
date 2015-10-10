@@ -4,6 +4,7 @@ ct-game-map-overview .canvas {
 
 ct-game-map-overview .canvas .hex {
     position: absolute;
+    border-radius: 4px;
 }
 
 ct-game-map-overview .canvas .hex > .coords {
@@ -17,6 +18,17 @@ ct-game-map-overview .canvas .hex > .dice {
 
 ct-game-map-overview .canvas .node {
     position: absolute;
+    border-radius: 10px;
+}
+
+ct-game-map-overview .canvas .node span {
+    transform: rotate(60deg);
+    font-size: 9px;
+    line-height: 9px;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    color: #fff;
 }
 
 ct-game-map-overview .canvas .brick {

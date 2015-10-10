@@ -12,86 +12,11 @@ angular.module('catan')
                 },
                 link: function(scope, element) {
 
-                    return; //TODO: fix game-map-overview
-
                     var map = scope.game.map;
-                    linkEntities(map);
                     var canvas = angular.element('<div/>').addClass('canvas').appendTo(element);
                     drawMap(map, canvas);
                 }
             };
-
-            function generateMap() {
-
-                var HEX_TYPES = ["EMPTY", "BRICK", "WOOD", "SHEEP", "WHEAT", "STONE"];
-                var NODE_PORTS = ["NONE", "BRICK", "WOOD", "SHEEP", "WHEAT", "STONE", "ALL"];
-
-                var mapSource = [
-                    [null,  null,   {},     {},     {}],
-                    [null,  {},     {},     {},     {}],
-                    [{},    {},     {},     {},     {}],
-                    [{},    {},     {},     {},     null],
-                    [{},    {},     {},     null,   null]
-                ];
-
-                var map = {
-                    hexes: [],
-                    nodes: []
-                };
-
-                var isAlreadyRobbed = false;
-
-                for (var i = 0, l = mapSource.length; i < l; i++) {
-                    for (var j = 0, lj = mapSource[i].length; j < lj; j++) {
-                        if (mapSource[i][j]) {
-                            var r = Math.round(Math.random() * 180 + 50);
-                            var g = Math.round(Math.random() * 180 + 50);
-                            var b = Math.round(Math.random() * 180 + 50);
-
-                            var hex = {
-                                x: j - 2,
-                                y: i - 2,
-                                type: HEX_TYPES[Math.round(Math.random()*5)],
-                                dice: Math.round(Math.random()*10) + 2,
-                                robbed: false,
-                                nodes: [{}, {}, {}, {}, {}, {}]
-                            };
-
-                            if (hex.type === "EMPTY") {
-                                hex.dice = null;
-                                hex.robbed = !isAlreadyRobbed;
-                                isAlreadyRobbed = true;
-                            }
-
-                            if (hex.dice === 7) {
-                                hex.dice = Math.round(Math.random()) * 2 + 6;
-                            }
-
-                            map.hexes.push(hex);
-                        }
-                    }
-                }
-
-                map.nodes[0] = {port: NODE_PORTS[Math.round(Math.random()*5+1)], hexes: [map.hexes[2]]};
-                map.nodes[1] = {port: NODE_PORTS[Math.round(Math.random()*5+1)], hexes: [map.hexes[2], map.hexes[6]]};
-
-                map.hexes[2].nodes[2] = map.nodes[0];
-                map.hexes[2].nodes[3] = map.nodes[1];
-                map.hexes[6].nodes[1] = map.nodes[1];
-
-                return map;
-            }
-
-            function getEntityById(map, type, id) {
-                var index = (type === "hex") ? type + "es" : type + "s";
-                var i,
-                    l = map[index].length;
-                for (i = 0; i < l; i++) {
-                    if (map[index][i][type+"Id"] === id) {
-                        return map[index][i];
-                    }
-                }
-            }
 
             function getPosition(where, what) {
                 for (var k in where) {
@@ -101,42 +26,16 @@ angular.module('catan')
                 }
             }
 
-            function linkEntitiesType(map, type, arr) {
-                var entity;
-                for (var k in arr) {
-                    entity = getEntityById(map, type, arr[k]);
-                    delete arr[k];
-                    arr[k.substr(0, k.length-2)] = entity;
-                }
-            }
-
-            function linkEntities(map) {
-                var i, l, k, entity;
-                for (i = 0, l = map.hexes.length; i < l; i++) {
-                    linkEntitiesType(map, "node", map.hexes[i].nodes);
-                    linkEntitiesType(map, "edge", map.hexes[i].edges);
-                }
-                for (i = 0, l = map.nodes.length; i < l; i++) {
-                    linkEntitiesType(map, "hex", map.nodes[i].hexes);
-                    linkEntitiesType(map, "edge", map.nodes[i].edges);
-                }
-                for (i = 0, l = map.edges.length; i < l; i++) {
-                    linkEntitiesType(map, "node", map.edges[i].nodes);
-                    linkEntitiesType(map, "hex", map.edges[i].hexes);
-                }
-
-                //console.log(map);
-            }
-
             function drawMap(map, canvas) {
 
                 var HEX_WIDTH = 50;
                 var HEX_HEIGHT = 25;
                 var OFFSET_X = 102;
                 var OFFSET_Y = 80;
-                var PORT_WIDTH = Math.round(HEX_HEIGHT / 3);
-                var PORT_HEIGHT = Math.round(HEX_HEIGHT / 3);
+                var PORT_WIDTH = Math.round(HEX_HEIGHT / 2.2);
+                var PORT_HEIGHT = Math.round(HEX_HEIGHT / 2.2);
                 var ROBBED_TEXT = angular.element('<span/>', {'class':'glyphicon glyphicon-fire'});
+                var PORT_TEXT = '<span class="glyphicon glyphicon-plane"></span>';
 
                 var MapService = {
                     getPositionX: function(x, y) {
@@ -218,6 +117,8 @@ angular.module('catan')
                             .css('height', PORT_HEIGHT + 'px')
                             .css('left', OFFSET_X + MapService.getPositionNodeX(item) + 'px')
                             .css('top', OFFSET_Y + MapService.getPositionNodeY(item) + 'px')
+
+                            .html((item.port !== "NONE")?PORT_TEXT:'')
 
                             .appendTo(canvas);
                 }
