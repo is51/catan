@@ -113,7 +113,7 @@ angular.module('catan')
                 var that = this;
 
                 map.hexes.forEach(function(hex) {
-                    that.drawHex(canvas, game, DrawHelper.getHexCoords(hex), hex);
+                    that.drawHex(canvas, DrawHelper.getHexCoords(hex), hex);
                 });
 
                 map.edges.forEach(function(edge) {
@@ -125,7 +125,7 @@ angular.module('catan')
                 });
             };
 
-            DrawMapService.drawHex = function(canvas, game, coords, hex) {
+            DrawMapService.drawHex = function(canvas, coords, hex) {
                 var ROBBED_TEXT = angular.element('<span/>', {'class':'glyphicon glyphicon-fire'});
 
                 var elem = angular.element('<div/>')
