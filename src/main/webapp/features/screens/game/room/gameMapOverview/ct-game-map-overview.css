@@ -4,7 +4,8 @@ ct-game-map-overview .canvas {
 
 ct-game-map-overview .canvas .hex {
     position: absolute;
-    border-radius: 4px;
+    border-radius: 5px;
+    border: 1px solid #fff;
 }
 
 ct-game-map-overview .canvas .hex > .coords {
