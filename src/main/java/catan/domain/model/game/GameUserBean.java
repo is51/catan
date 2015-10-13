@@ -1,7 +1,6 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -13,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "GAME_USER")
@@ -176,6 +173,7 @@ public class GameUserBean {
                 ", gameId: " + game.getGameId() +
                 ", ready: " + ready +
                 ", moveOrder: " + moveOrder +
+                ", actions: " + availableActions +
                "]";
     }
 }
