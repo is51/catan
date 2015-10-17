@@ -1,103 +1,10 @@
 'use strict';
 
 angular.module('catan')
-        .factory('DrawMapService', [function () {
+        .factory('DrawMapService', ['DrawMapHelper', function (DrawMapHelper) {
 
             var HEX_WIDTH = 78;
             var HEX_HEIGHT = 40;
-
-            var DrawHelper = {
-                getFirstHexOfNode: function(node) {
-                    for (var k in node.hexes) {
-                        if (node.hexes[k]) {
-                            return node.hexes[k];
-                        }
-                    }
-                    return null;
-                },
-                getFirstHexOfEdge: function(edge) {
-                    for (var k in edge.hexes) {
-                        if (edge.hexes[k]) {
-                            return edge.hexes[k];
-                        }
-                    }
-                    return null;
-                },
-                getObjectPosition: function(where, what) {
-                    for (var k in where) {
-                        if (where[k] === what) {
-                            return k;
-                        }
-                    }
-                },
-                getHexCoords: function (hex) {
-                    return {
-                        x: hex.x * HEX_WIDTH + hex.y * HEX_WIDTH / 2,
-                        y: hex.y * HEX_HEIGHT
-                    }
-                },
-                getNodeCoords: function (node) {
-                    var hex = DrawHelper.getFirstHexOfNode(node);
-                    var position = DrawHelper.getObjectPosition(hex.nodes, node);
-                    var hexCoords = this.getHexCoords(hex);
-
-                    var x = hexCoords.x;
-                    if (position === "topLeft" || position === "bottomLeft") { x -= Math.round(HEX_WIDTH/2); }
-                    if (position === "topRight" || position === "bottomRight") { x += Math.round(HEX_WIDTH/2); }
-
-                    var y = hexCoords.y;
-                    if (position === "topRight" || position === "top" || position === "topLeft") { y -= Math.round(HEX_HEIGHT/2); }
-                    if (position === "bottomRight" || position === "bottom" || position === "bottomLeft") { y += Math.round(HEX_HEIGHT/2); }
-
-                    return {x: x, y: y}
-                },
-                getEdgeCoords: function (edge) {
-                    var hex = DrawHelper.getFirstHexOfEdge(edge);
-                    var position = DrawHelper.getObjectPosition(hex.edges, edge);
-                    var hexCoords = this.getHexCoords(hex);
-
-                    var x = hexCoords.x;
-                    if (position === "left") { x -= Math.round(HEX_WIDTH/2); }
-                    if (position === "topLeft" || position === "bottomLeft") { x -= Math.round(HEX_WIDTH/4); }
-                    if (position === "topRight" || position === "bottomRight") { x += Math.round(HEX_WIDTH/4); }
-                    if (position === "right") { x += Math.round(HEX_WIDTH/2); }
-
-                    var y = hexCoords.y;
-                    if (position === "topLeft" || position === "topRight") { y -= Math.round(HEX_HEIGHT/2); }
-                    if (position === "bottomLeft" || position === "bottomRight") { y += Math.round(HEX_HEIGHT/2); }
-
-                    return {x: x, y: y}
-                },
-                getPortOffset: function(node) {
-                    var x, y;
-
-                    if (node.orientation === "SINGLE_BOTTOM") {
-                        y = (node.hexes.bottom) ? -1 : 1;
-
-                        if (node.hexes.topLeft && !node.hexes.topRight) {
-                            x = 1;
-                        } else if (!node.hexes.topLeft && node.hexes.topRight) {
-                            x = -1;
-                        } else {
-                            x = 0;
-                        }
-                    }
-
-                    if (node.orientation === "SINGLE_TOP") {
-                        y = (node.hexes.top) ? 1 : -1;
-
-                        if (node.hexes.bottomLeft && !node.hexes.bottomRight) {
-                            x = 1;
-                        } else if (!node.hexes.bottomLeft && node.hexes.bottomRight) {
-                            x = -1;
-                        } else {
-                            x = 0;
-                        }
-                    }
-
-                    return {x: x, y: y};
-                }
-            };
 
             var DrawMapService = {};
 
@@ -106,17 +13,23 @@ angular.module('catan')
                 canvas.empty();
 
                 var that = this;
+                var coords;
 
                 map.hexes.forEach(function(hex) {
-                    that.drawHex(canvas, DrawHelper.getHexCoords(hex), hex);
+                    coords = DrawMapHelper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
+                    that.drawHex(canvas, coords, hex);
                 });
 
                 map.edges.forEach(function(edge) {
-                    that.drawEdge(canvas, game, DrawHelper.getEdgeCoords(edge), edge);
+                    coords = DrawMapHelper.getEdgeCoords(edge, HEX_WIDTH, HEX_HEIGHT);
+                    that.drawEdge(canvas, game, coords, edge
+                    );
                 });
 
                 map.nodes.forEach(function(node) {
-                    that.drawNode(canvas, game, DrawHelper.getNodeCoords(node), node);
+                    coords = DrawMapHelper.getNodeCoords(node, HEX_WIDTH, HEX_HEIGHT);
+                    that.drawNode(canvas, game, coords, node
+                    );
                 });
             };
 
@@ -158,7 +71,7 @@ angular.module('catan')
                         .appendTo(canvas);
 
                 if (node.port !== "NONE") {
-                    this.drawPort(elem, DrawHelper.getPortOffset(node), node.port);
+                    this.drawPort(elem, DrawMapHelper.getPortOffset(node), node.port);
                 }
 
                 if (node.building) {
