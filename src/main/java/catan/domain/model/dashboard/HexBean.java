@@ -37,7 +37,7 @@ public class HexBean implements MapElement{
     private HexType resourceType;
 
     @Column(name = "DICE", unique = false, nullable = true)
-    private int dice;
+    private Integer dice;
 
     @Column(name = "IS_ROBBED", unique = false, nullable = false)
     private boolean robbed;
@@ -67,7 +67,7 @@ public class HexBean implements MapElement{
     public HexBean() {
     }
 
-    public HexBean(GameBean game, Coordinates coordinates, HexType resourceType, int dice, boolean robbed) {
+    public HexBean(GameBean game, Coordinates coordinates, HexType resourceType, Integer dice, boolean robbed) {
         this.game = game;
         this.coordinates = coordinates;
         this.resourceType = resourceType;
@@ -107,11 +107,11 @@ public class HexBean implements MapElement{
         this.resourceType = resourceType;
     }
 
-    public int getDice() {
+    public Integer getDice() {
         return dice;
     }
 
-    public void setDice(int dice) {
+    public void setDice(Integer dice) {
         this.dice = dice;
     }
 
@@ -146,7 +146,7 @@ public class HexBean implements MapElement{
 
         HexBean hexBean = (HexBean) o;
 
-        if (dice != hexBean.dice) return false;
+        if (dice != null ? !dice.equals(hexBean.dice) : hexBean.dice != null) return false;
         if (!coordinates.equals(hexBean.coordinates)) return false;
         if (!game.equals(hexBean.game)) return false;
         if (resourceType != hexBean.resourceType) return false;
@@ -159,7 +159,8 @@ public class HexBean implements MapElement{
         int result = game.hashCode();
         result = 31 * result + coordinates.hashCode();
         result = 31 * result + resourceType.hashCode();
-        result = 31 * result + dice;
+        result = 31 * result + (dice != null ? dice.hashCode() : 0);
+        
         return result;
     }
 }
