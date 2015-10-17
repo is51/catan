@@ -20,7 +20,7 @@ angular.module('catan')
                     };
 
                     scope.build = function() {
-                        ModalWindowService.toggle("BUILD_PANEL");
+                        ModalWindowService.show("BUILD_PANEL");
                     };
                 }
             };
