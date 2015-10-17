@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('catan')
-        .factory('GameModel', ['User', function (User) {
+        .factory('GameModel', ['User', 'LinkMapEntitiesHelper', function (User, LinkMapEntitiesHelper) {
 
             var GAME_PRIMARY_KEY = "gameId";
 
             return function (data) {
 
                 angular.copy(data, this);
+                LinkMapEntitiesHelper.linkNeighbourEntitiesByIds(this.map);
 
                 this.getId = function () {
                     return this[GAME_PRIMARY_KEY];
@@ -42,6 +43,15 @@ angular.module('catan')
                 this.isCurrentUserMove = function () {
                     return this.currentMove === this.getCurrentUser().moveOrder;
                 };
+
+                this.getGameUser = function(gameUserId) {
+                    for (var i in this.gameUsers) {
+                        if (this.gameUsers[i].id === gameUserId) {
+                            return this.gameUsers[i];
+                        }
+                    }
+                    return null;
+                }
 
             };
         }]);

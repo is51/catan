@@ -7,7 +7,7 @@ import catan.domain.model.dashboard.VerticalLinks;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LinkDetails {
+public class LinkIdsDetails {
 
     private Integer topLeftId;
     private Integer topId;
@@ -18,10 +18,10 @@ public class LinkDetails {
     private Integer bottomLeftId;
     private Integer leftId;
 
-    public LinkDetails() {
+    public LinkIdsDetails() {
     }
 
-    public LinkDetails(Links mapElements) {
+    public LinkIdsDetails(Links mapElements) {
         this.topLeftId = mapElements.getTopLeft() != null ? ((MapElement) mapElements.getTopLeft()).getId() : null;
         this.topRightId = mapElements.getTopRight() != null ? ((MapElement) mapElements.getTopRight()).getId() : null;
         this.bottomRightId = mapElements.getBottomRight() != null ? ((MapElement) mapElements.getBottomRight()).getId() : null;
