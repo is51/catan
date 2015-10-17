@@ -69,34 +69,29 @@ angular.module('catan')
                     return {x: x, y: y}
                 },
                 getPortOffset: function(node) {
-                    var x = 0,
-                        y = 0;
+                    var x, y;
 
                     if (node.orientation === "SINGLE_BOTTOM") {
-                        if (!node.hexes.bottom) {
-                            y = 1;
-                        }
-                        if (node.hexes.bottom) {
-                            y = -1;
-                        }
+                        y = (node.hexes.bottom) ? -1 : 1;
+
                         if (node.hexes.topLeft && !node.hexes.topRight) {
                             x = 1;
                         } else if (!node.hexes.topLeft && node.hexes.topRight) {
                             x = -1;
+                        } else {
+                            x = 0;
                         }
                     }
 
                     if (node.orientation === "SINGLE_TOP") {
-                        if (!node.hexes.top) {
-                            y = -1;
-                        }
-                        if (node.hexes.top) {
-                            y = 1;
-                        }
+                        y = (node.hexes.top) ? 1 : -1;
+
                         if (node.hexes.bottomLeft && !node.hexes.bottomRight) {
                             x = 1;
                         } else if (!node.hexes.bottomLeft && node.hexes.bottomRight) {
                             x = -1;
+                        } else {
+                            x = 0;
                         }
                     }
 
