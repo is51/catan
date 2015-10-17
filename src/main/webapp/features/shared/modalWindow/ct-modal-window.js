@@ -1,19 +1,19 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctModal',['ModalService', function(ModalService) {
+        .directive('ctModalWindow',['ModalWindowService', function(ModalWindowService) {
 
             return {
                 restrict: 'E',
                 scope: {
-                    modalId: "@"
+                    modalWindowId: "@"
                 },
                 link: function(scope, element) {
 
-                    ModalService.register(scope.modalId);
+                    ModalWindowService.register(scope.modalWindowId);
 
                     scope.$watch(function() {
-                        return ModalService.isVisible(scope.modalId)
+                        return ModalWindowService.isVisible(scope.modalWindowId)
                     }, function(isVisible) {
                         if (isVisible) {
                             element.show();

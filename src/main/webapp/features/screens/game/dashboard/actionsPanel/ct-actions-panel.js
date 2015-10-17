@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctActionsPanel',['PlayService', 'GameService', 'ModalService', function(PlayService, GameService, ModalService) {
+        .directive('ctActionsPanel',['PlayService', 'GameService', 'ModalWindowService', function(PlayService, GameService, ModalWindowService) {
             return {
                 restrict: 'E',
                 scope: {
@@ -20,7 +20,7 @@ angular.module('catan')
                     };
 
                     scope.build = function() {
-                        ModalService.toggle("BUILD_PANEL");
+                        ModalWindowService.toggle("BUILD_PANEL");
                     };
                 }
             };

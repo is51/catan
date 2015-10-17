@@ -1,17 +1,17 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctModalClose',['ModalService', function(ModalService) {
+        .directive('ctModalWindowClose',['ModalWindowService', function(ModalWindowService) {
 
             return {
                 restrict: 'A',
                 link: function(scope, element) {
 
-                    var modalId = element.closest("ct-modal").attr("modal-id");
+                    var modalWindowId = element.closest("ct-modal-window").attr("modal-window-id");
 
-                    if (modalId) {
+                    if (modalWindowId) {
                         element.on("click", function() {
-                            ModalService.hide(modalId);
+                            ModalWindowService.hide(modalWindowId);
                             scope.$apply();
                         });
                     }

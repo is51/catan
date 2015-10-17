@@ -1,4 +1,4 @@
-ct-modal {
+ct-modal-window {
     position: absolute;
     top: 0;
     left: 0;
@@ -7,7 +7,7 @@ ct-modal {
     z-index: 100;
 }
 
-ct-modal .ct-modal-bg {
+ct-modal-window .ct-modal-window-bg {
     position: absolute;
     top: 0;
     left: 0;
@@ -17,7 +17,7 @@ ct-modal .ct-modal-bg {
     z-index: 10;
 }
 
-ct-modal .ct-modal-content {
+ct-modal-window .ct-modal-window-content {
     position: absolute;
     z-index: 20;
 }
