@@ -44,8 +44,8 @@ public class BuildRoadTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
         int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
@@ -60,7 +60,7 @@ public class BuildRoadTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuild))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuild))
                 .body("map.nodes.find {it.nodeId == " + nodeIdToBuild + "}.building", notNullValue())
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuild + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
@@ -71,7 +71,7 @@ public class BuildRoadTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuild))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuild))
                 .rootPath("map.edges.find {it.edgeId == " + edgeIdToBuild + "}")
                 .body("building", notNullValue())
                 .body("building.ownerGameUserId", is(gameUserId1))
@@ -86,9 +86,9 @@ public class BuildRoadTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int edgeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
-        int edgeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].edges.topRightId");
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int edgeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
+        int edgeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topRightId");
         int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
@@ -103,9 +103,9 @@ public class BuildRoadTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuildFirst))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuildFirst))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildFirst + "}.building", nullValue())
-                .body("map.hexes[0].edges.topRightId", is(edgeIdToBuildSecond))
+                .body("map.hexes[0].edgesIds.topRightId", is(edgeIdToBuildSecond))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildSecond + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -115,8 +115,8 @@ public class BuildRoadTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuildFirst))
-                .body("map.hexes[0].edges.topRightId", is(edgeIdToBuildSecond))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuildFirst))
+                .body("map.hexes[0].edgesIds.topRightId", is(edgeIdToBuildSecond))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildSecond + "}.building", nullValue())
                 .rootPath("map.edges.find {it.edgeId == " + edgeIdToBuildFirst + "}")
                 .body("building", notNullValue())
@@ -129,8 +129,8 @@ public class BuildRoadTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuildFirst))
-                .body("map.hexes[0].edges.topRightId", is(edgeIdToBuildSecond))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuildFirst))
+                .body("map.hexes[0].edgesIds.topRightId", is(edgeIdToBuildSecond))
                 .rootPath("map.edges.find {it.edgeId == " + edgeIdToBuildFirst + "}")
                 .body("building", notNullValue())
                 .body("building.ownerGameUserId", is(gameUserId1))
@@ -149,8 +149,8 @@ public class BuildRoadTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
         int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
@@ -165,7 +165,7 @@ public class BuildRoadTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuild))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuild))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuild + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -175,7 +175,7 @@ public class BuildRoadTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuild))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuild))
                 .rootPath("map.edges.find {it.edgeId == " + edgeIdToBuild + "}")
                 .body("building", notNullValue())
                 .body("building.ownerGameUserId", is(gameUserId1))
@@ -195,7 +195,7 @@ public class BuildRoadTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
+        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
@@ -207,7 +207,7 @@ public class BuildRoadTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuild))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuild))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuild + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -225,8 +225,8 @@ public class BuildRoadTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
@@ -240,7 +240,7 @@ public class BuildRoadTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuild))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuild))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuild + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -258,9 +258,9 @@ public class BuildRoadTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int edgeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
-        int edgeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].edges.topRightId");;
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int edgeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
+        int edgeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topRightId");;
         int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
@@ -275,9 +275,9 @@ public class BuildRoadTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuildFirst))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuildFirst))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildFirst + "}.building", nullValue())
-                .body("map.hexes[0].edges.topRightId", is(edgeIdToBuildSecond))
+                .body("map.hexes[0].edgesIds.topRightId", is(edgeIdToBuildSecond))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildSecond + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -287,8 +287,8 @@ public class BuildRoadTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuildFirst))
-                .body("map.hexes[0].edges.topRightId", is(edgeIdToBuildSecond))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuildFirst))
+                .body("map.hexes[0].edgesIds.topRightId", is(edgeIdToBuildSecond))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildSecond + "}.building", nullValue())
                 .rootPath("map.edges.find {it.edgeId == " + edgeIdToBuildFirst + "}")
                 .body("building", notNullValue())
@@ -332,10 +332,10 @@ public class BuildRoadTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int nodeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topRightId");
-        int edgeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
-        int edgeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].edges.topRightId");
+        int nodeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int nodeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topRightId");
+        int edgeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
+        int edgeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topRightId");
         int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
@@ -351,9 +351,9 @@ public class BuildRoadTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuildFirst))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuildFirst))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildFirst + "}.building", nullValue())
-                .body("map.hexes[0].edges.topRightId", is(edgeIdToBuildSecond))
+                .body("map.hexes[0].edgesIds.topRightId", is(edgeIdToBuildSecond))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildSecond + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -363,8 +363,8 @@ public class BuildRoadTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].edges.topLeftId", is(edgeIdToBuildFirst))
-                .body("map.hexes[0].edges.topRightId", is(edgeIdToBuildSecond))
+                .body("map.hexes[0].edgesIds.topLeftId", is(edgeIdToBuildFirst))
+                .body("map.hexes[0].edgesIds.topRightId", is(edgeIdToBuildSecond))
                 .body("map.edges.find {it.edgeId == " + edgeIdToBuildSecond + "}.building", nullValue())
                 .rootPath("map.edges.find {it.edgeId == " + edgeIdToBuildFirst + "}")
                 .body("building", notNullValue())
