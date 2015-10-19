@@ -12,6 +12,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
+import catan.domain.model.game.types.GameUserActions;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
@@ -106,7 +107,7 @@ public class PlayServiceImpl implements PlayService {
 
         edgeToBuildOn.setBuilding(building);
         updateCurrentCycleBuildingNumber(game);
-        //TODO: calculate and generate next available actions here
+        updateAvailableUserActions(game);
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built {} at edge {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), edgeId, gameIdString);
@@ -178,7 +179,7 @@ public class PlayServiceImpl implements PlayService {
 
         nodeToBuildOn.setBuilding(building);
         updateCurrentCycleBuildingNumber(game);
-        //TODO: calculate and generate next available actions here
+        updateAvailableUserActions(game);
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built {} at node {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), nodeId, gameIdString);
@@ -215,8 +216,62 @@ public class PlayServiceImpl implements PlayService {
         log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
         game.setCurrentMove(nextMoveNumber);
         updateCurrentCycleBuildingNumber(game);
-        //TODO: calculate and generate next available actions here
+        updateAvailableUserActions(game);
         gameDao.updateGame(game);
+    }
+
+    private void updateAvailableUserActions(GameBean game) throws GameException {
+        boolean isMandatory = true;
+        List<String> actionsList = null;
+        List<GameUserActions> actionCode = null;
+        switch (game.getStage()) {
+            case PREPARATION:
+                List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+                for (GameUserBean gameUser : game.getGameUsers()) {
+                    if (gameUser.getMoveOrder() == game.getCurrentMove()) {
+                        if (game.getCurrentCycleBuildingNumber() > initialBuildingsSet.get(game.getPreparationCycle() - 1).size()) {
+                            actionCode.add(GameUserActions.END_TURN);
+                            //set end turn mandatory
+                            break;
+                        } else if (initialBuildingsSet.get(game.getPreparationCycle() - 1).get(game
+                                .getCurrentCycleBuildingNumber() - 1).equals("ROAD")) {
+                            actionCode.add(GameUserActions.BUILD_ROAD);
+                            //set build road mandatory
+                        } else if (initialBuildingsSet.get(game.getPreparationCycle() - 1).get(game
+                                .getCurrentCycleBuildingNumber() - 1).equals("SETTLEMENT")) {
+                            actionCode.add(GameUserActions.BUILD_SETTLEMENT);
+                            //set build settlement mandatory
+                        } else if (initialBuildingsSet.get(game.getPreparationCycle() - 1).get(game
+                                .getCurrentCycleBuildingNumber() - 1).equals("CITY")) {
+                            actionCode.add(GameUserActions.BUILD_CITY);
+                            //set build city mandatory
+                        }
+                    } else {
+                        //non-active users have not any available actions
+                        isMandatory = false;
+                    }
+                    if (actionCode != null) {
+                        actionsList.add("\"code\": " + actionCode + "\"params\": {}");
+                        //set actionsList here
+                    }
+                    gameUser.setAvailableActions("\"list\": " + actionsList + ", \"isMandatory\": " + isMandatory);
+                }
+                break;
+            case MAIN:
+                //TODO: complete this part when developing main stage part
+                for (GameUserBean gameUser : game.getGameUsers()) {
+                    if (gameUser.getMoveOrder() == game.getCurrentMove()) {
+                        gameUser.setAvailableActions("blalbalba");
+                    } else {
+                        gameUser.setAvailableActions("no available actions");
+                        //non-active users have not any available actions (trade in future)
+                    }
+                }
+                break;
+            default:
+                log.debug("Cannot recognize current game stage: {}", game.getStage());
+                throw new GameException(ERROR_CODE_ERROR);
+        }
     }
 
     private void updateCurrentCycleBuildingNumber (GameBean game) {
