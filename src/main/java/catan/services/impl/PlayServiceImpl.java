@@ -10,20 +10,16 @@ import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
-import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
-import catan.domain.model.game.types.GameUserActions;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
-import catan.services.util.play.EndTurnUtil;
+import catan.services.util.play.PlayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service("playService")
 @Transactional
@@ -34,7 +30,7 @@ public class PlayServiceImpl implements PlayService {
 
     private GameDao gameDao;
     private GameUtil gameUtil;
-    private EndTurnUtil endTurnUtil;
+    private PlayUtil playUtil;
 
     @Override
     public void buildRoad(UserBean user, String gameIdString, String edgeIdString) throws PlayException, GameException {
@@ -106,8 +102,9 @@ public class PlayServiceImpl implements PlayService {
         building.setBuildingOwner(gameUserBean);
 
         edgeToBuildOn.setBuilding(building);
-        updateCurrentCycleBuildingNumber(game);
-        updateAvailableUserActions(game);
+        playUtil.updateCurrentCycleBuildingNumber(game);
+        playUtil.updateAvailableUserActions(game);
+
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built {} at edge {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), edgeId, gameIdString);
@@ -178,8 +175,9 @@ public class PlayServiceImpl implements PlayService {
         building.setBuildingOwner(gameUserBean);
 
         nodeToBuildOn.setBuilding(building);
-        updateCurrentCycleBuildingNumber(game);
-        updateAvailableUserActions(game);
+        playUtil.updateCurrentCycleBuildingNumber(game);
+        playUtil.updateAvailableUserActions(game);
+
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built {} at node {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), nodeId, gameIdString);
@@ -194,83 +192,11 @@ public class PlayServiceImpl implements PlayService {
         validateUserNotEmpty(user);
         validateCurrentTurnOfUser(game, user);
 
-        updateNextMoveOrder(game);
-        updateCurrentCycleBuildingNumber(game);
-        updateAvailableUserActions(game);
+        playUtil.updateNextMoveOrder(game);
+        playUtil.updateCurrentCycleBuildingNumber(game);
+        playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
-    }
-
-    private void updateAvailableUserActions(GameBean game) throws GameException {
-        boolean isMandatory = true;
-        List<String> actionsList = null;
-        List<GameUserActions> actionCode = null;
-        switch (game.getStage()) {
-            case PREPARATION:
-                List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-                for (GameUserBean gameUser : game.getGameUsers()) {
-                    if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                        if (game.getCurrentCycleBuildingNumber() > initialBuildingsSet.get(game.getPreparationCycle() - 1).size()) {
-                            actionCode.add(GameUserActions.END_TURN);
-                            //set end turn mandatory
-                            break;
-                        } else if (initialBuildingsSet.get(game.getPreparationCycle() - 1).get(game
-                                .getCurrentCycleBuildingNumber() - 1).equals("ROAD")) {
-                            actionCode.add(GameUserActions.BUILD_ROAD);
-                            //set build road mandatory
-                        } else if (initialBuildingsSet.get(game.getPreparationCycle() - 1).get(game
-                                .getCurrentCycleBuildingNumber() - 1).equals("SETTLEMENT")) {
-                            actionCode.add(GameUserActions.BUILD_SETTLEMENT);
-                            //set build settlement mandatory
-                        } else if (initialBuildingsSet.get(game.getPreparationCycle() - 1).get(game
-                                .getCurrentCycleBuildingNumber() - 1).equals("CITY")) {
-                            actionCode.add(GameUserActions.BUILD_CITY);
-                            //set build city mandatory
-                        }
-                    } else {
-                        //non-active users have not any available actions
-                        isMandatory = false;
-                    }
-                    if (actionCode != null) {
-                        actionsList.add("\"code\": " + actionCode + "\"params\": {}");
-                        //set actionsList here
-                    }
-                    gameUser.setAvailableActions("\"list\": " + actionsList + ", \"isMandatory\": " + isMandatory);
-                }
-                break;
-            case MAIN:
-                //TODO: complete this part when developing main stage part
-                for (GameUserBean gameUser : game.getGameUsers()) {
-                    if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                        gameUser.setAvailableActions("blalbalba");
-                    } else {
-                        gameUser.setAvailableActions("no available actions");
-                        //non-active users have not any available actions (trade in future)
-                    }
-                }
-                break;
-            default:
-                log.debug("Cannot recognize current game stage: {}", game.getStage());
-                throw new GameException(ERROR_CODE_ERROR);
-        }
-    }
-
-    private void updateNextMoveOrder(GameBean game) throws GameException {
-        Integer nextMoveNumber;
-        switch (game.getStage()) {
-            case PREPARATION:
-                nextMoveNumber = endTurnUtil.endTurnImplInPreparationStage(game);
-                break;
-            case MAIN:
-                nextMoveNumber = endTurnUtil.endTurnImplInMainStage(game);
-                break;
-            default:
-                log.debug("Cannot recognize current game stage: {}", game.getStage());
-                throw new GameException(ERROR_CODE_ERROR);
-        }
-
-        log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
-        game.setCurrentMove(nextMoveNumber);
     }
 
     private void validateCurrentTurnOfUser(GameBean game, UserBean user) throws PlayException {
@@ -279,17 +205,6 @@ public class PlayServiceImpl implements PlayService {
         if (!game.getCurrentMove().equals(gameUserBean.getMoveOrder())) {
             log.debug("It is not current turn of user {}", gameUserBean.getUser().getUsername());
             throw new PlayException(ERROR_CODE_ERROR);
-        }
-    }
-
-    private void updateCurrentCycleBuildingNumber(GameBean game) {
-        if (game.getStage().equals(GameStage.PREPARATION)) {
-            List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-            if (game.getCurrentCycleBuildingNumber() > initialBuildingsSet.get(game.getPreparationCycle() - 1).size()) {
-                game.setCurrentCycleBuildingNumber(1);
-            } else {
-                game.setCurrentCycleBuildingNumber(game.getCurrentCycleBuildingNumber() + 1);
-            }
         }
     }
 
@@ -342,7 +257,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     @Autowired
-    public void setEndTurnUtil(EndTurnUtil endTurnUtil) {
-        this.endTurnUtil = endTurnUtil;
+    public void setPlayUtil(PlayUtil playUtil) {
+        this.playUtil = playUtil;
     }
 }

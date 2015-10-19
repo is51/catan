@@ -2,8 +2,6 @@ package catan.services.util.play;
 
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.types.GameStage;
-import catan.services.util.game.GameUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +12,8 @@ import java.util.List;
 public class EndTurnUtil {
     private Logger log = LoggerFactory.getLogger(EndTurnUtil.class);
 
-    private GameUtil gameUtil;
-
-    public Integer endTurnImplInPreparationStage(GameBean game) {
+    public Integer endTurnImplInPreparationStage(GameBean game, List<List<String>> initialBuildingsSet) {
         Integer nextMoveNumber;
-        List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
         if (isCycleFinished(game)) {
             if (isLastCycle(game, initialBuildingsSet.size())) {
                 game.setStage(GameStage.MAIN);
@@ -72,10 +67,5 @@ public class EndTurnUtil {
 
     private boolean isLastPlayer(GameBean game) {
         return game.getCurrentMove() == game.getGameUsers().size();
-    }
-
-    @Autowired
-    public void setGameUtil(GameUtil gameUtil) {
-        this.gameUtil = gameUtil;
     }
 }

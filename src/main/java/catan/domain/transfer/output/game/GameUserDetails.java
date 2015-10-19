@@ -10,7 +10,7 @@ public class GameUserDetails {
     private boolean ready;
     private int moveOrder;
     private AchievementsDetails achievements;
-    private String availableActions;
+    private String actions;
     private ResourcesDetails resources;
     private DevelopmentCardsDetails developmentCards;
 
@@ -25,7 +25,7 @@ public class GameUserDetails {
         this.ready = gameUserBean.isReady();
         this.moveOrder = gameUserBean.getMoveOrder();
         this.achievements = new AchievementsDetails(gameUserBean.getAchievements());
-        this.availableActions = gameUserBean.getAvailableActions();
+        this.actions = gameUserBean.getActions();
 
         if (user.getId() == detailsRequesterId) {
             this.resources = new ResourcesDetails(gameUserBean.getResources());
@@ -81,12 +81,12 @@ public class GameUserDetails {
         this.achievements = achievements;
     }
 
-    public String getAvailableActions() {
-        return  availableActions;
+    public String getActions() {
+        return  actions;
     }
 
-    public void setAvailableActions(String availableActions) {
-        this.availableActions = availableActions;
+    public void setActions(String actions) {
+        this.actions = actions;
     }
 
     public ResourcesDetails getResources() {
