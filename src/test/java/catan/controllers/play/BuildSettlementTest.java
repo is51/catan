@@ -127,8 +127,8 @@ public class BuildSettlementTest extends PlayTestUtil {
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
 
         int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int nodeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topId");
+        int nodeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int nodeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topId");
         int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
 
         joinPublicGame(userToken2, gameId);
@@ -141,7 +141,7 @@ public class BuildSettlementTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].nodes.topLeftId", is(nodeIdToBuildFirst))
+                .body("map.hexes[0].nodesIds.topLeftId", is(nodeIdToBuildFirst))
                 .body("map.nodes.find {it.nodeId == " + nodeIdToBuildFirst + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -153,7 +153,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].nodes.topLeftId", is(nodeIdToBuildFirst))
+                .body("map.hexes[0].nodesIds.topLeftId", is(nodeIdToBuildFirst))
                 .rootPath("map.nodes.find {it.nodeId == " + nodeIdToBuildFirst + "}")
                 .body("building", notNullValue())
                 .body("building.ownerGameUserId", is(gameUserId1))
@@ -182,11 +182,11 @@ public class BuildSettlementTest extends PlayTestUtil {
 
         int gameId = createNewGame(userToken1, false).path("gameId");
         int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
-        int nodeIdToBuildFirstSettlement = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topLeftId");
-        int nodeIdToBuildSecondSettlement = viewGame(userToken1, gameId).path("map.hexes[0].nodes.topRightId");
-        int edgeIdToBuildFirstRoad = viewGame(userToken1, gameId).path("map.hexes[0].edges.topLeftId");
-        int edgeIdToBuildSecondRoad = viewGame(userToken1, gameId).path("map.hexes[0].edges.topRightId");
-        int edgeIdToBuildThirdRoad = viewGame(userToken1, gameId).path("map.hexes[0].edges.rightId");
+        int nodeIdToBuildFirstSettlement = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int nodeIdToBuildSecondSettlement = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topRightId");
+        int edgeIdToBuildFirstRoad = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
+        int edgeIdToBuildSecondRoad = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topRightId");
+        int edgeIdToBuildThirdRoad = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.rightId");
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
@@ -198,7 +198,7 @@ public class BuildSettlementTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].nodes.topLeftId", is(nodeIdToBuildFirstSettlement))
+                .body("map.hexes[0].nodesIds.topLeftId", is(nodeIdToBuildFirstSettlement))
                 .body("map.nodes.find {it.nodeId == " + nodeIdToBuildFirstSettlement + "}.building", nullValue())
                 .body("status", equalTo("PLAYING"));
 
@@ -219,7 +219,7 @@ public class BuildSettlementTest extends PlayTestUtil {
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("map.hexes[0].nodes.topLeftId", is(nodeIdToBuildFirstSettlement))
+                .body("map.hexes[0].nodesIds.topLeftId", is(nodeIdToBuildFirstSettlement))
                 .rootPath("map.nodes.find {it.nodeId == " + nodeIdToBuildFirstSettlement + "}")
                 .body("building", notNullValue())
                 .body("building.ownerGameUserId", is(gameUserId1))
