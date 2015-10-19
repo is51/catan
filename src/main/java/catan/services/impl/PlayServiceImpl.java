@@ -45,9 +45,9 @@ public class PlayServiceImpl implements PlayService {
         int edgeId = validateIdIsInteger(edgeIdString);
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateGameStatus(game, GameStatus.PLAYING);
+        validateGameStatusIsPlaying(game);
 
-        GameUserBean gameUserBean = validateUserIsJoined(user, game);
+        GameUserBean gameUserBean = getJoinedGameUser(user, game);
 
         EdgeBean edgeToBuildOn = null;
         for (EdgeBean edge : game.getEdges()) {
@@ -122,8 +122,8 @@ public class PlayServiceImpl implements PlayService {
         int nodeId = validateIdIsInteger(nodeIdString);
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateGameStatus(game, GameStatus.PLAYING);
-        GameUserBean gameUserBean = validateUserIsJoined(user, game);
+        validateGameStatusIsPlaying(game);
+        GameUserBean gameUserBean = getJoinedGameUser(user, game);
 
         NodeBean nodeToBuildOn = null;
         for (NodeBean node : game.getNodes()) {
@@ -187,36 +187,17 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
-        Integer nextMoveNumber;
+        log.debug("User {} tries to end his turn of game id {}", user == null ? "<EMPTY>" : user.getUsername(), gameIdString);
+
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-
-        log.debug("User {} tries to end his turn of game id {}",user == null ? "<EMPTY>" : user.getUsername(), gameIdString);
-
+        validateGameStatusIsPlaying(game);
         validateUserNotEmpty(user);
-        validateGameStatus(game, GameStatus.PLAYING);
-        GameUserBean gameUserBean = validateUserIsJoined(user, game);
+        validateCurrentTurnOfUser(game, user);
 
-        if (!game.getCurrentMove().equals(gameUserBean.getMoveOrder())) {
-            log.debug("It is not current turn of user {}", user.getUsername());
-            throw new PlayException(ERROR_CODE_ERROR);
-        }
-
-        switch (game.getStage()) {
-            case PREPARATION:
-                nextMoveNumber = endTurnUtil.endTurnImplInPreparationStage(game);
-                break;
-            case MAIN:
-                nextMoveNumber = endTurnUtil.endTurnImplInMainStage(game);
-                break;
-            default:
-                log.debug("Cannot recognize current game stage: {}", game.getStage());
-                throw new GameException(ERROR_CODE_ERROR);
-        }
-
-        log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
-        game.setCurrentMove(nextMoveNumber);
+        updateNextMoveOrder(game);
         updateCurrentCycleBuildingNumber(game);
         updateAvailableUserActions(game);
+
         gameDao.updateGame(game);
     }
 
@@ -274,7 +255,34 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void updateCurrentCycleBuildingNumber (GameBean game) {
+    private void updateNextMoveOrder(GameBean game) throws GameException {
+        Integer nextMoveNumber;
+        switch (game.getStage()) {
+            case PREPARATION:
+                nextMoveNumber = endTurnUtil.endTurnImplInPreparationStage(game);
+                break;
+            case MAIN:
+                nextMoveNumber = endTurnUtil.endTurnImplInMainStage(game);
+                break;
+            default:
+                log.debug("Cannot recognize current game stage: {}", game.getStage());
+                throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
+        game.setCurrentMove(nextMoveNumber);
+    }
+
+    private void validateCurrentTurnOfUser(GameBean game, UserBean user) throws PlayException {
+        GameUserBean gameUserBean = getJoinedGameUser(user, game);
+
+        if (!game.getCurrentMove().equals(gameUserBean.getMoveOrder())) {
+            log.debug("It is not current turn of user {}", gameUserBean.getUser().getUsername());
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private void updateCurrentCycleBuildingNumber(GameBean game) {
         if (game.getStage().equals(GameStage.PREPARATION)) {
             List<List<String>> initialBuildingsSet = gameUtil.getInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
             if (game.getCurrentCycleBuildingNumber() > initialBuildingsSet.get(game.getPreparationCycle() - 1).size()) {
@@ -292,21 +300,15 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private GameUserBean validateUserIsJoined(UserBean user, GameBean game) throws PlayException {
-        GameUserBean gameUserBean = null;
+    private GameUserBean getJoinedGameUser(UserBean user, GameBean game) throws PlayException {
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().equals(user)) {
-                gameUserBean = gameUser;
-                break;
+                return gameUser;
             }
         }
 
-        if (gameUserBean == null) {
-            log.debug("User is not joined to game {}", game.getGameId());
-            throw new PlayException(ERROR_CODE_ERROR);
-        }
-
-        return gameUserBean;
+        log.debug("User is not joined to game {}", game.getGameId());
+        throw new PlayException(ERROR_CODE_ERROR);
     }
 
     private Integer validateIdIsInteger(String idString) throws PlayException {
@@ -322,9 +324,9 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void validateGameStatus(GameBean game, GameStatus expectedStatus) throws GameException {
-        if (game.getStatus() != expectedStatus) {
-            log.debug("User cannot do this action in current game status: {} instead of {}", game.getStatus(), expectedStatus);
+    private void validateGameStatusIsPlaying(GameBean game) throws GameException {
+        if (game.getStatus() != GameStatus.PLAYING) {
+            log.debug("User cannot do this action in current game status: {} instead of {}", game.getStatus(), GameStatus.PLAYING);
             throw new GameException(ERROR_CODE_ERROR);
         }
     }
