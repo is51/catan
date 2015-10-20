@@ -233,6 +233,11 @@ public class PreparationStageTest extends PlayTestUtil {
                 .then()
                 .statusCode(200);
 
+        // should fail when end turn if current move is not move of third user
+        endTurn(userTokens[thirdGameUserNumber], gameId)
+                .then()
+                .statusCode(400);
+
 
         // Second player moves #2
         checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId2ToBuildForSecondUser);
