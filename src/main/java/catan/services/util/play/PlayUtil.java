@@ -77,9 +77,9 @@ public class PlayUtil {
                     }
                     if (!actionCode.isEmpty()) {
                         actionsList.add("{\"code\": \"" + actionCode.get(0).toString() + "\", \"params\": {}}");
-                        gameUser.setActions("{\"list\": [" + actionsList.get(0) + "], \"isMandatory\": true}");
+                        gameUser.setAvailableActions("{\"list\": [" + actionsList.get(0) + "], \"isMandatory\": true}");
                     } else {
-                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
+                        gameUser.setAvailableActions("{\"list\": [], \"isMandatory\": false}");
                     }
                     actionCode.clear();
                     actionsList.clear();
@@ -89,9 +89,9 @@ public class PlayUtil {
                 //TODO: complete this part when developing main stage part
                 for (GameUserBean gameUser : game.getGameUsers()) {
                     if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
+                        gameUser.setAvailableActions("{\"list\": [], \"isMandatory\": false}");
                     } else {
-                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
+                        gameUser.setAvailableActions("{\"list\": [], \"isMandatory\": false}");
                         //non-active users have not any available actions (trade in future)
                     }
                 }

@@ -40,7 +40,7 @@ public class GameUserBean {
     private int moveOrder;
 
     @Column(name = "AVAILABLE_ACTIONS", unique = false, nullable = true)
-    private String actions;
+    private String availableActions;
 
     @Embedded
     private AchievementsBean achievements;
@@ -111,12 +111,12 @@ public class GameUserBean {
         this.moveOrder = moveOrder;
     }
 
-    public String getActions() {
-        return actions;
+    public String getAvailableActions() {
+        return availableActions;
     }
 
-    public void setActions(String actions) {
-        this.actions = actions;
+    public void setAvailableActions(String availableActions) {
+        this.availableActions = availableActions;
     }
 
     public AchievementsBean getAchievements() {
@@ -173,7 +173,7 @@ public class GameUserBean {
                 ", gameId: " + game.getGameId() +
                 ", ready: " + ready +
                 ", moveOrder: " + moveOrder +
-                ", actions: " + actions +
+                ", availableActions: " + availableActions +
                "]";
     }
 }

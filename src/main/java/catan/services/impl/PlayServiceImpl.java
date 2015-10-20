@@ -208,7 +208,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void validateActionIsAllowed(UserBean user, GameBean game, GameUserActions requiredAction) throws PlayException {
-        AllAvailableActionsDetails actions = playUtil.getAllAvailableActions(getJoinedGameUser(user, game).getActions());
+        AllAvailableActionsDetails actions = playUtil.getAllAvailableActions(getJoinedGameUser(user, game).getAvailableActions());
         boolean isActionAllowed = false;
         for (ActionDetails allowedActions : actions.getList()) {
             if (allowedActions.getCode() == requiredAction) {
