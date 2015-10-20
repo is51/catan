@@ -1,6 +1,6 @@
 package catan.domain.transfer.output.game;
 
-import catan.domain.model.game.DevelopmentCardsBean;
+import catan.domain.model.game.DevelopmentCards;
 
 public class DevelopmentCardsDetails {
     private int knight;
@@ -12,7 +12,7 @@ public class DevelopmentCardsDetails {
     public DevelopmentCardsDetails() {
     }
 
-    public DevelopmentCardsDetails(DevelopmentCardsBean developmentCards) {
+    public DevelopmentCardsDetails(DevelopmentCards developmentCards) {
         this.knight = developmentCards.getKnight();
         this.victoryPoint = developmentCards.getVictoryPoint();
         this.roadBuilding = developmentCards.getRoadBuilding();

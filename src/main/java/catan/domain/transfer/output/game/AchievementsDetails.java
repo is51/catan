@@ -1,6 +1,6 @@
 package catan.domain.transfer.output.game;
 
-import catan.domain.model.game.AchievementsBean;
+import catan.domain.model.game.Achievements;
 
 public class AchievementsDetails {
     private int displayVictoryPoints;
@@ -12,7 +12,7 @@ public class AchievementsDetails {
     public AchievementsDetails() {
     }
 
-    public AchievementsDetails(AchievementsBean achievements) {
+    public AchievementsDetails(Achievements achievements) {
         this.displayVictoryPoints = achievements.getDisplayVictoryPoints();
         this.totalResources = achievements.getTotalResources();
         this.totalCards = achievements.getTotalCards();

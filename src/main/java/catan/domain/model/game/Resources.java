@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Embeddable
-public class ResourcesBean {
+public class Resources {
 
     @Column(name = "RESOURCE_BRICK", nullable = false)
     private int brick;
@@ -24,10 +24,10 @@ public class ResourcesBean {
     @Column(name = "RESOURCE_STONE", nullable = false)
     private int stone;
 
-    public ResourcesBean() {
+    public Resources() {
     }
 
-    public ResourcesBean(int brick, int wood, int sheep, int wheat, int stone) {
+    public Resources(int brick, int wood, int sheep, int wheat, int stone) {
         this.brick = brick;
         this.wood = wood;
         this.sheep = sheep;

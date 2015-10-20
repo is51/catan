@@ -43,13 +43,13 @@ public class GameUserBean {
     private String availableActions;
 
     @Embedded
-    private AchievementsBean achievements;
+    private Achievements achievements;
 
     @Embedded
-    private ResourcesBean resources;
+    private Resources resources;
 
     @Embedded
-    private DevelopmentCardsBean developmentCards;
+    private DevelopmentCards developmentCards;
 
     public GameUserBean() {
     }
@@ -58,9 +58,9 @@ public class GameUserBean {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
-        this.achievements = new AchievementsBean(0, 0, 0, 0, 0);
-        this.resources = new ResourcesBean(0, 0, 0, 0, 0);
-        this.developmentCards = new DevelopmentCardsBean(0, 0, 0, 0, 0);
+        this.achievements = new Achievements(0, 0, 0, 0, 0);
+        this.resources = new Resources(0, 0, 0, 0, 0);
+        this.developmentCards = new DevelopmentCards(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -119,27 +119,27 @@ public class GameUserBean {
         this.availableActions = availableActions;
     }
 
-    public AchievementsBean getAchievements() {
+    public Achievements getAchievements() {
         return achievements;
     }
 
-    public void setAchievements(AchievementsBean achievements) {
+    public void setAchievements(Achievements achievements) {
         this.achievements = achievements;
     }
 
-    public ResourcesBean getResources() {
+    public Resources getResources() {
         return resources;
     }
 
-    public void setResources(ResourcesBean resources) {
+    public void setResources(Resources resources) {
         this.resources = resources;
     }
 
-    public DevelopmentCardsBean getDevelopmentCards() {
+    public DevelopmentCards getDevelopmentCards() {
         return developmentCards;
     }
 
-    public void setDevelopmentCards(DevelopmentCardsBean developmentCards) {
+    public void setDevelopmentCards(DevelopmentCards developmentCards) {
         this.developmentCards = developmentCards;
     }
 
