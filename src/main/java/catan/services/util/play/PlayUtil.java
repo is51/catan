@@ -5,6 +5,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameUserActions;
+import catan.domain.transfer.output.game.AllAvailableActionsDetails;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
@@ -28,6 +29,10 @@ public class PlayUtil {
     public List<List<String>> getInitialBuildingsSetFromJson(String json) {
         return GSON.fromJson(json, new TypeToken<List<List<String>>>() {
         }.getType());
+    }
+
+    public AllAvailableActionsDetails getAllAvailableActions(String json) {
+        return GSON.fromJson(json, AllAvailableActionsDetails.class);
     }
 
     public void updateNextMoveOrder(GameBean game) throws GameException {
@@ -73,9 +78,8 @@ public class PlayUtil {
                     if (!actionCode.isEmpty()) {
                         actionsList.add("{\"code\": \"" + actionCode.get(0).toString() + "\", \"params\": {}}");
                         gameUser.setActions("{\"list\": [" + actionsList.get(0) + "], \"isMandatory\": true}");
-                        //set actionsList here
                     } else {
-                        gameUser.setActions("{\"list\": null, \"isMandatory\": false}");
+                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
                     }
                     actionCode.clear();
                     actionsList.clear();
@@ -85,9 +89,9 @@ public class PlayUtil {
                 //TODO: complete this part when developing main stage part
                 for (GameUserBean gameUser : game.getGameUsers()) {
                     if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                        gameUser.setActions("{\"list\": null, \"isMandatory\": false}");
+                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
                     } else {
-                        gameUser.setActions("{\"list\": null, \"isMandatory\": false}");
+                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
                         //non-active users have not any available actions (trade in future)
                     }
                 }

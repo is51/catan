@@ -11,7 +11,10 @@ import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
+import catan.domain.model.game.types.GameUserActions;
 import catan.domain.model.user.UserBean;
+import catan.domain.transfer.output.game.ActionDetails;
+import catan.domain.transfer.output.game.AllAvailableActionsDetails;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.PlayUtil;
@@ -44,6 +47,8 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
 
         GameUserBean gameUserBean = getJoinedGameUser(user, game);
+
+        validateActionIsAllowed(user, game, GameUserActions.BUILD_ROAD);
 
         EdgeBean edgeToBuildOn = null;
         for (EdgeBean edge : game.getEdges()) {
@@ -122,6 +127,8 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         GameUserBean gameUserBean = getJoinedGameUser(user, game);
 
+        validateActionIsAllowed(user, game, GameUserActions.BUILD_SETTLEMENT);
+
         NodeBean nodeToBuildOn = null;
         for (NodeBean node : game.getNodes()) {
             if (node.getId() == nodeId) {
@@ -191,12 +198,28 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateUserNotEmpty(user);
         validateCurrentTurnOfUser(game, user);
+        validateActionIsAllowed(user, game, GameUserActions.END_TURN);
 
         playUtil.updateNextMoveOrder(game);
         playUtil.updateCurrentCycleBuildingNumber(game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
+    }
+
+    private void validateActionIsAllowed(UserBean user, GameBean game, GameUserActions requiredAction) throws PlayException {
+        AllAvailableActionsDetails actions = playUtil.getAllAvailableActions(getJoinedGameUser(user, game).getActions());
+        boolean isActionAllowed = false;
+        for (ActionDetails allowedActions : actions.getList()) {
+            if (allowedActions.getCode() == requiredAction) {
+                isActionAllowed = true;
+            }
+        }
+
+        if (!isActionAllowed) {
+            log.debug("Required action {} is not allowed for user", requiredAction);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
     }
 
     private void validateCurrentTurnOfUser(GameBean game, UserBean user) throws PlayException {

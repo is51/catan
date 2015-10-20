@@ -48,6 +48,8 @@ public class EndTurnTest extends PlayTestUtil {
         int userId3 = getUserId(userToken3);
 
         int gameId = createNewGame(userToken1, false, 12, 1).path("gameId");
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int edgeIdToBuild = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
 
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
@@ -84,6 +86,8 @@ public class EndTurnTest extends PlayTestUtil {
                 .body("currentMove", is(1))
                 .body("status", equalTo("PLAYING"));
 
+        buildSettlement(userTokenOfFirstPlayer, gameId, nodeIdToBuild);
+        buildRoad(userTokenOfFirstPlayer, gameId, edgeIdToBuild);
         endTurn(userTokenOfFirstPlayer, gameId);
         viewGame(userToken1, gameId)
                 .then()

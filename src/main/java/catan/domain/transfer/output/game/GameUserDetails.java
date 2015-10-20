@@ -28,9 +28,9 @@ public class GameUserDetails {
         this.ready = gameUserBean.isReady();
         this.moveOrder = gameUserBean.getMoveOrder();
         this.achievements = new AchievementsDetails(gameUserBean.getAchievements());
-        this.actions = GSON.fromJson(gameUserBean.getActions(), AllAvailableActionsDetails.class);
 
         if (user.getId() == detailsRequesterId) {
+            this.actions = GSON.fromJson(gameUserBean.getActions(), AllAvailableActionsDetails.class);
             this.resources = new ResourcesDetails(gameUserBean.getResources());
             this.developmentCards = new DevelopmentCardsDetails(gameUserBean.getDevelopmentCards());
         }
