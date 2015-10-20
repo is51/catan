@@ -5,6 +5,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameUserActions;
+import catan.domain.transfer.output.game.AllAvailableActionsDetails;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
@@ -28,6 +29,10 @@ public class PlayUtil {
     public List<List<String>> getInitialBuildingsSetFromJson(String json) {
         return GSON.fromJson(json, new TypeToken<List<List<String>>>() {
         }.getType());
+    }
+
+    public AllAvailableActionsDetails getAllAvailableActions(String json) {
+        return GSON.fromJson(json, AllAvailableActionsDetails.class);
     }
 
     public void updateNextMoveOrder(GameBean game) throws GameException {
