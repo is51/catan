@@ -75,7 +75,7 @@ public class PlayUtil {
                         gameUser.setActions("{\"list\": [" + actionsList.get(0) + "], \"isMandatory\": true}");
                         //set actionsList here
                     } else {
-                        gameUser.setActions("{\"list\": null, \"isMandatory\": false}");
+                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
                     }
                     actionCode.clear();
                     actionsList.clear();
@@ -85,9 +85,9 @@ public class PlayUtil {
                 //TODO: complete this part when developing main stage part
                 for (GameUserBean gameUser : game.getGameUsers()) {
                     if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                        gameUser.setActions("{\"list\": null, \"isMandatory\": false}");
+                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
                     } else {
-                        gameUser.setActions("{\"list\": null, \"isMandatory\": false}");
+                        gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
                         //non-active users have not any available actions (trade in future)
                     }
                 }
