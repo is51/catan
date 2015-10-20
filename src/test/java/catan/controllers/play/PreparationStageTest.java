@@ -77,7 +77,7 @@ public class PreparationStageTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_provide_correct_available_actions_during_preparation_stage_if_initial_buildings_set_id_is_1() {
+    public void should_provide_correct_available_actions_and_build_correctly_during_preparation_stage() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
@@ -111,7 +111,19 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("gameUsers[" + firstGameUserNumber + "].availableActions", nullValue())
                 .body("gameUsers[" + thirdGameUserNumber + "].availableActions", nullValue());
 
-        // Achtung! Nodes and edges are correct only for currently generated map
+        /* Achtung! Nodes and edges are correct only for currently generated map
+        *     --------------
+        *     | 7 |12 | 16 |
+        *   -------------------
+        *   | 3 | 8 | 13 | 17 |
+        * -----------------------
+        * | 0 | 4 | 9 | 14 | 18 |
+        * -----------------------
+        *   | 1 | 5 | 10 | 15 |
+        *   -------------------
+        *     | 2 | 6 | 11 |
+        *     --------------
+        */
         int nodeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
         int edgeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
         int nodeId2ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topRightId");
@@ -133,8 +145,95 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
         // Third player moves #1
         checkAvailableForUserActionsDuringMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
+
+
         // Third player moves #2
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId2ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId2ToBuildForThirdUser);
+
+        // should_fail_if_try_to_build_settlement_on_existing_settlement
+        buildSettlement(userTokens[thirdGameUserNumber], gameId, nodeId1ToBuildForThirdUser)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_fail_if_try_to_build_settlement_close_to_another_settlement_less_than_2_roads
+        int nodeIdClosedToPreviousSettlement = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.bottomLeftId");
+        buildSettlement(userTokens[thirdGameUserNumber], gameId, nodeIdClosedToPreviousSettlement)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_fail_if_node_does_not_belong_to_this_game
+        int nonexistentNodeId = -1;
+        buildSettlement(userTokens[thirdGameUserNumber], gameId, nonexistentNodeId)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_successfully_build_settlement_on_empty_node
+        buildSettlement(userTokens[thirdGameUserNumber], gameId, nodeId2ToBuildForThirdUser)
+                .then()
+                .statusCode(200);
+        int thirdGameUserId = viewGame(userToken1, gameId).path("gameUsers[" + thirdGameUserNumber + "].id");
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .rootPath("map.nodes.find {it.nodeId == " + nodeId2ToBuildForThirdUser + "}")
+                .body("building", notNullValue())
+                .body("building.ownerGameUserId", is(thirdGameUserId))
+                .body("building.built", equalTo("SETTLEMENT"));
+
+        // should_fail_if_try_to_build_road_on_existing_road
+        buildRoad(userTokens[thirdGameUserNumber], gameId, edgeId1ToBuildForThirdUser)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_fail_if_player_try_to_build_road_without_any_connection_to_settlement_or_city_or_road
+        int edgeIdWithoutAnyConnection = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.bottomLeftId");
+        buildRoad(userTokens[thirdGameUserNumber], gameId, edgeIdWithoutAnyConnection)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_fail_if_player_try_to_build_road_without_any_connection_to_his_settlement_or_city_or_road_but_connected_with_opponents_settlement
+        int edgeIdWithConnectionToOpponentSettlement = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.leftId");
+        buildRoad(userTokens[thirdGameUserNumber], gameId, edgeIdWithConnectionToOpponentSettlement)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_fail_if_player_try_to_build_road_without_any_connection_to_his_settlement_or_city_or_road_but_connected_with_opponents_road
+        int edgeIdWithConnectionToOpponentRoad = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.topRightId");
+        buildRoad(userTokens[thirdGameUserNumber], gameId, edgeIdWithConnectionToOpponentRoad)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_fail_if_edge_does_not_belong_to_this_game
+        int nonexistentEdgeId = -1;
+        buildRoad(userTokens[thirdGameUserNumber], gameId, nonexistentEdgeId)
+                .then()
+                .statusCode(400)
+                .body("errorCode", equalTo("ERROR"));
+
+        // should_successfully_build_road_on_empty_edge_if_has_neighbour_road_that_belongs_to_this_player
+        buildRoad(userTokens[thirdGameUserNumber], gameId, edgeId2ToBuildForThirdUser)
+                .then()
+                .statusCode(200);
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .rootPath("map.edges.find {it.edgeId == " + edgeId2ToBuildForThirdUser + "}")
+                .body("building", notNullValue())
+                .body("building.ownerGameUserId", is(thirdGameUserId))
+                .body("building.built", equalTo("ROAD"));
+
+        // should_successfully_end_turn
+        endTurn(userTokens[thirdGameUserNumber], gameId)
+                .then()
+                .statusCode(200);
+
+
         // Second player moves #2
         checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId2ToBuildForSecondUser);
         // First player moves #2
