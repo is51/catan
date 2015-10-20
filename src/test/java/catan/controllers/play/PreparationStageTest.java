@@ -34,8 +34,8 @@ public class PreparationStageTest extends PlayTestUtil {
         }
     }
 
-    protected void checkAvailableForUserAction(String userToken, int gameId, int gameUserNumber, String action) {
-        if (action.equals("")) {
+    protected void checkAvailableForUserAction(String userToken, int gameId, int gameUserNumber, String actionCode) {
+        if (actionCode.equals("")) {
             viewGame(userToken, gameId)
                     .then()
                     .statusCode(200)
@@ -46,7 +46,7 @@ public class PreparationStageTest extends PlayTestUtil {
                     .statusCode(200)
                     .body("gameUsers[" + gameUserNumber + "].actions.isMandatory", equalTo(true))
                     .body("gameUsers[" + gameUserNumber + "].actions.list", hasSize(1))
-                    .body("gameUsers[" + gameUserNumber + "].actions.list", hasItemInArray(hasEntry("code", action)));
+                    .body("gameUsers[" + gameUserNumber + "].actions.list.find {it.code == '" + actionCode + "'}", notNullValue());
         }
     }
 
@@ -85,23 +85,6 @@ public class PreparationStageTest extends PlayTestUtil {
 
         int gameId = createNewGame(userToken1, false, 12, 1).path("gameId");
 
-        // nodes and edges are correct only for currently generated map
-
-        int nodeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
-        int edgeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
-        int nodeId2ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topRightId");
-        int edgeId2ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.right");
-
-        int nodeId1ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.topLeftId");
-        int edgeId1ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.topLeftId");
-        int nodeId2ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.topRightId");
-        int edgeId2ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.right");
-
-        int nodeId1ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.topLeftId");
-        int edgeId1ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.topLeftId");
-        int nodeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.topRightId");
-        int edgeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.right");
-
         joinPublicGame(userToken2, gameId);
         joinPublicGame(userToken3, gameId);
 
@@ -115,6 +98,34 @@ public class PreparationStageTest extends PlayTestUtil {
         int firstGameUserNumber = (gameUserNumber0MoveOrder == 1) ? 0 : ((gameUserNumber1MoveOrder == 1) ? 1 : 2);
         int secondGameUserNumber = (gameUserNumber0MoveOrder == 2) ? 0 : ((gameUserNumber1MoveOrder == 2) ? 1 : 2);
         int thirdGameUserNumber = (gameUserNumber0MoveOrder == 3) ? 0 : ((gameUserNumber1MoveOrder == 3) ? 1 : 2);
+
+        // Users shouldn't get access to other users' actions
+        viewGame(userTokens[firstGameUserNumber], gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + secondGameUserNumber + "].actions", nullValue())
+                .body("gameUsers[" + thirdGameUserNumber + "].actions", nullValue());
+        viewGame(userTokens[secondGameUserNumber], gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + firstGameUserNumber + "].actions", nullValue())
+                .body("gameUsers[" + thirdGameUserNumber + "].actions", nullValue());
+
+        // Achtung! Nodes and edges are correct only for currently generated map
+        int nodeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
+        int edgeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
+        int nodeId2ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topRightId");
+        int edgeId2ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.rightId");
+
+        int nodeId1ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.topLeftId");
+        int edgeId1ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.topLeftId");
+        int nodeId2ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.topRightId");
+        int edgeId2ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.rightId");
+
+        int nodeId1ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.topLeftId");
+        int edgeId1ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.topLeftId");
+        int nodeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.topRightId");
+        int edgeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.rightId");
 
         // First player moves #1
         checkAvailableForUserActionsDuringMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
