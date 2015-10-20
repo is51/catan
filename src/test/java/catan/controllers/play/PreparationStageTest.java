@@ -39,14 +39,14 @@ public class PreparationStageTest extends PlayTestUtil {
             viewGame(userToken, gameId)
                     .then()
                     .statusCode(200)
-                    .body("gameUsers[" + gameUserNumber + "].actions.list", hasSize(0));
+                    .body("gameUsers[" + gameUserNumber + "].availableActions.list", hasSize(0));
         } else {
             viewGame(userToken, gameId)
                     .then()
                     .statusCode(200)
-                    .body("gameUsers[" + gameUserNumber + "].actions.isMandatory", equalTo(true))
-                    .body("gameUsers[" + gameUserNumber + "].actions.list", hasSize(1))
-                    .body("gameUsers[" + gameUserNumber + "].actions.list.find {it.code == '" + actionCode + "'}", notNullValue());
+                    .body("gameUsers[" + gameUserNumber + "].availableActions.isMandatory", equalTo(true))
+                    .body("gameUsers[" + gameUserNumber + "].availableActions.list", hasSize(1))
+                    .body("gameUsers[" + gameUserNumber + "].availableActions.list.find {it.code == '" + actionCode + "'}", notNullValue());
         }
     }
 
@@ -103,13 +103,13 @@ public class PreparationStageTest extends PlayTestUtil {
         viewGame(userTokens[firstGameUserNumber], gameId)
                 .then()
                 .statusCode(200)
-                .body("gameUsers[" + secondGameUserNumber + "].actions", nullValue())
-                .body("gameUsers[" + thirdGameUserNumber + "].actions", nullValue());
+                .body("gameUsers[" + secondGameUserNumber + "].availableActions", nullValue())
+                .body("gameUsers[" + thirdGameUserNumber + "].availableActions", nullValue());
         viewGame(userTokens[secondGameUserNumber], gameId)
                 .then()
                 .statusCode(200)
-                .body("gameUsers[" + firstGameUserNumber + "].actions", nullValue())
-                .body("gameUsers[" + thirdGameUserNumber + "].actions", nullValue());
+                .body("gameUsers[" + firstGameUserNumber + "].availableActions", nullValue())
+                .body("gameUsers[" + thirdGameUserNumber + "].availableActions", nullValue());
 
         // Achtung! Nodes and edges are correct only for currently generated map
         int nodeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
