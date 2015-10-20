@@ -73,7 +73,6 @@ public class PlayUtil {
                     if (!actionCode.isEmpty()) {
                         actionsList.add("{\"code\": \"" + actionCode.get(0).toString() + "\", \"params\": {}}");
                         gameUser.setActions("{\"list\": [" + actionsList.get(0) + "], \"isMandatory\": true}");
-                        //set actionsList here
                     } else {
                         gameUser.setActions("{\"list\": [], \"isMandatory\": false}");
                     }

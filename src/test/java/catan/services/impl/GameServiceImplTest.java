@@ -7,6 +7,7 @@ import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.PlayUtil;
 import catan.services.util.map.MapUtil;
 import catan.services.util.random.RandomUtil;
 import catan.domain.exception.GameException;
@@ -53,6 +54,8 @@ public class GameServiceImplTest {
     private GameServiceImpl gameService;
     @InjectMocks
     private GameUtil gameUtil;
+    @InjectMocks
+    private PlayUtil playUtil;
 
     private RandomValueGeneratorMock rvg = new RandomValueGeneratorMock();
 
@@ -62,6 +65,7 @@ public class GameServiceImplTest {
         randomUtil.setRvg(rvg);
 
         gameUtil.setRandomUtil(randomUtil);
+        gameUtil.setPlayUtil(playUtil);
 
         gameService.setRandomUtil(randomUtil);
         gameService.setGameUtil(gameUtil);

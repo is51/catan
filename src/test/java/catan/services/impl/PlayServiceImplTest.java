@@ -20,6 +20,7 @@ import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.EndTurnUtil;
 import catan.services.util.play.PlayUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -57,6 +58,8 @@ public class PlayServiceImplTest {
     private GameUtil gameUtil;
     @InjectMocks
     private PlayUtil playUtil;
+    @InjectMocks
+    private EndTurnUtil endTurnUtil;
     private GameBean game;
     private HexBean hex_0_0;
     private HexBean hex_1_0;
@@ -64,10 +67,12 @@ public class PlayServiceImplTest {
     private GameUserBean gameUser2;
 
     @Before
-    public void setUp() {
+    public void setUp() throws GameException {
+        playUtil.setEndTurnUtil(endTurnUtil);
+
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);
-        buildClearTriangleMap();
+        buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
 
     @After
@@ -79,6 +84,7 @@ public class PlayServiceImplTest {
     public void shouldChangeCurrentMoveFromFirstPlayerToSecondWhenFirstPlayerEndsHisTurnCorrectly() throws GameException, PlayException {
         //GIVEN
         game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(3);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -365,7 +371,7 @@ public class PlayServiceImplTest {
         }
     }
 
-    private void buildClearTriangleMap() {
+    private void buildClearTriangleMapAndSetAlreadyPlayingGame() throws GameException {
         // GIVEN
         game = new GameBean();
 
@@ -687,6 +693,7 @@ public class PlayServiceImplTest {
         game.setStatus(GameStatus.PLAYING);
         game.setStage(GameStage.PREPARATION);
         game.setPreparationCycle(1);
+        game.setCurrentCycleBuildingNumber(1);
         game.setCurrentMove(1);
         game.setDateCreated(new Date());
         game.setDateStarted(new Date());
@@ -705,5 +712,7 @@ public class PlayServiceImplTest {
                 edge_1_1, edge_1_2, edge_1_3, edge_1_4, edge_1_5, edge_1_6,
                 edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5,
                 edge_3_3, edge_3_4, edge_3_5, edge_3_6));
+        game.setInitialBuildingsSet("[[SETTLEMENT, ROAD], [SETTLEMENT, ROAD]]");
+        playUtil.updateAvailableUserActions(game);
     }
 }
