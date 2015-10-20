@@ -99,6 +99,18 @@ public class PreparationStageTest extends PlayTestUtil {
         int secondGameUserNumber = (gameUserNumber0MoveOrder == 2) ? 0 : ((gameUserNumber1MoveOrder == 2) ? 1 : 2);
         int thirdGameUserNumber = (gameUserNumber0MoveOrder == 3) ? 0 : ((gameUserNumber1MoveOrder == 3) ? 1 : 2);
 
+        // Users shouldn't get access to other users' actions
+        viewGame(userTokens[firstGameUserNumber], gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + secondGameUserNumber + "].actions", nullValue())
+                .body("gameUsers[" + thirdGameUserNumber + "].actions", nullValue());
+        viewGame(userTokens[secondGameUserNumber], gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + firstGameUserNumber + "].actions", nullValue())
+                .body("gameUsers[" + thirdGameUserNumber + "].actions", nullValue());
+
         // Achtung! Nodes and edges are correct only for currently generated map
         int nodeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
         int edgeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
