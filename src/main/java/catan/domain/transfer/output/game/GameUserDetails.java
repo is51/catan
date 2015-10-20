@@ -2,6 +2,7 @@ package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameUserBean;
 import catan.domain.transfer.output.user.UserDetails;
+import com.google.gson.Gson;
 
 public class GameUserDetails {
     private int id;
@@ -10,9 +11,11 @@ public class GameUserDetails {
     private boolean ready;
     private int moveOrder;
     private AchievementsDetails achievements;
-    private String actions;
+    private AllAvailableActionsDetails actions;
     private ResourcesDetails resources;
     private DevelopmentCardsDetails developmentCards;
+
+    private static final Gson GSON = new Gson();
 
     public GameUserDetails() {
 
@@ -25,7 +28,7 @@ public class GameUserDetails {
         this.ready = gameUserBean.isReady();
         this.moveOrder = gameUserBean.getMoveOrder();
         this.achievements = new AchievementsDetails(gameUserBean.getAchievements());
-        this.actions = gameUserBean.getActions();
+        this.actions = GSON.fromJson(gameUserBean.getActions(), AllAvailableActionsDetails.class);
 
         if (user.getId() == detailsRequesterId) {
             this.resources = new ResourcesDetails(gameUserBean.getResources());
@@ -81,11 +84,11 @@ public class GameUserDetails {
         this.achievements = achievements;
     }
 
-    public String getActions() {
+    public AllAvailableActionsDetails getActions() {
         return  actions;
     }
 
-    public void setActions(String actions) {
+    public void setActions(AllAvailableActionsDetails actions) {
         this.actions = actions;
     }
 
