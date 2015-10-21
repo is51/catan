@@ -28,23 +28,15 @@ angular.module('catan')
             var GameActionsService = {};
 
             GameActionsService.isActionEnableForUser = function(gameUser, actionCode) {
-                return (
-                        gameUser.actions &&
-                        gameUser.actions.list &&
-                        gameUser.actions.list.some(function(item) {
-                            return item.code === actionCode;
-                        })
-                );
+                return gameUser.availableActions.list.some(function(item) {
+                    return item.code === actionCode;
+                });
             };
 
             GameActionsService.isActionGroupEnableForUser = function(gameUser, actionGroupCode) {
-                return (
-                        gameUser.actions &&
-                        gameUser.actions.list &&
-                        gameUser.actions.list.some(function(item) {
-                            return getRelatedActions(actionGroupCode).indexOf(item.code) !== -1;
-                        })
-                );
+                return gameUser.availableActions.list.some(function(item) {
+                    return getRelatedActions(actionGroupCode).indexOf(item.code) !== -1;
+                });
             };
 
             return GameActionsService;
