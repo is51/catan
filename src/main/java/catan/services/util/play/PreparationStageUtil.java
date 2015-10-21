@@ -67,7 +67,7 @@ public class PreparationStageUtil {
         List<List<String>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
         boolean lastCycle = game.getPreparationCycle().equals(initialBuildingsSet.size());
 
-        if (lastCycle) {
+        if (lastCycle && isEndOfCycle(game)) {
             game.setStage(GameStage.MAIN);
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
         }

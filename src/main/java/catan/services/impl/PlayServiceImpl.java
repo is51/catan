@@ -95,7 +95,7 @@ public class PlayServiceImpl implements PlayService {
             preparationStageUtil.updateGameStageToMain(game);
             preparationStageUtil.updateCurrentCycleBuildingNumber(game);
             preparationStageUtil.updatePreparationCycle(game);
-            if (!currentPreparationCycle.equals(game.getPreparationCycle())) {
+            if (currentPreparationCycle.equals(game.getPreparationCycle())) {
                 preparationStageUtil.updateNextMoveInPreparationStage(game);
             }
         } else {
