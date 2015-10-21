@@ -20,7 +20,6 @@ import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
-import catan.services.util.play.EndTurnUtil;
 import catan.services.util.play.PlayUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -58,8 +57,6 @@ public class PlayServiceImplTest {
     private GameUtil gameUtil;
     @InjectMocks
     private PlayUtil playUtil;
-    @InjectMocks
-    private EndTurnUtil endTurnUtil;
     private GameBean game;
     private HexBean hex_0_0;
     private HexBean hex_1_0;
@@ -68,8 +65,6 @@ public class PlayServiceImplTest {
 
     @Before
     public void setUp() throws GameException {
-        playUtil.setEndTurnUtil(endTurnUtil);
-
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);
         buildClearTriangleMapAndSetAlreadyPlayingGame();

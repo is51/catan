@@ -10,14 +10,16 @@ import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
-import catan.domain.model.game.types.GameUserActions;
+import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
-import catan.domain.transfer.output.game.ActionDetails;
-import catan.domain.transfer.output.game.AllAvailableActionsDetails;
+import catan.domain.transfer.output.game.actions.Action;
+import catan.domain.transfer.output.game.actions.AvailableActions;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.PlayUtil;
+import catan.services.util.play.PreparationStageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ public class PlayServiceImpl implements PlayService {
     private GameDao gameDao;
     private GameUtil gameUtil;
     private PlayUtil playUtil;
+    private PreparationStageUtil preparationStageUtil;
 
     @Override
     public void buildRoad(UserBean user, String gameIdString, String edgeIdString) throws PlayException, GameException {
@@ -42,14 +45,13 @@ public class PlayServiceImpl implements PlayService {
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         validateUserNotEmpty(user);
         validateGameStatusIsPlaying(game);
-        validateCurrentTurnOfUser(user, game);
-        validateActionIsAllowed(user, game, GameUserActions.BUILD_ROAD);
+        validateActionIsAllowed(user, game, GameUserActionCode.BUILD_ROAD);
 
         EdgeBean edgeToBuildOn = getValidEdgeToBuildOn(edgeIdString, game);
         validateCanBuildRoanOnEdge(user, edgeToBuildOn);
         buildRoadOnEdge(user, edgeToBuildOn);
 
-        playUtil.updateCurrentCycleBuildingNumber(game);
+        preparationStageUtil.updateCurrentCycleBuildingNumber(game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
@@ -64,14 +66,13 @@ public class PlayServiceImpl implements PlayService {
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         validateUserNotEmpty(user);
         validateGameStatusIsPlaying(game);
-        validateCurrentTurnOfUser(user, game);
-        validateActionIsAllowed(user, game, GameUserActions.BUILD_SETTLEMENT);
+        validateActionIsAllowed(user, game, GameUserActionCode.BUILD_SETTLEMENT);
 
         NodeBean nodeToBuildOn = getValidNodeToBuildOn(gameIdString, nodeIdString, game);
         validateCanBuildSettlementOnEdge(user, nodeToBuildOn);
         buildSettlementOnNode(user, nodeToBuildOn);
 
-        playUtil.updateCurrentCycleBuildingNumber(game);
+        preparationStageUtil.updateCurrentCycleBuildingNumber(game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
@@ -84,13 +85,22 @@ public class PlayServiceImpl implements PlayService {
         log.debug("{} tries to end his turn of game id {}", user, gameIdString);
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateGameStatusIsPlaying(game);
         validateUserNotEmpty(user);
-        validateCurrentTurnOfUser(user, game);
-        validateActionIsAllowed(user, game, GameUserActions.END_TURN);
+        validateGameStatusIsPlaying(game);
+        validateActionIsAllowed(user, game, GameUserActionCode.END_TURN);
 
-        playUtil.updateNextMoveOrder(game);
-        playUtil.updateCurrentCycleBuildingNumber(game);
+        //TODO: think about refactoring this part
+        if (game.getStage().equals(GameStage.PREPARATION)) {
+            Integer currentPreparationCycle = game.getPreparationCycle();
+            preparationStageUtil.updateGameStageToMain(game);
+            preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+            preparationStageUtil.updatePreparationCycle(game);
+            if (!currentPreparationCycle.equals(game.getPreparationCycle())) {
+                preparationStageUtil.updateNextMoveInPreparationStage(game);
+            }
+        } else {
+            playUtil.updateNextMoveInMainStage(game);
+        }
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
@@ -179,7 +189,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private NodeBean getValidNodeToBuildOn(String gameIdString, String nodeIdString, GameBean game) throws PlayException {
-        int nodeId = validateIdIsInteger(nodeIdString);
+        int nodeId = toValidId(nodeIdString);
         NodeBean nodeToBuildOn = null;
         for (NodeBean node : game.getNodes()) {
             if (node.getId() == nodeId) {
@@ -195,7 +205,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private EdgeBean getValidEdgeToBuildOn(String edgeIdString, GameBean game) throws PlayException {
-        int edgeId = validateIdIsInteger(edgeIdString);
+        int edgeId = toValidId(edgeIdString);
         EdgeBean edgeToBuildOn = null;
         for (EdgeBean edge : game.getEdges()) {
             if (edge.getId() == edgeId) {
@@ -231,26 +241,18 @@ public class PlayServiceImpl implements PlayService {
         edgeToBuildOn.setBuilding(building);
     }
 
-    private void validateActionIsAllowed(UserBean user, GameBean game, GameUserActions requiredAction) throws PlayException {
-        AllAvailableActionsDetails actions = playUtil.getAllAvailableActions(getGameUserJoinedToGame(user, game).getAvailableActions());
-        boolean isActionAllowed = false;
-        for (ActionDetails allowedActions : actions.getList()) {
-            if (allowedActions.getCode() == requiredAction) {
-                isActionAllowed = true;
+    private void validateActionIsAllowed(UserBean user, GameBean game, GameUserActionCode requiredAction) throws PlayException {
+        String actionsString = getGameUserJoinedToGame(user, game).getAvailableActions();
+        AvailableActions actions = playUtil.toAvailableActionsFromJson(actionsString);
+        boolean actionAllowed = false;
+        for (Action allowedActions : actions.getList()) {
+            if (allowedActions.getCode().equals(requiredAction.name())) {
+                actionAllowed = true;
             }
         }
 
-        if (!isActionAllowed) {
-            log.debug("Required action {} is not allowed for user", requiredAction);
-            throw new PlayException(ERROR_CODE_ERROR);
-        }
-    }
-
-    private void validateCurrentTurnOfUser(UserBean user, GameBean game) throws PlayException {
-        GameUserBean gameUserBean = getGameUserJoinedToGame(user, game);
-
-        if (!game.getCurrentMove().equals(gameUserBean.getMoveOrder())) {
-            log.debug("It is not current turn of user {}", gameUserBean.getUser().getUsername());
+        if (!actionAllowed) {
+            log.debug("Required action {} is not allowed for user", requiredAction.name());
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
@@ -273,12 +275,8 @@ public class PlayServiceImpl implements PlayService {
         throw new PlayException(ERROR_CODE_ERROR);
     }
 
-    private Integer validateIdIsInteger(String idString) throws PlayException {
+    private Integer toValidId(String idString) throws PlayException {
         try {
-            if (idString == null || idString.trim().length() == 0) {
-                log.debug("Requested object Id cannot be empty");
-                throw new PlayException(ERROR_CODE_ERROR);
-            }
             return Integer.parseInt(idString);
         } catch (Exception e) {
             log.debug("Cannot convert object Id to integer value");
@@ -306,5 +304,10 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setPlayUtil(PlayUtil playUtil) {
         this.playUtil = playUtil;
+    }
+
+    @Autowired
+    public void setPreparationStageUtil(PreparationStageUtil preparationStageUtil) {
+        this.preparationStageUtil = preparationStageUtil;
     }
 }

@@ -80,7 +80,7 @@ public class GameBean {
 
     //TODO: think about renaming of this field as it will be used only in preparation stage
     @Column(name = "CURRENT_CYCLE_BUILDING_NUMBER", unique = false, nullable = true)
-    private int currentCycleBuildingNumber;
+    private Integer currentCycleBuildingNumber;
 
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
@@ -242,11 +242,11 @@ public class GameBean {
         this.initialBuildingsSet = initialBuildingsSet;
     }
 
-    public int getCurrentCycleBuildingNumber() {
+    public Integer getCurrentCycleBuildingNumber() {
         return currentCycleBuildingNumber;
     }
 
-    public void setCurrentCycleBuildingNumber(int currentCycleBuildingNumber) {
+    public void setCurrentCycleBuildingNumber(Integer currentCycleBuildingNumber) {
         this.currentCycleBuildingNumber = currentCycleBuildingNumber;
     }
 

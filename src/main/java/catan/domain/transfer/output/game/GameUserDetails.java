@@ -1,6 +1,7 @@
 package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameUserBean;
+import catan.domain.transfer.output.game.actions.AvailableActionsDetails;
 import catan.domain.transfer.output.user.UserDetails;
 import com.google.gson.Gson;
 
@@ -11,10 +12,11 @@ public class GameUserDetails {
     private boolean ready;
     private int moveOrder;
     private AchievementsDetails achievements;
-    private AllAvailableActionsDetails availableActions;
+    private AvailableActionsDetails availableActions;
     private ResourcesDetails resources;
     private DevelopmentCardsDetails developmentCards;
 
+    //TODO: move all GSON methods to util class
     private static final Gson GSON = new Gson();
 
     public GameUserDetails() {
@@ -30,7 +32,7 @@ public class GameUserDetails {
         this.achievements = new AchievementsDetails(gameUserBean.getAchievements());
 
         if (user.getId() == detailsRequesterId) {
-            this.availableActions = GSON.fromJson(gameUserBean.getAvailableActions(), AllAvailableActionsDetails.class);
+            this.availableActions = GSON.fromJson(gameUserBean.getAvailableActions(), AvailableActionsDetails.class);
             this.resources = new ResourcesDetails(gameUserBean.getResources());
             this.developmentCards = new DevelopmentCardsDetails(gameUserBean.getDevelopmentCards());
         }
@@ -84,11 +86,11 @@ public class GameUserDetails {
         this.achievements = achievements;
     }
 
-    public AllAvailableActionsDetails getAvailableActions() {
+    public AvailableActionsDetails getAvailableActions() {
         return  availableActions;
     }
 
-    public void setAvailableActions(AllAvailableActionsDetails availableActions) {
+    public void setAvailableActions(AvailableActionsDetails availableActions) {
         this.availableActions = availableActions;
     }
 

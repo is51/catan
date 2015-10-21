@@ -1,15 +1,15 @@
-package catan.domain.transfer.output.game;
+package catan.domain.transfer.output.game.actions;
 
 import java.util.List;
 
-public class AllAvailableActionsDetails {
+public class AvailableActionsDetails {
     private List<ActionDetails> list;
     private boolean isMandatory;
 
-    public AllAvailableActionsDetails() {
+    public AvailableActionsDetails() {
     }
 
-    public AllAvailableActionsDetails(List<ActionDetails> list, boolean isMandatory) {
+    public AvailableActionsDetails(List<ActionDetails> list, boolean isMandatory) {
         this.list = list;
         this.isMandatory = isMandatory;
     }
