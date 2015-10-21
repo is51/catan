@@ -5,12 +5,11 @@ angular.module('catan')
         return {
             restrict: 'E',
             scope: {
-                game: '='
+                game: '=',
+                showReadyStatus: '@'
             },
             templateUrl: "/features/shared/directives/playersList/ct-players-list.html",
             link: function(scope) {
-
-                scope.game.maxPlayers = 4; // temp, until maxPlayers appears
 
                 scope.$watch('game.gameUsers.length', function() {
                     var vacantPlacesCount = scope.game.maxPlayers - scope.game.gameUsers.length;
