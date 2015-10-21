@@ -2,7 +2,7 @@ package catan.services.util.play;
 
 import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
-import catan.domain.transfer.output.game.actions.AvailableActions;
+import catan.domain.model.game.actions.AvailableActions;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class PlayUtil {
     public void updateAvailableUserActions(GameBean game) throws GameException {
         switch (game.getStage()) {
             case PREPARATION:
-                preparationStageUtil.updateAvailableUserActionsInPreparationStage(game);
+                preparationStageUtil.updateAvailableUserActions(game);
                 break;
             case MAIN:
                 //TODO: complete this part when developing main stage part

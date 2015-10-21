@@ -1,4 +1,4 @@
-package catan.domain.transfer.output.game.actions;
+package catan.domain.model.game.actions;
 
 public class ActionParams {
     //TODO: put params of building here if needed

@@ -1,4 +1,4 @@
-package catan.domain.transfer.output.game.actions;
+package catan.domain.model.game.actions;
 
 import java.util.List;
 

@@ -21,6 +21,7 @@ import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.PlayUtil;
+import catan.services.util.play.PreparationStageUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +58,8 @@ public class PlayServiceImplTest {
     private GameUtil gameUtil;
     @InjectMocks
     private PlayUtil playUtil;
+    @InjectMocks
+    private PreparationStageUtil preparationStageUtil;
     private GameBean game;
     private HexBean hex_0_0;
     private HexBean hex_1_0;
@@ -67,6 +70,8 @@ public class PlayServiceImplTest {
     public void setUp() throws GameException {
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);
+        playService.setPreparationStageUtil(preparationStageUtil);
+        playUtil.setPreparationStageUtil(preparationStageUtil);
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
 
@@ -79,7 +84,7 @@ public class PlayServiceImplTest {
     public void shouldChangeCurrentMoveFromFirstPlayerToSecondWhenFirstPlayerEndsHisTurnCorrectly() throws GameException, PlayException {
         //GIVEN
         game.setCurrentMove(gameUser1.getMoveOrder());
-        game.setCurrentCycleBuildingNumber(3);
+        game.setCurrentCycleBuildingNumber(null);
         playUtil.updateAvailableUserActions(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 

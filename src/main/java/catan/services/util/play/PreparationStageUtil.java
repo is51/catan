@@ -5,8 +5,8 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameUserActionCode;
-import catan.domain.transfer.output.game.actions.Action;
-import catan.domain.transfer.output.game.actions.AvailableActions;
+import catan.domain.model.game.actions.Action;
+import catan.domain.model.game.actions.AvailableActions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class PreparationStageUtil {
         List<List<String>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
         Integer numberOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
 
-        if (game.getCurrentCycleBuildingNumber().equals(numberOfBuildingsInCycle)) {
+        if (numberOfBuildingsInCycle.equals(game.getCurrentCycleBuildingNumber())) {
             game.setCurrentCycleBuildingNumber(null);
         } else if (game.getCurrentCycleBuildingNumber() == null) {
                 game.setCurrentCycleBuildingNumber(1);
@@ -87,12 +87,12 @@ public class PreparationStageUtil {
         }
     }
 
-    public void updateAvailableUserActionsInPreparationStage(GameBean game) throws GameException {
+    public void updateAvailableUserActions(GameBean game) throws GameException {
 
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getMoveOrder() == game.getCurrentMove()) {
 
-                List<GameUserActionCode> actionCodesList = getListOfActionCodes(game);
+                List<GameUserActionCode> actionCodesList = getListOfActionCodesForActivePlayer(game);
                 AvailableActions availableActions = new AvailableActions();
                 List<Action> actionsList = new ArrayList<Action>();
 
@@ -109,10 +109,10 @@ public class PreparationStageUtil {
         }
     }
 
-    private List<GameUserActionCode> getListOfActionCodes (GameBean game) {
+    private List<GameUserActionCode> getListOfActionCodesForActivePlayer (GameBean game) {
 
         List<GameUserActionCode> actionCodesList = new ArrayList<GameUserActionCode>();
-        if (userBuiltAllBuildingsInCurrentCycle(game)) {
+        if (game.getCurrentCycleBuildingNumber() == null) {
             actionCodesList.add(GameUserActionCode.END_TURN);
             //set end turn mandatory
         } else if (getCurrentInitialBuilding(game).equals("ROAD")) {
@@ -134,10 +134,6 @@ public class PreparationStageUtil {
         boolean oddCycle = game.getPreparationCycle() % 2 > 0;
 
         return firstPlayer && !oddCycle || lastPlayer && oddCycle;
-    }
-
-    private boolean userBuiltAllBuildingsInCurrentCycle(GameBean game) {
-        return game.getCurrentCycleBuildingNumber() == null;
     }
 
     private String getCurrentInitialBuilding(GameBean game) {
