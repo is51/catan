@@ -11,13 +11,14 @@
         <div><span class="label label-warning">{{game.status}}</span></div>
         <div>&nbsp;</div>
         <div>Target Victory Points: {{game.targetVictoryPoints}}</div>
+        <div>Number of players: {{game.minPlayers}} &ndash; {{game.maxPlayers}}</div>
 
     </div>
 
     <div class="col-xs-6">
         <div>
             <h1>Players:</h1>
-            <ct-players-list game="game"></ct-players-list>
+            <ct-players-list game="game" show-ready-status="true"></ct-players-list>
         </div>
 
         <div><br><br><br></div>
