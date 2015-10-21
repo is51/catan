@@ -64,6 +64,7 @@ public class PlayUtil {
             }
         }
     }
+
     public void updateAvailableUserActions(GameBean game) throws GameException {
         boolean isMandatory = false;
         List<String> actionsList = new ArrayList<String>();

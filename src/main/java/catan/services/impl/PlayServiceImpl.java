@@ -37,31 +37,106 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public void buildRoad(UserBean user, String gameIdString, String edgeIdString) throws PlayException, GameException {
-        log.debug("User {} tries to build road at edge {} of game id {}",
-                user == null ? "<EMPTY>" : user.getUsername(), edgeIdString, gameIdString);
+        log.debug("{} tries to build road at edge {} of game id {}", user, edgeIdString, gameIdString);
 
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         validateUserNotEmpty(user);
-        int edgeId = validateIdIsInteger(edgeIdString);
+        validateGameStatusIsPlaying(game);
+        validateCurrentTurnOfUser(user, game);
+        validateActionIsAllowed(user, game, GameUserActions.BUILD_ROAD);
+
+        EdgeBean edgeToBuildOn = getValidEdgeToBuildOn(edgeIdString, game);
+        validateCanBuildRoanOnEdge(user, edgeToBuildOn);
+        buildRoadOnEdge(user, edgeToBuildOn);
+
+        playUtil.updateCurrentCycleBuildingNumber(game);
+        playUtil.updateAvailableUserActions(game);
+
+        gameDao.updateGame(game);
+
+        log.debug("User {} successfully built road at edge {} of game id {}", user.getUsername(), edgeIdString, gameIdString);
+    }
+
+    @Override
+    public void buildSettlement(UserBean user, String gameIdString, String nodeIdString) throws PlayException, GameException {
+        log.debug("{} tries to build settlement at node {} of game id {}", user, nodeIdString, gameIdString);
+
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        validateUserNotEmpty(user);
+        validateGameStatusIsPlaying(game);
+        validateCurrentTurnOfUser(user, game);
+        validateActionIsAllowed(user, game, GameUserActions.BUILD_SETTLEMENT);
+
+        NodeBean nodeToBuildOn = getValidNodeToBuildOn(gameIdString, nodeIdString, game);
+        validateCanBuildSettlementOnEdge(user, nodeToBuildOn);
+        buildSettlementOnNode(user, nodeToBuildOn);
+
+        playUtil.updateCurrentCycleBuildingNumber(game);
+        playUtil.updateAvailableUserActions(game);
+
+        gameDao.updateGame(game);
+
+        log.debug("User {} successfully built settlement at node {} of game id {}", user.getUsername(), nodeIdString, gameIdString);
+    }
+
+    @Override
+    public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
+        log.debug("{} tries to end his turn of game id {}", user, gameIdString);
 
         GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         validateGameStatusIsPlaying(game);
+        validateUserNotEmpty(user);
+        validateCurrentTurnOfUser(user, game);
+        validateActionIsAllowed(user, game, GameUserActions.END_TURN);
 
-        GameUserBean gameUserBean = getJoinedGameUser(user, game);
+        playUtil.updateNextMoveOrder(game);
+        playUtil.updateCurrentCycleBuildingNumber(game);
+        playUtil.updateAvailableUserActions(game);
 
-        validateActionIsAllowed(user, game, GameUserActions.BUILD_ROAD);
+        gameDao.updateGame(game);
 
-        EdgeBean edgeToBuildOn = null;
-        for (EdgeBean edge : game.getEdges()) {
-            if (edge.getId() == edgeId) {
-                edgeToBuildOn = edge;
-            }
-        }
+        log.debug("User {} successfully ended his turn", user.getUsername(), gameIdString);
+    }
 
-        if (edgeToBuildOn == null) {
-            log.debug("Cannot build road on edgeId {} that does not belong to game {}", edgeId, gameIdString);
+    private void validateCanBuildSettlementOnEdge(UserBean user, NodeBean nodeToBuildOn) throws PlayException {
+        if (nodeToBuildOn.getBuilding() != null) {
+            log.debug("Cannot build settlement on this node as it already has building on it");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
+        UserBean opponent = null;
+        boolean nearNeighbourRoad = false;
+        for (EdgeBean edge : nodeToBuildOn.getEdges().all()) {
+            if (edge != null) {
+                if (edge.getBuilding() != null) {
+                    UserBean buildingOwner = edge.getBuilding().getBuildingOwner().getUser();
+                    if (buildingOwner.equals(user)) {
+                        nearNeighbourRoad = true;
+                    } else {
+                        if (buildingOwner.equals(opponent)) {
+                            log.debug("Cannot build settlement on opponents' ways");
+                            throw new PlayException(ERROR_CODE_ERROR);
+                        } else opponent = buildingOwner;
+                    }
+                }
+                for (NodeBean node : edge.getNodes().all()) {
+                    if (node != null && node != nodeToBuildOn && node.getBuilding() != null) {
+                        log.debug("Cannot build settlement close to other settlements");
+                        throw new PlayException(ERROR_CODE_ERROR);
+                    }
+                }
+            }
+        }
+
+        /* TODO: uncomment this part when preparation development would be done
+        if (!nearNeighbourRoad && !game.getStage().equals(GameStage.PREPARATION)) {
+            log.debug("Cannot build settlement without any connections with player's roads");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+        */
+    }
+
+    private void validateCanBuildRoanOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws PlayException {
         if (edgeToBuildOn.getBuilding() != null) {
             log.debug("Cannot build road on this edge as it already has building on it");
             throw new PlayException(ERROR_CODE_ERROR);
@@ -101,34 +176,10 @@ public class PlayServiceImpl implements PlayService {
             log.debug("Cannot build road that doesn't have neighbour road or settlement that belongs to this player ");
             throw new PlayException(ERROR_CODE_ERROR);
         }
-
-        Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
-        building.setBuilt(EdgeBuiltType.ROAD);
-        building.setBuildingOwner(gameUserBean);
-
-        edgeToBuildOn.setBuilding(building);
-        playUtil.updateCurrentCycleBuildingNumber(game);
-        playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
-
-        log.debug("User {} successfully built {} at edge {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), edgeId, gameIdString);
     }
 
-    @Override
-    public void buildSettlement(UserBean user, String gameIdString, String nodeIdString) throws PlayException, GameException {
-        log.debug("User {} tries to build settlement at node {} of game id {}",
-                user == null ? "<EMPTY>" : user.getUsername(), nodeIdString, gameIdString);
-        validateUserNotEmpty(user);
-
+    private NodeBean getValidNodeToBuildOn(String gameIdString, String nodeIdString, GameBean game) throws PlayException {
         int nodeId = validateIdIsInteger(nodeIdString);
-
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateGameStatusIsPlaying(game);
-        GameUserBean gameUserBean = getJoinedGameUser(user, game);
-
-        validateActionIsAllowed(user, game, GameUserActions.BUILD_SETTLEMENT);
-
         NodeBean nodeToBuildOn = null;
         for (NodeBean node : game.getNodes()) {
             if (node.getId() == nodeId) {
@@ -140,75 +191,48 @@ public class PlayServiceImpl implements PlayService {
             log.debug("Cannot build settlement on nodeId {} that does not belong to game {}", nodeId, gameIdString);
             throw new PlayException(ERROR_CODE_ERROR);
         }
+        return nodeToBuildOn;
+    }
 
-        if (nodeToBuildOn.getBuilding() != null) {
-            log.debug("Cannot build settlement on this node as it already has building on it");
-            throw new PlayException(ERROR_CODE_ERROR);
-        }
-
-        UserBean opponent = null;
-        boolean nearNeighbourRoad = false;
-        for (EdgeBean edge : nodeToBuildOn.getEdges().all()) {
-            if (edge != null) {
-                if (edge.getBuilding() != null) {
-                    UserBean buildingOwner = edge.getBuilding().getBuildingOwner().getUser();
-                    if (buildingOwner.equals(user)) {
-                        nearNeighbourRoad = true;
-                    } else {
-                        if (buildingOwner.equals(opponent)) {
-                            log.debug("Cannot build settlement on opponents' ways");
-                            throw new PlayException(ERROR_CODE_ERROR);
-                        } else opponent = buildingOwner;
-                    }
-                }
-                for (NodeBean node : edge.getNodes().all()) {
-                    if (node != null && node != nodeToBuildOn && node.getBuilding() != null) {
-                        log.debug("Cannot build settlement close to other settlements");
-                        throw new PlayException(ERROR_CODE_ERROR);
-                    }
-                }
+    private EdgeBean getValidEdgeToBuildOn(String edgeIdString, GameBean game) throws PlayException {
+        int edgeId = validateIdIsInteger(edgeIdString);
+        EdgeBean edgeToBuildOn = null;
+        for (EdgeBean edge : game.getEdges()) {
+            if (edge.getId() == edgeId) {
+                edgeToBuildOn = edge;
             }
         }
 
-        /* TODO: uncomment this part when preparation development would be done
-        if (!nearNeighbourRoad && !game.getStage().equals(GameStage.PREPARATION)) {
-            log.debug("Cannot build settlement without any connections with player's roads");
+        if (edgeToBuildOn == null) {
+            log.debug("Cannot build road on edgeId {} that does not belong to game {}", edgeId, game.getGameId());
             throw new PlayException(ERROR_CODE_ERROR);
         }
-        */
+
+        return edgeToBuildOn;
+    }
+
+    private void buildSettlementOnNode(UserBean user, NodeBean nodeToBuildOn) throws PlayException {
+        GameUserBean gameUserBean = getGameUserJoinedToGame(user, nodeToBuildOn.getGame());
 
         Building<NodeBuiltType> building = new Building<NodeBuiltType>();
         building.setBuilt(NodeBuiltType.SETTLEMENT);
         building.setBuildingOwner(gameUserBean);
 
         nodeToBuildOn.setBuilding(building);
-        playUtil.updateCurrentCycleBuildingNumber(game);
-        playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
-
-        log.debug("User {} successfully built {} at node {} of game id {}", building.getBuildingOwner().getUser().getUsername(), building.getBuilt(), nodeId, gameIdString);
     }
 
-    @Override
-    public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
-        log.debug("User {} tries to end his turn of game id {}", user == null ? "<EMPTY>" : user.getUsername(), gameIdString);
+    private void buildRoadOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws PlayException {
+        GameUserBean gameUserBean = getGameUserJoinedToGame(user, edgeToBuildOn.getGame());
 
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateGameStatusIsPlaying(game);
-        validateUserNotEmpty(user);
-        validateCurrentTurnOfUser(game, user);
-        validateActionIsAllowed(user, game, GameUserActions.END_TURN);
+        Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
+        building.setBuilt(EdgeBuiltType.ROAD);
+        building.setBuildingOwner(gameUserBean);
 
-        playUtil.updateNextMoveOrder(game);
-        playUtil.updateCurrentCycleBuildingNumber(game);
-        playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
+        edgeToBuildOn.setBuilding(building);
     }
 
     private void validateActionIsAllowed(UserBean user, GameBean game, GameUserActions requiredAction) throws PlayException {
-        AllAvailableActionsDetails actions = playUtil.getAllAvailableActions(getJoinedGameUser(user, game).getAvailableActions());
+        AllAvailableActionsDetails actions = playUtil.getAllAvailableActions(getGameUserJoinedToGame(user, game).getAvailableActions());
         boolean isActionAllowed = false;
         for (ActionDetails allowedActions : actions.getList()) {
             if (allowedActions.getCode() == requiredAction) {
@@ -222,8 +246,8 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void validateCurrentTurnOfUser(GameBean game, UserBean user) throws PlayException {
-        GameUserBean gameUserBean = getJoinedGameUser(user, game);
+    private void validateCurrentTurnOfUser(UserBean user, GameBean game) throws PlayException {
+        GameUserBean gameUserBean = getGameUserJoinedToGame(user, game);
 
         if (!game.getCurrentMove().equals(gameUserBean.getMoveOrder())) {
             log.debug("It is not current turn of user {}", gameUserBean.getUser().getUsername());
@@ -238,7 +262,7 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private GameUserBean getJoinedGameUser(UserBean user, GameBean game) throws PlayException {
+    private GameUserBean getGameUserJoinedToGame(UserBean user, GameBean game) throws PlayException {
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().equals(user)) {
                 return gameUser;
