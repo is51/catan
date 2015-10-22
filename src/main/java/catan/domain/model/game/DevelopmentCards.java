@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Embeddable
-public class DevelopmentCardsBean {
+public class DevelopmentCards {
 
     @Column(name = "DEV_CARD_KNIGHT", nullable = false)
     private int knight;
@@ -25,10 +25,10 @@ public class DevelopmentCardsBean {
     @Column(name = "DEV_CARD_YEAR_OF_PLENTY", nullable = false)
     private int yearOfPlenty;
 
-    public DevelopmentCardsBean() {
+    public DevelopmentCards() {
     }
 
-    public DevelopmentCardsBean(int knight, int victoryPoint, int roadBuilding, int monopoly, int yearOfPlenty) {
+    public DevelopmentCards(int knight, int victoryPoint, int roadBuilding, int monopoly, int yearOfPlenty) {
         this.knight = knight;
         this.victoryPoint = victoryPoint;
         this.roadBuilding = roadBuilding;

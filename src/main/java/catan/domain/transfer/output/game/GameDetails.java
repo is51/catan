@@ -32,7 +32,7 @@ public class GameDetails {
         this.privateCode = game.isPrivateGame() ? game.getPrivateCode() : null;
         this.dateCreated = game.getDateCreated().getTime();
         this.dateStarted = game.getDateStarted() != null ? game.getDateStarted().getTime() : 0;
-        this.status = game.getStatus().toString();
+        this.status = game.getStatus().name();
         this.gameUsers = game.getGameUserDetails(detailsRequesterId);
         this.minPlayers = game.getMinPlayers();
         this.maxPlayers = game.getMaxPlayers();

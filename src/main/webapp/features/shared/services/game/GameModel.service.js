@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .factory('GameModel', ['User', 'LinkMapEntitiesHelper', function (User, LinkMapEntitiesHelper) {
+        .factory('GameModel', ['User', 'GameActionsService', 'LinkMapEntitiesHelper', function (User, GameActionsService, LinkMapEntitiesHelper) {
 
             var GAME_PRIMARY_KEY = "gameId";
 
@@ -42,6 +42,14 @@ angular.module('catan')
 
                 this.isCurrentUserMove = function () {
                     return this.currentMove === this.getCurrentUser().moveOrder;
+                };
+
+                this.isActionEnabledForCurrentUser = function (actionCode) {
+                    return GameActionsService.isActionEnableForUser(this.getCurrentUser(), actionCode);
+                };
+
+                this.isActionGroupEnabledForCurrentUser = function (actionGroupCode) {
+                    return GameActionsService.isActionGroupEnableForUser(this.getCurrentUser(), actionGroupCode);
                 };
 
                 this.getGameUser = function(gameUserId) {

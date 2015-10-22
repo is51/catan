@@ -1,7 +1,6 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -13,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
 @Table(name = "GAME_USER")
@@ -42,14 +39,17 @@ public class GameUserBean {
     @Column(name = "MOVE_ORDER", unique = false, nullable = false)
     private int moveOrder;
 
-    @Embedded
-    private AchievementsBean achievements;
+    @Column(name = "AVAILABLE_ACTIONS", unique = false, nullable = true)
+    private String availableActions;
 
     @Embedded
-    private ResourcesBean resources;
+    private Achievements achievements;
 
     @Embedded
-    private DevelopmentCardsBean developmentCards;
+    private Resources resources;
+
+    @Embedded
+    private DevelopmentCards developmentCards;
 
     public GameUserBean() {
     }
@@ -58,9 +58,9 @@ public class GameUserBean {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
-        this.achievements = new AchievementsBean(0, 0, 0, 0, 0);
-        this.resources = new ResourcesBean(0, 0, 0, 0, 0);
-        this.developmentCards = new DevelopmentCardsBean(0, 0, 0, 0, 0);
+        this.achievements = new Achievements(0, 0, 0, 0, 0);
+        this.resources = new Resources(0, 0, 0, 0, 0);
+        this.developmentCards = new DevelopmentCards(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -111,27 +111,35 @@ public class GameUserBean {
         this.moveOrder = moveOrder;
     }
 
-    public AchievementsBean getAchievements() {
+    public String getAvailableActions() {
+        return availableActions;
+    }
+
+    public void setAvailableActions(String availableActions) {
+        this.availableActions = availableActions;
+    }
+
+    public Achievements getAchievements() {
         return achievements;
     }
 
-    public void setAchievements(AchievementsBean achievements) {
+    public void setAchievements(Achievements achievements) {
         this.achievements = achievements;
     }
 
-    public ResourcesBean getResources() {
+    public Resources getResources() {
         return resources;
     }
 
-    public void setResources(ResourcesBean resources) {
+    public void setResources(Resources resources) {
         this.resources = resources;
     }
 
-    public DevelopmentCardsBean getDevelopmentCards() {
+    public DevelopmentCards getDevelopmentCards() {
         return developmentCards;
     }
 
-    public void setDevelopmentCards(DevelopmentCardsBean developmentCards) {
+    public void setDevelopmentCards(DevelopmentCards developmentCards) {
         this.developmentCards = developmentCards;
     }
 
@@ -165,6 +173,7 @@ public class GameUserBean {
                 ", gameId: " + game.getGameId() +
                 ", ready: " + ready +
                 ", moveOrder: " + moveOrder +
+                ", availableActions: " + availableActions +
                "]";
     }
 }

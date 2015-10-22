@@ -1,0 +1,25 @@
+<ct-modal-window modal-window-id="BUILD_PANEL">
+
+    <div class="ct-modal-window-bg" ct-modal-window-close></div>
+    <div class="ct-modal-window-content content">
+
+        <button ng-click="buildSettlement()" ng-disabled="!game.isActionEnabledForCurrentUser('BUILD_SETTLEMENT')">
+            <span class="glyphicon glyphicon-compressed"></span><br>
+            Settlement
+        </button>
+
+        <button ng-click="buildCity()" ng-disabled="!game.isActionEnabledForCurrentUser('BUILD_CITY')">
+            <span class="glyphicon glyphicon-calendar"></span><br>
+            City
+        </button>
+
+        <br>
+
+        <button ng-click="buildRoad()" ng-disabled="!game.isActionEnabledForCurrentUser('BUILD_ROAD')">
+            <span class="glyphicon glyphicon-road"></span><br>
+            Road
+        </button>
+
+    </div>
+
+</ct-modal-window>

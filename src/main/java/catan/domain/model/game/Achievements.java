@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Embeddable
-public class AchievementsBean {
+public class Achievements {
     @Column(name = "ACHIEVEMENTS_DISPLAY_VICTORY_POINTS", nullable = false)
     private int displayVictoryPoints;
 
@@ -24,10 +24,10 @@ public class AchievementsBean {
     @Column(name = "ACHIEVEMENTS_LONGEST_WAY_LENGTH", nullable = false)
     private int longestWayLength;
 
-    public AchievementsBean() {
+    public Achievements() {
     }
 
-    public AchievementsBean(int displayVictoryPoints, int totalResources, int totalCards, int totalUsedKnights, int longestWayLength) {
+    public Achievements(int displayVictoryPoints, int totalResources, int totalCards, int totalUsedKnights, int longestWayLength) {
         this.displayVictoryPoints = displayVictoryPoints;
         this.totalResources = totalResources;
         this.totalCards = totalCards;

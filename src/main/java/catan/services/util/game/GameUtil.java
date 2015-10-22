@@ -7,6 +7,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
+import catan.services.util.play.PlayUtil;
 import catan.services.util.random.RandomUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,6 +34,7 @@ public class GameUtil {
 
     private GameDao gameDao;
     private RandomUtil randomUtil;
+    private PlayUtil playUtil;
 
     private static final Gson GSON = new Gson();
     private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>>();
@@ -100,6 +102,17 @@ public class GameUtil {
         return game;
     }
 
+    public GameUserBean getGameUserJoinedToGame(UserBean user, GameBean game) throws GameException {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().equals(user)) {
+                return gameUser;
+            }
+        }
+
+        log.debug("User is not joined to game {}", game.getGameId());
+        throw new GameException(ERROR_CODE_ERROR);
+    }
+
     public GameBean findPrivateGame(String privateCode) throws GameException {
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {
@@ -145,7 +158,7 @@ public class GameUtil {
     }
 
 
-    public void startGame(GameBean game) {
+    public void startGame(GameBean game) throws GameException {
         log.info("Checking if game can be started (all players should be ready)");
 
         if (game.getMinPlayers() > game.getGameUsers().size()) {
@@ -169,14 +182,11 @@ public class GameUtil {
         game.setStatus(GameStatus.PLAYING);
         game.setStage(GameStage.PREPARATION);
         game.setPreparationCycle(1);
+        game.setCurrentCycleBuildingNumber(1);
         game.setDateStarted(new Date());
+        playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
-    }
-
-    public List<List<String>> getInitialBuildingsSetFromJson(String json) {
-        return GSON.fromJson(json, new TypeToken<List<List<String>>>() {
-        }.getType());
     }
 
     @Autowired
@@ -187,5 +197,10 @@ public class GameUtil {
     @Autowired
     public void setRandomUtil(RandomUtil randomUtil) {
         this.randomUtil = randomUtil;
+    }
+
+    @Autowired
+    public void setPlayUtil(PlayUtil playUtil) {
+        this.playUtil = playUtil;
     }
 }
