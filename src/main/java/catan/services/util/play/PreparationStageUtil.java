@@ -27,7 +27,7 @@ public class PreparationStageUtil {
         }.getType());
     }
 
-    public void updateNextMoveInPreparationStage(GameBean game) {
+    public void updateNextMove(GameBean game) {
         Integer nextMoveNumber;
 
         if (game.getPreparationCycle() == null) {
@@ -115,16 +115,12 @@ public class PreparationStageUtil {
         List<GameUserActionCode> actionCodesList = new ArrayList<GameUserActionCode>();
         if (game.getCurrentCycleBuildingNumber() == null) {
             actionCodesList.add(GameUserActionCode.END_TURN);
-            //set end turn mandatory
         } else if (getCurrentInitialBuilding(game).equals("ROAD")) {
             actionCodesList.add(GameUserActionCode.BUILD_ROAD);
-            //set build road mandatory
         } else if (getCurrentInitialBuilding(game).equals("SETTLEMENT")) {
             actionCodesList.add(GameUserActionCode.BUILD_SETTLEMENT);
-            //set build settlement mandatory
         } else if (getCurrentInitialBuilding(game).equals("CITY")) {
             actionCodesList.add(GameUserActionCode.BUILD_CITY);
-            //set build city mandatory
         }
 
         return actionCodesList;
