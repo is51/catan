@@ -3,10 +3,10 @@ package catan.services.util.play;
 import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
-import catan.domain.model.game.types.GameStage;
-import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.types.GameStage;
+import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class PreparationStageUtil {
             nextMoveNumber = 1;
         } else {
             Integer currentMove = game.getCurrentMove();
-            if(game.getPreparationCycle() % 2 > 0){
+            if (game.getPreparationCycle() % 2 > 0) {
                 nextMoveNumber = currentMove.equals(game.getGameUsers().size())
                         ? currentMove
                         : currentMove + 1;
@@ -56,10 +56,11 @@ public class PreparationStageUtil {
         if (numberOfBuildingsInCycle.equals(game.getCurrentCycleBuildingNumber())) {
             game.setCurrentCycleBuildingNumber(null);
         } else if (game.getCurrentCycleBuildingNumber() == null) {
-                game.setCurrentCycleBuildingNumber(1);
-            } else {
-                game.setCurrentCycleBuildingNumber(game.getCurrentCycleBuildingNumber() + 1);
-            }
+            game.setCurrentCycleBuildingNumber(1);
+        } else {
+            game.setCurrentCycleBuildingNumber(game.getCurrentCycleBuildingNumber() + 1);
+        }
+
         log.debug("Current Cycle Building Number changed to {}", game.getCurrentCycleBuildingNumber());
     }
 
@@ -109,7 +110,7 @@ public class PreparationStageUtil {
         }
     }
 
-    private List<GameUserActionCode> getListOfActionCodesForActivePlayer (GameBean game) {
+    private List<GameUserActionCode> getListOfActionCodesForActivePlayer(GameBean game) {
 
         List<GameUserActionCode> actionCodesList = new ArrayList<GameUserActionCode>();
         if (game.getCurrentCycleBuildingNumber() == null) {
@@ -125,6 +126,7 @@ public class PreparationStageUtil {
             actionCodesList.add(GameUserActionCode.BUILD_CITY);
             //set build city mandatory
         }
+
         return actionCodesList;
     }
 
@@ -140,6 +142,7 @@ public class PreparationStageUtil {
         List<List<String>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
         int indexOfCycle = game.getPreparationCycle() - 1;
         int indexOfBuildingNumberInCycle = game.getCurrentCycleBuildingNumber() - 1;
+
         return initialBuildingsSet.get(indexOfCycle).get(indexOfBuildingNumberInCycle);
     }
 }

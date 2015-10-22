@@ -36,7 +36,6 @@ public class GameServiceImpl implements GameService {
     public static final String ALREADY_JOINED_ERROR = "ALREADY_JOINED";
     public static final String INVALID_CODE_ERROR = "INVALID_CODE";
     public static final String GAME_IS_NOT_FOUND_ERROR = "GAME_IS_NOT_FOUND";
-    public static final String USER_IS_NOT_JOINED_ERROR = "USER_IS_NOT_JOINED";
     public static final String GUEST_NOT_PERMITTED_ERROR = "GUEST_NOT_PERMITTED";
 
     private GameDao gameDao;
@@ -120,16 +119,9 @@ public class GameServiceImpl implements GameService {
         GameBean game = gameUtil.getGameById(gameId, GAME_IS_NOT_FOUND_ERROR);
 
         validateGameStatusIsNotCancelled(game);
+        validateUserIsJoinedToGame(user, game);
 
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getUser().getId() == user.getId()) {
-                log.debug("Successfully found game that is joined by user specified, " + game);
-                return game;
-            }
-        }
-
-        log.debug(user + " is not joined to " + game);
-        throw new GameException(USER_IS_NOT_JOINED_ERROR);
+        return game;
     }
 
     @Override
@@ -275,6 +267,11 @@ public class GameServiceImpl implements GameService {
             log.error("Cannot proceed as user is not a creator");
             throw new GameException(ERROR_CODE_ERROR);
         }
+    }
+
+    private void validateUserIsJoinedToGame(UserBean user, GameBean game) throws GameException {
+        gameUtil.getGameUserJoinedToGame(user, game);
+        //Should throw exception if user is not joined
     }
 
     private GameBean createPrivateGame(UserBean creator, int targetVictoryPoints, String initialBuildingsSet) {

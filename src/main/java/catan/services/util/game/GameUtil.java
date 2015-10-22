@@ -102,6 +102,17 @@ public class GameUtil {
         return game;
     }
 
+    public GameUserBean getGameUserJoinedToGame(UserBean user, GameBean game) throws GameException {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getUser().equals(user)) {
+                return gameUser;
+            }
+        }
+
+        log.debug("User is not joined to game {}", game.getGameId());
+        throw new GameException(ERROR_CODE_ERROR);
+    }
+
     public GameBean findPrivateGame(String privateCode) throws GameException {
         GameBean game = gameDao.getGameByPrivateCode(privateCode);
         if (game == null) {

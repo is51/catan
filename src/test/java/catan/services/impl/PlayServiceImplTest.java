@@ -20,6 +20,7 @@ import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.BuildUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import org.junit.After;
@@ -59,7 +60,10 @@ public class PlayServiceImplTest {
     @InjectMocks
     private PlayUtil playUtil;
     @InjectMocks
+    private BuildUtil buildUtil;
+    @InjectMocks
     private PreparationStageUtil preparationStageUtil;
+
     private GameBean game;
     private HexBean hex_0_0;
     private HexBean hex_1_0;
@@ -68,9 +72,13 @@ public class PlayServiceImplTest {
 
     @Before
     public void setUp() throws GameException {
+        buildUtil.setGameUtil(gameUtil);
+
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);
+        playService.setBuildUtil(buildUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
+
         playUtil.setPreparationStageUtil(preparationStageUtil);
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
@@ -204,7 +212,7 @@ public class PlayServiceImplTest {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
-            fail("No other exceptions should be thrown");
+            fail("No other exceptions should be thrown, but was thrown: " + e);
         }
     }
 
@@ -245,7 +253,7 @@ public class PlayServiceImplTest {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
-            fail("No other exceptions should be thrown");
+            fail("No other exceptions should be thrown, but was thrown: " + e);
         }
     }
 
@@ -330,7 +338,7 @@ public class PlayServiceImplTest {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
-            fail("No other exceptions should be thrown");
+            fail("No other exceptions should be thrown, but was thrown: " + e);
         }
     }
 
@@ -347,7 +355,7 @@ public class PlayServiceImplTest {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
-            fail("No other exceptions should be thrown");
+            fail("No other exceptions should be thrown, but was thrown: " + e);
         }
     }
 

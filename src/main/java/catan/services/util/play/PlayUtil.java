@@ -23,6 +23,20 @@ public class PlayUtil {
         return GSON.fromJson(availableActionsJson, AvailableActions.class);
     }
 
+    public void updateNextMove(GameBean game) throws GameException {
+        switch (game.getStage()) {
+            case PREPARATION:
+                preparationStageUtil.updateNextMoveInPreparationStage(game);
+                break;
+            case MAIN:
+                updateNextMoveInMainStage(game);
+                break;
+            default:
+                log.debug("Cannot recognize current game stage: {}", game.getStage());
+                throw new GameException(ERROR_CODE_ERROR);
+        }
+    }
+
     public void updateNextMoveInMainStage(GameBean game) {
         Integer nextMoveNumber = game.getCurrentMove().equals(game.getGameUsers().size())
                 ? 1

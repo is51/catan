@@ -211,7 +211,7 @@ public class ViewGameTest extends GameTestUtil {
         viewGame(userToken2, gameId)
                 .then()
                 .statusCode(400)
-                .body("errorCode", equalTo("USER_IS_NOT_JOINED"));
+                .body("errorCode", equalTo("ERROR"));
     }
 
     @Test
