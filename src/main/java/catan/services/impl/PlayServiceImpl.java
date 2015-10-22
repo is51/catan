@@ -71,7 +71,7 @@ public class PlayServiceImpl implements PlayService {
         validateActionIsAllowed(user, game, GameUserActionCode.BUILD_SETTLEMENT);
 
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
-        buildUtil.validateUserCanBuildSettlementOnNode(user, nodeToBuildOn);
+        buildUtil.validateUserCanBuildSettlementOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
@@ -92,7 +92,7 @@ public class PlayServiceImpl implements PlayService {
         validateActionIsAllowed(user, game, GameUserActionCode.BUILD_CITY);
 
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
-        buildUtil.validateUserCanBuildCityOnNode(user, nodeToBuildOn);
+        buildUtil.validateUserCanBuildCityOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
