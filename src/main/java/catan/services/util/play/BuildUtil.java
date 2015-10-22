@@ -130,11 +130,27 @@ public class BuildUtil {
         */
     }
 
-    public void buildSettlementOnNode(UserBean user, NodeBean nodeToBuildOn) throws GameException {
+    public void validateUserCanBuildCityOnNode(UserBean user, NodeBean nodeToBuildOn) throws PlayException {
+        if (nodeToBuildOn.getBuilding() == null) {
+            log.debug("Cannot build city on empty node. User should build settlement first");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+        if (nodeToBuildOn.getBuilding().getBuilt() == NodeBuiltType.CITY) {
+            log.debug("Cannot build city on this node as it is already built");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+        UserBean buildingOwner = nodeToBuildOn.getBuilding().getBuildingOwner().getUser();
+        if (buildingOwner != user) {
+            log.debug("Cannot build city on this node as building on it doesn't belong to user");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    public void buildOnNode(UserBean user, NodeBean nodeToBuildOn, NodeBuiltType nodeBuiltType) throws GameException {
         GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, nodeToBuildOn.getGame());
 
         Building<NodeBuiltType> building = new Building<NodeBuiltType>();
-        building.setBuilt(NodeBuiltType.SETTLEMENT);
+        building.setBuilt(nodeBuiltType);
         building.setBuildingOwner(gameUserBean);
 
         nodeToBuildOn.setBuilding(building);

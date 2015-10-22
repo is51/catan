@@ -6,6 +6,7 @@ import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
@@ -71,7 +72,7 @@ public class PlayServiceImpl implements PlayService {
 
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildSettlementOnNode(user, nodeToBuildOn);
-        buildUtil.buildSettlementOnNode(user, nodeToBuildOn);
+        buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
         playUtil.updateAvailableUserActions(game);
@@ -79,6 +80,27 @@ public class PlayServiceImpl implements PlayService {
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built settlement at node {} of game id {}", user.getUsername(), nodeIdString, gameIdString);
+    }
+
+    @Override
+    public void buildCity(UserBean user, String gameIdString, String nodeIdString) throws PlayException, GameException {
+        log.debug("{} tries to build city at node {} of game id {}", user, nodeIdString, gameIdString);
+
+        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
+        validateUserNotEmpty(user);
+        validateGameStatusIsPlaying(game);
+        validateActionIsAllowed(user, game, GameUserActionCode.BUILD_CITY);
+
+        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
+        buildUtil.validateUserCanBuildCityOnNode(user, nodeToBuildOn);
+        buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
+
+        preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+        playUtil.updateAvailableUserActions(game);
+
+        gameDao.updateGame(game);
+
+        log.debug("User {} successfully built city at node {} of game id {}", user.getUsername(), nodeIdString, gameIdString);
     }
 
     @Override
