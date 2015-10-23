@@ -44,9 +44,9 @@ public class GameUtil {
                 Arrays.asList("SETTLEMENT", "ROAD"),
                 Arrays.asList("SETTLEMENT", "ROAD")));
         initialBuildingsSetsMap.put(2, Arrays.asList(
-                Arrays.asList("CITY"),
-                Arrays.asList("SETTLEMENT", "SETTLEMENT"),
-                Arrays.asList("ROAD", "ROAD", "ROAD")));
+                Arrays.asList("SETTLEMENT", "ROAD"),
+                Arrays.asList("CITY", "ROAD"),
+                Arrays.asList("SETTLEMENT", "ROAD")));
     }
 
     public int toValidVictoryPoints(String inputTargetVictoryPoints) throws GameException {
