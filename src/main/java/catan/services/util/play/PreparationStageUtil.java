@@ -52,16 +52,17 @@ public class PreparationStageUtil {
     public void updateCurrentCycleBuildingNumber(GameBean game) {
         List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
         Integer numberOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
+        Integer currentCycleBuildingNumber = game.getCurrentCycleBuildingNumber();
 
-        if (numberOfBuildingsInCycle.equals(game.getCurrentCycleBuildingNumber())) {
+        if (numberOfBuildingsInCycle.equals(currentCycleBuildingNumber)) {
             game.setCurrentCycleBuildingNumber(null);
-        } else if (game.getCurrentCycleBuildingNumber() == null) {
+        } else if (currentCycleBuildingNumber == null) {
             game.setCurrentCycleBuildingNumber(1);
         } else {
-            game.setCurrentCycleBuildingNumber(game.getCurrentCycleBuildingNumber() + 1);
+            game.setCurrentCycleBuildingNumber(currentCycleBuildingNumber + 1);
         }
 
-        log.debug("Current Cycle Building Number changed to {}", game.getCurrentCycleBuildingNumber());
+        log.debug("Current Cycle Building Number changed from {} to {}", currentCycleBuildingNumber, game.getCurrentCycleBuildingNumber());
     }
 
     public void updateGameStageToMain(GameBean game) {
@@ -93,17 +94,18 @@ public class PreparationStageUtil {
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getMoveOrder() == game.getCurrentMove()) {
 
-                AvailableActions availableActions = new AvailableActions();
-                List<Action> actionsList = new ArrayList<Action>();
-
                 List<GameUserActionCode> actionCodesList = new ArrayList<GameUserActionCode>();
                 actionCodesList.add(getCurrentInitialAction(game));
 
+                List<Action> actionsList = new ArrayList<Action>();
                 for (GameUserActionCode actionCode : actionCodesList) {
                     actionsList.add(new Action(actionCode));
                 }
+
+                AvailableActions availableActions = new AvailableActions();
                 availableActions.setList(actionsList);
                 availableActions.setIsMandatory(true);
+
                 String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
                 gameUser.setAvailableActions(availableActionsString);
             } else {

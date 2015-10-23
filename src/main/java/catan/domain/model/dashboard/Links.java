@@ -57,12 +57,12 @@ public class Links<T> {
         this.bottomLeft = bottomLeft;
     }
 
-    public List<T> all() {
+    public List<T> listAllNotNullItems() {
         List<T> allElements = new ArrayList<T>();
-        allElements.add(topLeft);
-        allElements.add(topRight);
-        allElements.add(bottomRight);
-        allElements.add(bottomLeft);
+        if(topLeft != null) allElements.add(topLeft);
+        if(topRight != null) allElements.add(topRight);
+        if(bottomRight != null) allElements.add(bottomRight);
+        if(bottomLeft != null) allElements.add(bottomLeft);
 
         return allElements;
     }

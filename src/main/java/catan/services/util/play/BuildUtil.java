@@ -28,7 +28,27 @@ public class BuildUtil {
 
     private GameUtil gameUtil;
 
-    public MapElement getValidMapElementToBuildOn(String mapElementIdString, List<MapElement> mapElements) throws PlayException {
+    public void buildRoadOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws GameException {
+        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, edgeToBuildOn.getGame());
+
+        Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
+        building.setBuilt(EdgeBuiltType.ROAD);
+        building.setBuildingOwner(gameUserBean);
+
+        edgeToBuildOn.setBuilding(building);
+    }
+
+    public void buildOnNode(UserBean user, NodeBean nodeToBuildOn, NodeBuiltType nodeBuiltType) throws GameException {
+        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, nodeToBuildOn.getGame());
+
+        Building<NodeBuiltType> building = new Building<NodeBuiltType>();
+        building.setBuilt(nodeBuiltType);
+        building.setBuildingOwner(gameUserBean);
+
+        nodeToBuildOn.setBuilding(building);
+    }
+
+    public MapElement getValidMapElementByIdToBuildOn(String mapElementIdString, List<MapElement> mapElements) throws PlayException {
         int mapElementId;
         try {
             mapElementId = Integer.parseInt(mapElementIdString);
@@ -61,14 +81,10 @@ public class BuildUtil {
         boolean nearNeighbourRoad = false;
         boolean nearNeighbourSettlement = false;
 
-        for (NodeBean node : edgeToBuildOn.getNodes().all()) {
-            if (node == null) {
-                continue;
-            }
-
+        for (NodeBean node : edgeToBuildOn.getNodes().listAllNotNullItems()) {
             if (node.getBuilding() == null) {
-                for (EdgeBean neighbourEdge : node.getEdges().all()) {
-                    if (neighbourEdge == null || neighbourEdge.equals(edgeToBuildOn)) {
+                for (EdgeBean neighbourEdge : node.getEdges().listAllNotNullItems()) {
+                    if (neighbourEdge.equals(edgeToBuildOn)) {
                         continue;
                     }
 
@@ -96,14 +112,14 @@ public class BuildUtil {
 
     public void validateUserCanBuildSettlementOnNode(UserBean user, GameStage gameStage, NodeBean nodeToBuildOn) throws PlayException {
 
-        validateNodeToBuildOnIsEmpty(nodeToBuildOn);
-        validateThereIsNoOtherBuildingsCloseToNodeToBuildOn(nodeToBuildOn);
+        validateNodeIsEmpty(nodeToBuildOn);
+        validateNoBuildingsCloseToNode(nodeToBuildOn);
 
         if (gameStage.equals(GameStage.MAIN)) {
 
             boolean nearOwnNeighbourRoad = false;
-            for (EdgeBean edge : nodeToBuildOn.getEdges().all()) {
-                if (edge != null && edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().getUser().equals(user)) {
+            for (EdgeBean edge : nodeToBuildOn.getEdges().listAllNotNullItems()) {
+                if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().getUser().equals(user)) {
                     nearOwnNeighbourRoad = true;
                 }
             }
@@ -118,20 +134,22 @@ public class BuildUtil {
     public void validateUserCanBuildCityOnNode(UserBean user, GameStage gameStage, NodeBean nodeToBuildOn) throws GameException, PlayException {
         switch (gameStage) {
             case PREPARATION:
-                validateNodeToBuildOnIsEmpty(nodeToBuildOn);
-                validateThereIsNoOtherBuildingsCloseToNodeToBuildOn(nodeToBuildOn);
+                validateNodeIsEmpty(nodeToBuildOn);
+                validateNoBuildingsCloseToNode(nodeToBuildOn);
                 break;
             case MAIN:
                 if (nodeToBuildOn.getBuilding() == null) {
                     log.debug("Cannot build city on empty node. User should build settlement first");
                     throw new PlayException(ERROR_CODE_ERROR);
                 }
+
                 if (nodeToBuildOn.getBuilding().getBuilt() == NodeBuiltType.CITY) {
                     log.debug("Cannot build city on this node as it is already built");
                     throw new PlayException(ERROR_CODE_ERROR);
                 }
+
                 UserBean buildingOwner = nodeToBuildOn.getBuilding().getBuildingOwner().getUser();
-                if (buildingOwner != user) {
+                if (!buildingOwner.equals(user)) {
                     log.debug("Cannot build city on this node as building on it doesn't belong to user");
                     throw new PlayException(ERROR_CODE_ERROR);
                 }
@@ -142,41 +160,19 @@ public class BuildUtil {
         }
     }
 
-    public void buildOnNode(UserBean user, NodeBean nodeToBuildOn, NodeBuiltType nodeBuiltType) throws GameException {
-        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, nodeToBuildOn.getGame());
-
-        Building<NodeBuiltType> building = new Building<NodeBuiltType>();
-        building.setBuilt(nodeBuiltType);
-        building.setBuildingOwner(gameUserBean);
-
-        nodeToBuildOn.setBuilding(building);
-    }
-
-    public void buildRoadOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws GameException {
-        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, edgeToBuildOn.getGame());
-
-        Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
-        building.setBuilt(EdgeBuiltType.ROAD);
-        building.setBuildingOwner(gameUserBean);
-
-        edgeToBuildOn.setBuilding(building);
-    }
-
-    private void validateNodeToBuildOnIsEmpty(NodeBean nodeToBuildOn) throws PlayException {
+    private void validateNodeIsEmpty(NodeBean nodeToBuildOn) throws PlayException {
         if (nodeToBuildOn.getBuilding() != null) {
             log.debug("Cannot build building on this node as it already has building on it");
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
 
-    private void validateThereIsNoOtherBuildingsCloseToNodeToBuildOn(NodeBean nodeToBuildOn) throws PlayException {
-        for (EdgeBean edge : nodeToBuildOn.getEdges().all()) {
-            if (edge != null) {
-                for (NodeBean node : edge.getNodes().all()) {
-                    if (node != null && node != nodeToBuildOn && node.getBuilding() != null) {
-                        log.debug("Cannot build building close to other settlements");
-                        throw new PlayException(ERROR_CODE_ERROR);
-                    }
+    private void validateNoBuildingsCloseToNode(NodeBean nodeToBuildOn) throws PlayException {
+        for (EdgeBean edge : nodeToBuildOn.getEdges().listAllNotNullItems()) {
+            for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
+                if (!node.equals(nodeToBuildOn) && node.getBuilding() != null) {
+                    log.debug("Cannot build building close to other settlements");
+                    throw new PlayException(ERROR_CODE_ERROR);
                 }
             }
         }

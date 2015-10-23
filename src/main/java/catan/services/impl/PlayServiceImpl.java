@@ -49,7 +49,7 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowed(user, game, GameUserActionCode.BUILD_ROAD);
 
-        EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementToBuildOn(edgeIdString, new ArrayList<MapElement>(game.getEdges()));
+        EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeIdString, new ArrayList<MapElement>(game.getEdges()));
         buildUtil.validateUserCanBuildRoanOnEdge(user, edgeToBuildOn);
         buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
 
@@ -70,7 +70,7 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowed(user, game, GameUserActionCode.BUILD_SETTLEMENT);
 
-        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
+        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildSettlementOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
@@ -91,7 +91,7 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowed(user, game, GameUserActionCode.BUILD_CITY);
 
-        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
+        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildCityOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
 
@@ -116,7 +116,7 @@ public class PlayServiceImpl implements PlayService {
         boolean shouldUpdateNextMove = true;
         if (game.getStage().equals(GameStage.PREPARATION)) {
             Integer currentPreparationCycle = game.getPreparationCycle();
-            preparationStageUtil.updateGameStageToMain(game);
+            preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
             preparationStageUtil.updateCurrentCycleBuildingNumber(game);
             preparationStageUtil.updatePreparationCycle(game);
             shouldUpdateNextMove = currentPreparationCycle.equals(game.getPreparationCycle());
