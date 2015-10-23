@@ -34,7 +34,7 @@ public class PreparationStageTest extends PlayTestUtil {
         }
     }
 
-    protected void checkAvailableForUserAction(String userToken, int gameId, int gameUserNumber, String actionCode) {
+    private void checkAvailableForUserAction(String userToken, int gameId, int gameUserNumber, String actionCode) {
         if (actionCode.equals("")) {
             viewGame(userToken, gameId)
                     .then()
@@ -50,18 +50,16 @@ public class PreparationStageTest extends PlayTestUtil {
         }
     }
 
-    protected void checkAvailableForUserActionsDuringMove(String[] userTokens, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, int nodeIdToBuild, String nodeBuildingAction, int edgeIdToBuild) {
+    private void checkAvailableActionsAndBuildDuringOneMove(String[] userTokens, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, int nodeIdToBuild, String nodeBuildingAction, int edgeIdToBuild) {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, nodeBuildingAction);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
 
         if (nodeBuildingAction.equals("BUILD_SETTLEMENT")) {
             buildSettlement(userTokens[activeUserNumber], gameId, nodeIdToBuild);
-        }
-        // uncomment when buildCity is implemented
-        /*else if (nodeBuildingAction.equals("BUILD_CITY")) {
+        } else if (nodeBuildingAction.equals("BUILD_CITY")) {
             buildCity(userTokens[activeUserNumber], gameId, nodeIdToBuild);
-        }*/
+        }
 
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, "BUILD_ROAD");
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
@@ -140,11 +138,11 @@ public class PreparationStageTest extends PlayTestUtil {
         int edgeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.rightId");
 
         // First player moves #1
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
         // Second player moves #1
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
         // Third player moves #1
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
 
 
         // Third player moves #2
@@ -240,9 +238,17 @@ public class PreparationStageTest extends PlayTestUtil {
 
 
         // Second player moves #2
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId2ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId2ToBuildForSecondUser);
         // First player moves #2
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId2ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId2ToBuildForFirstUser);
+
+
+
+        // check currentMove after the preparation stage ending
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", equalTo(1));
     }
 
 
@@ -293,36 +299,36 @@ public class PreparationStageTest extends PlayTestUtil {
         int edgeId1ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.topLeftId");
         int nodeId2ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.topRightId");
         int edgeId2ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.rightId");
-        int nodeId3ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.bottomId");
-        int edgeId3ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.bottomLeftId");
+        int nodeId3ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.bottomId");
+        int edgeId3ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.bottomLeftId");
 
         int nodeId1ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.topLeftId");
         int edgeId1ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.topLeftId");
         int nodeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.topRightId");
         int edgeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.rightId");
-        int nodeId3ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.bottomId");
-        int edgeId3ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.bottomLeftId");
+        int nodeId3ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.bottomId");
+        int edgeId3ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.bottomLeftId");
 
         // First player moves #1
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
         // Second player moves #1
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
         // Third player moves #1
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
 
         // Third player moves #2
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId2ToBuildForThirdUser, "BUILD_CITY", edgeId2ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId2ToBuildForThirdUser, "BUILD_CITY", edgeId2ToBuildForThirdUser);
         // Second player moves #2
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_CITY", edgeId2ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_CITY", edgeId2ToBuildForSecondUser);
         // First player moves #2
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_CITY", edgeId2ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_CITY", edgeId2ToBuildForFirstUser);
 
         // First player moves #3
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId3ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId3ToBuildForFirstUser);
         // Second player moves #3
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId3ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId3ToBuildForSecondUser);
         // Third player moves #3
-        checkAvailableForUserActionsDuringMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId3ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId3ToBuildForThirdUser);
     }
 
 
