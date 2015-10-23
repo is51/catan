@@ -6,6 +6,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
+import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.random.RandomUtil;
@@ -37,16 +38,16 @@ public class GameUtil {
     private PlayUtil playUtil;
 
     private static final Gson GSON = new Gson();
-    private static final Map<Integer, List<List<String>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<String>>>();
+    private static final Map<Integer, List<List<GameUserActionCode>>> initialBuildingsSetsMap = new HashMap<Integer, List<List<GameUserActionCode>>>();
 
     static {
         initialBuildingsSetsMap.put(1, Arrays.asList(
-                Arrays.asList("SETTLEMENT", "ROAD"),
-                Arrays.asList("SETTLEMENT", "ROAD")));
+                Arrays.asList(GameUserActionCode.BUILD_SETTLEMENT, GameUserActionCode.BUILD_ROAD),
+                Arrays.asList(GameUserActionCode.BUILD_SETTLEMENT, GameUserActionCode.BUILD_ROAD)));
         initialBuildingsSetsMap.put(2, Arrays.asList(
-                Arrays.asList("SETTLEMENT", "ROAD"),
-                Arrays.asList("CITY", "ROAD"),
-                Arrays.asList("SETTLEMENT", "ROAD")));
+                Arrays.asList(GameUserActionCode.BUILD_SETTLEMENT, GameUserActionCode.BUILD_ROAD),
+                Arrays.asList(GameUserActionCode.BUILD_CITY, GameUserActionCode.BUILD_ROAD),
+                Arrays.asList(GameUserActionCode.BUILD_SETTLEMENT, GameUserActionCode.BUILD_ROAD)));
     }
 
     public int toValidVictoryPoints(String inputTargetVictoryPoints) throws GameException {
@@ -74,13 +75,13 @@ public class GameUtil {
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        List<List<String>> buildingsSet = initialBuildingsSetsMap.get(initialBuildingsSetId);
+        List<List<GameUserActionCode>> buildingsSet = initialBuildingsSetsMap.get(initialBuildingsSetId);
         if (buildingsSet == null) {
             log.error("Cannot create game with unknown initialBuildingsSetId");
             throw new GameException(ERROR_CODE_ERROR);
         }
 
-        return GSON.toJson(buildingsSet, new TypeToken<List<List<String>>>() {
+        return GSON.toJson(buildingsSet, new TypeToken<List<List<GameUserActionCode>>>() {
         }.getType());
     }
 

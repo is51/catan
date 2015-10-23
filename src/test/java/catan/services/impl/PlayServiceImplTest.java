@@ -1054,7 +1054,7 @@ public class PlayServiceImplTest {
                 edge_1_1, edge_1_2, edge_1_3, edge_1_4, edge_1_5, edge_1_6,
                 edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5,
                 edge_3_3, edge_3_4, edge_3_5, edge_3_6));
-        game.setInitialBuildingsSet("[[SETTLEMENT, ROAD], [SETTLEMENT, ROAD]]");
+        game.setInitialBuildingsSet("[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         playUtil.updateAvailableUserActions(game);
     }
 }
