@@ -24,7 +24,7 @@ angular.module('catan')
 
             SelectMapObjectService.cancelRequestSelection = function(type) {
                 if (requestSelectionDeferred[type]) {
-                    requestSelectionDeferred[type].reject("canceled");
+                    requestSelectionDeferred[type].reject("CANCELED");
                 }
             };
 

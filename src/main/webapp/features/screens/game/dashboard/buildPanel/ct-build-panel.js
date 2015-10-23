@@ -15,8 +15,10 @@ angular.module('catan')
                         ModalWindowService.hide("BUILD_PANEL");
                         PlayService.buildSettlement(scope.game).then(function() {
                             GameService.refresh(scope.game);
-                        }, function() {
-                            alert("Build settlement error!");
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert("Build settlement error!");
+                            }
                         });
                     };
 
@@ -24,8 +26,10 @@ angular.module('catan')
                         ModalWindowService.hide("BUILD_PANEL");
                         PlayService.buildCity(scope.game).then(function() {
                             GameService.refresh(scope.game);
-                        }, function() {
-                            alert("Build city error!");
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert("Build city error!");
+                            }
                         });
                     };
 
@@ -33,8 +37,10 @@ angular.module('catan')
                         ModalWindowService.hide("BUILD_PANEL");
                         PlayService.buildRoad(scope.game).then(function() {
                             GameService.refresh(scope.game);
-                        }, function() {
-                            alert("Build road error!");
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert("Build road error!");
+                            }
                         });
                     };
 
