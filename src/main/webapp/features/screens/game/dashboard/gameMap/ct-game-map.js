@@ -2,7 +2,7 @@
 
 angular.module('catan')
 
-        .directive('ctGameMap', ['DrawMapService', function(DrawMapService) {
+        .directive('ctGameMap', ['DrawMapService', 'SelectMapObjectService', function(DrawMapService, SelectMapObjectService) {
             return {
                 restrict: 'E',
                 scope: {
@@ -22,6 +22,15 @@ angular.module('catan')
                         DrawMapService.drawMap(canvas, game, game.map);
                     });
 
+                    element.on('click', DrawMapService.NODE_SELECTOR, function(event) {
+                        var nodeId = angular.element(event.target).closest(DrawMapService.NODE_SELECTOR).attr('node-id');
+                        SelectMapObjectService.select('node', nodeId);
+                    });
+
+                    element.on('click', DrawMapService.EDGE_SELECTOR, function(event) {
+                        var edgeId = angular.element(event.target).closest(DrawMapService.EDGE_SELECTOR).attr('edge-id');
+                        SelectMapObjectService.select('edge', edgeId);
+                    });
                 }
             };
 

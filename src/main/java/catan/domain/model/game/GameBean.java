@@ -10,6 +10,8 @@ import catan.domain.transfer.output.dashboard.EdgeDetails;
 import catan.domain.transfer.output.dashboard.HexDetails;
 import catan.domain.transfer.output.dashboard.NodeDetails;
 import catan.domain.transfer.output.game.GameUserDetails;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -90,16 +92,19 @@ public class GameBean {
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
     @OrderBy("coordinates ASC")
     private Set<HexBean> hexes = new HashSet<HexBean>();
 
     //TODO: think about removal of this set as it may be redundant
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
     @OrderBy("id ASC")
     private Set<EdgeBean> edges = new HashSet<EdgeBean>();
 
     //TODO: think about removal of this set as it may be redundant
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
     @OrderBy("id ASC")
     private Set<NodeBean> nodes = new HashSet<NodeBean>();
 
