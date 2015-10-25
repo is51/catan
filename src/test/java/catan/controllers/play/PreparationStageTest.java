@@ -8,6 +8,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -231,6 +232,16 @@ public class PreparationStageTest extends PlayTestUtil {
                 .then()
                 .statusCode(200);
 
+        given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", userToken1)
+                .when()
+                .post(URL_CURRENT_GAMES_LIST)
+                .then()
+                .statusCode(200)
+                .body("findall.size()", greaterThan(0));
+
         // should fail when end turn if current move is not move of third user
         endTurn(userTokens[thirdGameUserNumber], gameId)
                 .then()
@@ -329,6 +340,16 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId3ToBuildForSecondUser);
         // Third player moves #3
         checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId3ToBuildForThirdUser);
+
+        given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", userToken1)
+                .when()
+                .post(URL_CURRENT_GAMES_LIST)
+                .then()
+                .statusCode(200)
+                .body("findall.size()", greaterThan(0));
     }
 
 

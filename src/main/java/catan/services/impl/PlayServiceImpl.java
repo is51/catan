@@ -130,7 +130,7 @@ public class PlayServiceImpl implements PlayService {
 
         gameDao.updateGame(game);
 
-        log.debug("User {} successfully ended his turn", user.getUsername(), gameIdString);
+        log.debug("User {} successfully ended his turn of game id {}", user.getUsername(), gameIdString);
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {

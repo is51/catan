@@ -148,7 +148,6 @@ public class HexBean implements MapElement{
 
         if (dice != null ? !dice.equals(hexBean.dice) : hexBean.dice != null) return false;
         if (!coordinates.equals(hexBean.coordinates)) return false;
-        if (!game.equals(hexBean.game)) return false;
         if (resourceType != hexBean.resourceType) return false;
 
         return true;
@@ -156,8 +155,7 @@ public class HexBean implements MapElement{
 
     @Override
     public int hashCode() {
-        int result = game.hashCode();
-        result = 31 * result + coordinates.hashCode();
+        int result = coordinates.hashCode();
         result = 31 * result + resourceType.hashCode();
         result = 31 * result + (dice != null ? dice.hashCode() : 0);
         

@@ -88,6 +88,7 @@ public class Links<T> {
         result = 31 * result + (topRight != null ? topRight.hashCode() : 0);
         result = 31 * result + (bottomRight != null ? bottomRight.hashCode() : 0);
         result = 31 * result + (bottomLeft != null ? bottomLeft.hashCode() : 0);
+
         return result;
     }
 }

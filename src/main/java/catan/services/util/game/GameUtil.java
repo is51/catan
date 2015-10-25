@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static catan.services.impl.GameServiceImpl.ALREADY_JOINED_ERROR;
 import static catan.services.impl.GameServiceImpl.ERROR_CODE_ERROR;
@@ -110,7 +111,7 @@ public class GameUtil {
             }
         }
 
-        log.debug("User is not joined to game {}", game.getGameId());
+        log.error("User is not joined to game {}", game.getGameId());
         throw new GameException(ERROR_CODE_ERROR);
     }
 
@@ -159,25 +160,35 @@ public class GameUtil {
     }
 
 
-    public void startGame(GameBean game) throws GameException {
-        log.info("Checking if game can be started (all players should be ready)");
-
+    public boolean enoughPlayersToStartGame(GameBean game) {
         if (game.getMinPlayers() > game.getGameUsers().size()) {
             log.info("There are not enough players to start game {}. Game will start when players count will be {}, current count is {}",
                     game.getGameId(), game.getMaxPlayers(), game.getGameUsers().size());
-            return;
+            return false;
         }
+
+        log.info("Enough players to start game");
+        return true;
+    }
+
+    public boolean allPlayersAreReady(GameBean game) {
+        log.info("Checking if all joined players are READY");
 
         for (GameUserBean userBean : game.getGameUsers()) {
             if (!userBean.isReady()) {
-                log.info("Cannot start game as not all players are ready, players: {}", game.getGameUsers());
-                return;
+                log.info("Cannot start game as not all joined players are ready, players: {}", game.getGameUsers());
+                return false;
             }
         }
 
-        log.info("All players are ready, starting {}", game);
+        log.info("All players are READY");
+        return true;
+    }
 
-        randomUtil.populatePlayersMoveOrderRandomly(game.getGameUsers());
+    public void startGame(GameBean game) throws GameException {
+        log.info("Starting {}", game);
+
+        populatePlayersMoveOrderRandomly(game.getGameUsers());
 
         game.setCurrentMove(1);
         game.setStatus(GameStatus.PLAYING);
@@ -189,6 +200,20 @@ public class GameUtil {
 
         gameDao.updateGame(game);
     }
+
+    private void populatePlayersMoveOrderRandomly(Set<GameUserBean> players) {
+        List<Integer> moveOrderSequence = new ArrayList<Integer>();
+        for (int i = 1; i <= players.size(); i++) {
+            moveOrderSequence.add(i);
+        }
+
+        for (GameUserBean gameUser : players) {
+            Integer moveOrder = randomUtil.pullRandomMoveOrder(moveOrderSequence);
+            gameUser.setMoveOrder(moveOrder);
+            log.info("GameUser (id: " + gameUser.getGameUserId() + ", username: "+ gameUser.getUser().getUsername() + ") moves: " + moveOrder);
+        }
+    }
+
 
     @Autowired
     public void setGameDao(GameDao gameDao) {

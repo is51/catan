@@ -60,6 +60,7 @@ public class HorizontalLinks<T> extends Links<T>{
         int result = super.hashCode();
         result = 31 * result + (right != null ? right.hashCode() : 0);
         result = 31 * result + (left != null ? left.hashCode() : 0);
+
         return result;
     }
 }

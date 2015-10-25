@@ -60,6 +60,7 @@ public class VerticalLinks<T> extends Links<T>{
         int result = super.hashCode();
         result = 31 * result + (top != null ? top.hashCode() : 0);
         result = 31 * result + (bottom != null ? bottom.hashCode() : 0);
+
         return result;
     }
 }
