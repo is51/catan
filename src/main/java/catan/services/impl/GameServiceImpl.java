@@ -205,7 +205,9 @@ public class GameServiceImpl implements GameService {
         gameDao.updateGameUser(gameUserBean);
         log.info("{} successfully updated status to ready for game with id: {}", user, game.getGameId());
 
-        gameUtil.startGame(game);
+        if (gameUtil.enoughPlayersToStartGame(game) && gameUtil.allPlayersAreReady(game)){
+            gameUtil.startGame(game);
+        }
     }
 
     private void validateUserNotEmpty(UserBean user) throws GameException {

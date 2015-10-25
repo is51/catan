@@ -8,6 +8,10 @@ angular.module('catan')
 
             var DrawMapService = {};
 
+            DrawMapService.HEX_SELECTOR = '.hex';
+            DrawMapService.NODE_SELECTOR = '.node';
+            DrawMapService.EDGE_SELECTOR = '.edge';
+
             DrawMapService.drawMap = function(canvas, game, map) {
 
                 canvas.empty();
@@ -37,6 +41,7 @@ angular.module('catan')
                 var ROBBED_TEXT = angular.element('<span/>', {'class':'glyphicon glyphicon-fire'});
 
                 var elem = angular.element('<div/>')
+                        .attr('hex-id', hex.hexId)
                         .addClass('hex')
                         .css('left', coords.x + 'px')
                         .css('top', coords.y + 'px')
@@ -65,6 +70,7 @@ angular.module('catan')
 
             DrawMapService.drawNode = function(canvas, game, coords, node) {
                 var elem = angular.element('<div/>')
+                        .attr('node-id', node.nodeId)
                         .addClass('node')
                         .css('left', coords.x)
                         .css('top', coords.y)
@@ -134,6 +140,7 @@ angular.module('catan')
 
             DrawMapService.drawEdge = function(canvas, game, coords, edge) {
                 var elem = angular.element('<div/>')
+                        .attr('edge-id', edge.edgeId)
                         .addClass('edge')
                         .css('left', coords.x)
                         .css('top', coords.y)

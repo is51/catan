@@ -119,9 +119,7 @@ public class EdgeBean implements MapElement {
 
         EdgeBean edgeBean = (EdgeBean) o;
 
-        if (!game.equals(edgeBean.game)) return false;
         if (!hexes.equals(edgeBean.hexes)) return false;
-        if (!nodes.equals(edgeBean.nodes)) return false;
         if (orientation != edgeBean.orientation) return false;
 
         return true;
@@ -129,10 +127,9 @@ public class EdgeBean implements MapElement {
 
     @Override
     public int hashCode() {
-        int result = game.hashCode();
-        result = 31 * result + orientation.hashCode();
+        int result = orientation.hashCode();
         result = 31 * result + hexes.hashCode();
-        result = 31 * result + nodes.hashCode();
+
         return result;
     }
 }

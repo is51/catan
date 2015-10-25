@@ -27,19 +27,9 @@ public class RandomUtil {
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
     }
 
-    //TODO: move population to GameUtil, this util should only return random values
-    public void populatePlayersMoveOrderRandomly(Set<GameUserBean> players) {
-        List<Integer> moveOrderSequence = new ArrayList<Integer>();
-        for (int i = 1; i <= players.size(); i++) {
-            moveOrderSequence.add(i);
-        }
-
-        for (GameUserBean gameUser : players) {
-            int randomMoveOrderId = (int) (rvg.randomValue() * moveOrderSequence.size());
-            Integer moveOrder = moveOrderSequence.remove(randomMoveOrderId);
-
-            gameUser.setMoveOrder(moveOrder);
-        }
+    public Integer pullRandomMoveOrder(List<Integer> moveOrderSequence) {
+        int randomMoveOrderId = (int) (rvg.randomValue() * moveOrderSequence.size());
+        return moveOrderSequence.remove(randomMoveOrderId);
     }
 
     public HexType pullRandomHexType(List<HexType> possibleHexTypes) {

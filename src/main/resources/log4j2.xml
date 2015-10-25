@@ -18,8 +18,10 @@
         <logger name="org.springframework.boot.context.web.ErrorPageFilter" level="OFF" />
 
         <logger name="catan.config.RequestResponseLogger" level="OFF" />
+        <logger name="catan.services.AuthenticationService" level="OFF" />
+        <logger name="catan.services.GameService" level="INFO" />
 
-        <Root level="info">
+        <Root level="DEBUG">
             <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>
