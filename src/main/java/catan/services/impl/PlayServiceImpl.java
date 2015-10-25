@@ -130,7 +130,6 @@ public class PlayServiceImpl implements PlayService {
 
         gameDao.updateGame(game);
 
-
         log.debug("User {} successfully ended his turn of game id {}", user.getUsername(), gameIdString);
     }
 
