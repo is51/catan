@@ -10,6 +10,8 @@ public interface PlayService {
 
     void buildSettlement(UserBean user, String gameId, String nodeId) throws PlayException, GameException;
 
+    void buildCity(UserBean user, String gameId, String nodeId) throws PlayException, GameException;
+
     void endTurn(UserBean user, String gameId) throws PlayException, GameException;
 
 }

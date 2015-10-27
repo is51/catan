@@ -11,7 +11,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
     protected static final String URL_BUILD_SETTLEMENT = "/api/play/build/settlement";
     protected static final String URL_BUILD_CITY = "/api/play/build/city";
     protected static final String URL_END_TURN = "/api/play/end-turn";
-    
+
     protected Response buildSettlement(String token, int gameId, int nodeId) {
         return given()
                 .port(SERVER_PORT)

@@ -51,7 +51,7 @@ angular.module('catan')
                 var deferred = $q.defer();
 
                 Remote.game.details({gameId: game.getId()}).then(function(response) {
-                    angular.merge(game, response.data);
+                    refreshGameModel(game, response.data);
 
                     deferred.resolve();
                 }, function() {
@@ -87,4 +87,13 @@ angular.module('catan')
             };
 
             return GameService;
+
+
+            function refreshGameModel(game, data) {
+                // We need replace all properties of game except "map". Map should be merged
+                var currentGameMap = game.map;
+                angular.extend(game, data);
+                angular.merge(currentGameMap, game.map);
+                game.map = currentGameMap;
+            }
         }]);

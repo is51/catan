@@ -137,7 +137,6 @@ public class NodeBean implements MapElement{
 
         NodeBean nodeBean = (NodeBean) o;
 
-        if (!game.equals(nodeBean.game)) return false;
         if (!hexes.equals(nodeBean.hexes)) return false;
         if (orientation != nodeBean.orientation) return false;
         if (port != nodeBean.port) return false;
@@ -147,10 +146,10 @@ public class NodeBean implements MapElement{
 
     @Override
     public int hashCode() {
-        int result = game.hashCode();
-        result = 31 * result + port.hashCode();
+        int result = port.hashCode();
         result = 31 * result + orientation.hashCode();
         result = 31 * result + hexes.hashCode();
+
         return result;
     }
 }

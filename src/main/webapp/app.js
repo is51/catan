@@ -93,9 +93,12 @@ angular.module('catan', [
             .setRequest('game', 'leave', { url: '/api/game/leave'})
             .setRequest('game', 'cancel', { url: '/api/game/cancel'})
             .setRequest('game', 'ready', { url: '/api/game/ready'})
-            .setRequest('game', 'notReady', { url: '/api/game/not-ready'});
+            .setRequest('game', 'notReady', { url: '/api/game/not-ready'})
 
-        RemoteProvider.setRequest('play', 'endTurn', { url: '/api/play/end-turn'});
+            .setRequest('play', 'endTurn', { url: '/api/play/end-turn'})
+            .setRequest('play', 'buildSettlement', { url: '/api/play/build/settlement'})
+            .setRequest('play', 'buildCity', { url: '/api/play/build/city'})
+            .setRequest('play', 'buildRoad', { url: '/api/play/build/road'});
     }])
 
     .run(['$rootScope', 'User', function($rootScope, User) {

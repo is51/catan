@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
         String token = allocateNewSessionTokenToUser(user);
 
-        log.debug("User '" + username + "' successfully logged in and session '" + token + "' assigned to him");
+        log.debug(user + " successfully logged in and session '" + token + "' assigned to him");
 
         return token;
     }
