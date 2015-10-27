@@ -112,14 +112,14 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowed(user, game, GameUserActionCode.END_TURN);
 
-        //TODO: think about refactoring this part
         boolean shouldUpdateNextMove = true;
         if (game.getStage().equals(GameStage.PREPARATION)) {
-            Integer currentPreparationCycle = game.getPreparationCycle();
+            Integer previousPreparationCycle = game.getPreparationCycle();
             preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
             preparationStageUtil.updateCurrentCycleBuildingNumber(game);
             preparationStageUtil.updatePreparationCycle(game);
-            shouldUpdateNextMove = currentPreparationCycle.equals(game.getPreparationCycle());
+            Integer newPreparationCycle = game.getPreparationCycle();
+            shouldUpdateNextMove = (newPreparationCycle == null || previousPreparationCycle.equals(newPreparationCycle));
         }
 
         if (shouldUpdateNextMove) {
