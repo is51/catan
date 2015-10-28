@@ -7,13 +7,13 @@
     </Appenders>
     <Loggers>
         <Logger name="org.apache.log4j.xml" level="INFO"/>
-        <Logger name="org.hibernate" level="INFO"/>
-        <Logger name="org.hibernate.SQL" level="INFO"/>
-        <Logger name="org.hibernate.type.descriptor.sql" level="INFO"/>
-        <Logger name="org.hibernate.tool.hbm2ddl" level="INFO"/>
-        <Logger name="org.hibernate.pretty" level="INFO"/>
-        <Logger name="org.hibernate.cache" level="INFO"/>
-        <Logger name="org.hibernate.hql.internal.ast.AST" level="INFO"/>
+        <Logger name="org.hibernate" level="DEBUG"/>
+        <Logger name="org.hibernate.SQL" level="DEBUG"/>
+        <Logger name="org.hibernate.type.descriptor.sql" level="DEBUG"/>
+        <Logger name="org.hibernate.tool.hbm2ddl" level="DEBUG"/>
+        <Logger name="org.hibernate.pretty" level="DEBUG"/>
+        <Logger name="org.hibernate.cache" level="DEBUG"/>
+        <Logger name="org.hibernate.hql.internal.ast.AST" level="DEBUG"/>
         <Logger name="org.springframework" level="INFO"/>
         <logger name="org.springframework.boot.context.web.ErrorPageFilter" level="OFF" />
 

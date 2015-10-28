@@ -2,6 +2,9 @@ package catan.dao.impl;
 
 import catan.dao.AbstractDao;
 import catan.dao.GameDao;
+import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.HexBean;
+import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
@@ -25,8 +28,15 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     public GameBean getGameByGameId(int gameId) {
         Criteria criteria = getSession().createCriteria(GameBean.class);
         criteria.add(Restrictions.eq("gameId", gameId));
+        //TODO: add logs
+        GameBean game = (GameBean) criteria.uniqueResult();
+        for (HexBean hex : game.getHexes()) {
+            hex.getEdgeBottomLeft().getHexes().setTopRight(hex);
+            //TODO: set other edges
+        }
+        //TODO: set other nodes
 
-        return (GameBean) criteria.uniqueResult();
+        return game;
     }
 
     @Override

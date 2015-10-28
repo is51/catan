@@ -21,6 +21,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "NODE")
@@ -43,26 +44,10 @@ public class NodeBean implements MapElement{
     @Column(name = "ORIENTATION", unique = false, nullable = false)
     private NodeOrientationType orientation;
 
-    @Embedded
-    @AssociationOverrides({
-            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "HEX_TOP_LEFT")),
-            @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "HEX_TOP")),
-            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "HEX_TOP_RIGHT")),
-            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "HEX_BOTTOM_RIGHT")),
-            @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "HEX_BOTTOM")),
-            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "HEX_BOTTOM_LEFT"))
-    })
+    @Transient
     private VerticalLinks<HexBean> hexes = new VerticalLinks<HexBean>();
 
-    @Embedded
-    @AssociationOverrides({
-            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "EDGE_TOP_LEFT")),
-            @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "EDGE_TOP")),
-            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "EDGE_TOP_RIGHT")),
-            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_RIGHT")),
-            @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "EDGE_BOTTOM")),
-            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_LEFT"))
-    })
+    @Transient
     private VerticalLinks<EdgeBean> edges = new VerticalLinks<EdgeBean>();
 
 
