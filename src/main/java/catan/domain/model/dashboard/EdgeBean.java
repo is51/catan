@@ -85,36 +85,8 @@ public class EdgeBean implements MapElement {
         return hexes;
     }
 
-    public void setHexes(HorizontalLinks<HexBean> hexes) {
-        this.hexes = hexes;
-    }
-
     public VerticalLinks<NodeBean> getNodes() {
         return nodes;
     }
 
-    public void setNodes(VerticalLinks<NodeBean> nodes) {
-        this.nodes = nodes;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof EdgeBean)) return false;
-
-        EdgeBean edgeBean = (EdgeBean) o;
-
-        if (!hexes.equals(edgeBean.hexes)) return false;
-        if (orientation != edgeBean.orientation) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = orientation.hashCode();
-        result = 31 * result + hexes.hashCode();
-
-        return result;
-    }
 }

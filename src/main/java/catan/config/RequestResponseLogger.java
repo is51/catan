@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+//This filter adds logging of initial requests and responses
 @WebFilter("/api/*")
 public class RequestResponseLogger implements Filter {
     private Logger logger = LoggerFactory.getLogger(RequestResponseLogger.class);
@@ -39,7 +40,7 @@ public class RequestResponseLogger implements Filter {
     @Override
     public void doFilter(ServletRequest plainRequest, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) plainRequest;
-        if (logger.isInfoEnabled()) {
+        if (logger.isDebugEnabled()) {
             StringBuilder sbAppender = new StringBuilder();
             request.setAttribute("WEB_EXECUTE_TIME", System.currentTimeMillis());
             sbAppender
@@ -78,7 +79,7 @@ public class RequestResponseLogger implements Filter {
                 sbAppender.append(" ]\n");
             }
 
-            logger.info(sbAppender.toString());
+            logger.debug(sbAppender.toString());
         }
 
         if (response.getCharacterEncoding() == null) {
@@ -91,9 +92,8 @@ public class RequestResponseLogger implements Filter {
             chain.doFilter(request, responseCopier);
             responseCopier.flushBuffer();
         } finally {
-            byte[] copy = responseCopier.getCopy();
-
-            if (logger.isInfoEnabled()) {
+            if (logger.isDebugEnabled()) {
+                byte[] copy = responseCopier.getCopy();
                 StringBuilder sbAppender = new StringBuilder();
                 sbAppender
                         .append("\n\n    Controller Execution time : [")
@@ -117,7 +117,7 @@ public class RequestResponseLogger implements Filter {
                         .append(new String(copy, response.getCharacterEncoding()))
                         .append("\n\n");
 
-                logger.info(sbAppender.toString());
+                logger.debug(sbAppender.toString());
             }
         }
     }

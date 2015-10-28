@@ -103,38 +103,7 @@ public class NodeBean implements MapElement{
         return hexes;
     }
 
-    public void setHexes(VerticalLinks<HexBean> hexes) {
-        this.hexes = hexes;
-    }
-
     public VerticalLinks<EdgeBean> getEdges() {
         return edges;
-    }
-
-    public void setEdges(VerticalLinks<EdgeBean> edges) {
-        this.edges = edges;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof NodeBean)) return false;
-
-        NodeBean nodeBean = (NodeBean) o;
-
-        if (!hexes.equals(nodeBean.hexes)) return false;
-        if (orientation != nodeBean.orientation) return false;
-        if (port != nodeBean.port) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = port.hashCode();
-        result = 31 * result + orientation.hashCode();
-        result = 31 * result + hexes.hashCode();
-
-        return result;
     }
 }

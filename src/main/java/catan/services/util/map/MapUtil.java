@@ -146,33 +146,32 @@ public class MapUtil {
         switch (nodePosition) {
             case TOP:
                 node.setOrientation(SINGLE_BOTTOM);
-                //TODO: populate hexes
-//                node.setHexBottom(hex);
+                node.getHexes().setBottom(hex);
                 hex.setNodeTop(node);
                 break;
             case TOP_RIGHT:
                 node.setOrientation(SINGLE_TOP);
-//                node.setHexBottomLeft(hex);
+                node.getHexes().setBottomLeft(hex);
                 hex.setNodeTopRight(node);
                 break;
             case BOTTOM_RIGHT:
                 node.setOrientation(SINGLE_BOTTOM);
-//                node.setHexTopLeft(hex);
+                 node.getHexes().setTopLeft(hex);
                 hex.setNodeBottomRight(node);
                 break;
             case BOTTOM:
                 node.setOrientation(SINGLE_TOP);
-//                node.setHexTop(hex);
+                node.getHexes().setTop(hex);
                 hex.setNodeBottom(node);
                 break;
             case BOTTOM_LEFT:
                 node.setOrientation(SINGLE_BOTTOM);
-//                node.setHexTopRight(hex);
+                node.getHexes().setTopRight(hex);
                 hex.setNodeBottomLeft(node);
                 break;
             case TOP_LEFT:
                 node.setOrientation(SINGLE_TOP);
-//                node.setHexBottomRight(hex);
+                node.getHexes().setBottomRight(hex);
                 hex.setNodeTopLeft(node);
                 break;
         }
