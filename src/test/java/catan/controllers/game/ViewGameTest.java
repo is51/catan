@@ -66,6 +66,7 @@ public class ViewGameTest extends GameTestUtil {
                 .body("minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
                 .body("maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
 
+                .body("map.edges", hasSize(72))
                 .body("map.edges.edgeId", everyItem(greaterThan(0)))
                 .body("map.edges.orientation", everyItem(anyOf(
                         equalTo("BOTTOM_RIGHT"),
@@ -99,6 +100,7 @@ public class ViewGameTest extends GameTestUtil {
                 .body("map.hexes.dice.findAll {it == 12}", hasSize(1))
                 .body("map.hexes.robbed.findAll {it == true}", hasSize(1))
 
+                .body("map.nodes", hasSize(54))
                 .body("map.nodes.nodeId", everyItem(greaterThan(0)))
                 .body("map.nodes.port.findAll {it == 'BRICK'}", hasSize(2))
                 .body("map.nodes.port.findAll {it == 'WOOD'}", hasSize(2))

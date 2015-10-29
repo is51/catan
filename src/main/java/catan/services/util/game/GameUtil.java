@@ -186,7 +186,7 @@ public class GameUtil {
     }
 
     public void startGame(GameBean game) throws GameException {
-        log.info("Starting {}", game);
+        log.info("Starting game ", game.getGameId());
 
         populatePlayersMoveOrderRandomly(game.getGameUsers());
 
@@ -199,6 +199,8 @@ public class GameUtil {
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
+
+        log.info("Game successfully started: {}", game);
     }
 
     private void populatePlayersMoveOrderRandomly(Set<GameUserBean> players) {
@@ -206,11 +208,14 @@ public class GameUtil {
         for (int i = 1; i <= players.size(); i++) {
             moveOrderSequence.add(i);
         }
+        log.debug("Possible move order sequence: {} ", moveOrderSequence);
 
         for (GameUserBean gameUser : players) {
             Integer moveOrder = randomUtil.pullRandomMoveOrder(moveOrderSequence);
+            log.debug("Random move order calculated is: {}", moveOrder);
+
             gameUser.setMoveOrder(moveOrder);
-            log.info("GameUser (id: " + gameUser.getGameUserId() + ", username: "+ gameUser.getUser().getUsername() + ") moves: " + moveOrder);
+            log.debug("GameUser (id: {}, username: {}) moves: {}", gameUser.getGameUserId(), gameUser.getUser().getUsername(), gameUser.getMoveOrder());
         }
     }
 

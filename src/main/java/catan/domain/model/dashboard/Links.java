@@ -7,22 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@MappedSuperclass
 public class Links<T> {
-    @ManyToOne
-    @JoinColumn(name = "TOP_LEFT")
     private T topLeft;
 
-    @ManyToOne
-    @JoinColumn(name = "TOP_RIGHT")
     private T topRight;
 
-    @ManyToOne
-    @JoinColumn(name = "BOTTOM_RIGHT")
     private T bottomRight;
 
-    @ManyToOne
-    @JoinColumn(name = "BOTTOM_LEFT")
     private T bottomLeft;
 
     public T getTopLeft() {

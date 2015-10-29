@@ -5,15 +5,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.List;
 
-@Embeddable
 public class VerticalLinks<T> extends Links<T>{
 
-    @ManyToOne
-    @JoinColumn(name = "TOP")
     private T top;
 
-    @ManyToOne
-    @JoinColumn(name = "BOTTOM")
     private T bottom;
 
     public T getTop() {
