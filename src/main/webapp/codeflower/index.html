@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html>
+<!-- Use the Source, Luke -->
+<head>
+    <title>CodeFlower Source code visualization</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link type="text/css" rel="stylesheet" href="stylesheets/bootstrap.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="stylesheets/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Rosario:400,700' rel='stylesheet' type='text/css'>
+    <link type="text/css" rel="stylesheet" href="stylesheets/style.css"/>
+    <style type="text/css">
+        circle.node {
+            cursor: pointer;
+            stroke: #000;
+            stroke-width: .5px;
+        }
+
+        circle.node.directory {
+            stroke: #9ecae1;
+            stroke-width: 2px;
+        }
+
+        circle.node.collapsed {
+            stroke: #555;
+        }
+
+        .nodetext {
+            fill: #252929;
+            font-weight: bold;
+            text-shadow: 0 0 0.2em white;
+        }
+
+        line.link {
+            fill: none;
+            stroke: #9ecae1;
+            stroke-width: 1.5px;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="container">
+        <h1>Commons/TPG CodeFlower code visualization</h1>
+        <p class="lead">This experiment visualizes source repositories using an interactive tree. Each disc represents a file, with a radius proportional to the number of lines of code (loc). All rendering is done client-side, in JavaScript. Try hovering on nodes to see the loc number, clicking on directory nodes to fold them, dragging nodes to rearrange the layout, and changing project to see different tree structures.</p>
+        <form class="form-inline">
+            <fieldset>
+                <label>Example projects from GitHub:</label>
+                <select id="project">
+                    <option value="data.json">template</option>
+                    <option value="data/tpg_backoffice.json">TPG / backoffice</option>
+                    <option value="data/tpg_batch.json">TPG / batch</option>
+                    <option value="data/tpg_dist.json">TPG / dist</option>
+                    <option value="data/tpg_proxy.json">TPG / proxy</option>
+                    <option value="data/tpg_server.json">TPG / server</option>
+                    <option value="data/tpg_server-contract.json">TPG / server-contract</option>
+                    <option value="data/tpg_web.json">TPG / web</option>
+                    <option value="data/commons_dataimport.json">Commons / dataimport</option>
+                    <option value="data/commons_dbtool.json">Commons / dbtool</option>
+                    <option value="data/commons_dist.json">Commons / dist</option>
+                    <option value="data/commons_domain.json">Commons / domain</option>
+                    <option value="data/commons_integration.json">Commons / integration</option>
+                    <option value="data/commons_operator.json">Commons / operator</option>
+                    <option value="data/commons_reverse-integration.json">Commons / reverse-integration</option>
+                    <option value="data/commons_server.json">Commons / server</option>
+                    <option value="data/commons_services.json">Commons / services</option>
+                    <option value="data/commons_services-contract.json">Commons / services-contract</option>
+                    <option value="data/commons_support.json">Commons / support</option>
+                    <option value="data/commons_tain-commons-shared.json">Commons / tain-commons-shared</option>
+                    <option value="data/commons_tools.json">Commons / tools</option>
+                    <option value="data/commons_web.json">Commons / web</option>
+                    <option value="data/commons_web-utils.json">Commons / web-utils</option>
+                    <option value="data/commons_white-label.json">Commons / white-label</option>
+                </select>
+            </fieldset>
+        </form>
+        <div id="visualization"></div>
+
+        <h2>Input data format</h2>
+        <p>The <code>jsonData</code> format taken as input to <code>update()</code> is extremely simple. It's a JavaScript object representing a file tree structure. Each node must have a <code>name</code> (the file or directory name), leaf nodes must have a <code>size</code> (the number of lines of code or the file), and directory nodes must have a <code>children</code> property containing an array of nodes. As an example, here is the input for the currently displayed CodeFlower. You can modify it at will and click the update button to see the effect of your changes on the CodeFlower.</p>
+        <form id="jsonInput">
+            <fieldset>
+                <textarea id="jsonData"></textarea>
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-primary btn-large">Update</button>
+                </div>
+            </fieldset>
+        </form>
+        <h2>Generating JSON for a project</h2>
+        <p>It's easy to generate loc metrics for any project, whatever the language. You can use <code>wc</code>, but this method requires cleaning the output and counts comments and blanks together with actual lines of code. Alternatively, you can use <code>cloc</code> (<a href="http://cloc.sourceforge.net/">http://cloc.sourceforge.net/</a>), which is open-source and makes the difference between real source code and comments. Here are three examples using <a href="http://github.com">GitHub</a> as a source.</p>
+        <pre>
+# Using curl and cloc (fast, accurate)
+$ curl https://nodeload.github.com/symfony/symfony/tar.gz/master | tar xvz
+$ cloc symfony-master --csv --by-file --report-file=symfony.cloc
+
+# Using git clone and cloc (slow, accurate)
+$ git clone git://github.com/symfony/symfony.git
+$ cloc symfony --csv --by-file --report-file=symfony.cloc
+
+# Using git clone and wc (slow, inaccurate)
+$ git clone git://github.com/symfony/symfony.git
+$ cd symfony
+$ git ls-files | xargs wc -l > symfony.wc
+        </pre>
+        <p>Once you have a loc metrics file, paste its content below and click on the convert button. This will update the CodeFlower and the JSON textarea, to let you save data for your own CodeFlowers.</p>
+        <form id="jsonConverter">
+            <fieldset>
+                <select name="origin">
+                    <option value="cloc" selected>Origin: cloc</option>
+                    <option value="ws">Origin: wc</option>
+                </select>
+                <textarea id="metricsData"></textarea>
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-primary btn-large">Convert</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="javascripts/d3/d3.js"></script>
+<script type="text/javascript" src="javascripts/d3/d3.geom.js"></script>
+<script type="text/javascript" src="javascripts/d3/d3.layout.js"></script>
+<script type="text/javascript" src="javascripts/CodeFlower.js"></script>
+<script type="text/javascript" src="javascripts/dataConverter.js"></script>
+<script type="text/javascript">
+    var currentCodeFlower;
+    var createCodeFlower = function(json) {
+        // update the jsonData textarea
+        document.getElementById('jsonData').value = JSON.stringify(json);
+        // remove previous flower to save memory
+        if (currentCodeFlower) currentCodeFlower.cleanup();
+        // adapt layout size to the total number of elements
+        var total = countElements(json);
+        var multiplier = total > 100 ? 30 : 60;
+        var size = total > 400 ? 10 : 15;
+        w = parseInt(Math.sqrt(total) * multiplier, size);
+        h = parseInt(Math.sqrt(total) * multiplier, size);
+        // create a new CodeFlower
+        currentCodeFlower = new CodeFlower("#visualization", w, h).update(json);
+    };
+
+    d3.json('data.json', createCodeFlower);
+
+    document.getElementById('project').addEventListener('change', function() {
+        d3.json(this.value, createCodeFlower);
+    });
+    document.getElementById('jsonInput').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('visualization').scrollIntoView();
+        var json = JSON.parse(document.getElementById('jsonData').value);
+        currentCodeFlower.update(json);
+    });
+    document.getElementById('jsonConverter').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var origin = this.children[0].children[0].value;
+        var data = this.children[0].children[1].value;
+        var json = convertToJSON(data, origin);
+        document.getElementById('visualization').scrollIntoView();
+        createCodeFlower(json);
+    });
+</script>
+</body>
+</html>
