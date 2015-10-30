@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 
-@Ignore
+//@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 
 //@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
@@ -48,6 +48,7 @@ public class BuildSettlementTest extends PlayTestUtil {
             registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
+        scenario = new Scenario();
     }
 
     private class Scenario {
@@ -56,9 +57,9 @@ public class BuildSettlementTest extends PlayTestUtil {
         private ValidatableResponse currentGameDetails = null;
 
 
-        public Scenario loginUser(String username, String assword) {
-            String userToken = GameTestUtil.loginUser(USER_NAME_1, USER_PASSWORD_1);
-            userTokens.put(USER_NAME_1, userToken);
+        public Scenario loginUser(String username, String password) {
+            String userToken = GameTestUtil.loginUser(username, password);
+            userTokens.put(username, userToken);
 
             return this;
         }
@@ -110,7 +111,7 @@ public class BuildSettlementTest extends PlayTestUtil {
             PlayTestUtil.buildSettlement(userToken, idOfCreatedGame, nodeIdToBuild)
                     .then()
                     .statusCode(200);
-            return null;
+            return this;
         }
 
         public Scenario stageIsPlaying() {
@@ -143,8 +144,13 @@ public class BuildSettlementTest extends PlayTestUtil {
                 return scenario;
             }
 
-            public void buildingBelongsToPlayer(String userName1) {
-               //TODO: validate building
+            public Scenario buildingBelongsToPlayer(String userName) {
+                String userToken = userTokens.get(userName);
+
+                int gameUserId1 = viewGame(userToken, idOfCreatedGame).path("gameUsers[0].id");
+                currentGameDetails.body(path + ".building.ownerGameUserId", is(gameUserId1));
+
+                return scenario;
             }
         }
     }
@@ -153,7 +159,7 @@ public class BuildSettlementTest extends PlayTestUtil {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
-                .loginUser(USER_NAME_2, USER_PASSWORD_2)
+                .loginUser(USER_NAME_3, USER_PASSWORD_3)
 
                 .createNewPublicGameByUser(USER_NAME_1)
                 .joinPublicGame(USER_NAME_2)
