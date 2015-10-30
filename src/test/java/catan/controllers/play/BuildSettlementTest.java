@@ -1,6 +1,8 @@
 package catan.controllers.play;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.game.GameTestUtil;
+import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -8,6 +10,9 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -33,6 +38,8 @@ public class BuildSettlementTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
+    private Scenario scenario;
+
     @Before
     public void setup() {
         if (!initialized) {
@@ -43,41 +50,122 @@ public class BuildSettlementTest extends PlayTestUtil {
         }
     }
 
+    private class Scenario {
+        private Map<String, String> userTokens = new HashMap<String, String>();
+        private int idOfCreatedGame = -1;
+        private ValidatableResponse currentGameDetails = null;
+
+
+        public Scenario loginUser(String username, String assword) {
+            String userToken = GameTestUtil.loginUser(USER_NAME_1, USER_PASSWORD_1);
+            userTokens.put(USER_NAME_1, userToken);
+
+            return this;
+        }
+
+        public Scenario createNewPublicGameByUser(String userName) {
+            String userToken = userTokens.get(userName);
+            idOfCreatedGame = createNewGame(userToken, false).path("gameId");
+
+            return this;
+        }
+
+        public Scenario setUserReady(String userName) {
+            String userToken = userTokens.get(userName);
+            GameTestUtil.setUserReady(userToken, idOfCreatedGame);
+
+            return this;
+        }
+
+        public Scenario joinPublicGame(String userName) {
+            String userToken = userTokens.get(userName);
+            GameTestUtil.joinPublicGame(userToken, idOfCreatedGame);
+
+            return this;
+        }
+
+        public Scenario gameDetailsForUser(String userName) {
+            String userToken = userTokens.get(userName);
+            currentGameDetails = viewGame(userToken, idOfCreatedGame)
+                    .then()
+                    .statusCode(200);
+
+            return this;
+        }
+
+        public MapValidator node(String nodePath) {
+            return new MapValidator(currentGameDetails, nodePath, this);
+        }
+
+        public Scenario buildSettlement(String userName, String nodePath) {
+            String userToken = userTokens.get(userName);
+            int nodeIdToBuild = viewGame(userToken, idOfCreatedGame).path(nodePath + ".nodeId");
+
+            PlayTestUtil.buildSettlement(userToken, idOfCreatedGame, nodeIdToBuild)
+                    .then()
+                    .statusCode(200);
+            return null;
+        }
+
+        public Scenario stageIsPlaying() {
+            currentGameDetails.body("status", equalTo("PLAYING"));
+
+            return this;
+        }
+
+        private class MapValidator {
+
+            private final ValidatableResponse currentGameDetails;
+            private final String path;
+            private final Scenario scenario;
+
+            public MapValidator(ValidatableResponse currentGameDetails, String path, Scenario scenario) {
+                this.currentGameDetails = currentGameDetails;
+                this.path = path;
+                this.scenario = scenario;
+            }
+
+            public Scenario buildingIsEmpty() {
+                currentGameDetails.body(path + ".building", nullValue());
+
+                return scenario;
+            }
+
+            public Scenario hasBuiltSettlement() {
+                currentGameDetails.body(path + ".building.built", equalTo("SETTLEMENT"));
+
+                return scenario;
+            }
+
+            public void buildingBelongsToUser(String userName1) {
+               //TODO: validate building
+            }
+        }
+    }
+
+    private Scenario startNewGame() {
+        return scenario
+                .loginUser(USER_NAME_1, USER_PASSWORD_1)
+                .loginUser(USER_NAME_2, USER_PASSWORD_2)
+                .loginUser(USER_NAME_2, USER_PASSWORD_2)
+
+                .createNewPublicGameByUser(USER_NAME_1)
+                .joinPublicGame(USER_NAME_2)
+                .joinPublicGame(USER_NAME_3)
+
+                .setUserReady(USER_NAME_1)
+                .setUserReady(USER_NAME_2)
+                .setUserReady(USER_NAME_3);
+    }
+
     @Test
     public void should_successfully_build_settlement_on_empty_node() {
-        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
-        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
-
-        int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.nodes[0].nodeId");
-        int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
-
-        joinPublicGame(userToken2, gameId);
-        joinPublicGame(userToken3, gameId);
-
-        setUserReady(userToken1, gameId);
-        setUserReady(userToken2, gameId);
-        setUserReady(userToken3, gameId);
-
-        viewGame(userToken1, gameId)
-                .then()
-                .statusCode(200)
-                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
-                .body("map.nodes[0].building", nullValue())
-                .body("status", equalTo("PLAYING"));
-
-        buildSettlement(userToken1, gameId, nodeIdToBuild)
-                .then()
-                .statusCode(200);
-
-        viewGame(userToken1, gameId)
-                .then()
-                .statusCode(200)
-                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
-                .body("map.nodes[0].building.ownerGameUserId", is(gameUserId1))
-                .body("map.nodes[0].building.built", equalTo("SETTLEMENT"))
-                .body("status", equalTo("PLAYING"));
+        startNewGame()
+                .gameDetailsForUser(USER_NAME_1).stageIsPlaying()
+                .gameDetailsForUser(USER_NAME_1).node("map.nodes[0]").buildingIsEmpty()
+                .buildSettlement(USER_NAME_1, "map.nodes[0]")
+                .gameDetailsForUser(USER_NAME_1).node("map.nodes[0]").hasBuiltSettlement()
+                .gameDetailsForUser(USER_NAME_1).node("map.nodes[0]").buildingBelongsToUser(USER_NAME_1);
     }
 
     @Test
