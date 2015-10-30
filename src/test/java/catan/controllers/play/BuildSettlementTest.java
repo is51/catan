@@ -84,7 +84,13 @@ public class BuildSettlementTest extends PlayTestUtil {
             return this;
         }
 
-        public Scenario gameDetailsForUser(String userName) {
+        public Scenario gameDetailsForUser(int moveOrder) {
+            //TODO: implement search of player by move order
+
+            return this;
+        }
+
+        public Scenario gameDetailsForPlayer(String userName) {
             String userToken = userTokens.get(userName);
             currentGameDetails = viewGame(userToken, idOfCreatedGame)
                     .then()
@@ -137,7 +143,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 return scenario;
             }
 
-            public void buildingBelongsToUser(String userName1) {
+            public void buildingBelongsToPlayer(String userName1) {
                //TODO: validate building
             }
         }
@@ -159,13 +165,50 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_build_settlement_on_empty_node() {
+    public void NEW___should_successfully_build_settlement_on_empty_node() {
         startNewGame()
-                .gameDetailsForUser(USER_NAME_1).stageIsPlaying()
-                .gameDetailsForUser(USER_NAME_1).node("map.nodes[0]").buildingIsEmpty()
+                .gameDetailsForPlayer(USER_NAME_1).stageIsPlaying()
+                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").buildingIsEmpty()
                 .buildSettlement(USER_NAME_1, "map.nodes[0]")
-                .gameDetailsForUser(USER_NAME_1).node("map.nodes[0]").hasBuiltSettlement()
-                .gameDetailsForUser(USER_NAME_1).node("map.nodes[0]").buildingBelongsToUser(USER_NAME_1);
+                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").hasBuiltSettlement()
+                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").buildingBelongsToPlayer(USER_NAME_1);
+    }
+
+    @Test
+    public void OLD___should_successfully_build_settlement_on_empty_node() {
+        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
+        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
+        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
+
+        int gameId = createNewGame(userToken1, false).path("gameId");
+        int nodeIdToBuild = viewGame(userToken1, gameId).path("map.nodes[0].nodeId");
+        int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
+
+        joinPublicGame(userToken2, gameId);
+        joinPublicGame(userToken3, gameId);
+
+        setUserReady(userToken1, gameId);
+        setUserReady(userToken2, gameId);
+        setUserReady(userToken3, gameId);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
+                .body("map.nodes[0].building", nullValue())
+                .body("status", equalTo("PLAYING"));
+
+        buildSettlement(userToken1, gameId, nodeIdToBuild)
+                .then()
+                .statusCode(200);
+
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("map.nodes[0].nodeId", is(nodeIdToBuild))
+                .body("map.nodes[0].building.ownerGameUserId", is(gameUserId1))
+                .body("map.nodes[0].building.built", equalTo("SETTLEMENT"))
+                .body("status", equalTo("PLAYING"));
     }
 
     @Test
