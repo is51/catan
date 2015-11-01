@@ -119,7 +119,8 @@ public class PlayServiceImpl implements PlayService {
             preparationStageUtil.updateCurrentCycleBuildingNumber(game);
             preparationStageUtil.updatePreparationCycle(game);
             Integer newPreparationCycle = game.getPreparationCycle();
-            shouldUpdateNextMove = (newPreparationCycle == null || previousPreparationCycle.equals(newPreparationCycle));
+            boolean preparationFinished = newPreparationCycle == null && !game.getCurrentMove().equals(1);
+            shouldUpdateNextMove = (preparationFinished || previousPreparationCycle.equals(newPreparationCycle));
         }
 
         if (shouldUpdateNextMove) {

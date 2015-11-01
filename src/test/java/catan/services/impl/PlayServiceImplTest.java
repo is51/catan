@@ -24,6 +24,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
+import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import com.google.gson.Gson;
@@ -69,6 +70,8 @@ public class PlayServiceImplTest {
     private BuildUtil buildUtil;
     @InjectMocks
     private PreparationStageUtil preparationStageUtil;
+    @InjectMocks
+    private MainStageUtil mainStageUtil;
 
     private GameBean game;
     private HexBean hex_0_0;
@@ -88,6 +91,7 @@ public class PlayServiceImplTest {
         playService.setBuildUtil(buildUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
 
+        playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
@@ -807,46 +811,46 @@ public class PlayServiceImplTest {
         //
         //
 
-
         hex_0_0.setId(1);
-        hex_0_0.getNodes().setTopLeft(node_1_1);
-        hex_0_0.getNodes().setTop(node_1_2);
-        hex_0_0.getNodes().setTopRight(node_1_3);
-        hex_0_0.getNodes().setBottomRight(node_1_4);
-        hex_0_0.getNodes().setBottom(node_1_5);
-        hex_0_0.getNodes().setBottomLeft(node_1_6);
-        hex_0_0.getEdges().setTopLeft(edge_1_1);
-        hex_0_0.getEdges().setTopRight(edge_1_2);
-        hex_0_0.getEdges().setRight(edge_1_3);
-        hex_0_0.getEdges().setBottomRight(edge_1_4);
-        hex_0_0.getEdges().setBottomLeft(edge_1_5);
-        hex_0_0.getEdges().setLeft(edge_1_6);
+        //TODO: use direct setters instead of getNodes().set...
+        hex_0_0.setNodeTopLeft(node_1_1);
+        hex_0_0.setNodeTop(node_1_2);
+        hex_0_0.setNodeTopRight(node_1_3);
+        hex_0_0.setNodeBottomRight(node_1_4);
+        hex_0_0.setNodeBottom(node_1_5);
+        hex_0_0.setNodeBottomLeft(node_1_6);
+        hex_0_0.setEdgeTopLeft(edge_1_1);
+        hex_0_0.setEdgeTopRight(edge_1_2);
+        hex_0_0.setEdgeRight(edge_1_3);
+        hex_0_0.setEdgeBottomRight(edge_1_4);
+        hex_0_0.setEdgeBottomLeft(edge_1_5);
+        hex_0_0.setEdgeLeft(edge_1_6);
         hex_1_0.setId(2);
-        hex_1_0.getNodes().setTopLeft(node_1_3);
-        hex_1_0.getNodes().setTop(node_2_2);
-        hex_1_0.getNodes().setTopRight(node_2_3);
-        hex_1_0.getNodes().setBottomRight(node_2_4);
-        hex_1_0.getNodes().setBottom(node_2_5);
-        hex_1_0.getNodes().setBottomLeft(node_1_4);
-        hex_1_0.getEdges().setTopLeft(edge_2_1);
-        hex_1_0.getEdges().setTopRight(edge_2_2);
-        hex_1_0.getEdges().setRight(edge_2_3);
-        hex_1_0.getEdges().setBottomRight(edge_2_4);
-        hex_1_0.getEdges().setBottomLeft(edge_2_5);
-        hex_1_0.getEdges().setLeft(edge_1_3);
+        hex_1_0.setNodeTopLeft(node_1_3);
+        hex_1_0.setNodeTop(node_2_2);
+        hex_1_0.setNodeTopRight(node_2_3);
+        hex_1_0.setNodeBottomRight(node_2_4);
+        hex_1_0.setNodeBottom(node_2_5);
+        hex_1_0.setNodeBottomLeft(node_1_4);
+        hex_1_0.setEdgeTopLeft(edge_2_1);
+        hex_1_0.setEdgeTopRight(edge_2_2);
+        hex_1_0.setEdgeRight(edge_2_3);
+        hex_1_0.setEdgeBottomRight(edge_2_4);
+        hex_1_0.setEdgeBottomLeft(edge_2_5);
+        hex_1_0.setEdgeLeft(edge_1_3);
         hex_0_1.setId(3);
-        hex_0_1.getNodes().setTopLeft(node_1_5);
-        hex_0_1.getNodes().setTop(node_1_4);
-        hex_0_1.getNodes().setTopRight(node_2_5);
-        hex_0_1.getNodes().setBottomRight(node_3_4);
-        hex_0_1.getNodes().setBottom(node_3_5);
-        hex_0_1.getNodes().setBottomLeft(node_3_6);
-        hex_0_1.getEdges().setTopLeft(edge_1_4);
-        hex_0_1.getEdges().setTopRight(edge_2_5);
-        hex_0_1.getEdges().setRight(edge_3_3);
-        hex_0_1.getEdges().setBottomRight(edge_3_4);
-        hex_0_1.getEdges().setBottomLeft(edge_3_5);
-        hex_0_1.getEdges().setLeft(edge_3_6);
+        hex_0_1.setNodeTopLeft(node_1_5);
+        hex_0_1.setNodeTop(node_1_4);
+        hex_0_1.setNodeTopRight(node_2_5);
+        hex_0_1.setNodeBottomRight(node_3_4);
+        hex_0_1.setNodeBottom(node_3_5);
+        hex_0_1.setNodeBottomLeft(node_3_6);
+        hex_0_1.setEdgeTopLeft(edge_1_4);
+        hex_0_1.setEdgeTopRight(edge_2_5);
+        hex_0_1.setEdgeRight(edge_3_3);
+        hex_0_1.setEdgeBottomRight(edge_3_4);
+        hex_0_1.setEdgeBottomLeft(edge_3_5);
+        hex_0_1.setEdgeLeft(edge_3_6);
 
         // Nodes of Hex 0,0
         node_1_1.setId(1);

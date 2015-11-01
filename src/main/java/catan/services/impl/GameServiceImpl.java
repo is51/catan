@@ -24,6 +24,7 @@ import java.util.List;
 @Transactional
 public class GameServiceImpl implements GameService {
     private Logger log = LoggerFactory.getLogger(GameService.class);
+
     public static final int MAX_DUPLICATES_RATIO = 5;
     public static final int START_NUMBER_OF_DIGITS_IN_PRIVATE_CODE = 4;
     public static final int MIN_USERS = 3;
@@ -43,8 +44,11 @@ public class GameServiceImpl implements GameService {
     private RandomUtil randomUtil;
     private MapUtil mapUtil;
 
+    private final Object joinGameLock = new Object();
+    private final Object updateUserStatusLock = new Object();
+
     @Override
-    synchronized public GameBean createNewGame(UserBean creator, boolean isPrivateGame, String inputTargetVictoryPoints, String initialBuildingsSetId) throws GameException {
+    public GameBean createNewGame(UserBean creator, boolean isPrivateGame, String inputTargetVictoryPoints, String initialBuildingsSetId) throws GameException {
         log.info("Creating new {} game, creator: {}, victory points: {}, initial building set id: {} ...",
                 isPrivateGame ? "private" : "public", creator, inputTargetVictoryPoints, initialBuildingsSetId);
 
@@ -87,7 +91,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    synchronized public GameBean joinGameByIdentifier(UserBean user, String gameId, boolean privateGame) throws GameException {
+    public GameBean joinGameByIdentifier(UserBean user, String gameId, boolean privateGame) throws GameException {
         log.info("Join " + user + " to "
                 + (privateGame ? "private" : "public") + " game with "
                 + (privateGame ? "privateCode" : "id") + " '" + gameId + "' ...");
@@ -95,18 +99,21 @@ public class GameServiceImpl implements GameService {
         validateUserNotEmpty(user);
         validateGameIdNotEmpty(gameId);
 
-        GameBean game = privateGame
-                ? gameUtil.findPrivateGame(gameId)
-                : gameUtil.findPublicGame(gameId);
+        synchronized (joinGameLock) {
+            GameBean game = privateGame
+                    ? gameUtil.findPrivateGame(gameId)
+                    : gameUtil.findPublicGame(gameId);
 
-        validateGameStatusIsNew(game);
-        validateMaxPlayersLimitNotReached(game);
+            validateGameStatusIsNew(game);
+            validateMaxPlayersLimitNotReached(game);
 
-        gameUtil.addUserToGame(game, user);
-        gameDao.updateGame(game);
+            gameUtil.addUserToGame(game, user);
+            gameDao.updateGame(game);
 
-        log.info(user + " successfully joined game with id: " + game.getGameId());
-        return game;
+            log.info(user + " successfully joined game with id: " + game.getGameId());
+            return game;
+        }
+
     }
 
     @Override
@@ -121,6 +128,7 @@ public class GameServiceImpl implements GameService {
         validateGameStatusIsNotCancelled(game);
         validateUserIsJoinedToGame(user, game);
 
+        log.debug("Return game details");
         return game;
     }
 
@@ -172,41 +180,43 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    synchronized public void updateGameUserStatus(UserBean user, String gameId, boolean readyForGame) throws GameException {
-        log.info("Setting status ready for user {} for game {}", user, gameId);
+    public void updateGameUserStatus(UserBean user, String gameId, boolean readyForGame) throws GameException {
+        log.info("Setting ready status in " + readyForGame + " for user {}, game {}", user, gameId);
 
         validateUserNotEmpty(user);
         validateGameIdNotEmpty(gameId);
 
-        GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
+        synchronized (updateUserStatusLock) {
 
-        validateGameStatusIsNew(game);
+            GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
+            validateGameStatusIsNew(game);
 
-        GameUserBean gameUserBean = null;
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getUser().equals(user)) {
-                gameUserBean = gameUser;
-                break;
+            GameUserBean gameUserBean = null;
+            for (GameUserBean gameUser : game.getGameUsers()) {
+                if (gameUser.getUser().equals(user)) {
+                    gameUserBean = gameUser;
+                    break;
+                }
             }
-        }
 
-        //TODO: Think about throwing exception in case when gameUser not found.
-        if (gameUserBean == null) {
-            log.error("User can set ready status only for joined game {}", game.getStatus());
-            throw new GameException(ERROR_CODE_ERROR);
-        }
+            //TODO: Think about throwing exception in case when gameUser not found.
+            if (gameUserBean == null) {
+                log.error("User can set ready status only for joined game {}", game.getStatus());
+                throw new GameException(ERROR_CODE_ERROR);
+            }
 
-        if (gameUserBean.isReady() == readyForGame) {
-            log.error("{} already set ready status for game , skipping, {}", user, game);
-            return;
-        }
+            if (gameUserBean.isReady() == readyForGame) {
+                log.error("{} already set ready status in " + readyForGame + ", skipping", user);
+                return;
+            }
 
-        gameUserBean.setReady(readyForGame);
-        gameDao.updateGameUser(gameUserBean);
-        log.info("{} successfully updated status to ready for game with id: {}", user, game.getGameId());
+            gameUserBean.setReady(readyForGame);
+            gameDao.updateGameUser(gameUserBean);
+            log.info("{} successfully updated status to ready for game with id: {}", user, game.getGameId());
 
-        if (gameUtil.enoughPlayersToStartGame(game) && gameUtil.allPlayersAreReady(game)){
-            gameUtil.startGame(game);
+            if (gameUtil.enoughPlayersToStartGame(game) && gameUtil.allPlayersAreReady(game)) {
+                gameUtil.startGame(game);
+            }
         }
     }
 

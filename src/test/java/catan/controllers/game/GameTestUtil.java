@@ -40,7 +40,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
                 .post(URL_CREATE_NEW_GAME);
     }
 
-    protected Response joinPublicGame(String token, int gameId) {
+    protected static Response joinPublicGame(String token, int gameId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -85,7 +85,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
                 .post(URL_VIEW_GAME_DETAILS);
     }
 
-    protected Response setUserReady(String token, int gameId) {
+    protected static Response setUserReady(String token, int gameId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
