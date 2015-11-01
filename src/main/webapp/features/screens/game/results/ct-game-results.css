@@ -1,0 +1,28 @@
+ct-game-results {
+
+}
+
+ct-game-results .badge {
+    width: 30px;
+}
+
+ct-game-results .badge.not-first-place {
+    background: none;
+    color: #333;
+}
+
+ct-game-results .result-place.color-1 {
+    background: #f50;
+}
+
+ct-game-results .result-place.color-2 {
+    background: #55f;
+}
+
+ct-game-results .result-place.color-3 {
+    background: #dc0;
+}
+
+ct-game-results .result-place.color-4 {
+    background: #0f5;
+}

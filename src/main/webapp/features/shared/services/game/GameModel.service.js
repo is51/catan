@@ -22,6 +22,10 @@ angular.module('catan')
                     return this.status === "PLAYING";
                 };
 
+                this.isFinished = function () {
+                    return this.status === "FINISHED";
+                };
+
                 this.getCurrentUser = function () {
                     for (var i in this.gameUsers) {
                         if (this.gameUsers[i].user.id === User.get().id) {

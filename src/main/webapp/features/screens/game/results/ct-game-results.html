@@ -1,0 +1,32 @@
+<div lass="row">
+
+    <div class="col-xs-12 text-center" style="font-size: 30px; padding: 20px 0">
+
+        Player {{::winnerName}} winner!
+
+    </div>
+
+    <div class="col-xs-offset-3 col-xs-6">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th class="text-right">Victory Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="gameUser in ::gameUsers">
+                    <td><span class="result-place label color-{{::gameUser.colorId}}">{{::($index+1)}}</span></td>
+                    <td>{{::gameUser.user.username}}</td>
+                    <td class="text-right"><span class="badge">{{::gameUser.achievements.displayVictoryPoints}}</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<a ui-sref="start" class="btn btn-default btn-back">Home</a>
