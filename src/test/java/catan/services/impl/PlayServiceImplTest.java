@@ -24,6 +24,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
+import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import com.google.gson.Gson;
@@ -69,6 +70,8 @@ public class PlayServiceImplTest {
     private BuildUtil buildUtil;
     @InjectMocks
     private PreparationStageUtil preparationStageUtil;
+    @InjectMocks
+    private MainStageUtil mainStageUtil;
 
     private GameBean game;
     private HexBean hex_0_0;
@@ -88,6 +91,7 @@ public class PlayServiceImplTest {
         playService.setBuildUtil(buildUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
 
+        playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
