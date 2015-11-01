@@ -186,7 +186,6 @@ public class AchievementsCalculationTest extends PlayTestUtil {
         int edgeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.topLeftId");
         int nodeId2ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topRightId");
         int edgeId2ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.rightId");
-        int nodeId3ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[17].nodesIds.topLeftId");
 
         int nodeId1ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.topLeftId");
         int edgeId1ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.topLeftId");
@@ -273,12 +272,12 @@ public class AchievementsCalculationTest extends PlayTestUtil {
         buildRoad(userTokens[firstGameUserNumber], gameId, edgeId2ToBuildForFirstUser);
 
         // MAIN STAGE STARTS
-        buildCity(userTokens[firstGameUserNumber], gameId, nodeId3ToBuildForFirstUser);
+        buildCity(userTokens[firstGameUserNumber], gameId, nodeId1ToBuildForFirstUser);
 
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)
-                .body("gameUsers[" + firstGameUserNumber + "].achievements.displayVictoryPoints", is(4))
+                .body("gameUsers[" + firstGameUserNumber + "].achievements.displayVictoryPoints", is(3))
                 .body("gameUsers.findAll {it != " + firstGameUserNumber + "}.achievements.displayVictoryPoints", everyItem(is(2)));
     }
 
