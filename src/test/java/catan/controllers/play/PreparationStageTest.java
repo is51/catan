@@ -1,6 +1,7 @@
 package catan.controllers.play;
 
 import catan.config.ApplicationConfig;
+import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +52,18 @@ public class PreparationStageTest extends PlayTestUtil {
         }
     }
 
+    private void checkAvailableForUserActions(String userToken, int gameId, int gameUserNumber, String[] actionCodes) {
+        ValidatableResponse game = viewGame(userToken, gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + gameUserNumber + "].availableActions.isMandatory", equalTo(false))
+                .body("gameUsers[" + gameUserNumber + "].availableActions.list", hasSize(actionCodes.length));
+
+        for (String actionCode: actionCodes) {
+            game.body("gameUsers[" + gameUserNumber + "].availableActions.list.find {it.code == '" + actionCode + "'}", notNullValue());
+        }
+    }
+
     private void checkAvailableActionsAndBuildDuringOneMove(String[] userTokens, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, int nodeIdToBuild, String nodeBuildingAction, int edgeIdToBuild) {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, nodeBuildingAction);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
@@ -75,8 +88,27 @@ public class PreparationStageTest extends PlayTestUtil {
         endTurn(userTokens[activeUserNumber], gameId);
     }
 
+    private void checkAvailableActionsMainStageMove(String[] userTokens, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, int nodeIdToBuild, int edgeIdToBuild) {
+
+        String[] availableActions = {"BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD", "END_TURN"};
+
+        checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActions);
+        checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
+        checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
+
+        buildSettlement(userTokens[activeUserNumber], gameId, nodeIdToBuild);
+        buildCity(userTokens[activeUserNumber], gameId, nodeIdToBuild);
+        buildRoad(userTokens[activeUserNumber], gameId, edgeIdToBuild);
+
+        checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActions);
+        checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
+        checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
+
+        endTurn(userTokens[activeUserNumber], gameId);
+    }
+
     @Test
-    public void should_provide_correct_available_actions_and_build_correctly_during_preparation_stage() {
+    public void should_provide_correct_available_actions_and_build_correctly() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
@@ -254,8 +286,29 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId2ToBuildForFirstUser);
 
 
+        // MAIN STAGE
 
         // check currentMove after the preparation stage ending
+        viewGame(userToken1, gameId)
+                .then()
+                .statusCode(200)
+                .body("currentMove", equalTo(1));
+
+        int nodeId3ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.bottomId");
+        int edgeId3ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].edgesIds.bottomLeftId");
+
+        int nodeId3ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].nodesIds.bottomId");
+        int edgeId3ToBuildForSecondUser = viewGame(userToken1, gameId).path("map.hexes[8].edgesIds.bottomLeftId");
+
+        int nodeId3ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].nodesIds.bottomId");
+        int edgeId3ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.bottomLeftId");
+
+        checkAvailableActionsMainStageMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForFirstUser, edgeId3ToBuildForFirstUser);
+        checkAvailableActionsMainStageMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForSecondUser, edgeId3ToBuildForSecondUser);
+        checkAvailableActionsMainStageMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, edgeId3ToBuildForThirdUser);
+
+
+        // check currentMove after one moves' cycle in the main stages
         viewGame(userToken1, gameId)
                 .then()
                 .statusCode(200)

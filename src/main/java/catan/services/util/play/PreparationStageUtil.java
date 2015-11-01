@@ -27,7 +27,7 @@ public class PreparationStageUtil {
         }.getType());
     }
 
-    public void updateNextMoveInPreparationStage(GameBean game) {
+    public void updateNextMove(GameBean game) {
         Integer nextMoveNumber;
 
         if (game.getPreparationCycle() == null) {
@@ -50,19 +50,21 @@ public class PreparationStageUtil {
     }
 
     public void updateCurrentCycleBuildingNumber(GameBean game) {
-        List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-        Integer numberOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
-        Integer currentCycleBuildingNumber = game.getCurrentCycleBuildingNumber();
+        if (game.getStage().equals(GameStage.PREPARATION)) {
+            List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+            Integer numberOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
+            Integer currentCycleBuildingNumber = game.getCurrentCycleBuildingNumber();
 
-        if (numberOfBuildingsInCycle.equals(currentCycleBuildingNumber)) {
-            game.setCurrentCycleBuildingNumber(null);
-        } else if (currentCycleBuildingNumber == null) {
-            game.setCurrentCycleBuildingNumber(1);
-        } else {
-            game.setCurrentCycleBuildingNumber(currentCycleBuildingNumber + 1);
+            if (numberOfBuildingsInCycle.equals(currentCycleBuildingNumber)) {
+                game.setCurrentCycleBuildingNumber(null);
+            } else if (currentCycleBuildingNumber == null) {
+                game.setCurrentCycleBuildingNumber(1);
+            } else {
+                game.setCurrentCycleBuildingNumber(currentCycleBuildingNumber + 1);
+            }
+
+            log.debug("Current Cycle Building Number changed from {} to {}", currentCycleBuildingNumber, game.getCurrentCycleBuildingNumber());
         }
-
-        log.debug("Current Cycle Building Number changed from {} to {}", currentCycleBuildingNumber, game.getCurrentCycleBuildingNumber());
     }
 
     public void updateGameStageToMain(GameBean game) {

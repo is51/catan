@@ -16,6 +16,7 @@ public class PlayUtil {
     private Logger log = LoggerFactory.getLogger(PlayUtil.class);
 
     private PreparationStageUtil preparationStageUtil;
+    private MainStageUtil mainStageUtil;
 
     private static final Gson GSON = new Gson();
 
@@ -26,24 +27,15 @@ public class PlayUtil {
     public void updateNextMove(GameBean game) throws GameException {
         switch (game.getStage()) {
             case PREPARATION:
-                preparationStageUtil.updateNextMoveInPreparationStage(game);
+                preparationStageUtil.updateNextMove(game);
                 break;
             case MAIN:
-                updateNextMoveInMainStage(game);
+                mainStageUtil.updateNextMove(game);
                 break;
             default:
                 log.debug("Cannot recognize current game stage: {}", game.getStage());
                 throw new GameException(ERROR_CODE_ERROR);
         }
-    }
-
-    public void updateNextMoveInMainStage(GameBean game) {
-        Integer nextMoveNumber = game.getCurrentMove().equals(game.getGameUsers().size())
-                ? 1
-                : game.getCurrentMove() + 1;
-
-        log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
-        game.setCurrentMove(nextMoveNumber);
     }
 
     public void updateAvailableUserActions(GameBean game) throws GameException {
@@ -52,7 +44,7 @@ public class PlayUtil {
                 preparationStageUtil.updateAvailableUserActions(game);
                 break;
             case MAIN:
-                //TODO: complete this part when developing main stage part
+                mainStageUtil.updateAvailableUserActions(game);
                 break;
             default:
                 log.debug("Cannot recognize current game stage: {}", game.getStage());
@@ -63,5 +55,10 @@ public class PlayUtil {
     @Autowired
     public void setPreparationStageUtil(PreparationStageUtil preparationStageUtil) {
         this.preparationStageUtil = preparationStageUtil;
+    }
+
+    @Autowired
+    public void setMainStageUtil(MainStageUtil mainStageUtil) {
+        this.mainStageUtil = mainStageUtil;
     }
 }
