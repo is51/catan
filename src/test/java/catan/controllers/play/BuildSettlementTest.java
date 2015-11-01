@@ -3,6 +3,7 @@ package catan.controllers.play;
 import catan.config.ApplicationConfig;
 import catan.controllers.game.GameTestUtil;
 import com.jayway.restassured.response.ValidatableResponse;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -85,13 +86,13 @@ public class BuildSettlementTest extends PlayTestUtil {
             return this;
         }
 
-        public Scenario gameDetailsForUser(int moveOrder) {
+        public Scenario getGameDetails(int moveOrder) {
             //TODO: implement search of player by move order
 
             return this;
         }
 
-        public Scenario gameDetailsForPlayer(String userName) {
+        public Scenario getGameDetails(String userName) {
             String userToken = userTokens.get(userName);
             currentGameDetails = viewGame(userToken, idOfCreatedGame)
                     .then()
@@ -114,8 +115,22 @@ public class BuildSettlementTest extends PlayTestUtil {
             return this;
         }
 
+        public Scenario check(String path, Matcher matcher) {
+            currentGameDetails.body(path, matcher);
+
+            return this;
+        }
+
+        public Scenario failsWithError(String error) {
+            //TODO: implement
+
+            return this;
+        }
+
+
+
         public Scenario stageIsPlaying() {
-            currentGameDetails.body("status", equalTo("PLAYING"));
+            currentGameDetails.body("status", equalTo("PREPARATION"));
 
             return this;
         }
@@ -173,11 +188,13 @@ public class BuildSettlementTest extends PlayTestUtil {
     @Test
     public void NEW___should_successfully_build_settlement_on_empty_node() {
         startNewGame()
-                .gameDetailsForPlayer(USER_NAME_1).stageIsPlaying()
-                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").buildingIsEmpty()
+                .getGameDetails(USER_NAME_1)
+                .stageIsPlaying()
+                .node("map.nodes[0]").buildingIsEmpty()
                 .buildSettlement(USER_NAME_1, "map.nodes[0]")
-                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").hasBuiltSettlement()
-                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").buildingBelongsToPlayer(USER_NAME_1);
+                .getGameDetails(USER_NAME_1)
+                .node("map.nodes[0]").hasBuiltSettlement()
+                .node("map.nodes[0]").buildingBelongsToPlayer(USER_NAME_1);
     }
 
     @Test
