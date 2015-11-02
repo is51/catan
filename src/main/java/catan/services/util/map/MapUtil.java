@@ -147,32 +147,32 @@ public class MapUtil {
             case TOP:
                 node.setOrientation(SINGLE_BOTTOM);
                 node.getHexes().setBottom(hex);
-                hex.setNodeTop(node);
+                hex.getNodes().setTop(node);
                 break;
             case TOP_RIGHT:
                 node.setOrientation(SINGLE_TOP);
                 node.getHexes().setBottomLeft(hex);
-                hex.setNodeTopRight(node);
+                hex.getNodes().setTopRight(node);
                 break;
             case BOTTOM_RIGHT:
                 node.setOrientation(SINGLE_BOTTOM);
-                 node.getHexes().setTopLeft(hex);
-                hex.setNodeBottomRight(node);
+                node.getHexes().setTopLeft(hex);
+                hex.getNodes().setBottomRight(node);
                 break;
             case BOTTOM:
                 node.setOrientation(SINGLE_TOP);
                 node.getHexes().setTop(hex);
-                hex.setNodeBottom(node);
+                hex.getNodes().setBottom(node);
                 break;
             case BOTTOM_LEFT:
                 node.setOrientation(SINGLE_BOTTOM);
                 node.getHexes().setTopRight(hex);
-                hex.setNodeBottomLeft(node);
+                hex.getNodes().setBottomLeft(node);
                 break;
             case TOP_LEFT:
                 node.setOrientation(SINGLE_TOP);
                 node.getHexes().setBottomRight(hex);
-                hex.setNodeTopLeft(node);
+                hex.getNodes().setTopLeft(node);
                 break;
         }
 
@@ -209,7 +209,7 @@ public class MapUtil {
                     innerHex.getNodes().getTop().setPort(nodePort);
                 }
 
-                innerHex.setEdgeTopLeft(edge);
+                innerHex.getEdges().setTopLeft(edge);
                 break;
             case TOP_RIGHT:
                 edge.setOrientation(BOTTOM_RIGHT);
@@ -227,7 +227,7 @@ public class MapUtil {
                     innerHex.getNodes().getTopRight().setPort(nodePort);
                 }
 
-                innerHex.setEdgeTopRight(edge);
+                innerHex.getEdges().setTopRight(edge);
                 break;
             case RIGHT:
                 edge.setOrientation(VERTICAL);
@@ -245,7 +245,7 @@ public class MapUtil {
                     innerHex.getNodes().getBottomRight().setPort(nodePort);
                 }
 
-                innerHex.setEdgeRight(edge);
+                innerHex.getEdges().setRight(edge);
                 break;
             case BOTTOM_RIGHT:
                 edge.setOrientation(BOTTOM_LEFT);
@@ -263,7 +263,7 @@ public class MapUtil {
                     innerHex.getNodes().getBottom().setPort(nodePort);
                 }
 
-                innerHex.setEdgeBottomRight(edge);
+                innerHex.getEdges().setBottomRight(edge);
                 break;
             case BOTTOM_LEFT:
                 edge.setOrientation(BOTTOM_RIGHT);
@@ -281,7 +281,7 @@ public class MapUtil {
                     innerHex.getNodes().getBottomLeft().setPort(nodePort);
                 }
 
-                innerHex.setEdgeBottomLeft(edge);
+                innerHex.getEdges().setBottomLeft(edge);
                 break;
             case LEFT:
                 edge.setOrientation(VERTICAL);
@@ -299,7 +299,7 @@ public class MapUtil {
                     innerHex.getNodes().getTopLeft().setPort(nodePort);
                 }
 
-                innerHex.setEdgeLeft(edge);
+                innerHex.getEdges().setLeft(edge);
                 break;
         }
 
