@@ -33,7 +33,7 @@ public class GameDetails {
         this.dateCreated = game.getDateCreated().getTime();
         this.dateStarted = game.getDateStarted() != null ? game.getDateStarted().getTime() : 0;
         this.status = game.getStatus().name();
-        this.gameUsers = game.getGameUserDetails(detailsRequesterId);
+        this.gameUsers = game.getGameUserDetails(detailsRequesterId, game.getStatus());
         this.minPlayers = game.getMinPlayers();
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();

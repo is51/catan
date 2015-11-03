@@ -4,6 +4,7 @@ import catan.domain.model.game.Achievements;
 
 public class AchievementsDetails {
     private int displayVictoryPoints;
+    private int realVictoryPoints;
     private int totalResources;
     private int totalCards;
     private int totalUsedKnights;
@@ -18,6 +19,19 @@ public class AchievementsDetails {
         this.totalCards = achievements.getTotalCards();
         this.totalUsedKnights = achievements.getTotalUsedKnights();
         this.longestWayLength = achievements.getLongestWayLength();
+    }
+
+    public AchievementsDetails(Achievements achievements, int extraVictoryPoints) {
+        this(achievements);
+        this.realVictoryPoints = achievements.getDisplayVictoryPoints() + extraVictoryPoints;
+    }
+
+    public int getRealVictoryPoints() {
+        return realVictoryPoints;
+    }
+
+    public void setRealVictoryPoints(int realVictoryPoints) {
+        this.realVictoryPoints = realVictoryPoints;
     }
 
     public int getDisplayVictoryPoints() {
