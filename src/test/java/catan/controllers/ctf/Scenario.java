@@ -1,7 +1,7 @@
-package catan.controllers;
+package catan.controllers.ctf;
 
-import catan.controllers.game.GameTestUtil;
-import catan.controllers.play.PlayTestUtil;
+import catan.controllers.util.GameTestUtil;
+import catan.controllers.util.PlayTestUtil;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Matcher;

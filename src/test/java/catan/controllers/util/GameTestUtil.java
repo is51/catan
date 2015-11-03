@@ -1,6 +1,6 @@
-package catan.controllers.game;
+package catan.controllers.util;
 
-import catan.controllers.FunctionalTestUtil;
+import catan.controllers.util.FunctionalTestUtil;
 import com.jayway.restassured.response.Response;
 
 import static com.jayway.restassured.RestAssured.given;

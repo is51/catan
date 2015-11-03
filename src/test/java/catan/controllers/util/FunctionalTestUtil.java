@@ -1,4 +1,4 @@
-package catan.controllers;
+package catan.controllers.util;
 
 import static com.jayway.restassured.RestAssured.given;
 import com.jayway.restassured.response.Response;

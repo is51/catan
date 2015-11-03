@@ -1,4 +1,4 @@
-package catan.controllers;
+package catan.controllers.ctf;
 
 import org.hamcrest.Matcher;
 

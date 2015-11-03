@@ -1,6 +1,6 @@
-package catan.controllers;
+package catan.controllers.ctf;
 
-import catan.controllers.play.PlayTestUtil;
+import catan.controllers.util.PlayTestUtil;
 
 public class BuildRoadAction {
     private String userToken;

@@ -1,13 +1,13 @@
-package catan.controllers.game;
+package catan.controllers.testcases.game;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.util.GameTestUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.jayway.restassured.response.Response;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;

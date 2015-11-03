@@ -1,6 +1,7 @@
-package catan.controllers.game;
+package catan.controllers.testcases.game;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.util.GameTestUtil;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.transfer.output.game.GameDetails;
 import catan.services.impl.GameServiceImpl;

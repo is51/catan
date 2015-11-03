@@ -1,6 +1,5 @@
-package catan.controllers.play;
+package catan.controllers.util;
 
-import catan.controllers.game.GameTestUtil;
 import com.jayway.restassured.response.Response;
 
 import static com.jayway.restassured.RestAssured.given;
