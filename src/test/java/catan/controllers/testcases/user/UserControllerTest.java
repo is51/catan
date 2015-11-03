@@ -1,7 +1,7 @@
-package catan.controllers.user;
+package catan.controllers.testcases.user;
 
 import catan.config.ApplicationConfig;
-import catan.controllers.FunctionalTestUtil;
+import catan.controllers.util.FunctionalTestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;

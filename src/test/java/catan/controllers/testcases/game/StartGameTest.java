@@ -1,7 +1,7 @@
-package catan.controllers.game;
+package catan.controllers.testcases.game;
 
 import catan.config.ApplicationConfig;
-import catan.config.RequestResponseLogger;
+import catan.controllers.util.GameTestUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
