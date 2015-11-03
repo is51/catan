@@ -287,11 +287,11 @@ public class GameBean {
         this.nodes = nodes;
     }
 
-    public List<GameUserDetails> getGameUserDetails(int detailsRequesterId, GameStatus gameStatus) {
+    public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
         for (GameUserBean gameUser : this.gameUsers) {
-            gameUsers.add(new GameUserDetails(gameUser, detailsRequesterId, gameStatus));
+            gameUsers.add(new GameUserDetails(gameUser, detailsRequesterId, this.status));
         }
 
         return gameUsers;
