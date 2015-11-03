@@ -20,7 +20,7 @@
                 <tr ng-repeat="gameUser in ::gameUsers">
                     <td><span class="result-place label color-{{::gameUser.colorId}}">{{::($index+1)}}</span></td>
                     <td>{{::gameUser.user.username}}</td>
-                    <td class="text-right"><span class="badge">{{::gameUser.achievements.displayVictoryPoints}}</span></td>
+                    <td class="text-right"><span class="badge">{{::gameUser.achievements.realVictoryPoints}}</span></td>
                 </tr>
             </tbody>
         </table>

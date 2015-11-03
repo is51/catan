@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctPlayersPanel', [function() {
+        .directive('ctPlayersPanel', ['User', function(User) {
             return {
                 restrict: 'E',
                 scope: {
@@ -13,6 +13,10 @@ angular.module('catan')
 
                     scope.isActive = function(gameUser) {
                         return scope.game.currentMove === gameUser.moveOrder;
+                    };
+
+                    scope.isCurrentUser = function(gameUser) {
+                        return User.get().id === gameUser.user.id;
                     };
 
                     function usersSortedByMoveOrderCurrentUserFirst(game) {
