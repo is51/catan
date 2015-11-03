@@ -23,7 +23,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
     public static final int TEMPORARY_MIN_PLAYERS = 3;
     public static final int TEMPORARY_MAX_PLAYERS = 4;
 
-    protected Response createNewGame(String token, boolean privateGame) {
+    public static Response createNewGame(String token, boolean privateGame) {
         return createNewGame(token, privateGame, DEFAULT_TARGET_VICTORY_POINTS, DEFAULT_INITIAL_BUILDINGS_SET_ID);
     }
 
@@ -31,7 +31,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
         return createNewGame(token, privateGame, targetVictoryPoints, DEFAULT_INITIAL_BUILDINGS_SET_ID);
     }
 
-    protected Response createNewGame(String token, boolean privateGame, int targetVictoryPoints, int initialBuildingsSetId) {
+    protected static Response createNewGame(String token, boolean privateGame, int targetVictoryPoints, int initialBuildingsSetId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -40,7 +40,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
                 .post(URL_CREATE_NEW_GAME);
     }
 
-    protected static Response joinPublicGame(String token, int gameId) {
+    public static Response joinPublicGame(String token, int gameId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -76,7 +76,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
                 .post(URL_CANCEL_GAME);
     }
 
-    protected Response viewGame(String token, int gameId) {
+    public static Response viewGame(String token, int gameId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -85,7 +85,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
                 .post(URL_VIEW_GAME_DETAILS);
     }
 
-    protected static Response setUserReady(String token, int gameId) {
+    public static Response setUserReady(String token, int gameId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)

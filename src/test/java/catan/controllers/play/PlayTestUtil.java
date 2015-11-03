@@ -12,7 +12,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
     protected static final String URL_BUILD_CITY = "/api/play/build/city";
     protected static final String URL_END_TURN = "/api/play/end-turn";
 
-    protected static Response buildSettlement(String token, int gameId, int nodeId) {
+    public static Response buildSettlement(String token, int gameId, int nodeId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)

@@ -20,7 +20,7 @@ public abstract class FunctionalTestUtil {
                 .statusCode(200);
     }
 
-    protected static String loginUser(String username, String password) {
+    public static String loginUser(String username, String password) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
