@@ -63,7 +63,7 @@ angular.module('catan')
                         }
                     }
                     return null;
-                }
+                };
 
             };
         }]);
