@@ -1,18 +1,14 @@
-package catan.controllers.play;
+package catan.controllers.testcases.play;
 
 import catan.config.ApplicationConfig;
-import catan.controllers.game.GameTestUtil;
-import com.jayway.restassured.response.ValidatableResponse;
+import catan.controllers.ctf.Scenario;
+import catan.controllers.util.PlayTestUtil;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -20,7 +16,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 
-@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 
 //@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
@@ -48,111 +43,8 @@ public class BuildSettlementTest extends PlayTestUtil {
             registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
+
         scenario = new Scenario();
-    }
-
-    private class Scenario {
-        private Map<String, String> userTokens = new HashMap<String, String>();
-        private int idOfCreatedGame = -1;
-        private ValidatableResponse currentGameDetails = null;
-
-
-        public Scenario loginUser(String username, String password) {
-            String userToken = GameTestUtil.loginUser(username, password);
-            userTokens.put(username, userToken);
-
-            return this;
-        }
-
-        public Scenario createNewPublicGameByUser(String userName) {
-            String userToken = userTokens.get(userName);
-            idOfCreatedGame = createNewGame(userToken, false).path("gameId");
-
-            return this;
-        }
-
-        public Scenario setUserReady(String userName) {
-            String userToken = userTokens.get(userName);
-            GameTestUtil.setUserReady(userToken, idOfCreatedGame);
-
-            return this;
-        }
-
-        public Scenario joinPublicGame(String userName) {
-            String userToken = userTokens.get(userName);
-            GameTestUtil.joinPublicGame(userToken, idOfCreatedGame);
-
-            return this;
-        }
-
-        public Scenario gameDetailsForUser(int moveOrder) {
-            //TODO: implement search of player by move order
-
-            return this;
-        }
-
-        public Scenario gameDetailsForPlayer(String userName) {
-            String userToken = userTokens.get(userName);
-            currentGameDetails = viewGame(userToken, idOfCreatedGame)
-                    .then()
-                    .statusCode(200);
-
-            return this;
-        }
-
-        public MapValidator node(String nodePath) {
-            return new MapValidator(currentGameDetails, nodePath, this);
-        }
-
-        public Scenario buildSettlement(String userName, String nodePath) {
-            String userToken = userTokens.get(userName);
-            int nodeIdToBuild = viewGame(userToken, idOfCreatedGame).path(nodePath + ".nodeId");
-
-            PlayTestUtil.buildSettlement(userToken, idOfCreatedGame, nodeIdToBuild)
-                    .then()
-                    .statusCode(200);
-            return this;
-        }
-
-        public Scenario stageIsPlaying() {
-            currentGameDetails.body("status", equalTo("PLAYING"));
-
-            return this;
-        }
-
-        private class MapValidator {
-
-            private final ValidatableResponse currentGameDetails;
-            private final String path;
-            private final Scenario scenario;
-
-            public MapValidator(ValidatableResponse currentGameDetails, String path, Scenario scenario) {
-                this.currentGameDetails = currentGameDetails;
-                this.path = path;
-                this.scenario = scenario;
-            }
-
-            public Scenario buildingIsEmpty() {
-                currentGameDetails.body(path + ".building", nullValue());
-
-                return scenario;
-            }
-
-            public Scenario hasBuiltSettlement() {
-                currentGameDetails.body(path + ".building.built", equalTo("SETTLEMENT"));
-
-                return scenario;
-            }
-
-            public Scenario buildingBelongsToPlayer(String userName) {
-                String userToken = userTokens.get(userName);
-
-                int gameUserId1 = viewGame(userToken, idOfCreatedGame).path("gameUsers[0].id");
-                currentGameDetails.body(path + ".building.ownerGameUserId", is(gameUserId1));
-
-                return scenario;
-            }
-        }
     }
 
     private Scenario startNewGame() {
@@ -170,18 +62,72 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .setUserReady(USER_NAME_3);
     }
 
+    /*
+    *          (X, Y) coordinates of generated map:                          Node position at hex:
+    *
+    *           *----*----*----*----*----*----*                                      top
+    *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                          topLeft *----*----* topRight
+    *      *----*----*----*----*----*----*----*----*                             |         |
+    *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                  bottomLeft *----*----* bottomRight
+    * *----*----*----*----*----*----*----*----*----*----*                           bottom
+    * | (-2, 0) | (-1, 0) | ( 0, 0) | ( 1, 0) | ( 2, 0) |
+    * *----*----*----*----*----*----*----*----*----*----*                    Edge position at hex:
+    *      | (-2, 1) | (-1, 1) | ( 0, 1) | ( 1, 1) |
+    *      *----*----*----*----*----*----*----*----*                           topLeft topRight
+    *           | (-2, 2) | (-1, 2) | ( 0, 2) |                                  .====.====.
+    *           *----*----*----*----*----*----*                            left ||         || right
+    *                                                                            .====.====.
+    *                                                                       bottomLeft bottomRight
+    */
+
     @Test
-    public void NEW___should_successfully_build_settlement_on_empty_node() {
+    public void should_successfully_build_settlement_on_empty_node_in_preparation_stage() {
         startNewGame()
-                .gameDetailsForPlayer(USER_NAME_1).stageIsPlaying()
-                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").buildingIsEmpty()
-                .buildSettlement(USER_NAME_1, "map.nodes[0]")
-                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").hasBuiltSettlement()
-                .gameDetailsForPlayer(USER_NAME_1).node("map.nodes[0]").buildingBelongsToPlayer(USER_NAME_1);
+                //Given
+                .getGameDetails(1).statusIsPlaying().and().node(0, 0, "topLeft").buildingIsEmpty()
+
+                //When
+                .buildSettlement(1).atNode(0, 0, "topLeft")
+
+                //Then
+                .getGameDetails(1).node(0, 0, "topLeft").buildingBelongsToPlayer(1);
     }
 
     @Test
-    public void OLD___should_successfully_build_settlement_on_empty_node() {
+    public void should_fail_if_try_to_build_settlement_on_existing_settlement_in_preparation_stage() {
+        startNewGame()
+                //Given
+                .buildSettlement(1).atNode(0, 0, "topLeft")
+                .buildRoad(1).atEdge(0, 0, "topLeft")
+                .endTurn(1)
+
+                        //When                              //Then
+                .buildSettlement(2).atNode(0, 0, "topLeft").failsWithError("ERROR")
+
+                //Check that this player still can build settlement on empty node
+                .getGameDetails(2).node(0, 0, "topRight").buildingIsEmpty()
+                .buildSettlement(2).atNode(0, 0, "topRight")
+                .getGameDetails(2).node(0, 0, "topRight").buildingBelongsToPlayer(2);
+    }
+
+    @Test
+    public void should_fail_if_try_to_build_settlement_close_to_another_settlement_less_than_2_roads_in_preparation_stage() {
+        startNewGame()
+                //Given
+                .buildSettlement(1).atNode(0, 0, "topLeft")
+                .buildRoad(1).atEdge(0, 0, "topLeft")
+                .endTurn(1)
+
+                        //When                          //Then
+                .buildSettlement(2).atNode(0, 0, "top").failsWithError("ERROR")
+
+                //Check that this player still can build settlement on empty node
+                .getGameDetails(2).node(0, 0, "topRight").buildingIsEmpty()
+                .buildSettlement(2).atNode(0, 0, "topRight")
+                .getGameDetails(2).node(0, 0, "topRight").buildingBelongsToPlayer(2);
+    }
+
+    public void OLD___should_successfully_build_settlement_on_empty_node_in_preparation_stage() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
@@ -217,8 +163,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .body("status", equalTo("PLAYING"));
     }
 
-    @Test
-    public void should_fail_if_try_to_build_settlement_on_existing_settlement() {
+    public void OLD_should_fail_if_try_to_build_settlement_on_existing_settlement_in_preparation_stage() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
@@ -259,8 +204,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .body("errorCode", equalTo("ERROR"));
     }
 
-    @Test
-    public void should_fail_if_try_to_build_settlement_close_to_another_settlement_less_than_2_roads() {
+    public void OLD_should_fail_if_try_to_build_settlement_close_to_another_settlement_less_than_2_roads_in_preparation_stage() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
@@ -313,7 +257,7 @@ public class BuildSettlementTest extends PlayTestUtil {
     */
 
 
-    @Test
+    //TODO: do we need this scenario?????
     public void should_fail_if_try_to_build_settlement_if_two_of_three_neighbour_roads_belongs_to_other_player() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
@@ -384,7 +328,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .body("errorCode", equalTo("ERROR"));
     }
 
-    @Test
+    //TODO: such test case should be covered by unit test
     public void should_fail_if_node_does_not_belong_to_this_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);

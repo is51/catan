@@ -1,6 +1,7 @@
-package catan.controllers.play;
+package catan.controllers.testcases.play;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.util.PlayTestUtil;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

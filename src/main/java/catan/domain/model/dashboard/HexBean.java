@@ -42,53 +42,27 @@ public class HexBean implements MapElement{
     @Column(name = "IS_ROBBED", unique = false, nullable = false)
     private boolean robbed;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "NODE_TOP_LEFT")
-    private NodeBean nodeTopLeft;
+    @Embedded
+    @AssociationOverrides({
+            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "NODE_TOP_LEFT")),
+            @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "NODE_TOP")),
+            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "NODE_TOP_RIGHT")),
+            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "NODE_BOTTOM_RIGHT")),
+            @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "NODE_BOTTOM")),
+            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "NODE_BOTTOM_LEFT"))
+    })
+    private VerticalLinks<NodeBean> nodes = new VerticalLinks<NodeBean>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "NODE_TOP_RIGHT")
-    private NodeBean nodeTopRight;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "NODE_BOTTOM_RIGHT")
-    private NodeBean nodeBottomRight;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "NODE_BOTTOM_LEFT")
-    private NodeBean nodeBottomLeft;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "NODE_TOP")
-    private NodeBean nodeTop;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "NODE_BOTTOM")
-    private NodeBean nodeBottom;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EDGE_TOP_LEFT")
-    private EdgeBean edgeTopLeft;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EDGE_TOP_RIGHT")
-    private EdgeBean edgeTopRight;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EDGE_BOTTOM_RIGHT")
-    private EdgeBean edgeBottomRight;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EDGE_BOTTOM_LEFT")
-    private EdgeBean edgeBottomLeft;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EDGE_RIGHT")
-    private EdgeBean edgeRight;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EDGE_LEFT")
-    private EdgeBean edgeLeft;
+    @Embedded
+    @AssociationOverrides({
+            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "EDGE_TOP_LEFT")),
+            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "EDGE_TOP_RIGHT")),
+            @AssociationOverride(name = "right", joinColumns = @JoinColumn(name = "EDGE_RIGHT")),
+            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_RIGHT")),
+            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_LEFT")),
+            @AssociationOverride(name = "left", joinColumns = @JoinColumn(name = "EDGE_LEFT"))
+    })
+    private HorizontalLinks<EdgeBean> edges = new HorizontalLinks<EdgeBean>();
 
     public HexBean() {
     }
@@ -150,124 +124,19 @@ public class HexBean implements MapElement{
     }
 
     public VerticalLinks<NodeBean> getNodes() {
-        VerticalLinks<NodeBean> nodeBeanVerticalLinks = new VerticalLinks<NodeBean>();
-        nodeBeanVerticalLinks.setBottom(nodeBottom);
-        nodeBeanVerticalLinks.setTop(nodeTop);
-        nodeBeanVerticalLinks.setTopLeft(nodeTopLeft);
-        nodeBeanVerticalLinks.setTopRight(nodeTopRight);
-        nodeBeanVerticalLinks.setBottomLeft(nodeBottomLeft);
-        nodeBeanVerticalLinks.setBottomRight(nodeBottomRight);
-        
-        return nodeBeanVerticalLinks;
+        return nodes;
+    }
+
+    public void setNodes(VerticalLinks<NodeBean> nodes) {
+        this.nodes = nodes;
     }
 
     public HorizontalLinks<EdgeBean> getEdges() {
-        HorizontalLinks<EdgeBean> edgeBeanHorizontalLinks = new HorizontalLinks<EdgeBean>();
-        edgeBeanHorizontalLinks.setLeft(edgeLeft);
-        edgeBeanHorizontalLinks.setRight(edgeRight);
-        edgeBeanHorizontalLinks.setBottomLeft(edgeBottomLeft);
-        edgeBeanHorizontalLinks.setBottomRight(edgeBottomRight);
-        edgeBeanHorizontalLinks.setTopLeft(edgeTopLeft);
-        edgeBeanHorizontalLinks.setTopRight(edgeTopRight);
-
-        return edgeBeanHorizontalLinks;
+        return edges;
     }
 
-
-    public NodeBean getNodeTopLeft() {
-        return nodeTopLeft;
-    }
-
-    public void setNodeTopLeft(NodeBean nodeTopLeft) {
-        this.nodeTopLeft = nodeTopLeft;
-    }
-
-    public NodeBean getNodeTopRight() {
-        return nodeTopRight;
-    }
-
-    public void setNodeTopRight(NodeBean nodeTopRight) {
-        this.nodeTopRight = nodeTopRight;
-    }
-
-    public NodeBean getNodeBottomRight() {
-        return nodeBottomRight;
-    }
-
-    public void setNodeBottomRight(NodeBean nodeBottomRight) {
-        this.nodeBottomRight = nodeBottomRight;
-    }
-
-    public NodeBean getNodeBottomLeft() {
-        return nodeBottomLeft;
-    }
-
-    public void setNodeBottomLeft(NodeBean nodeBottomLeft) {
-        this.nodeBottomLeft = nodeBottomLeft;
-    }
-
-    public NodeBean getNodeTop() {
-        return nodeTop;
-    }
-
-    public void setNodeTop(NodeBean nodeTop) {
-        this.nodeTop = nodeTop;
-    }
-
-    public NodeBean getNodeBottom() {
-        return nodeBottom;
-    }
-
-    public void setNodeBottom(NodeBean nodeBottom) {
-        this.nodeBottom = nodeBottom;
-    }
-
-    public EdgeBean getEdgeTopLeft() {
-        return edgeTopLeft;
-    }
-
-    public void setEdgeTopLeft(EdgeBean edgeTopLeft) {
-        this.edgeTopLeft = edgeTopLeft;
-    }
-
-    public EdgeBean getEdgeTopRight() {
-        return edgeTopRight;
-    }
-
-    public void setEdgeTopRight(EdgeBean edgeTopRight) {
-        this.edgeTopRight = edgeTopRight;
-    }
-
-    public EdgeBean getEdgeBottomRight() {
-        return edgeBottomRight;
-    }
-
-    public void setEdgeBottomRight(EdgeBean edgeBottomRight) {
-        this.edgeBottomRight = edgeBottomRight;
-    }
-
-    public EdgeBean getEdgeBottomLeft() {
-        return edgeBottomLeft;
-    }
-
-    public void setEdgeBottomLeft(EdgeBean edgeBottomLeft) {
-        this.edgeBottomLeft = edgeBottomLeft;
-    }
-
-    public EdgeBean getEdgeRight() {
-        return edgeRight;
-    }
-
-    public void setEdgeRight(EdgeBean edgeRight) {
-        this.edgeRight = edgeRight;
-    }
-
-    public EdgeBean getEdgeLeft() {
-        return edgeLeft;
-    }
-
-    public void setEdgeLeft(EdgeBean edgeLeft) {
-        this.edgeLeft = edgeLeft;
+    public void setEdges(HorizontalLinks<EdgeBean> edges) {
+        this.edges = edges;
     }
 
     @Override
