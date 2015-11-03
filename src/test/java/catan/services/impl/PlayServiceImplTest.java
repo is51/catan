@@ -14,6 +14,8 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
+import catan.domain.model.game.Achievements;
+import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -705,7 +707,60 @@ public class PlayServiceImplTest {
             fail("No other exceptions should be thrown");
         }
     }
+    /*
+    //TODO: uncomment tests when victory points calculation would be developed (us-61)
+    @Test
+    public void shouldPassWhenDisplayVictoryPointsEqualsToTargetAfterSomeAction() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setTargetVictoryPoints(3);
+        gameUser1.setAchievements(new Achievements(2, 0, 0, 0, 0));
 
+        //WHEN
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        //THEN
+        assertNotNull(game);
+        assertEquals(3, gameUser1.getAchievements().getDisplayVictoryPoints());
+        assertEquals(GameStatus.FINISHED, game.getStatus());
+    }
+
+    @Test
+    public void shouldPassWhenDisplayVictoryPointsMoreThenTargetAfterSomeAction() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setTargetVictoryPoints(3);
+        gameUser1.setAchievements(new Achievements(3, 0, 0, 0, 0));
+
+        //WHEN
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        //THEN
+        assertNotNull(game);
+        assertEquals(4, gameUser1.getAchievements().getDisplayVictoryPoints());
+        assertEquals(GameStatus.FINISHED, game.getStatus());
+    }
+
+    @Test
+    public void shouldPassWhenRealVictoryPointsEqualsToTargetAfterSomeAction() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setTargetVictoryPoints(3);
+        gameUser1.setAchievements(new Achievements(1, 0, 0, 0, 0));
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 1, 0, 0, 0));
+
+        //WHEN
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        //THEN
+        assertNotNull(game);
+        assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
+        assertEquals(GameStatus.FINISHED, game.getStatus());
+    }
+    */
     private GameUserBean allowUserToBuildCity(GameUserBean user) {
         AvailableActions availableActions = new AvailableActions();
         List<Action> actionsList = new ArrayList<Action>();
