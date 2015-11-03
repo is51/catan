@@ -57,7 +57,7 @@ public class PlayUtil {
     public void finishGameIfTargetReached(GameBean game) {
         for (GameUserBean gameUser : game.getGameUsers()) {
             int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
-            if (realVictoryPoints == game.getTargetVictoryPoints()) {
+            if (realVictoryPoints >= game.getTargetVictoryPoints()) {
                 game.setStatus(GameStatus.FINISHED);
                 break;
             }
