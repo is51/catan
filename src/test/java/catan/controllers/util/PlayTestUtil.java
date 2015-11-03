@@ -20,7 +20,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .post(URL_BUILD_SETTLEMENT);
     }
 
-    protected Response buildCity(String token, int gameId, int nodeId) {
+    public static Response buildCity(String token, int gameId, int nodeId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)

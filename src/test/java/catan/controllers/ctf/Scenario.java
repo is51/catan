@@ -20,6 +20,11 @@ public class Scenario {
     ValidatableResponse currentGameDetails = null;
     Response lastApiResponse = null;
 
+    public Scenario registerUser(String username, String password) {
+        GameTestUtil.registerUser(username, password);
+        return this;
+    }
+
     public Scenario loginUser(String username, String password) {
         String userToken = GameTestUtil.loginUser(username, password);
         userTokensByName.put(username, userToken);
@@ -27,8 +32,12 @@ public class Scenario {
     }
 
     public Scenario createNewPublicGameByUser(String userName) {
+        return createNewPublicGameByUser(userName, 12);
+    }
+
+    public Scenario createNewPublicGameByUser(String userName, int targetVictoryPoints) {
         String userToken = userTokensByName.get(userName);
-        gameId = GameTestUtil.createNewGame(userToken, false).then().statusCode(200).extract().path("gameId");
+        gameId = GameTestUtil.createNewGame(userToken, false, targetVictoryPoints).then().statusCode(200).extract().path("gameId");
         return this;
     }
 
@@ -82,6 +91,11 @@ public class Scenario {
         return new BuildSettlementAction(userToken, this);
     }
 
+    public BuildCityAction buildCity(int moveOrder) {
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new BuildCityAction(userToken, this);
+    }
+
     public BuildRoadAction buildRoad(int moveOrder) {
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildRoadAction(userToken, this);
@@ -95,6 +109,10 @@ public class Scenario {
 
     public MapValidator node(int x, int y, String nodePosition) {
         return new MapValidator(this, x, y, nodePosition, "node");
+    }
+
+    public GameUserValidator gameUser(int moveOrder) {
+        return new GameUserValidator(this, moveOrder);
     }
 
     //if custom check is used several times - create a new method for it
@@ -116,6 +134,11 @@ public class Scenario {
 
     public Scenario statusIsPlaying() {
         currentGameDetails.body("status", equalTo("PLAYING"));
+        return this;
+    }
+
+    public Scenario statusIsFinished() {
+        currentGameDetails.body("status", equalTo("FINISHED"));
         return this;
     }
 
