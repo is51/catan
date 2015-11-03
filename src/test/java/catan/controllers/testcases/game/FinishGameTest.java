@@ -118,21 +118,6 @@ public class FinishGameTest {
     }
 
     @Test
-    public void should_successfully_finish_game_when_target_victory_points_is_4_and_user_builds_2_settlements_and_1_city() {
-        //Given
-        startNewGame(4);
-        playPreparationStage()
-                .buildSettlement(1).atNode(0, -2, "bottomLeft") //victory points of user should be equal to target victory points
-                .getGameDetails(1).statusIsPlaying()
-
-                //When
-                .buildCity(1).atNode(0, -2, "bottomLeft") //victory points of user should be more than target victory points
-
-                //Then
-                .getGameDetails(1).statusIsFinished();
-    }
-
-    @Test
     public void should_not_finish_game_when_target_victory_points_is_4_and_user_builds_3_settlements() {
         //Given
         startNewGame(4);
@@ -144,6 +129,12 @@ public class FinishGameTest {
 
                 //Then
                 .getGameDetails(1).statusIsPlaying();
+    }
+
+    @Test
+    public void should_successfully_finish_game_when_target_victory_points_is_4_and_user_builds_3_settlements_and_builds_longest_road() {
+         //test case to check when real victory points is grated than target victory points
+         //TODO: implement when add functionality of adding 2 victory points for longest way
     }
 
     @Test
