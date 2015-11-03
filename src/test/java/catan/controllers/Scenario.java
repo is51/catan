@@ -15,8 +15,8 @@ public class Scenario {
 
     int gameId = -1;
     Map<String, String> userTokensByName = new HashMap<String, String>();
-    Map<Integer, String> userTokensByMoveOrder = new HashMap<Integer, String>();
-    Map<Integer, Integer> userIdsByMoveOrder = new HashMap<Integer, Integer>();
+    Map<Integer, String> tokensByMoveOrder = new HashMap<Integer, String>();
+    Map<Integer, Integer> gameUserIdsByMoveOrder = new HashMap<Integer, Integer>();
     ValidatableResponse currentGameDetails = null;
     Response lastApiResponse = null;
 
@@ -55,51 +55,51 @@ public class Scenario {
 
     private void populateTokensByMoveOrder() {
         for(int i = 0; i < (Integer) currentGameDetails.extract().path("gameUsers.size"); i++){
-            Integer moveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].moveOrder");
-            Integer userIdWithCurrentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].user.id");
+            Integer currentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].moveOrder");
+            Integer gameUserIdOfPlayerWithCurrentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].id");
             String userNameWithCurrentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].user.username");
-            String tokenOfPlayerWithCurrentMoveOrder = userTokensByName.get(userNameWithCurrentMoveOrder);
-            userTokensByMoveOrder.put(moveOrder, tokenOfPlayerWithCurrentMoveOrder);
-            userIdsByMoveOrder.put(moveOrder, userIdWithCurrentMoveOrder);
+            String tokenOfUserWithCurrentMoveOrder = userTokensByName.get(userNameWithCurrentMoveOrder);
+            tokensByMoveOrder.put(currentMoveOrder, tokenOfUserWithCurrentMoveOrder);
+            gameUserIdsByMoveOrder.put(currentMoveOrder, gameUserIdOfPlayerWithCurrentMoveOrder);
         }
     }
 
     public Scenario getGameDetails(int moveOrder) {
-        String userToken = userTokensByMoveOrder.get(moveOrder);
-        currentGameDetails = GameTestUtil.viewGame(userToken, gameId).then().statusCode(200);
-        return this;
+        return getGameDetailsByToken(tokensByMoveOrder.get(moveOrder));
     }
 
     public Scenario getGameDetails(String userName) {
-        String userToken = userTokensByName.get(userName);
+        return getGameDetailsByToken(userTokensByName.get(userName));
+    }
+
+    private Scenario getGameDetailsByToken(String userToken) {
         currentGameDetails = GameTestUtil.viewGame(userToken, gameId).then().statusCode(200);
         return this;
     }
 
-    public Scenario buildSettlement(int moveOrder, String nodePath) {
-        String userToken = userTokensByMoveOrder.get(moveOrder);
-        int nodeIdToBuild = GameTestUtil.viewGame(userToken, gameId).then().statusCode(200).extract().path(nodePath + ".nodeId");
+    public BuildSettlementAction buildSettlement(int moveOrder) {
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new BuildSettlementAction(userToken, this);
+    }
 
-        lastApiResponse = PlayTestUtil.buildSettlement(userToken, gameId, nodeIdToBuild);
+    public BuildRoadAction buildRoad(int moveOrder) {
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new BuildRoadAction(userToken, this);
+    }
+
+    public Scenario endTurn(int moveOrder) {
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.endTurn(userToken, gameId);
         return this;
     }
 
-    public Scenario buildSettlement(String userName, String nodePath) {
-        String userToken = userTokensByName.get(userName);
-        int nodeIdToBuild = GameTestUtil.viewGame(userToken, gameId).then().statusCode(200).extract().path(nodePath + ".nodeId");
-
-        lastApiResponse = PlayTestUtil.buildSettlement(userToken, gameId, nodeIdToBuild);
-        return this;
-    }
-
-    public MapValidator node(String nodePath) {
-        return new MapValidator(this, currentGameDetails, nodePath);
+    public MapValidator node(int x, int y, String nodePosition) {
+        return new MapValidator(this, x, y, nodePosition, "node");
     }
 
     //if custom check is used several times - create a new method for it
     public Scenario check(String path, Matcher matcher) {
         currentGameDetails.body(path, matcher);
-
         return this;
     }
 
@@ -119,4 +119,7 @@ public class Scenario {
         return this;
     }
 
+    public Scenario and() {
+        return this;
+    }
 }

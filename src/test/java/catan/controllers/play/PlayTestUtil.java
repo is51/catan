@@ -30,7 +30,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .post(URL_BUILD_CITY);
     }
 
-    protected Response buildRoad(String token, int gameId, int edgeId) {
+    public static Response buildRoad(String token, int gameId, int edgeId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -39,7 +39,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .post(URL_BUILD_ROAD);
     }
 
-    protected Response endTurn(String token, int gameId) {
+    public static Response endTurn(String token, int gameId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)

@@ -1,39 +1,64 @@
 package catan.controllers;
 
-import catan.controllers.game.GameTestUtil;
-import com.jayway.restassured.response.ValidatableResponse;
+import org.hamcrest.Matcher;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 public class MapValidator {
 
-    private final ValidatableResponse currentGameDetails;
-    private final String path;
-    private final Scenario scenario;
+    public static final String BUILT_ATTRIBUTE = ".built";
+    public static final String OWNER_ATTRIBUTE = ".ownerGameUserId";
 
-    public MapValidator(Scenario scenario, ValidatableResponse currentGameDetails, String path) {
+    private Scenario scenario;
+    private final int x;
+    private final int y;
+    private String mapElementPosition;
+    private String mapElementType;
+
+    public MapValidator(Scenario scenario, int x, int y, String mapElementPosition, String mapElementType) {
         this.scenario = scenario;
-        this.currentGameDetails = currentGameDetails;
-        this.path = path;
+        this.x = x;
+        this.y = y;
+        this.mapElementPosition = mapElementPosition;
+        this.mapElementType = mapElementType;
     }
 
     public Scenario buildingIsEmpty() {
-        currentGameDetails.body(path + ".building", nullValue());
+        assertBuilding(null, is(nullValue()));
         return scenario;
     }
 
     public Scenario hasBuiltSettlement() {
-        currentGameDetails.body(path + ".building.built", equalTo("SETTLEMENT"));
+        assertBuilding(null, is(notNullValue()));
+        assertBuilding(BUILT_ATTRIBUTE, equalTo("SETTLEMENT"));
         return scenario;
     }
 
     public Scenario buildingBelongsToPlayer(int moveOrder) {
-        int gameUserId = scenario.userIdsByMoveOrder.get(moveOrder);
-
-        currentGameDetails.body(path + ".building.ownerGameUserId", is(gameUserId));
+        int gameUserId = scenario.gameUserIdsByMoveOrder.get(moveOrder);
+        assertBuilding(null, is(notNullValue()));
+        assertBuilding(BUILT_ATTRIBUTE, equalTo("SETTLEMENT"));
+        assertBuilding(OWNER_ATTRIBUTE, is(gameUserId));
         return scenario;
+    }
+
+    private void assertBuilding(String buildingAttribute, Matcher matcher) {
+        int mapElementId = getMapElementId();
+        scenario.currentGameDetails.body(
+                "map." + mapElementType + "s" +
+                        ".find {it." + mapElementType + "Id == " + mapElementId + "}" +
+                        ".building" + (buildingAttribute != null ? buildingAttribute : ""), matcher);
+    }
+
+    private int getMapElementId() {
+        return scenario.currentGameDetails.extract().path(
+                "map.hexes" +
+                        ".findAll { it.x == " + x + " }" +
+                        ".find { it.y == " + y + " }" +
+                        "." + mapElementType + "sIds." + mapElementPosition + "Id");
     }
 
 }
