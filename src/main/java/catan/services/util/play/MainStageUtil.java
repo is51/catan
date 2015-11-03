@@ -5,6 +5,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class MainStageUtil {
     public void updateAvailableUserActions(GameBean game) throws GameException {
 
         for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getMoveOrder() == game.getCurrentMove()) {
+            if (gameUser.getMoveOrder() == game.getCurrentMove() || !GameStatus.FINISHED.equals(game.getStatus())) {
 
                 AvailableActions availableActions = new AvailableActions();
                 List<Action> actionsList = new ArrayList<Action>();
