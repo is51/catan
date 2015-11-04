@@ -16,6 +16,8 @@ import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
+import catan.domain.model.dashboard.*;
+import catan.domain.model.dashboard.types.*;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -38,15 +40,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -95,6 +91,8 @@ public class PlayServiceImplTest {
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
+        playUtil.setGameUtil(gameUtil);
+
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
 
@@ -515,7 +513,7 @@ public class PlayServiceImplTest {
     @Test
     public void shouldPassWhenBuildCityInPreparationStage() throws GameException, PlayException{
         // WHEN
-        gameUser1 = allowUserToBuildCity(gameUser1);
+        allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
         playService.buildCity(gameUser1.getUser(), "1", "3");
 
@@ -548,7 +546,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.CITY, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "3");
@@ -566,7 +564,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "3");
@@ -584,7 +582,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "4");
@@ -602,7 +600,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.CITY, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "4");
@@ -675,7 +673,7 @@ public class PlayServiceImplTest {
         // WHEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
-        gameUser1 = allowUserToBuildCity(gameUser1);
+        allowUserToBuildCity(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
         playService.buildCity(gameUser1.getUser(), "1", "3");
@@ -693,7 +691,7 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildCityOnNodeWithoutBuildingsInMainStage() throws GameException {
         //GIVEN
         game.setStage(GameStage.MAIN);
-        gameUser1 = allowUserToBuildCity(gameUser1);
+        allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -761,15 +759,83 @@ public class PlayServiceImplTest {
         assertEquals(GameStatus.FINISHED, game.getStatus());
     }
     */
-    private GameUserBean allowUserToBuildCity(GameUserBean user) {
-        AvailableActions availableActions = new AvailableActions();
+    
+    @Test
+    public void shouldUpdateVictoryPointsOnBuildCity() throws Exception {
+        allowUserToBuildCity(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildCity(gameUser1.getUser(), "1", "3");
+
+        assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnBuildSettlement() throws Exception {
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnMultipleBuildingsInPreparationStage() throws Exception {
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "5");
+
+        allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "1");
+
+        allowUserToBuildCity(gameUser1);
+        playService.buildCity(gameUser1.getUser(), "1", "9");
+
+        assertEquals(5, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnMultipleBuildingsInMainStage() throws Exception {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setStage(GameStage.MAIN);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        assertEquals(0, gameUser1.getAchievements().getDisplayVictoryPoints());
+
+        allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
+
+        allowUserToBuildCity(gameUser1);
+        playService.buildCity(gameUser1.getUser(), "1", "3");
+
+        assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    private void allowUserToBuildCity(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.BUILD_CITY));
+    }
+
+    private void allowUserToBuildSettlement(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.BUILD_SETTLEMENT));
+    }
+
+    private void allowUserAction(GameUserBean user, Action actionToAllow) {
         List<Action> actionsList = new ArrayList<Action>();
-        actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
+        actionsList.add(actionToAllow);
+
+        AvailableActions availableActions = new AvailableActions();
         availableActions.setList(actionsList);
         availableActions.setIsMandatory(true);
+
         String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
         user.setAvailableActions(availableActionsString);
-        return user;
     }
 
     private void buildClearTriangleMapAndSetAlreadyPlayingGame() throws GameException {

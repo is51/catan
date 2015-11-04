@@ -78,6 +78,7 @@ public class PlayServiceImpl implements PlayService {
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
 
+        playUtil.updateVictoryPoints(user, game);
         playUtil.finishGameIfTargetVictoryPointsReached(game);
         playUtil.updateAvailableUserActions(game);
 
@@ -101,6 +102,7 @@ public class PlayServiceImpl implements PlayService {
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
 
+        playUtil.updateVictoryPoints(user, game);
         playUtil.finishGameIfTargetVictoryPointsReached(game);
         playUtil.updateAvailableUserActions(game);
 
@@ -170,6 +172,7 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
+
 
     @Autowired
     public void setGameDao(GameDao gameDao) {

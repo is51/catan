@@ -46,6 +46,9 @@ public class GameUserBean {
     private Achievements achievements;
 
     @Embedded
+    private BuildingsCount buildingsCount;
+
+    @Embedded
     private Resources resources;
 
     @Embedded
@@ -58,6 +61,7 @@ public class GameUserBean {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
+        this.buildingsCount = new BuildingsCount(0, 0);
         this.achievements = new Achievements(0, 0, 0, 0, 0);
         this.resources = new Resources(0, 0, 0, 0, 0);
         this.developmentCards = new DevelopmentCards(0, 0, 0, 0, 0);
@@ -125,6 +129,14 @@ public class GameUserBean {
 
     public void setAchievements(Achievements achievements) {
         this.achievements = achievements;
+    }
+
+    public BuildingsCount getBuildingsCount() {
+        return buildingsCount;
+    }
+
+    public void setBuildingsCount(BuildingsCount buildingsCount) {
+        this.buildingsCount = buildingsCount;
     }
 
     public Resources getResources() {
