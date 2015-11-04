@@ -3,17 +3,8 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
-import catan.domain.model.dashboard.Building;
-import catan.domain.model.dashboard.Coordinates;
-import catan.domain.model.dashboard.EdgeBean;
-import catan.domain.model.dashboard.HexBean;
-import catan.domain.model.dashboard.NodeBean;
-import catan.domain.model.dashboard.types.EdgeBuiltType;
-import catan.domain.model.dashboard.types.EdgeOrientationType;
-import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.dashboard.types.NodeBuiltType;
-import catan.domain.model.dashboard.types.NodeOrientationType;
-import catan.domain.model.dashboard.types.NodePortType;
+import catan.domain.model.dashboard.*;
+import catan.domain.model.dashboard.types.*;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -36,15 +27,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -706,14 +691,63 @@ public class PlayServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldUpdateVictoryPointsOnBuildCity() throws Exception {
+        gameUser1 = allowUserToBuildCity(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildCity(gameUser1.getUser(), "1", "3");
+
+        assertEquals(PlayServiceImpl.CITY_VICTORY_POINTS_TO_ADD, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnBuildSettlement() throws Exception {
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        assertEquals(PlayServiceImpl.SETTLEMENT_VICTORY_POINTS_TO_ADD, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnMultipleBuildings() throws Exception {
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        gameUser1 = allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "5");
+
+        gameUser1 = allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "1");
+
+        gameUser1 = allowUserToBuildCity(gameUser1);
+        playService.buildCity(gameUser1.getUser(), "1", "9");
+
+        assertEquals(PlayServiceImpl.SETTLEMENT_VICTORY_POINTS_TO_ADD * 3 + PlayServiceImpl.CITY_VICTORY_POINTS_TO_ADD,
+                gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
     private GameUserBean allowUserToBuildCity(GameUserBean user) {
-        AvailableActions availableActions = new AvailableActions();
+        return allowUserAction(user, new Action(GameUserActionCode.BUILD_CITY));
+    }
+
+    private GameUserBean allowUserToBuildSettlement(GameUserBean user) {
+        return allowUserAction(user, new Action(GameUserActionCode.BUILD_SETTLEMENT));
+    }
+
+    private GameUserBean allowUserAction(GameUserBean user, Action actionToAllow) {
         List<Action> actionsList = new ArrayList<Action>();
-        actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
+        actionsList.add(actionToAllow);
+
+        AvailableActions availableActions = new AvailableActions();
         availableActions.setList(actionsList);
         availableActions.setIsMandatory(true);
+
         String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
         user.setAvailableActions(availableActionsString);
+
         return user;
     }
 
