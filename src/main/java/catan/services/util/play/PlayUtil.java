@@ -2,7 +2,10 @@ package catan.services.util.play;
 
 import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.user.UserBean;
+import catan.services.util.game.GameUtil;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ public class PlayUtil {
 
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
+    private GameUtil gameUtil;
 
     private static final Gson GSON = new Gson();
 
@@ -52,6 +56,16 @@ public class PlayUtil {
         }
     }
 
+    public void updateVictoryPoints(UserBean user, GameBean game) throws GameException {
+        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, game);
+
+        int settlementsCount = gameUserBean.getBuildingsCount().getSettlements();
+        int citiesCount = gameUserBean.getBuildingsCount().getCities();
+
+        gameUserBean.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2);
+        //points =  settlementsCount + cityCount * 2 + ((isOwnerWay) ? 2 : 0 ) +  ((isOwnerArmy) ? 2 : 0 );
+    }
+
     @Autowired
     public void setPreparationStageUtil(PreparationStageUtil preparationStageUtil) {
         this.preparationStageUtil = preparationStageUtil;
@@ -60,5 +74,10 @@ public class PlayUtil {
     @Autowired
     public void setMainStageUtil(MainStageUtil mainStageUtil) {
         this.mainStageUtil = mainStageUtil;
+    }
+
+    @Autowired
+    public void setGameUtil(GameUtil gameUtil) {
+        this.gameUtil = gameUtil;
     }
 }

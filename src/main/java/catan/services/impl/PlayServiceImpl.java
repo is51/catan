@@ -8,7 +8,6 @@ import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.GameStage;
@@ -34,8 +33,6 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
-    public static final int SETTLEMENT_VICTORY_POINTS_TO_ADD = 1;
-    public static final int CITY_VICTORY_POINTS_TO_ADD = 2;
 
     private GameDao gameDao;
     private GameUtil gameUtil;
@@ -78,9 +75,10 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+
+        playUtil.updateVictoryPoints(user, game);
         playUtil.updateAvailableUserActions(game);
 
-        updateVictoryPoints(user, game, SETTLEMENT_VICTORY_POINTS_TO_ADD);
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built settlement at node {} of game id {}", user.getUsername(), nodeIdString, gameIdString);
@@ -100,9 +98,10 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+
+        playUtil.updateVictoryPoints(user, game);
         playUtil.updateAvailableUserActions(game);
 
-        updateVictoryPoints(user, game, CITY_VICTORY_POINTS_TO_ADD);
         gameDao.updateGame(game);
 
         log.debug("User {} successfully built city at node {} of game id {}", user.getUsername(), nodeIdString, gameIdString);
@@ -170,14 +169,6 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void updateVictoryPoints(UserBean user, GameBean game, int victoryPointsToAdd) throws GameException {
-        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, game);
-
-        int updatedVictoryPoints = gameUserBean.getAchievements().getDisplayVictoryPoints() + victoryPointsToAdd;
-        gameUserBean.getAchievements().setDisplayVictoryPoints(updatedVictoryPoints);
-
-        gameDao.updateGameUser(gameUserBean);
-    }
 
     @Autowired
     public void setGameDao(GameDao gameDao) {

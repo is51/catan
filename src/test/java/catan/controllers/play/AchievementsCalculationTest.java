@@ -1,6 +1,7 @@
 package catan.controllers.play;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.util.PlayTestUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +56,8 @@ public class AchievementsCalculationTest extends PlayTestUtil {
         int gameUserNumber1MoveOrder = viewGame(userToken1, gameId).path("gameUsers[1].moveOrder");
 
         int firstGameUserNumber = (gameUserNumber0MoveOrder == 1) ? 0 : ((gameUserNumber1MoveOrder == 1) ? 1 : 2);
+        int secondGameUserNumber = (gameUserNumber0MoveOrder == 2) ? 0 : ((gameUserNumber1MoveOrder == 2) ? 1 : 2);
+        int thirdGameUserNumber = (gameUserNumber0MoveOrder == 3) ? 0 : ((gameUserNumber1MoveOrder == 3) ? 1 : 2);
 
         int nodeId1ToBuildForFirstUser = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
 
@@ -71,7 +74,8 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("gameUsers[" + firstGameUserNumber + "].achievements.displayVictoryPoints", is(1))
-                .body("gameUsers.findAll {it != " + firstGameUserNumber + "}.achievements.displayVictoryPoints", everyItem(is(0)));
+                .body("gameUsers[" + secondGameUserNumber + "].achievements.displayVictoryPoints", is(0))
+                .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(0));
 
     }
 
@@ -120,14 +124,17 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("gameUsers[" + firstGameUserNumber + "].achievements.displayVictoryPoints", is(1))
-                .body("gameUsers.findAll {it != " + firstGameUserNumber + "}.achievements.displayVictoryPoints", everyItem(is(0)));
+                .body("gameUsers[" + secondGameUserNumber + "].achievements.displayVictoryPoints", is(0))
+                .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(0));
 
         buildRoad(userTokens[firstGameUserNumber], gameId, edgeId1ToBuildForFirstUser);
+        endTurn(userTokens[firstGameUserNumber], gameId);
 
         // Second player moves #1
         buildSettlement(userTokens[secondGameUserNumber], gameId, nodeId1ToBuildForSecondUser);
 
         viewGame(userToken1, gameId)
+
                 .then()
                 .statusCode(200)
                 .body("gameUsers[" + firstGameUserNumber + "].achievements.displayVictoryPoints", is(1))
@@ -135,6 +142,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(0));
 
         buildRoad(userTokens[secondGameUserNumber], gameId, edgeId1ToBuildForSecondUser);
+        endTurn(userTokens[secondGameUserNumber], gameId);
 
         // Third player moves #1
         buildSettlement(userTokens[thirdGameUserNumber], gameId, nodeId1ToBuildForThirdUser);
@@ -147,6 +155,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(1));
 
         buildRoad(userTokens[thirdGameUserNumber], gameId, edgeId1ToBuildForThirdUser);
+        endTurn(userTokens[thirdGameUserNumber], gameId);
 
         // Third player moves #2
         buildCity(userTokens[thirdGameUserNumber], gameId, nodeId2ToBuildForThirdUser);
@@ -209,9 +218,11 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("gameUsers[" + firstGameUserNumber + "].achievements.displayVictoryPoints", is(1))
-                .body("gameUsers.findAll {it != " + firstGameUserNumber + "}.achievements.displayVictoryPoints", everyItem(is(0)));
+                .body("gameUsers[" + secondGameUserNumber + "].achievements.displayVictoryPoints", is(0))
+                .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(0));
 
         buildRoad(userTokens[firstGameUserNumber], gameId, edgeId1ToBuildForFirstUser);
+        endTurn(userTokens[firstGameUserNumber], gameId);
 
         // Second player moves #1
         buildSettlement(userTokens[secondGameUserNumber], gameId, nodeId1ToBuildForSecondUser);
@@ -224,6 +235,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(0));
 
         buildRoad(userTokens[secondGameUserNumber], gameId, edgeId1ToBuildForSecondUser);
+        endTurn(userTokens[secondGameUserNumber], gameId);
 
         // Third player moves #1
         buildSettlement(userTokens[thirdGameUserNumber], gameId, nodeId1ToBuildForThirdUser);
@@ -236,6 +248,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(1));
 
         buildRoad(userTokens[thirdGameUserNumber], gameId, edgeId1ToBuildForThirdUser);
+        endTurn(userTokens[thirdGameUserNumber], gameId);
 
         // Third player moves #2
         buildSettlement(userTokens[thirdGameUserNumber], gameId, nodeId2ToBuildForThirdUser);
@@ -248,6 +261,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(2));
 
         buildRoad(userTokens[thirdGameUserNumber], gameId, edgeId2ToBuildForThirdUser);
+        endTurn(userTokens[thirdGameUserNumber], gameId);
 
         // Second player moves #2
         buildSettlement(userTokens[secondGameUserNumber], gameId, nodeId2ToBuildForSecondUser);
@@ -260,6 +274,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(2));
 
         buildRoad(userTokens[secondGameUserNumber], gameId, edgeId2ToBuildForSecondUser);
+        endTurn(userTokens[secondGameUserNumber], gameId);
 
         // First player moves #2
         buildSettlement(userTokens[firstGameUserNumber], gameId, nodeId2ToBuildForFirstUser);
@@ -270,6 +285,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .body("gameUsers.achievements.displayVictoryPoints", everyItem(is(2)));
 
         buildRoad(userTokens[firstGameUserNumber], gameId, edgeId2ToBuildForFirstUser);
+        endTurn(userTokens[firstGameUserNumber], gameId);
 
         // MAIN STAGE STARTS
         buildCity(userTokens[firstGameUserNumber], gameId, nodeId1ToBuildForFirstUser);
@@ -278,7 +294,8 @@ public class AchievementsCalculationTest extends PlayTestUtil {
                 .then()
                 .statusCode(200)
                 .body("gameUsers[" + firstGameUserNumber + "].achievements.displayVictoryPoints", is(3))
-                .body("gameUsers.findAll {it != " + firstGameUserNumber + "}.achievements.displayVictoryPoints", everyItem(is(2)));
+                .body("gameUsers[" + secondGameUserNumber + "].achievements.displayVictoryPoints", is(2))
+                .body("gameUsers[" + thirdGameUserNumber + "].achievements.displayVictoryPoints", is(2));
     }
 
 }

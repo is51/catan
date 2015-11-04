@@ -11,6 +11,11 @@ angular.module('catan')
                 link: function(scope) {
                     scope.gameUsers = usersSortedByMoveOrderCurrentUserFirst(scope.game);
 
+                    // TODO: replace watchCollection with some nonshitcode style code
+                    scope.$watchCollection("game", function() {
+                        scope.gameUsers = usersSortedByMoveOrderCurrentUserFirst(scope.game);
+                    });
+
                     scope.isActive = function(gameUser) {
                         return scope.game.currentMove === gameUser.moveOrder;
                     };

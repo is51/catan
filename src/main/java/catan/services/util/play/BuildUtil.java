@@ -46,6 +46,23 @@ public class BuildUtil {
         building.setBuildingOwner(gameUserBean);
 
         nodeToBuildOn.setBuilding(building);
+
+        updateBuildingsCount(nodeBuiltType, gameUserBean);
+    }
+
+    private void updateBuildingsCount(NodeBuiltType nodeBuiltType, GameUserBean gameUserBean) {
+        switch (nodeBuiltType) {
+            case SETTLEMENT:
+                gameUserBean.getBuildingsCount().setSettlements(gameUserBean.getBuildingsCount().getSettlements() + 1);
+                break;
+            case CITY:
+                if (gameUserBean.getGame().getStage().equals(GameStage.MAIN)) {
+                    gameUserBean.getBuildingsCount().setSettlements(gameUserBean.getBuildingsCount().getSettlements() - 1);
+                }
+
+                gameUserBean.getBuildingsCount().setCities(gameUserBean.getBuildingsCount().getCities() + 1);
+                break;
+        }
     }
 
     public MapElement getValidMapElementByIdToBuildOn(String mapElementIdString, List<MapElement> mapElements) throws PlayException {
