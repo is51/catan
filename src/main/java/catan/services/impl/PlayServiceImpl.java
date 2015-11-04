@@ -53,9 +53,9 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildRoanOnEdge(user, edgeToBuildOn);
         buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
 
-        playUtil.finishGameIfTargetReached(game);
-
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+
+        playUtil.finishGameIfTargetVictoryPointsReached(game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
@@ -76,9 +76,9 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildSettlementOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
-        playUtil.finishGameIfTargetReached(game);
-
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+
+        playUtil.finishGameIfTargetVictoryPointsReached(game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
@@ -99,9 +99,9 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildCityOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
 
-        playUtil.finishGameIfTargetReached(game);
-
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+
+        playUtil.finishGameIfTargetVictoryPointsReached(game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);

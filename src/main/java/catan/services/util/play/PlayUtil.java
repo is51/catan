@@ -54,11 +54,13 @@ public class PlayUtil {
         }
     }
 
-    public void finishGameIfTargetReached(GameBean game) {
+    public void finishGameIfTargetVictoryPointsReached(GameBean game) {
         for (GameUserBean gameUser : game.getGameUsers()) {
-            int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
-            if (realVictoryPoints >= game.getTargetVictoryPoints()) {
-                game.setStatus(GameStatus.FINISHED);
+            if (gameUser.getMoveOrder() == game.getCurrentMove()) {
+                int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
+                if (realVictoryPoints >= game.getTargetVictoryPoints()) {
+                    game.setStatus(GameStatus.FINISHED);
+                }
                 break;
             }
         }

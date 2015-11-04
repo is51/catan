@@ -33,7 +33,7 @@ public class MainStageUtil {
     public void updateAvailableUserActions(GameBean game) throws GameException {
 
         for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getMoveOrder() == game.getCurrentMove() || !GameStatus.FINISHED.equals(game.getStatus())) {
+            if (gameUser.getMoveOrder() == game.getCurrentMove() && !GameStatus.FINISHED.equals(game.getStatus())) {
 
                 AvailableActions availableActions = new AvailableActions();
                 List<Action> actionsList = new ArrayList<Action>();
