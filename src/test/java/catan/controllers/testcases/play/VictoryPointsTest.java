@@ -15,15 +15,15 @@ import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
-//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class VictoryPointsTest {
-    public static final String USER_NAME_1 = "user1_BuildSettlementTest";
+    public static final String USER_NAME_1 = "user1_VictoryPointsTest";
     public static final String USER_PASSWORD_1 = "password1";
-    public static final String USER_NAME_2 = "user2_BuildSettlementTest";
+    public static final String USER_NAME_2 = "user2_VictoryPointsTest";
     public static final String USER_PASSWORD_2 = "password2";
-    public static final String USER_NAME_3 = "user3_BuildSettlementTest";
+    public static final String USER_NAME_3 = "user3_VictoryPointsTest";
     public static final String USER_PASSWORD_3 = "password3";
 
     private static boolean initialized = false;

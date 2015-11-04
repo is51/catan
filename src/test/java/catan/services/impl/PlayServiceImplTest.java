@@ -16,8 +16,6 @@ import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
-import catan.domain.model.dashboard.*;
-import catan.domain.model.dashboard.types.*;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -40,9 +38,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -337,7 +341,7 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldPassWhenBuildingSettlementOnTheWayOfOtherPlayerButNearOwnNeighbourRoad() throws GameException, PlayException{
+    public void shouldPassWhenBuildingSettlementOnTheWayOfOtherPlayerButNearOwnNeighbourRoad() throws GameException, PlayException {
         // GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
         hex_0_0.getEdges().getRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
@@ -390,7 +394,7 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldFailWhenBuildSettlementByNonActivePlayer(){
+    public void shouldFailWhenBuildSettlementByNonActivePlayer() {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
@@ -511,7 +515,7 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldPassWhenBuildCityInPreparationStage() throws GameException, PlayException{
+    public void shouldPassWhenBuildCityInPreparationStage() throws GameException, PlayException {
         // WHEN
         allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -631,7 +635,7 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldFailWhenBuildCityByNonActivePlayer(){
+    public void shouldFailWhenBuildCityByNonActivePlayer() {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
@@ -669,7 +673,7 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldPassWhenBuildCityInMainStage() throws PlayException, GameException{
+    public void shouldPassWhenBuildCityInMainStage() throws PlayException, GameException {
         // WHEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
@@ -705,14 +709,14 @@ public class PlayServiceImplTest {
             fail("No other exceptions should be thrown");
         }
     }
-    /*
-    //TODO: uncomment tests when victory points calculation would be developed (us-61)
+
     @Test
     public void shouldPassWhenDisplayVictoryPointsEqualsToTargetAfterSomeAction() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setStage(GameStage.MAIN);
         game.setTargetVictoryPoints(3);
-        gameUser1.setAchievements(new Achievements(2, 0, 0, 0, 0));
+        gameUser1.getBuildingsCount().setSettlements(2);
 
         //WHEN
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -725,28 +729,12 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldPassWhenDisplayVictoryPointsMoreThenTargetAfterSomeAction() throws GameException, PlayException {
-        //GIVEN
-        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
-        game.setTargetVictoryPoints(3);
-        gameUser1.setAchievements(new Achievements(3, 0, 0, 0, 0));
-
-        //WHEN
-        when(gameDao.getGameByGameId(1)).thenReturn(game);
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
-
-        //THEN
-        assertNotNull(game);
-        assertEquals(4, gameUser1.getAchievements().getDisplayVictoryPoints());
-        assertEquals(GameStatus.FINISHED, game.getStatus());
-    }
-
-    @Test
     public void shouldPassWhenRealVictoryPointsEqualsToTargetAfterSomeAction() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
-        game.setTargetVictoryPoints(3);
-        gameUser1.setAchievements(new Achievements(1, 0, 0, 0, 0));
+        game.setStage(GameStage.MAIN);
+        game.setTargetVictoryPoints(4);
+        gameUser1.getBuildingsCount().setSettlements(2);
         gameUser1.setDevelopmentCards(new DevelopmentCards(0, 1, 0, 0, 0));
 
         //WHEN
@@ -755,10 +743,10 @@ public class PlayServiceImplTest {
 
         //THEN
         assertNotNull(game);
-        assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
+        assertEquals(3, gameUser1.getAchievements().getDisplayVictoryPoints());
         assertEquals(GameStatus.FINISHED, game.getStatus());
     }
-    */
+
     
     @Test
     public void shouldUpdateVictoryPointsOnBuildCity() throws Exception {
