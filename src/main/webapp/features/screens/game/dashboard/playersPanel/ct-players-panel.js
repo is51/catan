@@ -12,6 +12,7 @@ angular.module('catan')
                     scope.gameUsers = usersSortedByMoveOrderCurrentUserFirst(scope.game);
 
                     // TODO: replace watchCollection with some nonshitcode style code
+                    // TODO: set :: where it's needed after previous TODO is done
                     scope.$watchCollection("game", function() {
                         scope.gameUsers = usersSortedByMoveOrderCurrentUserFirst(scope.game);
                     });
