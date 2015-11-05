@@ -11,6 +11,7 @@ angular.module('catan')
 
                 link: function(scope) {
                     scope.gameUsers = usersSortedByVictoryPoints(scope.game);
+                    console.log(scope.gameUsers);
 
                     scope.winnerName = scope.gameUsers[0].user.username;
 
@@ -18,7 +19,7 @@ angular.module('catan')
                         var gameUsers = game.gameUsers.map(function(user) { return user; });
 
                         return gameUsers.sort(function(a, b) {
-                            return b.displayVictoryPoints - a.displayVictoryPoints;
+                            return b.achievements.displayVictoryPoints - a.achievements.displayVictoryPoints;
                         });
                     }
                 }
