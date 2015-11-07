@@ -75,6 +75,8 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+
+        playUtil.updateVictoryPoints(user, game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
@@ -96,6 +98,8 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
 
         preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+
+        playUtil.updateVictoryPoints(user, game);
         playUtil.updateAvailableUserActions(game);
 
         gameDao.updateGame(game);
@@ -164,6 +168,7 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
+
 
     @Autowired
     public void setGameDao(GameDao gameDao) {

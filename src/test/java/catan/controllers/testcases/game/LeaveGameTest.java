@@ -1,6 +1,7 @@
-package catan.controllers.game;
+package catan.controllers.testcases.game;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.util.GameTestUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +17,11 @@ import static org.hamcrest.Matchers.equalTo;
 //@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
-public class CancelGameTest extends GameTestUtil {
+public class LeaveGameTest extends GameTestUtil {
 
-    public static final String USER_NAME_1 = "user1_CancelGameTest";
+    public static final String USER_NAME_1 = "user1_LeaveGameTest";
     public static final String USER_PASSWORD_1 = "password1";
-    public static final String USER_NAME_2 = "user2_CancelGameTest";
+    public static final String USER_NAME_2 = "user2_LeaveGameTest";
     public static final String USER_PASSWORD_2 = "password2";
 
     private static boolean initialized = false;
@@ -35,22 +36,16 @@ public class CancelGameTest extends GameTestUtil {
     }
 
     @Test
-    public void should_successfully_cancel_game() {
+    public void should_successfully_leave_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        int gameId = createNewGame(userToken1, false)
-                .path("gameId");
+        int gameId = createNewGame(userToken1, false).path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         joinPublicGame(userToken2, gameId);
 
-        cancelGame(userToken1, gameId)
+        leaveGame(userToken2, gameId)
                 .then()
                 .statusCode(200);
-
-        viewGame(userToken1, gameId)
-                .then()
-                .statusCode(400)
-                .body("errorCode", equalTo("ERROR"));
 
         viewGame(userToken2, gameId)
                 .then()
@@ -59,65 +54,62 @@ public class CancelGameTest extends GameTestUtil {
     }
 
     @Test
-    public void should_fails_when_user_cancel_not_his_game() {
+    public void should_fails_when_user_leaves_game_if_he_is_not_joined() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int gameId = createNewGame(userToken1, false)
                 .path("gameId");
 
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
 
-        cancelGame(userToken2, gameId)
+        leaveGame(userToken2, gameId)
                 .then()
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
     }
 
     @Test
-    public void should_fails_when_user_cancels_nonexistent_game() {
+    public void should_fails_when_user_leaves_nonexistent_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
-        cancelGame(userToken1, 999999999)
+        leaveGame(userToken1, 999999999)
                 .then()
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
     }
 
     @Test
-    public void should_fails_when_user_cancel_canceled_game() {
+    public void should_fails_when_creator_leaves_his_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int gameId = createNewGame(userToken1, false)
                 .path("gameId");
 
-        cancelGame(userToken1, gameId);
-
-        cancelGame(userToken1, gameId)
+        leaveGame(userToken1, gameId)
                 .then()
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
     }
 
     @Test
-    public void should_fail_when_user_cancel_game_if_user_is_not_authorized() {
+    public void should_fail_when_user_leave_game_if_user_is_not_authorized() {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
         int gameId = createNewGame(userToken, false)
                 .path("gameId");
 
         logoutUser(userToken);
 
-        cancelGame(userToken, gameId)
+        leaveGame(userToken, gameId)
                 .then()
                 .statusCode(403);
     }
 
     /*@Test
-    public void should_fails_when_user_cancels_already_started_game() {
-        //TODO: should_fails_when_user_cancel_already_started_game
+    public void should_fails_when_user_leaves_already_started_game() {
+        //TODO: should_fails_when_user_leaves_already_started_game
         //needs to be written when game starting is implemented
     }*/
 
     /*@Test
-    public void should_fails_when_user_cancels_finished_game() {
-        //TODO: should_fails_when_user_cancels_finished_game
-        //needs to be written when game finishing is implemented
+    public void should_fails_when_user_leaves_finished_game() {
+        //TODO: should_fails_when_user_leaves_finished_game
     }*/
 }

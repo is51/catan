@@ -3,17 +3,8 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
-import catan.domain.model.dashboard.Building;
-import catan.domain.model.dashboard.Coordinates;
-import catan.domain.model.dashboard.EdgeBean;
-import catan.domain.model.dashboard.HexBean;
-import catan.domain.model.dashboard.NodeBean;
-import catan.domain.model.dashboard.types.EdgeBuiltType;
-import catan.domain.model.dashboard.types.EdgeOrientationType;
-import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.dashboard.types.NodeBuiltType;
-import catan.domain.model.dashboard.types.NodeOrientationType;
-import catan.domain.model.dashboard.types.NodePortType;
+import catan.domain.model.dashboard.*;
+import catan.domain.model.dashboard.types.*;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -36,15 +27,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -93,6 +78,8 @@ public class PlayServiceImplTest {
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
+        playUtil.setGameUtil(gameUtil);
+
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
 
@@ -513,7 +500,7 @@ public class PlayServiceImplTest {
     @Test
     public void shouldPassWhenBuildCityInPreparationStage() throws GameException, PlayException{
         // WHEN
-        gameUser1 = allowUserToBuildCity(gameUser1);
+        allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
         playService.buildCity(gameUser1.getUser(), "1", "3");
 
@@ -546,7 +533,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.CITY, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "3");
@@ -564,7 +551,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "3");
@@ -582,7 +569,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "4");
@@ -600,7 +587,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.CITY, gameUser1));
-            gameUser1 = allowUserToBuildCity(gameUser1);
+            allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
             playService.buildCity(gameUser1.getUser(), "1", "4");
@@ -673,7 +660,7 @@ public class PlayServiceImplTest {
         // WHEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
-        gameUser1 = allowUserToBuildCity(gameUser1);
+        allowUserToBuildCity(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
         playService.buildCity(gameUser1.getUser(), "1", "3");
@@ -691,7 +678,7 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildCityOnNodeWithoutBuildingsInMainStage() throws GameException {
         //GIVEN
         game.setStage(GameStage.MAIN);
-        gameUser1 = allowUserToBuildCity(gameUser1);
+        allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -706,15 +693,82 @@ public class PlayServiceImplTest {
         }
     }
 
-    private GameUserBean allowUserToBuildCity(GameUserBean user) {
-        AvailableActions availableActions = new AvailableActions();
+    @Test
+    public void shouldUpdateVictoryPointsOnBuildCity() throws Exception {
+        allowUserToBuildCity(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildCity(gameUser1.getUser(), "1", "3");
+
+        assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnBuildSettlement() throws Exception {
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnMultipleBuildingsInPreparationStage() throws Exception {
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "5");
+
+        allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "1");
+
+        allowUserToBuildCity(gameUser1);
+        playService.buildCity(gameUser1.getUser(), "1", "9");
+
+        assertEquals(5, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldUpdateVictoryPointsOnMultipleBuildingsInMainStage() throws Exception {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setStage(GameStage.MAIN);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        assertEquals(0, gameUser1.getAchievements().getDisplayVictoryPoints());
+
+        allowUserToBuildSettlement(gameUser1);
+        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
+
+        allowUserToBuildCity(gameUser1);
+        playService.buildCity(gameUser1.getUser(), "1", "3");
+
+        assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    private void allowUserToBuildCity(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.BUILD_CITY));
+    }
+
+    private void allowUserToBuildSettlement(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.BUILD_SETTLEMENT));
+    }
+
+    private void allowUserAction(GameUserBean user, Action actionToAllow) {
         List<Action> actionsList = new ArrayList<Action>();
-        actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
+        actionsList.add(actionToAllow);
+
+        AvailableActions availableActions = new AvailableActions();
         availableActions.setList(actionsList);
         availableActions.setIsMandatory(true);
+
         String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
         user.setAvailableActions(availableActionsString);
-        return user;
     }
 
     private void buildClearTriangleMapAndSetAlreadyPlayingGame() throws GameException {
@@ -811,46 +865,46 @@ public class PlayServiceImplTest {
         //
         //
 
+
         hex_0_0.setId(1);
-        //TODO: use direct setters instead of getNodes().set...
-        hex_0_0.setNodeTopLeft(node_1_1);
-        hex_0_0.setNodeTop(node_1_2);
-        hex_0_0.setNodeTopRight(node_1_3);
-        hex_0_0.setNodeBottomRight(node_1_4);
-        hex_0_0.setNodeBottom(node_1_5);
-        hex_0_0.setNodeBottomLeft(node_1_6);
-        hex_0_0.setEdgeTopLeft(edge_1_1);
-        hex_0_0.setEdgeTopRight(edge_1_2);
-        hex_0_0.setEdgeRight(edge_1_3);
-        hex_0_0.setEdgeBottomRight(edge_1_4);
-        hex_0_0.setEdgeBottomLeft(edge_1_5);
-        hex_0_0.setEdgeLeft(edge_1_6);
+        hex_0_0.getNodes().setTopLeft(node_1_1);
+        hex_0_0.getNodes().setTop(node_1_2);
+        hex_0_0.getNodes().setTopRight(node_1_3);
+        hex_0_0.getNodes().setBottomRight(node_1_4);
+        hex_0_0.getNodes().setBottom(node_1_5);
+        hex_0_0.getNodes().setBottomLeft(node_1_6);
+        hex_0_0.getEdges().setTopLeft(edge_1_1);
+        hex_0_0.getEdges().setTopRight(edge_1_2);
+        hex_0_0.getEdges().setRight(edge_1_3);
+        hex_0_0.getEdges().setBottomRight(edge_1_4);
+        hex_0_0.getEdges().setBottomLeft(edge_1_5);
+        hex_0_0.getEdges().setLeft(edge_1_6);
         hex_1_0.setId(2);
-        hex_1_0.setNodeTopLeft(node_1_3);
-        hex_1_0.setNodeTop(node_2_2);
-        hex_1_0.setNodeTopRight(node_2_3);
-        hex_1_0.setNodeBottomRight(node_2_4);
-        hex_1_0.setNodeBottom(node_2_5);
-        hex_1_0.setNodeBottomLeft(node_1_4);
-        hex_1_0.setEdgeTopLeft(edge_2_1);
-        hex_1_0.setEdgeTopRight(edge_2_2);
-        hex_1_0.setEdgeRight(edge_2_3);
-        hex_1_0.setEdgeBottomRight(edge_2_4);
-        hex_1_0.setEdgeBottomLeft(edge_2_5);
-        hex_1_0.setEdgeLeft(edge_1_3);
+        hex_1_0.getNodes().setTopLeft(node_1_3);
+        hex_1_0.getNodes().setTop(node_2_2);
+        hex_1_0.getNodes().setTopRight(node_2_3);
+        hex_1_0.getNodes().setBottomRight(node_2_4);
+        hex_1_0.getNodes().setBottom(node_2_5);
+        hex_1_0.getNodes().setBottomLeft(node_1_4);
+        hex_1_0.getEdges().setTopLeft(edge_2_1);
+        hex_1_0.getEdges().setTopRight(edge_2_2);
+        hex_1_0.getEdges().setRight(edge_2_3);
+        hex_1_0.getEdges().setBottomRight(edge_2_4);
+        hex_1_0.getEdges().setBottomLeft(edge_2_5);
+        hex_1_0.getEdges().setLeft(edge_1_3);
         hex_0_1.setId(3);
-        hex_0_1.setNodeTopLeft(node_1_5);
-        hex_0_1.setNodeTop(node_1_4);
-        hex_0_1.setNodeTopRight(node_2_5);
-        hex_0_1.setNodeBottomRight(node_3_4);
-        hex_0_1.setNodeBottom(node_3_5);
-        hex_0_1.setNodeBottomLeft(node_3_6);
-        hex_0_1.setEdgeTopLeft(edge_1_4);
-        hex_0_1.setEdgeTopRight(edge_2_5);
-        hex_0_1.setEdgeRight(edge_3_3);
-        hex_0_1.setEdgeBottomRight(edge_3_4);
-        hex_0_1.setEdgeBottomLeft(edge_3_5);
-        hex_0_1.setEdgeLeft(edge_3_6);
+        hex_0_1.getNodes().setTopLeft(node_1_5);
+        hex_0_1.getNodes().setTop(node_1_4);
+        hex_0_1.getNodes().setTopRight(node_2_5);
+        hex_0_1.getNodes().setBottomRight(node_3_4);
+        hex_0_1.getNodes().setBottom(node_3_5);
+        hex_0_1.getNodes().setBottomLeft(node_3_6);
+        hex_0_1.getEdges().setTopLeft(edge_1_4);
+        hex_0_1.getEdges().setTopRight(edge_2_5);
+        hex_0_1.getEdges().setRight(edge_3_3);
+        hex_0_1.getEdges().setBottomRight(edge_3_4);
+        hex_0_1.getEdges().setBottomLeft(edge_3_5);
+        hex_0_1.getEdges().setLeft(edge_3_6);
 
         // Nodes of Hex 0,0
         node_1_1.setId(1);

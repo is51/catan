@@ -1,6 +1,6 @@
 package catan.localstart;
 
-import catan.controllers.play.PlayTestUtil;
+import catan.controllers.util.PlayTestUtil;
 
 import static org.hamcrest.Matchers.is;
 

@@ -1,6 +1,7 @@
-package catan.controllers.play;
+package catan.controllers.testcases.play;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.util.PlayTestUtil;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;

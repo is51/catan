@@ -1,6 +1,5 @@
-package catan.controllers.play;
+package catan.controllers.util;
 
-import catan.controllers.game.GameTestUtil;
 import com.jayway.restassured.response.Response;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -12,7 +11,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
     protected static final String URL_BUILD_CITY = "/api/play/build/city";
     protected static final String URL_END_TURN = "/api/play/end-turn";
 
-    protected static Response buildSettlement(String token, int gameId, int nodeId) {
+    public static Response buildSettlement(String token, int gameId, int nodeId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -30,7 +29,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .post(URL_BUILD_CITY);
     }
 
-    protected Response buildRoad(String token, int gameId, int edgeId) {
+    public static Response buildRoad(String token, int gameId, int edgeId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
@@ -39,7 +38,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .post(URL_BUILD_ROAD);
     }
 
-    protected Response endTurn(String token, int gameId) {
+    public static Response endTurn(String token, int gameId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
