@@ -3,6 +3,7 @@ package catan.controllers;
 import catan.domain.exception.AuthenticationException;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
+import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
 
 
 @RestController
@@ -29,7 +32,10 @@ public class PlayController {
                           @RequestParam("edgeId") String edgeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        playService.buildRoad(user, gameId, edgeId);
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", edgeId);
+
+        playService.performAction(GameUserActionCode.BUILD_ROAD, user, gameId, params);
     }
 
     @RequestMapping(value = "build/settlement",
@@ -40,7 +46,10 @@ public class PlayController {
                                 @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        playService.buildSettlement(user, gameId, nodeId);
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", nodeId);
+
+        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, user, gameId, params);
     }
 
     @RequestMapping(value = "build/city",
@@ -51,7 +60,10 @@ public class PlayController {
                                 @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        playService.buildCity(user, gameId, nodeId);
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", nodeId);
+
+        playService.performAction(GameUserActionCode.BUILD_CITY, user, gameId, params);
     }
 
     @RequestMapping(value = "end-turn",
@@ -61,7 +73,7 @@ public class PlayController {
                         @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        playService.endTurn(user, gameId);
+        playService.performAction(GameUserActionCode.END_TURN, user, gameId, new HashMap<String, String>());
     }
 
     @Autowired

@@ -49,7 +49,7 @@ public class PreparationStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void updateCurrentCycleBuildingNumber(GameBean game) {
+    public void updateCurrentCycleInitialBuildingNumber(GameBean game) {
         if (game.getStage().equals(GameStage.PREPARATION)) {
             List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
             Integer numberOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
@@ -73,6 +73,7 @@ public class PreparationStageUtil {
 
         if (lastCycle && isEndOfCycle(game)) {
             game.setStage(GameStage.MAIN);
+            game.setDiceThrown(false);
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
         }
     }
@@ -94,25 +95,20 @@ public class PreparationStageUtil {
     public void updateAvailableUserActions(GameBean game) throws GameException {
 
         for (GameUserBean gameUser : game.getGameUsers()) {
+            boolean isMandatory = false;
+            List<Action> actionsList = new ArrayList<Action>();
+
             if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-
-                List<GameUserActionCode> actionCodesList = new ArrayList<GameUserActionCode>();
-                actionCodesList.add(getCurrentInitialAction(game));
-
-                List<Action> actionsList = new ArrayList<Action>();
-                for (GameUserActionCode actionCode : actionCodesList) {
-                    actionsList.add(new Action(actionCode));
-                }
-
-                AvailableActions availableActions = new AvailableActions();
-                availableActions.setList(actionsList);
-                availableActions.setIsMandatory(true);
-
-                String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
-                gameUser.setAvailableActions(availableActionsString);
-            } else {
-                gameUser.setAvailableActions("{\"list\": [], \"isMandatory\": false}");
+                actionsList.add(new Action(getCurrentInitialBuildAction(game)));
+                isMandatory = true;
             }
+
+            AvailableActions availableActions = new AvailableActions();
+            availableActions.setList(actionsList);
+            availableActions.setIsMandatory(isMandatory);
+
+            String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
+            gameUser.setAvailableActions(availableActionsString);
         }
     }
 
@@ -124,16 +120,16 @@ public class PreparationStageUtil {
         return firstPlayer && !oddCycle || lastPlayer && oddCycle;
     }
 
-    private GameUserActionCode getCurrentInitialAction(GameBean game) {
+    private GameUserActionCode getCurrentInitialBuildAction(GameBean game) {
 
         if (game.getCurrentCycleBuildingNumber() == null) {
             return GameUserActionCode.END_TURN;
         }
 
         List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-        int indexOfCycle = game.getPreparationCycle() - 1;
-        int indexOfBuildingNumberInCycle = game.getCurrentCycleBuildingNumber() - 1;
+        int indexOfCurrentCycle = game.getPreparationCycle() - 1;
+        int indexOfCurrentBuildingNumberInCycle = game.getCurrentCycleBuildingNumber() - 1;
 
-        return initialBuildingsSet.get(indexOfCycle).get(indexOfBuildingNumberInCycle);
+        return initialBuildingsSet.get(indexOfCurrentCycle).get(indexOfCurrentBuildingNumberInCycle);
     }
 }

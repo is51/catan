@@ -4,7 +4,6 @@ import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.AvailableActions;
-import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -48,7 +47,7 @@ public class PlayUtil {
                 preparationStageUtil.updateAvailableUserActions(game);
                 break;
             case MAIN:
-                mainStageUtil.updateAvailableUserActions(game);
+                mainStageUtil.updateAvailableActionsForAllUsers(game);
                 break;
             default:
                 log.debug("Cannot recognize current game stage: {}", game.getStage());
@@ -56,13 +55,12 @@ public class PlayUtil {
         }
     }
 
-    public void updateVictoryPoints(UserBean user, GameBean game) throws GameException {
-        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, game);
+    public void updateVictoryPoints(GameUserBean gameUser) throws GameException {
 
-        int settlementsCount = gameUserBean.getBuildingsCount().getSettlements();
-        int citiesCount = gameUserBean.getBuildingsCount().getCities();
+        int settlementsCount = gameUser.getBuildingsCount().getSettlements();
+        int citiesCount = gameUser.getBuildingsCount().getCities();
 
-        gameUserBean.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2);
+        gameUser.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2);
         //points =  settlementsCount + cityCount * 2 + ((isOwnerWay) ? 2 : 0 ) +  ((isOwnerArmy) ? 2 : 0 );
     }
 

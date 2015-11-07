@@ -8,6 +8,7 @@ import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.GameStage;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service("playService")
 @Transactional
@@ -41,86 +43,77 @@ public class PlayServiceImpl implements PlayService {
     private PreparationStageUtil preparationStageUtil;
 
     @Override
-    public void buildRoad(UserBean user, String gameIdString, String edgeIdString) throws PlayException, GameException {
-        log.debug("{} tries to build road at edge {} of game id {}", user, edgeIdString, gameIdString);
+    public void performAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
+        log.debug("{} tries to perform action {} at game with id {} and additional params {}", user, action, gameId, params);
 
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
         validateUserNotEmpty(user);
-        validateGameStatusIsPlaying(game);
-        validateActionIsAllowed(user, game, GameUserActionCode.BUILD_ROAD);
 
-        EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeIdString, new ArrayList<MapElement>(game.getEdges()));
+        GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
+        GameUserBean gameUser = gameUtil.getGameUserJoinedToGame(user, game);
+
+        validateGameStatusIsPlaying(game);
+        validateActionIsAllowedForUser(gameUser, action);
+        performActionInternal(action, user, params, game);
+
+        playUtil.updateVictoryPoints(gameUser);
+        playUtil.updateAvailableUserActions(game);
+
+        gameDao.updateGame(game);
+
+        log.debug("User {} successfully performed action {}", user.getUsername(), action);
+    }
+
+    private void performActionInternal(GameUserActionCode action, UserBean user, Map<String, String> params, GameBean game) throws PlayException, GameException {
+        switch(action){
+            case BUILD_ROAD:
+                buildRoad(user, game, params.get("edgeId"));
+                break;
+            case BUILD_SETTLEMENT:
+                buildSettlement(user, game, params.get("nodeId"));
+                break;
+            case BUILD_CITY:
+                buildCity(user, game, params.get("nodeId"));
+                break;
+            case END_TURN:
+                endTurn(game);
+                break;
+            case THROW_DICE:
+                throwDice();
+                break;
+        }
+    }
+
+    private void buildRoad(UserBean user, GameBean game, String edgeId) throws PlayException, GameException {
+        EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeId, new ArrayList<MapElement>(game.getEdges()));
         buildUtil.validateUserCanBuildRoanOnEdge(user, edgeToBuildOn);
         buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
 
-        preparationStageUtil.updateCurrentCycleBuildingNumber(game);
-        playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
-
-        log.debug("User {} successfully built road at edge {} of game id {}", user.getUsername(), edgeIdString, gameIdString);
+        preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
     }
 
-    @Override
-    public void buildSettlement(UserBean user, String gameIdString, String nodeIdString) throws PlayException, GameException {
-        log.debug("{} tries to build settlement at node {} of game id {}", user, nodeIdString, gameIdString);
-
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateUserNotEmpty(user);
-        validateGameStatusIsPlaying(game);
-        validateActionIsAllowed(user, game, GameUserActionCode.BUILD_SETTLEMENT);
-
-        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
+    private void buildSettlement(UserBean user, GameBean game, String nodeId) throws PlayException, GameException {
+        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildSettlementOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
-        preparationStageUtil.updateCurrentCycleBuildingNumber(game);
-
-        playUtil.updateVictoryPoints(user, game);
-        playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
-
-        log.debug("User {} successfully built settlement at node {} of game id {}", user.getUsername(), nodeIdString, gameIdString);
+        preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
     }
 
-    @Override
-    public void buildCity(UserBean user, String gameIdString, String nodeIdString) throws PlayException, GameException {
-        log.debug("{} tries to build city at node {} of game id {}", user, nodeIdString, gameIdString);
-
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateUserNotEmpty(user);
-        validateGameStatusIsPlaying(game);
-        validateActionIsAllowed(user, game, GameUserActionCode.BUILD_CITY);
-
-        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeIdString, new ArrayList<MapElement>(game.getNodes()));
+    private void buildCity(UserBean user, GameBean game, String nodeId) throws PlayException, GameException {
+        NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildCityOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
 
-        preparationStageUtil.updateCurrentCycleBuildingNumber(game);
-
-        playUtil.updateVictoryPoints(user, game);
-        playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
-
-        log.debug("User {} successfully built city at node {} of game id {}", user.getUsername(), nodeIdString, gameIdString);
+        preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
     }
 
-    @Override
-    public void endTurn(UserBean user, String gameIdString) throws PlayException, GameException {
-        log.debug("{} tries to end his turn of game id {}", user, gameIdString);
-
-        GameBean game = gameUtil.getGameById(gameIdString, ERROR_CODE_ERROR);
-        validateUserNotEmpty(user);
-        validateGameStatusIsPlaying(game);
-        validateActionIsAllowed(user, game, GameUserActionCode.END_TURN);
-
+    private void endTurn(GameBean game) throws GameException {
         boolean shouldUpdateNextMove = true;
+
         if (game.getStage().equals(GameStage.PREPARATION)) {
             Integer previousPreparationCycle = game.getPreparationCycle();
             preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
-            preparationStageUtil.updateCurrentCycleBuildingNumber(game);
+            preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
             preparationStageUtil.updatePreparationCycle(game);
             Integer newPreparationCycle = game.getPreparationCycle();
             boolean preparationFinished = newPreparationCycle == null && !game.getCurrentMove().equals(1);
@@ -130,30 +123,10 @@ public class PlayServiceImpl implements PlayService {
         if (shouldUpdateNextMove) {
             playUtil.updateNextMove(game);
         }
-
-        playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
-
-        log.debug("User {} successfully ended his turn of game id {}", user.getUsername(), gameIdString);
     }
 
-    @Override
-    public void throwDice(UserBean user) throws PlayException, GameException {
-        log.debug("{} throws dice", user);
-
-        GameBean game = gameUtil.getGameById("", ERROR_CODE_ERROR);
-        validateUserNotEmpty(user);
-        validateGameStatusIsPlaying(game);
-        validateActionIsAllowed(user, game, GameUserActionCode.THROW_DICE);
-
-
-
-        //playUtil.updateAvailableUserActions(game);
-
-        gameDao.updateGame(game);
-
-        log.debug("User {} successfully ended his turn of game id {}", user.getUsername(), "");
+    private void throwDice() {
+        //TODO: implement
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {
@@ -170,8 +143,8 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void validateActionIsAllowed(UserBean user, GameBean game, GameUserActionCode requiredAction) throws PlayException, GameException {
-        String availableActionsJson = gameUtil.getGameUserJoinedToGame(user, game).getAvailableActions();
+    private void validateActionIsAllowedForUser(GameUserBean gameUser, GameUserActionCode requiredAction) throws PlayException, GameException {
+        String availableActionsJson = gameUser.getAvailableActions();
         AvailableActions availableActions = playUtil.toAvailableActionsFromJson(availableActionsJson);
 
         boolean actionAllowed = false;
@@ -182,7 +155,8 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (!actionAllowed) {
-            log.debug("Required action {} is not allowed for user", requiredAction.name());
+            log.debug("Required action {} is not allowed for {}, current move in game is {}",
+                    requiredAction.name(), gameUser, gameUser.getGame().getCurrentMove());
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }

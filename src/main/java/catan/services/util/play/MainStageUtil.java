@@ -29,26 +29,72 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void updateAvailableUserActions(GameBean game) throws GameException {
-
+    public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
         for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getMoveOrder() == game.getCurrentMove()) {
+            updateAvailableActionsForUser(gameUser, game);
+        }
+    }
 
-                AvailableActions availableActions = new AvailableActions();
-                List<Action> actionsList = new ArrayList<Action>();
+    private void updateAvailableActionsForUser(GameUserBean gameUser, GameBean game) {
+        List<Action> actionsList = new ArrayList<Action>();
 
-                actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
-                actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
-                actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
-                actionsList.add(new Action(GameUserActionCode.END_TURN));
+        allowBuildSettlement(gameUser, game, actionsList);
+        allowBuildCity(gameUser, game, actionsList);
+        allowBuildRoad(gameUser, game, actionsList);
+        allowEndTurn(gameUser, game, actionsList);
+        allowThrowDice(gameUser, game, actionsList);
 
-                availableActions.setList(actionsList);
-                availableActions.setIsMandatory(false);
-                String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
-                gameUser.setAvailableActions(availableActionsString);
-            } else {
-                gameUser.setAvailableActions("{\"list\": [], \"isMandatory\": false}");
-            }
+        AvailableActions availableActions = new AvailableActions();
+        availableActions.setList(actionsList);
+        availableActions.setIsMandatory(false);
+
+        String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
+        gameUser.setAvailableActions(availableActionsString);
+    }
+
+    private void allowThrowDice(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameUser.getMoveOrder() == game.getCurrentMove() && !game.isDiceThrown()) {
+            //actionsList.add(new Action(GameUserActionCode.THROW_DICE));
+        }
+    }
+
+    private void allowEndTurn(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameUser.getMoveOrder() == game.getCurrentMove()
+                //&& game.isDiceThrown()
+                ) {
+            actionsList.add(new Action(GameUserActionCode.END_TURN));
+        }
+    }
+
+    private void allowBuildCity(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameUser.getMoveOrder() == game.getCurrentMove()
+                //&& game.isDiceThrown()
+                && gameUser.getResources().getStone() >= 0
+                && gameUser.getResources().getWheat() >= 0
+                ) {
+            actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
+        }
+    }
+
+    private void allowBuildSettlement(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameUser.getMoveOrder() == game.getCurrentMove()
+                //&& game.isDiceThrown()
+                && gameUser.getResources().getWood() >= 0
+                && gameUser.getResources().getBrick() >= 0
+                && gameUser.getResources().getSheep() >= 0
+                && gameUser.getResources().getWheat() >= 0
+                ) {
+            actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
+        }
+    }
+
+    private void allowBuildRoad(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameUser.getMoveOrder() == game.getCurrentMove()
+                //&& game.isDiceThrown()
+                && gameUser.getResources().getWood() >= 0
+                && gameUser.getResources().getBrick() >= 0
+                ) {
+            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
         }
     }
 }

@@ -87,6 +87,9 @@ public class GameBean {
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
 
+    @Column(name = "DICE_THROWN", unique = false, nullable = true)
+    private Boolean diceThrown;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
@@ -261,6 +264,14 @@ public class GameBean {
 
     public void setCurrentMove(Integer currentMove) {
         this.currentMove = currentMove;
+    }
+
+    public boolean isDiceThrown() {
+        return diceThrown;
+    }
+
+    public void setDiceThrown(boolean diceThrown) {
+        this.diceThrown = diceThrown;
     }
 
     public Set<EdgeBean> getEdges() {
