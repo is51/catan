@@ -78,7 +78,7 @@ public class PlayServiceImpl implements PlayService {
                 endTurn(game);
                 break;
             case THROW_DICE:
-                throwDice();
+                throwDice(game);
                 break;
         }
     }
@@ -122,11 +122,13 @@ public class PlayServiceImpl implements PlayService {
 
         if (shouldUpdateNextMove) {
             playUtil.updateNextMove(game);
+            //TODO: set it only in MAIN stage
+            game.setDiceThrown(false);
         }
     }
 
-    private void throwDice() {
-        //TODO: implement
+    private void throwDice(GameBean game) {
+        game.setDiceThrown(true);
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {

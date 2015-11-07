@@ -54,13 +54,13 @@ public class MainStageUtil {
 
     private void allowThrowDice(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameUser.getMoveOrder() == game.getCurrentMove() && !game.isDiceThrown()) {
-            //actionsList.add(new Action(GameUserActionCode.THROW_DICE));
+            actionsList.add(new Action(GameUserActionCode.THROW_DICE));
         }
     }
 
     private void allowEndTurn(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameUser.getMoveOrder() == game.getCurrentMove()
-                //&& game.isDiceThrown()
+                && game.isDiceThrown()
                 ) {
             actionsList.add(new Action(GameUserActionCode.END_TURN));
         }
@@ -68,7 +68,7 @@ public class MainStageUtil {
 
     private void allowBuildCity(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameUser.getMoveOrder() == game.getCurrentMove()
-                //&& game.isDiceThrown()
+                && game.isDiceThrown()
                 && gameUser.getResources().getStone() >= 0
                 && gameUser.getResources().getWheat() >= 0
                 ) {
@@ -78,7 +78,7 @@ public class MainStageUtil {
 
     private void allowBuildSettlement(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameUser.getMoveOrder() == game.getCurrentMove()
-                //&& game.isDiceThrown()
+                && game.isDiceThrown()
                 && gameUser.getResources().getWood() >= 0
                 && gameUser.getResources().getBrick() >= 0
                 && gameUser.getResources().getSheep() >= 0
@@ -90,7 +90,7 @@ public class MainStageUtil {
 
     private void allowBuildRoad(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameUser.getMoveOrder() == game.getCurrentMove()
-                //&& game.isDiceThrown()
+                && game.isDiceThrown()
                 && gameUser.getResources().getWood() >= 0
                 && gameUser.getResources().getBrick() >= 0
                 ) {
