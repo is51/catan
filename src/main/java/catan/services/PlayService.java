@@ -14,4 +14,5 @@ public interface PlayService {
 
     void endTurn(UserBean user, String gameId) throws PlayException, GameException;
 
+    void throwDice(UserBean user) throws PlayException, GameException;
 }

@@ -138,6 +138,24 @@ public class PlayServiceImpl implements PlayService {
         log.debug("User {} successfully ended his turn of game id {}", user.getUsername(), gameIdString);
     }
 
+    @Override
+    public void throwDice(UserBean user) throws PlayException, GameException {
+        log.debug("{} throws dice", user);
+
+        GameBean game = gameUtil.getGameById("", ERROR_CODE_ERROR);
+        validateUserNotEmpty(user);
+        validateGameStatusIsPlaying(game);
+        validateActionIsAllowed(user, game, GameUserActionCode.THROW_DICE);
+
+
+
+        //playUtil.updateAvailableUserActions(game);
+
+        gameDao.updateGame(game);
+
+        log.debug("User {} successfully ended his turn of game id {}", user.getUsername(), "");
+    }
+
     private void validateUserNotEmpty(UserBean user) throws PlayException {
         if (user == null) {
             log.debug("User should not be empty");
