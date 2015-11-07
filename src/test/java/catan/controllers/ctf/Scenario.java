@@ -107,6 +107,12 @@ public class Scenario {
         return this;
     }
 
+    public Scenario throwDice(int moveOrder) {
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.throwDice(userToken, gameId);
+        return this;
+    }
+
     public MapValidator node(int x, int y, String nodePosition) {
         return new MapValidator(this, x, y, nodePosition, "node");
     }
