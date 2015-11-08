@@ -217,10 +217,31 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldFailWhenBuildRoadNearOwnNeighbourRoadButAlsoNearNotOwnNeighbourCity() throws GameException {
+    public void shouldPassWhenBuildRoadNearOwnNeighbourRoadAndNearNotOwnNeighbourCityFromOtherSide() throws GameException, PlayException {
         //GIVEN
         hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
+        game.setCurrentCycleBuildingNumber(2);
+        playUtil.updateAvailableUserActions(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_1_0);
+        assertNotNull(hex_1_0.getEdges().getTopLeft());
+        assertNotNull(hex_1_0.getEdges().getTopLeft().getBuilding());
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldFailWhenBuildRoadNearOwnNeighbourRoadButOverNotOwnNeighbourCity() throws GameException {
+        //GIVEN
+        hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        hex_1_0.getNodes().getTop().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         game.setCurrentCycleBuildingNumber(2);
         playUtil.updateAvailableUserActions(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -233,7 +254,7 @@ public class PlayServiceImplTest {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
-            fail("No other exceptions should be thrown");
+            fail("No other exceptions should be thrown, but was thrown: " + e);
         }
     }
 
