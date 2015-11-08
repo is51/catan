@@ -76,6 +76,16 @@ public class PlayController {
         playService.performAction(GameUserActionCode.END_TURN, user, gameId, new HashMap<String, String>());
     }
 
+    @RequestMapping(value = "throw-dice",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void throwDice(@RequestParam(value = "token", required = false) String token,
+                        @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        playService.performAction(GameUserActionCode.THROW_DICE, user, gameId, new HashMap<String, String>());
+    }
+
     @Autowired
     public void setPlayService(PlayService playService) {
         this.playService = playService;
