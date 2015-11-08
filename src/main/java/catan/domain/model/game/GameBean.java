@@ -266,11 +266,11 @@ public class GameBean {
         this.currentMove = currentMove;
     }
 
-    public boolean isDiceThrown() {
+    public Boolean isDiceThrown() {
         return diceThrown;
     }
 
-    public void setDiceThrown(boolean diceThrown) {
+    public void setDiceThrown(Boolean diceThrown) {
         this.diceThrown = diceThrown;
     }
 

@@ -35,7 +35,7 @@ public class PlayController {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("edgeId", edgeId);
 
-        playService.performAction(GameUserActionCode.BUILD_ROAD, user, gameId, params);
+        playService.processAction(GameUserActionCode.BUILD_ROAD, user, gameId, params);
     }
 
     @RequestMapping(value = "build/settlement",
@@ -49,7 +49,7 @@ public class PlayController {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", nodeId);
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, user, gameId, params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, user, gameId, params);
     }
 
     @RequestMapping(value = "build/city",
@@ -63,7 +63,7 @@ public class PlayController {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", nodeId);
 
-        playService.performAction(GameUserActionCode.BUILD_CITY, user, gameId, params);
+        playService.processAction(GameUserActionCode.BUILD_CITY, user, gameId, params);
     }
 
     @RequestMapping(value = "end-turn",
@@ -73,7 +73,7 @@ public class PlayController {
                         @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        playService.performAction(GameUserActionCode.END_TURN, user, gameId, new HashMap<String, String>());
+        playService.processAction(GameUserActionCode.END_TURN, user, gameId);
     }
 
     @RequestMapping(value = "throw-dice",
@@ -83,7 +83,7 @@ public class PlayController {
                         @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        playService.performAction(GameUserActionCode.THROW_DICE, user, gameId, new HashMap<String, String>());
+        playService.processAction(GameUserActionCode.THROW_DICE, user, gameId);
     }
 
     @Autowired

@@ -97,7 +97,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
-        playService.performAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
+        playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
 
         // THEN
         assertNotNull(game);
@@ -114,7 +114,7 @@ public class PlayServiceImplTest {
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            playService.performAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
+            playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
             fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -132,7 +132,7 @@ public class PlayServiceImplTest {
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            playService.performAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
+            playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
             fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -154,7 +154,7 @@ public class PlayServiceImplTest {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("edgeId", "7");
 
-        playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -178,7 +178,7 @@ public class PlayServiceImplTest {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("edgeId", "7");
 
-        playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -198,7 +198,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "16");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -221,7 +221,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "7");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -246,7 +246,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "7");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -270,7 +270,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "7");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -291,7 +291,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "7");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -310,7 +310,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "14");
 
-            playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -331,7 +331,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -352,7 +352,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "4");
 
-            playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -376,7 +376,7 @@ public class PlayServiceImplTest {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -398,7 +398,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -416,7 +416,7 @@ public class PlayServiceImplTest {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -440,7 +440,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -461,7 +461,7 @@ public class PlayServiceImplTest {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -482,7 +482,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -505,7 +505,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "7");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -528,7 +528,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -546,7 +546,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "7");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -564,7 +564,7 @@ public class PlayServiceImplTest {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("edgeId", "7");
 
-            playService.performAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -582,7 +582,7 @@ public class PlayServiceImplTest {
         Map<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -601,7 +601,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "14");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -622,7 +622,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -643,7 +643,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -664,7 +664,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "4");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -685,7 +685,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "4");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -705,7 +705,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -727,7 +727,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -749,7 +749,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -764,13 +764,14 @@ public class PlayServiceImplTest {
         // WHEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
         allowUserToBuildCity(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
         Map<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -793,7 +794,7 @@ public class PlayServiceImplTest {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
-            playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -811,7 +812,7 @@ public class PlayServiceImplTest {
         Map<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
     }
@@ -823,7 +824,7 @@ public class PlayServiceImplTest {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
     }
@@ -835,25 +836,25 @@ public class PlayServiceImplTest {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         allowUserToBuildSettlement(gameUser1);
         params = new HashMap<String, String>();
         params.put("nodeId", "5");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         allowUserToBuildSettlement(gameUser1);
         params = new HashMap<String, String>();
         params.put("nodeId", "1");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         allowUserToBuildCity(gameUser1);
         params = new HashMap<String, String>();
         params.put("nodeId", "9");
 
-        playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         assertEquals(5, gameUser1.getAchievements().getDisplayVictoryPoints());
     }
@@ -863,6 +864,7 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -872,7 +874,7 @@ public class PlayServiceImplTest {
         Map<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
 
@@ -880,7 +882,7 @@ public class PlayServiceImplTest {
         params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
-        playService.performAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
     }

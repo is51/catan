@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service("playService")
@@ -43,7 +44,12 @@ public class PlayServiceImpl implements PlayService {
     private PreparationStageUtil preparationStageUtil;
 
     @Override
-    public void performAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
+    public void processAction(GameUserActionCode action, UserBean user, String gameId) throws PlayException, GameException {
+        processAction(action, user, gameId, new HashMap<String, String>());
+    }
+
+    @Override
+    public void processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
         log.debug("{} tries to perform action {} at game with id {} and additional params {}", user, action, gameId, params);
 
         validateUserNotEmpty(user);
@@ -53,7 +59,7 @@ public class PlayServiceImpl implements PlayService {
 
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
-        performActionInternal(action, user, params, game);
+        doAction(action, user, game, params);
 
         playUtil.updateVictoryPoints(gameUser);
         playUtil.updateAvailableUserActions(game);
@@ -63,7 +69,7 @@ public class PlayServiceImpl implements PlayService {
         log.debug("User {} successfully performed action {}", user.getUsername(), action);
     }
 
-    private void performActionInternal(GameUserActionCode action, UserBean user, Map<String, String> params, GameBean game) throws PlayException, GameException {
+    private void doAction(GameUserActionCode action, UserBean user, GameBean game, Map<String, String> params) throws PlayException, GameException {
         switch(action){
             case BUILD_ROAD:
                 buildRoad(user, game, params.get("edgeId"));
