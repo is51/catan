@@ -241,7 +241,11 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
-        playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", "7");
+
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
