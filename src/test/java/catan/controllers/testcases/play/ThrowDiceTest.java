@@ -118,4 +118,19 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .endTurn(2);
     }
 
+    @Test
+    public void should_user_cannot_throw_dice_after_he_has_already_thrown() {
+
+        playPreparationStage()
+                .throwDice(1)
+                .throwDice(1).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_user_cannot_throw_dice_in_not_his_move() {
+
+        playPreparationStage()
+                .throwDice(2).failsWithError("ERROR");
+    }
+
 }
