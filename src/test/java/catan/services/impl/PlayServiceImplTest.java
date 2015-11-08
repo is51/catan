@@ -887,6 +887,197 @@ public class PlayServiceImplTest {
         assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
     }
 
+    @Test
+    public void shouldPassWhenBuildCityInMainStageOnlyAfterDiceThrown() throws PlayException, GameException{
+        // WHEN
+        hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        try {
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_0_0);
+        assertNotNull(hex_0_0.getNodes().getTopRight());
+        assertNotNull(hex_0_0.getNodes().getTopRight().getBuilding());
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuilt(), NodeBuiltType.CITY);
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+
+    @Test
+    public void shouldPassWhenBuildingSettlementInMainStageOnlyAfterDiceThrown() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        try {
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+
+        // WHEN
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_0_0);
+        assertNotNull(hex_0_0.getNodes().getTopRight());
+        assertNotNull(hex_0_0.getNodes().getTopRight().getBuilding());
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuilt(), NodeBuiltType.SETTLEMENT);
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldPassWhenBuildingRoadNearOwnNeighbourRoadOnlyAfterDiceThrown() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setCurrentCycleBuildingNumber(2);
+        playUtil.updateAvailableUserActions(game);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", "7");
+
+        try {
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+
+
+        // WHEN
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_1_0);
+        assertNotNull(hex_1_0.getEdges().getTopLeft());
+        assertNotNull(hex_1_0.getEdges().getTopLeft().getBuilding());
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldAllowEndTurnOnlyAfterDiceThrown() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        try {
+            playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1");
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        // WHEN
+        playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(game.getCurrentMove());
+        assertEquals(game.getCurrentMove().intValue(), gameUser2.getMoveOrder());
+    }
+
+    @Test
+    public void shouldFailWhenThrowDiceAfterItIsAlreadyThrown() throws GameException, PlayException {
+        //GIVEN
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserThrowDiceNotAtHisTurn() throws GameException, PlayException {
+        //GIVEN
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.THROW_DICE, gameUser2.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    private void allowUserToThrowDice(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE));
+    }
+
     private void allowUserToBuildCity(GameUserBean user) {
         allowUserAction(user, new Action(GameUserActionCode.BUILD_CITY));
     }
