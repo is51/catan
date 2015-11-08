@@ -138,6 +138,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario done() {
+        lastApiResponse
+                .then()
+                .statusCode(200);
+        return this;
+    }
+
     public Scenario statusIsPlaying() {
         currentGameDetails.body("status", equalTo("PLAYING"));
         return this;
