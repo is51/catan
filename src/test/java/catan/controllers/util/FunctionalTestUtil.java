@@ -9,7 +9,7 @@ public abstract class FunctionalTestUtil {
     public static final int SERVER_PORT = 8091;
     public static final String ACCEPT_CONTENT_TYPE = "application/json";
 
-    protected void registerUser(String username, String password) {
+    public static void registerUser(String username, String password) {
         given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)

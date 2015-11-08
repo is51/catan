@@ -27,7 +27,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
         return createNewGame(token, privateGame, DEFAULT_TARGET_VICTORY_POINTS, DEFAULT_INITIAL_BUILDINGS_SET_ID);
     }
 
-    protected Response createNewGame(String token, boolean privateGame, int targetVictoryPoints) {
+    public static Response createNewGame(String token, boolean privateGame, int targetVictoryPoints) {
         return createNewGame(token, privateGame, targetVictoryPoints, DEFAULT_INITIAL_BUILDINGS_SET_ID);
     }
 
