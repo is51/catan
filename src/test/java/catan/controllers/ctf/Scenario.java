@@ -138,7 +138,7 @@ public class Scenario {
         return this;
     }
 
-    public Scenario done() {
+    public Scenario successfully() {
         lastApiResponse
                 .then()
                 .statusCode(200);

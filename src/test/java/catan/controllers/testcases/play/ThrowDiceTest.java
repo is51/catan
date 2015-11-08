@@ -105,14 +105,14 @@ public class ThrowDiceTest extends PlayTestUtil {
         playPreparationStage()
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("THROW_DICE")
-                .throwDice(1).done()
+                .throwDice(1).successfully()
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("THROW_DICE")
                 .endTurn(1)
 
                 .getGameDetails(2)
                 .gameUser(2).hasAvailableAction("THROW_DICE")
-                .throwDice(2).done()
+                .throwDice(2).successfully()
                 .getGameDetails(2)
                 .gameUser(2).doesntHaveAvailableAction("THROW_DICE")
                 .endTurn(2);
