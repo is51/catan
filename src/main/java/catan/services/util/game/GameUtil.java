@@ -104,6 +104,12 @@ public class GameUtil {
         return game;
     }
 
+    public GameUserBean getGameUserJoinedToGame(UserBean user, String gameId) throws GameException {
+        GameBean game = getGameById(gameId, ERROR_CODE_ERROR);
+
+        return  getGameUserJoinedToGame(user, game);
+    }
+
     public GameUserBean getGameUserJoinedToGame(UserBean user, GameBean game) throws GameException {
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.getUser().equals(user)) {
@@ -196,7 +202,7 @@ public class GameUtil {
         game.setPreparationCycle(1);
         game.setCurrentCycleBuildingNumber(1);
         game.setDateStarted(new Date());
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
 
         gameDao.updateGame(game);
 

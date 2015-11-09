@@ -29,26 +29,77 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void updateAvailableUserActions(GameBean game) throws GameException {
-
+    public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
         for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-
-                AvailableActions availableActions = new AvailableActions();
-                List<Action> actionsList = new ArrayList<Action>();
-
-                actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
-                actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
-                actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
-                actionsList.add(new Action(GameUserActionCode.END_TURN));
-
-                availableActions.setList(actionsList);
-                availableActions.setIsMandatory(false);
-                String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
-                gameUser.setAvailableActions(availableActionsString);
-            } else {
-                gameUser.setAvailableActions("{\"list\": [], \"isMandatory\": false}");
-            }
+            updateAvailableActionsForUser(gameUser, game);
         }
+    }
+
+    private void updateAvailableActionsForUser(GameUserBean gameUser, GameBean game) {
+        List<Action> actionsList = new ArrayList<Action>();
+
+        allowBuildSettlement(gameUser, game, actionsList);
+        allowBuildCity(gameUser, game, actionsList);
+        allowBuildRoad(gameUser, game, actionsList);
+        allowEndTurn(gameUser, game, actionsList);
+        allowThrowDice(gameUser, game, actionsList);
+
+        AvailableActions availableActions = new AvailableActions();
+        availableActions.setList(actionsList);
+        availableActions.setIsMandatory(false);
+
+        String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
+        gameUser.setAvailableActions(availableActionsString);
+    }
+
+    private void allowThrowDice(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (isCurrentUsersMove(gameUser, game) && !game.isDiceThrown()) {
+            actionsList.add(new Action(GameUserActionCode.THROW_DICE));
+        }
+    }
+
+    private void allowEndTurn(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown()) {
+            actionsList.add(new Action(GameUserActionCode.END_TURN));
+        }
+    }
+
+    private void allowBuildCity(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuildCity(gameUser)) {
+            actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
+        }
+    }
+
+    private void allowBuildSettlement(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesForSettlement(gameUser)) {
+            actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
+        }
+    }
+
+    private void allowBuildRoad(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuildRoad(gameUser)) {
+            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
+        }
+    }
+
+    private boolean userHasResourcesToBuildCity(GameUserBean gameUser) {
+        return gameUser.getResources().getStone() >= 0
+                && gameUser.getResources().getWheat() >= 0;
+    }
+
+    private boolean userHasResourcesForSettlement(GameUserBean gameUser) {
+        return gameUser.getResources().getWood() >= 0
+                && gameUser.getResources().getBrick() >= 0
+                && gameUser.getResources().getSheep() >= 0
+                && gameUser.getResources().getWheat() >= 0;
+    }
+
+    private boolean userHasResourcesToBuildRoad(GameUserBean gameUser) {
+        return gameUser.getResources().getWood() >= 0
+                && gameUser.getResources().getBrick() >= 0;
+    }
+
+    private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {
+        return gameUser.getMoveOrder() == game.getCurrentMove();
     }
 }

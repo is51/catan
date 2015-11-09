@@ -19,6 +19,15 @@ angular.module('catan')
                                 });
                     };
 
+                    scope.throwDice = function() {
+                        PlayService.throwDice(scope.game)
+                                .then(function() {
+                                    GameService.refresh(scope.game);
+                                }, function(response) {
+                                    alert('Throw Dice error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
+                                });
+                    };
+
                     scope.build = function() {
                         ModalWindowService.show("BUILD_PANEL");
                     };

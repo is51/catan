@@ -5,15 +5,11 @@ angular.module('catan')
             var PlayService = {};
 
             PlayService.endTurn = function (game) {
-                var deferred = $q.defer();
+                return Remote.play.endTurn({gameId: game.getId()});
+            };
 
-                Remote.play.endTurn({gameId: game.getId()}).then(function() {
-                    deferred.resolve();
-                }, function(response) {
-                    deferred.reject(response);
-                });
-
-                return deferred.promise;
+            PlayService.throwDice = function (game) {
+                return Remote.play.throwDice({gameId: game.getId()});
             };
 
             PlayService.buildSettlement = function (game) {

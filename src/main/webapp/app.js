@@ -98,7 +98,8 @@ angular.module('catan', [
             .setRequest('play', 'endTurn', { url: '/api/play/end-turn'})
             .setRequest('play', 'buildSettlement', { url: '/api/play/build/settlement'})
             .setRequest('play', 'buildCity', { url: '/api/play/build/city'})
-            .setRequest('play', 'buildRoad', { url: '/api/play/build/road'});
+            .setRequest('play', 'buildRoad', { url: '/api/play/build/road'})
+            .setRequest('play', 'throwDice', { url: '/api/play/throw-dice'});
     }])
 
     .run(['$rootScope', 'User', function($rootScope, User) {

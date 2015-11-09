@@ -89,7 +89,7 @@ public class BuildUtil {
         return mapElementToBuildOn;
     }
 
-    public void validateUserCanBuildRoanOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws PlayException {
+    public void validateUserCanBuildRoadOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws PlayException {
         if (edgeToBuildOn.getBuilding() != null) {
             log.debug("Cannot build road on this edge as it already has building on it");
             throw new PlayException(ERROR_CODE_ERROR);
