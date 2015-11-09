@@ -41,10 +41,10 @@ public class PlayUtil {
         }
     }
 
-    public void updateAvailableUserActions(GameBean game) throws GameException {
+    public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
         switch (game.getStage()) {
             case PREPARATION:
-                preparationStageUtil.updateAvailableUserActions(game);
+                preparationStageUtil.updateAvailableActionsForAllUsers(game);
                 break;
             case MAIN:
                 mainStageUtil.updateAvailableActionsForAllUsers(game);

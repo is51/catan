@@ -93,7 +93,7 @@ public class PlayServiceImplTest {
         //GIVEN
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -110,7 +110,7 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
@@ -147,7 +147,7 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -170,7 +170,7 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -212,7 +212,7 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildRoadNotNearOwnNeighbourCityOrRoad() throws GameException {
         //GIVEN
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -237,7 +237,7 @@ public class PlayServiceImplTest {
         hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -262,7 +262,7 @@ public class PlayServiceImplTest {
         hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         hex_1_0.getNodes().getTop().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -286,7 +286,7 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -457,7 +457,7 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
@@ -522,7 +522,7 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
@@ -544,7 +544,7 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildSettlementIfActionIsNotAllowed() throws GameException {
         //GIVEN
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -745,7 +745,7 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
@@ -766,7 +766,7 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildCityIfActionIsNotAllowed() throws GameException {
         //GIVEN
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -913,7 +913,7 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldPassWhenBuildCityInMainStageOnlyAfterDiceThrown() throws PlayException, GameException{
+    public void shouldFailWhenBuildCityInMainStageBeforeDiceThrown() throws PlayException, GameException{
         // WHEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
@@ -933,6 +933,19 @@ public class PlayServiceImplTest {
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
+    }
+
+    @Test
+    public void shouldPassWhenBuildCityInMainStageAfterDiceThrown() throws PlayException, GameException{
+        // WHEN
+        hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
 
         playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
         playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -989,7 +1002,7 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         game.setDiceThrown(false);
         allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -1465,6 +1478,6 @@ public class PlayServiceImplTest {
                 edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5,
                 edge_3_3, edge_3_4, edge_3_5, edge_3_6));
         game.setInitialBuildingsSet("[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
     }
 }

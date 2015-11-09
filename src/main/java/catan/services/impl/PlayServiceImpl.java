@@ -62,7 +62,7 @@ public class PlayServiceImpl implements PlayService {
         doAction(action, user, game, params);
 
         playUtil.updateVictoryPoints(gameUser);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
 
         gameDao.updateGame(game);
 
@@ -91,7 +91,7 @@ public class PlayServiceImpl implements PlayService {
 
     private void buildRoad(UserBean user, GameBean game, String edgeId) throws PlayException, GameException {
         EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeId, new ArrayList<MapElement>(game.getEdges()));
-        buildUtil.validateUserCanBuildRoanOnEdge(user, edgeToBuildOn);
+        buildUtil.validateUserCanBuildRoadOnEdge(user, edgeToBuildOn);
         buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);

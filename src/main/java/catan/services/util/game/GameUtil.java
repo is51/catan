@@ -202,7 +202,7 @@ public class GameUtil {
         game.setPreparationCycle(1);
         game.setCurrentCycleBuildingNumber(1);
         game.setDateStarted(new Date());
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
 
         gameDao.updateGame(game);
 

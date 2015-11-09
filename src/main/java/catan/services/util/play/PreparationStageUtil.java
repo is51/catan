@@ -92,14 +92,14 @@ public class PreparationStageUtil {
         }
     }
 
-    public void updateAvailableUserActions(GameBean game) throws GameException {
+    public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
 
         for (GameUserBean gameUser : game.getGameUsers()) {
             boolean isMandatory = false;
             List<Action> actionsList = new ArrayList<Action>();
 
             if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                actionsList.add(new Action(getCurrentInitialBuildAction(game)));
+                actionsList.add(new Action(getCurrentActionCode(game)));
                 isMandatory = true;
             }
 
@@ -120,7 +120,7 @@ public class PreparationStageUtil {
         return firstPlayer && !oddCycle || lastPlayer && oddCycle;
     }
 
-    private GameUserActionCode getCurrentInitialBuildAction(GameBean game) {
+    private GameUserActionCode getCurrentActionCode(GameBean game) {
 
         if (game.getCurrentCycleBuildingNumber() == null) {
             return GameUserActionCode.END_TURN;

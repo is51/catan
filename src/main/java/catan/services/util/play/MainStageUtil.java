@@ -53,48 +53,53 @@ public class MainStageUtil {
     }
 
     private void allowThrowDice(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameUser.getMoveOrder() == game.getCurrentMove() && !game.isDiceThrown()) {
+        if (isCurrentUsersMove(gameUser, game) && !game.isDiceThrown()) {
             actionsList.add(new Action(GameUserActionCode.THROW_DICE));
         }
     }
 
     private void allowEndTurn(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameUser.getMoveOrder() == game.getCurrentMove()
-                && game.isDiceThrown()
-                ) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown()) {
             actionsList.add(new Action(GameUserActionCode.END_TURN));
         }
     }
 
     private void allowBuildCity(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameUser.getMoveOrder() == game.getCurrentMove()
-                && game.isDiceThrown()
-                && gameUser.getResources().getStone() >= 0
-                && gameUser.getResources().getWheat() >= 0
-                ) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuildCity(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
         }
     }
 
     private void allowBuildSettlement(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameUser.getMoveOrder() == game.getCurrentMove()
-                && game.isDiceThrown()
-                && gameUser.getResources().getWood() >= 0
-                && gameUser.getResources().getBrick() >= 0
-                && gameUser.getResources().getSheep() >= 0
-                && gameUser.getResources().getWheat() >= 0
-                ) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesForSettlement(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
         }
     }
 
     private void allowBuildRoad(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameUser.getMoveOrder() == game.getCurrentMove()
-                && game.isDiceThrown()
-                && gameUser.getResources().getWood() >= 0
-                && gameUser.getResources().getBrick() >= 0
-                ) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuildRoad(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
         }
+    }
+
+    private boolean userHasResourcesToBuildCity(GameUserBean gameUser) {
+        return gameUser.getResources().getStone() >= 0
+                && gameUser.getResources().getWheat() >= 0;
+    }
+
+    private boolean userHasResourcesForSettlement(GameUserBean gameUser) {
+        return gameUser.getResources().getWood() >= 0
+                && gameUser.getResources().getBrick() >= 0
+                && gameUser.getResources().getSheep() >= 0
+                && gameUser.getResources().getWheat() >= 0;
+    }
+
+    private boolean userHasResourcesToBuildRoad(GameUserBean gameUser) {
+        return gameUser.getResources().getWood() >= 0
+                && gameUser.getResources().getBrick() >= 0;
+    }
+
+    private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {
+        return gameUser.getMoveOrder() == game.getCurrentMove();
     }
 }
