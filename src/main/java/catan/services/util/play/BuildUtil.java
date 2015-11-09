@@ -89,7 +89,7 @@ public class BuildUtil {
         return mapElementToBuildOn;
     }
 
-    public void validateUserCanBuildRoanOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws PlayException {
+    public void validateUserCanBuildRoadOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws PlayException {
         if (edgeToBuildOn.getBuilding() != null) {
             log.debug("Cannot build road on this edge as it already has building on it");
             throw new PlayException(ERROR_CODE_ERROR);
@@ -114,9 +114,6 @@ public class BuildUtil {
                 if (node.getBuilding().getBuildingOwner().getUser().equals(user)) {
                     nearNeighbourSettlement = true;
                     break;
-                } else {
-                    log.debug("Cannot build road close to settles that don't belong to user");
-                    throw new PlayException(ERROR_CODE_ERROR);
                 }
             }
         }

@@ -43,13 +43,13 @@ public class PlayUtil {
         }
     }
 
-    public void updateAvailableUserActions(GameBean game) throws GameException {
+    public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
         switch (game.getStage()) {
             case PREPARATION:
-                preparationStageUtil.updateAvailableUserActions(game);
+                preparationStageUtil.updateAvailableActionsForAllUsers(game);
                 break;
             case MAIN:
-                mainStageUtil.updateAvailableUserActions(game);
+                mainStageUtil.updateAvailableActionsForAllUsers(game);
                 break;
             default:
                 log.debug("Cannot recognize current game stage: {}", game.getStage());
@@ -69,13 +69,12 @@ public class PlayUtil {
         }
     }
 
-    public void updateVictoryPoints(UserBean user, GameBean game) throws GameException {
-        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, game);
+    public void updateVictoryPoints(GameUserBean gameUser) throws GameException {
 
-        int settlementsCount = gameUserBean.getBuildingsCount().getSettlements();
-        int citiesCount = gameUserBean.getBuildingsCount().getCities();
+        int settlementsCount = gameUser.getBuildingsCount().getSettlements();
+        int citiesCount = gameUser.getBuildingsCount().getCities();
 
-        gameUserBean.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2);
+        gameUser.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2);
         //points =  settlementsCount + cityCount * 2 + ((isOwnerWay) ? 2 : 0 ) +  ((isOwnerArmy) ? 2 : 0 );
     }
 

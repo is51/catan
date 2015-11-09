@@ -110,11 +110,11 @@ public class PlayServiceImplTest {
         //GIVEN
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
-        playService.endTurn(gameUser1.getUser(), "1");
+        playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
 
         // THEN
         assertNotNull(game);
@@ -127,11 +127,11 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            playService.endTurn(gameUser1.getUser(), "1");
+            playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
             fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -149,7 +149,7 @@ public class PlayServiceImplTest {
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            playService.endTurn(gameUser1.getUser(), "1");
+            playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
             fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -164,11 +164,14 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
-        playService.buildRoad(gameUser1.getUser(), "1", "7");
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", "7");
+
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -184,11 +187,15 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
-        playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", "7");
+
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -204,7 +211,11 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildRoad(gameUser1.getUser(), "1", "16");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "16");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -218,12 +229,16 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildRoadNotNearOwnNeighbourCityOrRoad() throws GameException {
         //GIVEN
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
             // WHEN
-            playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "7");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -234,23 +249,52 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldFailWhenBuildRoadNearOwnNeighbourRoadButAlsoNearNotOwnNeighbourCity() throws GameException {
+    public void shouldPassWhenBuildRoadNearOwnNeighbourRoadAndNearNotOwnNeighbourCityFromOtherSide() throws GameException, PlayException {
         //GIVEN
         hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", "7");
+
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_1_0);
+        assertNotNull(hex_1_0.getEdges().getTopLeft());
+        assertNotNull(hex_1_0.getEdges().getTopLeft().getBuilding());
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldFailWhenBuildRoadNearOwnNeighbourRoadButOverNotOwnNeighbourCity() throws GameException {
+        //GIVEN
+        hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        hex_1_0.getNodes().getTop().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
+        game.setCurrentCycleBuildingNumber(2);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
             // WHEN
-            playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "7");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
-            fail("No other exceptions should be thrown");
+            fail("No other exceptions should be thrown, but was thrown: " + e);
         }
     }
 
@@ -259,12 +303,16 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
             // WHEN
-            playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "7");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -281,7 +329,11 @@ public class PlayServiceImplTest {
             game.setStatus(GameStatus.NEW);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "7");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -296,7 +348,11 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildSettlement(gameUser1.getUser(), "1", "14");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "14");
+
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -313,7 +369,11 @@ public class PlayServiceImplTest {
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -330,7 +390,11 @@ public class PlayServiceImplTest {
             hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildSettlement(gameUser1.getUser(), "1", "4");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "4");
+
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -350,7 +414,11 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -368,7 +436,11 @@ public class PlayServiceImplTest {
             game.setStatus(GameStatus.NEW);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -382,7 +454,11 @@ public class PlayServiceImplTest {
     public void shouldPassWhenBuildingSettlementInPreparationStage() throws GameException, PlayException {
         // WHEN
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -398,11 +474,15 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -419,7 +499,11 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -436,7 +520,11 @@ public class PlayServiceImplTest {
             // WHEN
             game.setStage(GameStage.MAIN);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -451,11 +539,15 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            playService.buildRoad(gameUser1.getUser(), "1", "7");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "7");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -469,12 +561,16 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildSettlementIfActionIsNotAllowed() throws GameException {
         //GIVEN
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
             // WHEN
-            playService.buildSettlement(gameUser1.getUser(), "1", "3");
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -489,7 +585,10 @@ public class PlayServiceImplTest {
         try {
             //WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildRoad(gameUser1.getUser(), "1", "7");
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "7");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -504,7 +603,10 @@ public class PlayServiceImplTest {
         try {
             //WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.endTurn(gameUser1.getUser(), "1");
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("edgeId", "7");
+
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -519,7 +621,10 @@ public class PlayServiceImplTest {
         // WHEN
         allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        playService.buildCity(gameUser1.getUser(), "1", "3");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -535,7 +640,10 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildCity(gameUser1.getUser(), "1", "14");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "14");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -553,7 +661,10 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildCity(gameUser1.getUser(), "1", "3");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -571,7 +682,10 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildCity(gameUser1.getUser(), "1", "3");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -589,7 +703,10 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildCity(gameUser1.getUser(), "1", "4");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "4");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -607,7 +724,10 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildCity(gameUser1.getUser(), "1", "4");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "4");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -624,7 +744,10 @@ public class PlayServiceImplTest {
             game.setStatus(GameStatus.NEW);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            playService.buildCity(gameUser1.getUser(), "1", "3");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
@@ -639,11 +762,14 @@ public class PlayServiceImplTest {
         try {
             //GIVEN
             game.setCurrentMove(gameUser2.getMoveOrder());
-            playUtil.updateAvailableUserActions(game);
+            playUtil.updateAvailableActionsForAllUsers(game);
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            playService.buildCity(gameUser1.getUser(), "1", "3");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -657,12 +783,15 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildCityIfActionIsNotAllowed() throws GameException {
         //GIVEN
         game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
             // WHEN
-            playService.buildCity(gameUser1.getUser(), "1", "3");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -677,10 +806,14 @@ public class PlayServiceImplTest {
         // WHEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
         allowUserToBuildCity(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        playService.buildCity(gameUser1.getUser(), "1", "3");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         // THEN
         assertNotNull(game);
@@ -700,7 +833,10 @@ public class PlayServiceImplTest {
 
         try {
             // WHEN
-            playService.buildCity(gameUser1.getUser(), "1", "3");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("nodeId", "3");
+
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
@@ -753,7 +889,10 @@ public class PlayServiceImplTest {
         allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        playService.buildCity(gameUser1.getUser(), "1", "3");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
     }
@@ -762,7 +901,10 @@ public class PlayServiceImplTest {
     public void shouldUpdateVictoryPointsOnBuildSettlement() throws Exception {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
     }
@@ -771,16 +913,28 @@ public class PlayServiceImplTest {
     public void shouldUpdateVictoryPointsOnMultipleBuildingsInPreparationStage() throws Exception {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         allowUserToBuildSettlement(gameUser1);
-        playService.buildSettlement(gameUser1.getUser(), "1", "5");
+        params = new HashMap<String, String>();
+        params.put("nodeId", "5");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         allowUserToBuildSettlement(gameUser1);
-        playService.buildSettlement(gameUser1.getUser(), "1", "1");
+        params = new HashMap<String, String>();
+        params.put("nodeId", "1");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         allowUserToBuildCity(gameUser1);
-        playService.buildCity(gameUser1.getUser(), "1", "9");
+        params = new HashMap<String, String>();
+        params.put("nodeId", "9");
+
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         assertEquals(5, gameUser1.getAchievements().getDisplayVictoryPoints());
     }
@@ -790,20 +944,231 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
         assertEquals(0, gameUser1.getAchievements().getDisplayVictoryPoints());
 
         allowUserToBuildSettlement(gameUser1);
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         assertEquals(1, gameUser1.getAchievements().getDisplayVictoryPoints());
 
         allowUserToBuildCity(gameUser1);
-        playService.buildCity(gameUser1.getUser(), "1", "3");
+        params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         assertEquals(2, gameUser1.getAchievements().getDisplayVictoryPoints());
+    }
+
+    @Test
+    public void shouldFailWhenBuildCityInMainStageBeforeDiceThrown() throws PlayException, GameException{
+        // WHEN
+        hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        try {
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldPassWhenBuildCityInMainStageAfterDiceThrown() throws PlayException, GameException{
+        // WHEN
+        hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+        playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_0_0);
+        assertNotNull(hex_0_0.getNodes().getTopRight());
+        assertNotNull(hex_0_0.getNodes().getTopRight().getBuilding());
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuilt(), NodeBuiltType.CITY);
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+
+    @Test
+    public void shouldPassWhenBuildingSettlementInMainStageOnlyAfterDiceThrown() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        try {
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+
+        // WHEN
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_0_0);
+        assertNotNull(hex_0_0.getNodes().getTopRight());
+        assertNotNull(hex_0_0.getNodes().getTopRight().getBuilding());
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuilt(), NodeBuiltType.SETTLEMENT);
+        assertEquals(hex_0_0.getNodes().getTopRight().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldPassWhenBuildingRoadNearOwnNeighbourRoadOnlyAfterDiceThrown() throws GameException, PlayException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setCurrentCycleBuildingNumber(2);
+        playUtil.updateAvailableActionsForAllUsers(game);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", "7");
+
+        try {
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+
+
+        // WHEN
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(hex_1_0);
+        assertNotNull(hex_1_0.getEdges().getTopLeft());
+        assertNotNull(hex_1_0.getEdges().getTopLeft().getBuilding());
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+        assertEquals(hex_1_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+    }
+
+    @Test
+    public void shouldAllowEndTurnOnlyAfterDiceThrown() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        try {
+            playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1");
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        // WHEN
+        playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(game.getCurrentMove());
+        assertEquals(game.getCurrentMove().intValue(), gameUser2.getMoveOrder());
+    }
+
+    @Test
+    public void shouldFailWhenThrowDiceAfterItIsAlreadyThrown() throws GameException, PlayException {
+        //GIVEN
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserThrowDiceNotAtHisTurn() throws GameException, PlayException {
+        //GIVEN
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.THROW_DICE, gameUser2.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    private void allowUserToThrowDice(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE));
     }
 
     private void allowUserToBuildCity(GameUserBean user) {
@@ -1168,6 +1533,6 @@ public class PlayServiceImplTest {
                 edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5,
                 edge_3_3, edge_3_4, edge_3_5, edge_3_6));
         game.setInitialBuildingsSet("[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
-        playUtil.updateAvailableUserActions(game);
+        playUtil.updateAvailableActionsForAllUsers(game);
     }
 }

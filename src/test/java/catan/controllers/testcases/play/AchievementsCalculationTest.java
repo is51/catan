@@ -1,4 +1,4 @@
-package catan.controllers.play;
+package catan.controllers.testcases.play;
 
 import catan.config.ApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
@@ -288,6 +288,7 @@ public class AchievementsCalculationTest extends PlayTestUtil {
         endTurn(userTokens[firstGameUserNumber], gameId);
 
         // MAIN STAGE STARTS
+        throwDice(userTokens[firstGameUserNumber], gameId);
         buildCity(userTokens[firstGameUserNumber], gameId, nodeId1ToBuildForFirstUser);
 
         viewGame(userToken1, gameId)

@@ -180,7 +180,8 @@ public class GameUserBean {
     public String toString() {
         return "GameUser [" +
                 "gameUserId:" + gameUserId +
-                ", user:" + user.getUsername() +
+                ", userId:" + user.getId() +
+                ", userName:" + user.getUsername() +
                 ", colorId: " + colorId +
                 ", gameId: " + game.getGameId() +
                 ", ready: " + ready +
