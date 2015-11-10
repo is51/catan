@@ -2,16 +2,20 @@ package catan.controllers.ctf;
 
 import catan.controllers.util.GameTestUtil;
 import catan.controllers.util.PlayTestUtil;
+import catan.services.util.random.RandomValueGeneratorMock;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Matcher;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 
 public class Scenario {
+
+    private RandomValueGeneratorMock rvg;
 
     int gameId = -1;
     Map<String, String> userTokensByName = new HashMap<String, String>();
@@ -19,6 +23,14 @@ public class Scenario {
     Map<Integer, Integer> gameUserIdsByMoveOrder = new HashMap<Integer, Integer>();
     ValidatableResponse currentGameDetails = null;
     Response lastApiResponse = null;
+
+    public Scenario() {
+
+    }
+
+    public Scenario(RandomValueGeneratorMock rvg) {
+        this.rvg = rvg;
+    }
 
     public Scenario registerUser(String username, String password) {
         GameTestUtil.registerUser(username, password);
@@ -156,6 +168,14 @@ public class Scenario {
     }
 
     public Scenario and() {
+        return this;
+    }
+
+    public Scenario nextRandomGeneratedValues(List<Integer> nextRandomValues) {
+        for (Integer nextRandomValue : nextRandomValues) {
+            rvg.setNextGeneratedValue(nextRandomValue);
+        }
+
         return this;
     }
 }

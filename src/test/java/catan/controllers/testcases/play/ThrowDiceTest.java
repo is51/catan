@@ -1,21 +1,29 @@
 package catan.controllers.testcases.play;
 
-import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
+import catan.services.util.random.RandomValueGeneratorMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Arrays;
+
+import static java.util.Arrays.asList;
+import static java.util.Arrays.equals;
+import static org.hamcrest.Matchers.is;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
 //@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
 //@SpringApplicationConfiguration(classes = ApplicationConfig.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class ThrowDiceTest extends PlayTestUtil {
 
@@ -28,6 +36,9 @@ public class ThrowDiceTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
+    @Autowired
+    private RandomValueGeneratorMock rvg;
+
     private Scenario scenario;
 
     @Before
@@ -39,7 +50,41 @@ public class ThrowDiceTest extends PlayTestUtil {
             initialized = true;
         }
 
-        scenario = new Scenario();
+        scenario = new Scenario(rvg);
+    }
+
+    @Test
+    public void should_user_has_available_action_throw_dice_before_move_and_shouldnt_after_throw_dice() {
+
+        playPreparationStage()
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("THROW_DICE")
+                .throwDice(1).successfully()
+                .getGameDetails(1)
+                .gameUser(1).doesntHaveAvailableAction("THROW_DICE")
+                .endTurn(1)
+
+                .getGameDetails(2)
+                .gameUser(2).hasAvailableAction("THROW_DICE")
+                .throwDice(2).successfully()
+                .getGameDetails(2)
+                .gameUser(2).doesntHaveAvailableAction("THROW_DICE")
+                .endTurn(2);
+    }
+
+    @Test
+    public void should_fail_when_user_throw_dice_after_he_has_already_thrown() {
+
+        playPreparationStage()
+                .throwDice(1)
+                .throwDice(1).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_fail_when_user_throw_dice_in_not_his_move() {
+
+        playPreparationStage()
+                .throwDice(2).failsWithError("ERROR");
     }
 
     private Scenario playPreparationStage() {
@@ -52,9 +97,18 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .joinPublicGame(USER_NAME_2)
                 .joinPublicGame(USER_NAME_3)
 
+                // return random values as 0 each time, when pulling move order from the list to have order: 1, 2, 3
+                .nextRandomGeneratedValues(asList(0, 0, 0))
+
                 .setUserReady(USER_NAME_1)
                 .setUserReady(USER_NAME_2)
                 .setUserReady(USER_NAME_3)
+
+                //check that move orders are never changed and users have move orders according to joined order
+                .getGameDetails(1)
+                .gameUser(1).check("user.username", is(USER_NAME_1))
+                .gameUser(2).check("user.username", is(USER_NAME_2))
+                .gameUser(3).check("user.username", is(USER_NAME_3))
 
                 .buildSettlement(1).atNode(0, 0, "topLeft")
                 .buildRoad(1).atEdge(0, 0, "topLeft")
@@ -98,39 +152,5 @@ public class ThrowDiceTest extends PlayTestUtil {
     *                                                                            .====.====.
     *                                                                       bottomLeft bottomRight
     */
-
-    @Test
-    public void should_user_has_available_action_throw_dice_before_move_and_shouldnt_after_throw_dice() {
-
-        playPreparationStage()
-                .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("THROW_DICE")
-                .throwDice(1).successfully()
-                .getGameDetails(1)
-                .gameUser(1).doesntHaveAvailableAction("THROW_DICE")
-                .endTurn(1)
-
-                .getGameDetails(2)
-                .gameUser(2).hasAvailableAction("THROW_DICE")
-                .throwDice(2).successfully()
-                .getGameDetails(2)
-                .gameUser(2).doesntHaveAvailableAction("THROW_DICE")
-                .endTurn(2);
-    }
-
-    @Test
-    public void should_fail_when_user_throw_dice_after_he_has_already_thrown() {
-
-        playPreparationStage()
-                .throwDice(1)
-                .throwDice(1).failsWithError("ERROR");
-    }
-
-    @Test
-    public void should_fail_when_user_throw_dice_in_not_his_move() {
-
-        playPreparationStage()
-                .throwDice(2).failsWithError("ERROR");
-    }
 
 }

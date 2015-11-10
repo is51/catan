@@ -1,12 +1,10 @@
 package catan.services.util.random;
 
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.game.GameUserBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class RandomUtil {
@@ -45,6 +43,7 @@ public class RandomUtil {
         return possibleDiceNumbers.remove(randomDiceNumber);
     }
 
+    @Autowired
     public void setRvg(RandomValueGenerator rvg) {
         this.rvg = rvg;
     }
