@@ -41,6 +41,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -95,7 +96,6 @@ public class PlayServiceImplTest {
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
-        playUtil.setGameUtil(gameUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
@@ -621,7 +621,7 @@ public class PlayServiceImplTest {
         // WHEN
         allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
         playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -640,7 +640,7 @@ public class PlayServiceImplTest {
         try {
             // WHEN
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "14");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -661,7 +661,7 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -682,7 +682,7 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -703,7 +703,7 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "4");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -724,7 +724,7 @@ public class PlayServiceImplTest {
             allowUserToBuildCity(gameUser1);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "4");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -744,7 +744,7 @@ public class PlayServiceImplTest {
             game.setStatus(GameStatus.NEW);
 
             when(gameDao.getGameByGameId(1)).thenReturn(game);
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -766,7 +766,7 @@ public class PlayServiceImplTest {
             when(gameDao.getGameByGameId(1)).thenReturn(game);
 
             // WHEN
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -788,7 +788,7 @@ public class PlayServiceImplTest {
 
         try {
             // WHEN
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -810,7 +810,7 @@ public class PlayServiceImplTest {
         allowUserToBuildCity(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
         playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -833,7 +833,7 @@ public class PlayServiceImplTest {
 
         try {
             // WHEN
-            Map<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -856,7 +856,10 @@ public class PlayServiceImplTest {
 
         //WHEN
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         //THEN
         assertNotNull(game);
@@ -875,7 +878,10 @@ public class PlayServiceImplTest {
 
         //WHEN
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        playService.buildSettlement(gameUser1.getUser(), "1", "3");
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", "3");
+
+        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         //THEN
         assertNotNull(game);
@@ -889,7 +895,7 @@ public class PlayServiceImplTest {
         allowUserToBuildCity(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
         playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
@@ -951,7 +957,7 @@ public class PlayServiceImplTest {
         assertEquals(0, gameUser1.getAchievements().getDisplayVictoryPoints());
 
         allowUserToBuildSettlement(gameUser1);
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
         playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
@@ -976,7 +982,7 @@ public class PlayServiceImplTest {
         allowUserToThrowDice(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
         try {
@@ -999,7 +1005,7 @@ public class PlayServiceImplTest {
         allowUserToThrowDice(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
         playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
@@ -1024,7 +1030,7 @@ public class PlayServiceImplTest {
         allowUserToThrowDice(gameUser1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
         try {
@@ -1062,7 +1068,7 @@ public class PlayServiceImplTest {
         allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        Map<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<String, String>();
         params.put("edgeId", "7");
 
         try {

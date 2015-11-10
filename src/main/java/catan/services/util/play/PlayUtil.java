@@ -5,8 +5,6 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.GameStatus;
-import catan.domain.model.user.UserBean;
-import catan.services.util.game.GameUtil;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,6 @@ public class PlayUtil {
 
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
-    private GameUtil gameUtil;
 
     private static final Gson GSON = new Gson();
 
@@ -57,14 +54,11 @@ public class PlayUtil {
         }
     }
 
-    public void finishGameIfTargetVictoryPointsReached(GameBean game) {
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
-                if (realVictoryPoints >= game.getTargetVictoryPoints()) {
-                    game.setStatus(GameStatus.FINISHED);
-                }
-                break;
+    public void finishGameIfTargetVictoryPointsReached(GameUserBean gameUser, GameBean game) {
+        if (gameUser.getMoveOrder() == game.getCurrentMove()) {
+            int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
+            if (realVictoryPoints >= game.getTargetVictoryPoints()) {
+                game.setStatus(GameStatus.FINISHED);
             }
         }
     }
@@ -86,10 +80,5 @@ public class PlayUtil {
     @Autowired
     public void setMainStageUtil(MainStageUtil mainStageUtil) {
         this.mainStageUtil = mainStageUtil;
-    }
-
-    @Autowired
-    public void setGameUtil(GameUtil gameUtil) {
-        this.gameUtil = gameUtil;
     }
 }

@@ -109,6 +109,7 @@ public class FinishGameTest {
         startNewGame(3);
         playPreparationStage()
                 .getGameDetails(1).statusIsPlaying()
+                .throwDice(1)
 
                 //When
                 .buildSettlement(1).atNode(0, -2, "bottomLeft") //victory points of user should be equal to target victory points
@@ -123,6 +124,7 @@ public class FinishGameTest {
         startNewGame(4);
         playPreparationStage()
                 .getGameDetails(1).statusIsPlaying()
+                .throwDice(1)
 
                 //When
                 .buildSettlement(1).atNode(0, -2, "bottomLeft") //victory points of user should be less than target victory points

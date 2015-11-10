@@ -138,6 +138,7 @@ public class VictoryPointsTest {
         //Given
         startNewGame(3);
         playPreparationStage()
+                .throwDice(1)
                 .buildSettlement(1).atNode(0, -2, "bottomLeft")
                 .getGameDetails(1) //get game details for first user
                 .statusIsFinished()

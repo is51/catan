@@ -118,6 +118,6 @@ public class MainStageUtil {
     }
     
     private boolean gameNotFinished(GameBean game) {
-        return !GameStatus.FINISHED.equals(game.getStatus())
+        return !GameStatus.FINISHED.equals(game.getStatus());
     }
 }
