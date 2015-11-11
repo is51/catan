@@ -7,6 +7,6 @@ angular.module('catan')
                 scope: {
                     game: "="
                 },
-                templateUrl: "/features/screens/game/dashboard/dice/ct-dice.html",
+                templateUrl: "/features/screens/game/dashboard/dice/ct-dice.html"
             };
         }]);

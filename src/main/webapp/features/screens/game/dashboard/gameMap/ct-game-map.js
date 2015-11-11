@@ -2,13 +2,19 @@
 
 angular.module('catan')
 
-        .directive('ctGameMap', ['DrawMapService', 'SelectMapObjectService', function(DrawMapService, SelectMapObjectService) {
+        .directive('ctGameMap', ['DrawMapService', 'SelectMapObjectService', '$timeout', function(DrawMapService, SelectMapObjectService, $timeout) {
+
+            var HEXES_HIGHLIGHT_DELAY = 3000;
+            var HEXES_HIGHLIGHT_CLASS = "highlighted";
+
             return {
                 restrict: 'E',
                 scope: {
                     game: '='
                 },
                 link: function(scope, element) {
+
+                    var hexesHighlightTimeout = null;
 
                     var canvas = angular.element('<div/>')
                             .addClass('canvas')
@@ -22,6 +28,12 @@ angular.module('catan')
                         DrawMapService.drawMap(canvas, game, game.map);
                     });
 
+                    scope.$watch("game.dice", function(newDice, oldDice) {
+                        if (oldDice !== undefined && !angular.equals(newDice, oldDice)) {
+                            hexesHighlightTimeout = highlightHexes(element, scope.game.map, newDice.value, hexesHighlightTimeout);
+                        }
+                    });
+
                     element.on('click', DrawMapService.NODE_SELECTOR, function(event) {
                         var nodeId = angular.element(event.target).closest(DrawMapService.NODE_SELECTOR).attr('node-id');
                         SelectMapObjectService.select('node', nodeId);
@@ -31,7 +43,29 @@ angular.module('catan')
                         var edgeId = angular.element(event.target).closest(DrawMapService.EDGE_SELECTOR).attr('edge-id');
                         SelectMapObjectService.select('edge', edgeId);
                     });
+
                 }
             };
+
+            //TODO: move that code to some helper?
+            function highlightHexes(element, map, dice, timeout) {
+                var hexesToHighlight = map.hexes.filter(function(hex) {
+                    return (dice === 7) ? hex.robbed : !hex.robbed && hex.dice === dice;
+                });
+
+                $timeout.cancel(timeout);
+                element.find(DrawMapService.HEX_SELECTOR).removeClass(HEXES_HIGHLIGHT_CLASS);
+
+                var elementsToHighlight = angular.element([]);
+                hexesToHighlight.forEach(function(hex) {
+                    elementsToHighlight = elementsToHighlight.add(DrawMapService.HEX_SELECTOR + "[hex-id="+hex.hexId+"]");
+                });
+
+                elementsToHighlight.addClass(HEXES_HIGHLIGHT_CLASS);
+
+                return $timeout(function() {
+                    elementsToHighlight.removeClass(HEXES_HIGHLIGHT_CLASS);
+                }, HEXES_HIGHLIGHT_DELAY);
+            }
 
         }]);
