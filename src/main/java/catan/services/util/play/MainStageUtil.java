@@ -98,7 +98,10 @@ public class MainStageUtil {
     }
 
     private void allowBuyCard(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuyCard(gameUser)) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
+                && userHasResourcesToBuyCard(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUY_CARD));
         }
     }
