@@ -14,8 +14,7 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
-import catan.domain.model.game.Achievements;
-import catan.domain.model.game.DevelopmentCards;
+import catan.domain.model.game.UsersDevelopmentCards;
 import catan.domain.model.game.AvailableDevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -880,7 +879,7 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setTargetVictoryPoints(4);
         gameUser1.getBuildingsCount().setSettlements(2);
-        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 1, 0, 0, 0));
+        gameUser1.setDevelopmentCards(new UsersDevelopmentCards(0, 1, 0, 0, 0));
 
         //WHEN
         when(gameDao.getGameByGameId(1)).thenReturn(game);
