@@ -18,6 +18,7 @@ import catan.services.util.play.BuildUtil;
 import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
+import catan.services.util.random.RandomUtil;
 import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Before;
@@ -50,6 +51,8 @@ public class PlayServiceImplTest {
     @InjectMocks
     private GameUtil gameUtil;
     @InjectMocks
+    private RandomUtil randomUtil;
+    @InjectMocks
     private PlayUtil playUtil;
     @InjectMocks
     private BuildUtil buildUtil;
@@ -71,6 +74,7 @@ public class PlayServiceImplTest {
     public void setUp() throws GameException {
         buildUtil.setGameUtil(gameUtil);
 
+        playService.setRandomUtil(randomUtil);
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);
         playService.setBuildUtil(buildUtil);

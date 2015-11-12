@@ -2,6 +2,7 @@ package catan.services.util.random;
 
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.DevelopmentCard;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -43,6 +44,11 @@ public class RandomUtil {
         int randomDiceNumber = (int) (rvg.randomValue() * possibleDiceNumbers.size());
 
         return possibleDiceNumbers.remove(randomDiceNumber);
+    }
+
+    public DevelopmentCard pullRandomDevelopmentCard(List<DevelopmentCard> availableDevCards) {
+        int randomAvailableDevCardIndex = (int) (rvg.randomValue() * availableDevCards.size());
+        return availableDevCards.remove(randomAvailableDevCardIndex);
     }
 
     public void setRvg(RandomValueGenerator rvg) {
