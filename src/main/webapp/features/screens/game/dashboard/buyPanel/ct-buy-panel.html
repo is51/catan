@@ -20,6 +20,13 @@
             City
         </button>
 
+        <br>
+
+        <button ng-click="buyCard()" ng-disabled="!game.isActionEnabledForCurrentUser('BUY_CARD')">
+            <span class="glyphicon glyphicon-credit-card"></span><br>
+            Card
+        </button>
+
     </div>
 
 </ct-modal-window>

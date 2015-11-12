@@ -44,6 +44,17 @@ angular.module('catan')
                         });
                     };
 
+                    scope.buyCard = function() {
+                        ModalWindowService.hide("BUY_PANEL");
+                        PlayService.buyCard(scope.game).then(function() {
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert("Buy card error!");
+                            }
+                        });
+                    };
+
                 }
             };
         }]);
