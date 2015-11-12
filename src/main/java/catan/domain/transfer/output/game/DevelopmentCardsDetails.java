@@ -1,6 +1,6 @@
 package catan.domain.transfer.output.game;
 
-import catan.domain.model.game.DevelopmentCards;
+import catan.domain.model.game.UsersDevelopmentCards;
 
 public class DevelopmentCardsDetails {
     private int knight;
@@ -12,12 +12,12 @@ public class DevelopmentCardsDetails {
     public DevelopmentCardsDetails() {
     }
 
-    public DevelopmentCardsDetails(DevelopmentCards developmentCards) {
-        this.knight = developmentCards.getKnight();
-        this.victoryPoint = developmentCards.getVictoryPoint();
-        this.roadBuilding = developmentCards.getRoadBuilding();
-        this.monopoly = developmentCards.getMonopoly();
-        this.yearOfPlenty = developmentCards.getYearOfPlenty();
+    public DevelopmentCardsDetails(UsersDevelopmentCards usersDevelopmentCards) {
+        this.knight = usersDevelopmentCards.getKnight();
+        this.victoryPoint = usersDevelopmentCards.getVictoryPoint();
+        this.roadBuilding = usersDevelopmentCards.getRoadBuilding();
+        this.monopoly = usersDevelopmentCards.getMonopoly();
+        this.yearOfPlenty = usersDevelopmentCards.getYearOfPlenty();
     }
 
     public int getKnight() {

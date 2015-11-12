@@ -12,9 +12,11 @@ import catan.domain.transfer.output.dashboard.NodeDetails;
 import catan.domain.transfer.output.game.GameUserDetails;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import sun.security.x509.AVA;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -90,6 +92,9 @@ public class GameBean {
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
     private Boolean diceThrown;
 
+    @Embedded
+    private AvailableDevelopmentCards availableDevelopmentCards;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
@@ -123,6 +128,7 @@ public class GameBean {
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
         this.initialBuildingsSet = initialBuildingsSet;
+        this.availableDevelopmentCards = new AvailableDevelopmentCards(14, 5, 2, 2, 2);
     }
 
     public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints, String initialBuildingsSet) {
@@ -135,6 +141,7 @@ public class GameBean {
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
         this.initialBuildingsSet = initialBuildingsSet;
+        this.availableDevelopmentCards = new AvailableDevelopmentCards(14, 5, 2, 2, 2);
     }
 
     public int getGameId() {
@@ -272,6 +279,14 @@ public class GameBean {
 
     public void setDiceThrown(Boolean diceThrown) {
         this.diceThrown = diceThrown;
+    }
+
+    public AvailableDevelopmentCards getAvailableDevelopmentCards() {
+        return availableDevelopmentCards;
+    }
+
+    public void setAvailableDevelopmentCards(AvailableDevelopmentCards availableDevelopmentCards) {
+        this.availableDevelopmentCards = availableDevelopmentCards;
     }
 
     public Set<EdgeBean> getEdges() {
