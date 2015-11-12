@@ -5,6 +5,7 @@ import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.*;
 import catan.domain.model.dashboard.types.*;
+import catan.domain.model.game.AvailableDevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -82,7 +83,6 @@ public class PlayServiceImplTest {
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
-        playUtil.setGameUtil(gameUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
@@ -1116,6 +1116,147 @@ public class PlayServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldPassWhenUserBuyCardIfActionIsAllowed() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        allowUserToBuyCard(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(gameUser1);
+        assertNotNull(gameUser1.getDevelopmentCards());
+
+        int obtainedCardsSum = gameUser1.getDevelopmentCards().getKnight()
+                + gameUser1.getDevelopmentCards().getVictoryPoint()
+                + gameUser1.getDevelopmentCards().getMonopoly()
+                + gameUser1.getDevelopmentCards().getRoadBuilding()
+                + gameUser1.getDevelopmentCards().getYearOfPlenty();
+        assertEquals(obtainedCardsSum, 1);
+
+        int availableCardsSum = game.getAvailableDevelopmentCards().getKnight()
+                + game.getAvailableDevelopmentCards().getVictoryPoint()
+                + game.getAvailableDevelopmentCards().getMonopoly()
+                + game.getAvailableDevelopmentCards().getRoadBuilding()
+                + game.getAvailableDevelopmentCards().getYearOfPlenty();
+        assertEquals(availableCardsSum, 24);
+    }
+
+    @Test
+    public void shouldPassWhenUserBuyCardAllCardsAndQuantityOfEachCardIsCorrect() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        allowUserToBuyCard(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        for (int i = 25; i > 0; i--) {
+            playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
+        }
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(gameUser1);
+        assertNotNull(gameUser1.getDevelopmentCards());
+
+        assertEquals(gameUser1.getDevelopmentCards().getKnight(), 14);
+        assertEquals(gameUser1.getDevelopmentCards().getVictoryPoint(), 5);
+        assertEquals(gameUser1.getDevelopmentCards().getMonopoly(), 2);
+        assertEquals(gameUser1.getDevelopmentCards().getRoadBuilding(), 2);
+        assertEquals(gameUser1.getDevelopmentCards().getYearOfPlenty(), 2);
+
+        assertEquals(game.getAvailableDevelopmentCards().getKnight(), 0);
+        assertEquals(game.getAvailableDevelopmentCards().getVictoryPoint(), 0);
+        assertEquals(game.getAvailableDevelopmentCards().getMonopoly(), 0);
+        assertEquals(game.getAvailableDevelopmentCards().getRoadBuilding(), 0);
+        assertEquals(game.getAvailableDevelopmentCards().getYearOfPlenty(), 0);
+    }
+
+    @Test
+    public void shouldFailWhenUserBuyCardAtHisTurnButActionIsNotAllowed() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserBuyCardNotAtHisTurn() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.BUY_CARD, gameUser2.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserBuyCardIfDevelopmentCardsIsOver() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        allowUserToBuyCard(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        for (int i = 25; i > 0; i--) {
+            playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
+        }
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.CARDS_ARE_OVER_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    private void allowUserToBuyCard(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.BUY_CARD));
+    }
+
     private void allowUserToThrowDice(GameUserBean user) {
         allowUserAction(user, new Action(GameUserActionCode.THROW_DICE));
     }
@@ -1482,6 +1623,7 @@ public class PlayServiceImplTest {
                 edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5,
                 edge_3_3, edge_3_4, edge_3_5, edge_3_6));
         game.setInitialBuildingsSet("[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
+        game.setAvailableDevelopmentCards(new AvailableDevelopmentCards(14, 5, 2, 2, 2));
         playUtil.updateAvailableActionsForAllUsers(game);
     }
 }

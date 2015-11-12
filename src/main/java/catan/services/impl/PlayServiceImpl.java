@@ -39,6 +39,7 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String CARDS_ARE_OVER_ERROR = "CARDS_ARE_OVER";
 
     private GameDao gameDao;
     private RandomUtil randomUtil;
@@ -163,7 +164,7 @@ public class PlayServiceImpl implements PlayService {
 
         if (availableDevCards.size() == 0) {
             log.debug("No available cards");
-            throw new PlayException(ERROR_CODE_ERROR);
+            throw new PlayException(CARDS_ARE_OVER_ERROR);
         }
 
         DevelopmentCard obtainedDevelopmentCard = randomUtil.pullRandomDevelopmentCard(availableDevCards);
