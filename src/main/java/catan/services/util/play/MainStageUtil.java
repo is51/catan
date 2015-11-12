@@ -43,6 +43,7 @@ public class MainStageUtil {
         allowBuildRoad(gameUser, game, actionsList);
         allowEndTurn(gameUser, game, actionsList);
         allowThrowDice(gameUser, game, actionsList);
+        allowBuyCard(gameUser, game, actionsList);
 
         AvailableActions availableActions = new AvailableActions();
         availableActions.setList(actionsList);
@@ -82,6 +83,12 @@ public class MainStageUtil {
         }
     }
 
+    private void allowBuyCard(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuyCard(gameUser)) {
+            actionsList.add(new Action(GameUserActionCode.BUY_CARD));
+        }
+    }
+
     private boolean userHasResourcesToBuildCity(GameUserBean gameUser) {
         return gameUser.getResources().getStone() >= 0
                 && gameUser.getResources().getWheat() >= 0;
@@ -97,6 +104,12 @@ public class MainStageUtil {
     private boolean userHasResourcesToBuildRoad(GameUserBean gameUser) {
         return gameUser.getResources().getWood() >= 0
                 && gameUser.getResources().getBrick() >= 0;
+    }
+
+    private boolean userHasResourcesToBuyCard(GameUserBean gameUser) {
+        return gameUser.getResources().getStone() >= 0
+                && gameUser.getResources().getSheep() >= 0
+                && gameUser.getResources().getWheat() >= 0;
     }
 
     private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {

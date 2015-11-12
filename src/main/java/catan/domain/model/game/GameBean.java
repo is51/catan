@@ -12,7 +12,6 @@ import catan.domain.transfer.output.dashboard.NodeDetails;
 import catan.domain.transfer.output.game.GameUserDetails;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import sun.security.x509.AVA;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
