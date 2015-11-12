@@ -29,7 +29,7 @@ angular.module('catan')
                     };
 
                     scope.build = function() {
-                        ModalWindowService.show("BUILD_PANEL");
+                        ModalWindowService.show("BUY_PANEL");
                     };
                 }
             };

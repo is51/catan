@@ -1,18 +1,18 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctBuildPanel', ['ModalWindowService', 'PlayService', 'GameService', function(ModalWindowService, PlayService, GameService) {
+        .directive('ctBuyPanel', ['ModalWindowService', 'PlayService', 'GameService', function(ModalWindowService, PlayService, GameService) {
 
             return {
                 restrict: 'E',
                 scope: {
                     game: "="
                 },
-                templateUrl: "/features/screens/game/dashboard/buildPanel/ct-build-panel.html",
+                templateUrl: "/features/screens/game/dashboard/buyPanel/ct-buy-panel.html",
                 link: function(scope) {
 
                     scope.buildSettlement = function() {
-                        ModalWindowService.hide("BUILD_PANEL");
+                        ModalWindowService.hide("BUY_PANEL");
                         PlayService.buildSettlement(scope.game).then(function() {
                             GameService.refresh(scope.game);
                         }, function(reason) {
@@ -23,7 +23,7 @@ angular.module('catan')
                     };
 
                     scope.buildCity = function() {
-                        ModalWindowService.hide("BUILD_PANEL");
+                        ModalWindowService.hide("BUY_PANEL");
                         PlayService.buildCity(scope.game).then(function() {
                             GameService.refresh(scope.game);
                         }, function(reason) {
@@ -34,7 +34,7 @@ angular.module('catan')
                     };
 
                     scope.buildRoad = function() {
-                        ModalWindowService.hide("BUILD_PANEL");
+                        ModalWindowService.hide("BUY_PANEL");
                         PlayService.buildRoad(scope.game).then(function() {
                             GameService.refresh(scope.game);
                         }, function(reason) {

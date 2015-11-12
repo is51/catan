@@ -1,8 +1,8 @@
-ct-build-panel {
+ct-buy-panel {
 
 }
 
-ct-build-panel .content {
+ct-buy-panel .content {
     top: 30%;
     left: 25%;
     width: 50%;
@@ -11,7 +11,7 @@ ct-build-panel .content {
     text-align: center;
 }
 
-ct-build-panel button {
+ct-buy-panel button {
     background: #f5f5f5;
     color: #68a;
     border: none;
@@ -23,17 +23,17 @@ ct-build-panel button {
     border-radius: 10px;
 }
 
-ct-build-panel button:hover {
+ct-buy-panel button:hover {
     background-color: #eee;
     color: #69c;
 }
 
-ct-build-panel button[disabled] {
+ct-buy-panel button[disabled] {
     background: #f5f5f5;
     color: #888;
     opacity: 0.5;
 }
 
-ct-build-panel button span {
+ct-buy-panel button span {
     font-size: 27px;
 }
