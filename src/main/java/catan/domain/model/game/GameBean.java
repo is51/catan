@@ -316,7 +316,7 @@ public class GameBean {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
         for (GameUserBean gameUser : this.gameUsers) {
-            gameUsers.add(new GameUserDetails(gameUser, detailsRequesterId));
+            gameUsers.add(new GameUserDetails(gameUser, detailsRequesterId, this.status));
         }
 
         return gameUsers;

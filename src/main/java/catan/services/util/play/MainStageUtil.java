@@ -5,6 +5,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -54,31 +55,44 @@ public class MainStageUtil {
     }
 
     private void allowThrowDice(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (isCurrentUsersMove(gameUser, game) && !game.isDiceThrown()) {
+        if (gameNotFinished(game) 
+                && isCurrentUsersMove(gameUser, game) 
+                && !game.isDiceThrown()) {
             actionsList.add(new Action(GameUserActionCode.THROW_DICE));
         }
     }
 
     private void allowEndTurn(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown()) {
+        if (gameNotFinished(game) 
+                && isCurrentUsersMove(gameUser, game) 
+                && game.isDiceThrown()) {
             actionsList.add(new Action(GameUserActionCode.END_TURN));
         }
     }
 
     private void allowBuildCity(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuildCity(gameUser)) {
+        if (gameNotFinished(game) 
+                && isCurrentUsersMove(gameUser, game) 
+                && game.isDiceThrown() 
+                && userHasResourcesToBuildCity(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
         }
     }
 
     private void allowBuildSettlement(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesForSettlement(gameUser)) {
+        if (gameNotFinished(game) 
+                && isCurrentUsersMove(gameUser, game) 
+                && game.isDiceThrown() 
+                && userHasResourcesForSettlement(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
         }
     }
 
     private void allowBuildRoad(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (isCurrentUsersMove(gameUser, game) && game.isDiceThrown() && userHasResourcesToBuildRoad(gameUser)) {
+        if (gameNotFinished(game) 
+                && isCurrentUsersMove(gameUser, game) 
+                && game.isDiceThrown() 
+                && userHasResourcesToBuildRoad(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
         }
     }
@@ -114,5 +128,9 @@ public class MainStageUtil {
 
     private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {
         return gameUser.getMoveOrder() == game.getCurrentMove();
+    }
+    
+    private boolean gameNotFinished(GameBean game) {
+        return !GameStatus.FINISHED.equals(game.getStatus());
     }
 }

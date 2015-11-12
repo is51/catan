@@ -68,6 +68,7 @@ public class PlayServiceImpl implements PlayService {
         Map<String, String> obtainedParams = doAction(action, user, game, params);
 
         playUtil.updateVictoryPoints(gameUser);
+        playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
         playUtil.updateAvailableActionsForAllUsers(game);
 
         gameDao.updateGame(game);

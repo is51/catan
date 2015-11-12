@@ -1,6 +1,7 @@
 package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.transfer.output.game.actions.AvailableActionsDetails;
 import catan.domain.transfer.output.user.UserDetails;
 import com.google.gson.Gson;
@@ -23,15 +24,21 @@ public class GameUserDetails {
 
     }
 
-    public GameUserDetails(GameUserBean gameUserBean, int detailsRequesterId) {
+    public GameUserDetails(GameUserBean gameUserBean, int detailsRequesterId, GameStatus gameStatus) {
         this.id = gameUserBean.getGameUserId();
         this.user = new UserDetails(gameUserBean.getUser());
         this.colorId = gameUserBean.getColorId();
         this.ready = gameUserBean.isReady();
         this.moveOrder = gameUserBean.getMoveOrder();
-        this.achievements = new AchievementsDetails(gameUserBean.getAchievements());
+        boolean detailsRequester = user.getId() == detailsRequesterId;
 
-        if (user.getId() == detailsRequesterId) {
+        if (detailsRequester || GameStatus.FINISHED.equals(gameStatus)) {
+            this.achievements = new AchievementsDetails(gameUserBean.getAchievements(), gameUserBean.getDevelopmentCards().getVictoryPoint());
+        } else {
+            this.achievements = new AchievementsDetails(gameUserBean.getAchievements());
+        }
+
+        if (detailsRequester) {
             this.availableActions = GSON.fromJson(gameUserBean.getAvailableActions(), AvailableActionsDetails.class);
             this.resources = new ResourcesDetails(gameUserBean.getResources());
             this.developmentCards = new DevelopmentCardsDetails(gameUserBean.getDevelopmentCards());

@@ -130,14 +130,14 @@ public class ListGameTest extends GameTestUtil {
                 .body("[0].gameId", greaterThan(0))
                 .body("[0].privateGame", equalTo(false))
                 .body("[0].status", equalTo(GameStatus.NEW.toString()))
-                .body("[0].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))))
+                .body("[0].dateCreated", is(both(greaterThan(now - 80000)).and(lessThanOrEqualTo(now))))
                 .body("[0].targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
                 .body("[0].minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
                 .body("[0].maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS))
                 .body("[1].gameId", greaterThan(0))
                 .body("[1].privateGame", equalTo(false))
                 .body("[1].status", equalTo(GameStatus.NEW.toString()))
-                .body("[1].dateCreated", is(both(greaterThan(now - 60000)).and(lessThanOrEqualTo(now))))
+                .body("[1].dateCreated", is(both(greaterThan(now - 80000)).and(lessThanOrEqualTo(now))))
                 .body("[1].targetVictoryPoints", equalTo(DEFAULT_TARGET_VICTORY_POINTS))
                 .body("[1].minPlayers", equalTo(TEMPORARY_MIN_PLAYERS))
                 .body("[1].maxPlayers", equalTo(TEMPORARY_MAX_PLAYERS));
@@ -165,7 +165,7 @@ public class ListGameTest extends GameTestUtil {
         assertThat("Status of first game should be NEW", firstGameDetails.getStatus(), is(GameStatus.NEW.toString()));
         assertFalse("Game should be public", firstGameDetails.isPrivateGame());
         assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
-                firstGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
+                firstGameDetails.getDateCreated(), is(both(greaterThan(now - 80000)).and(lessThan(now))));
         assertThat("Min users should be filled up", firstGameDetails.getMinPlayers(), equalTo(GameServiceImpl.MIN_USERS));
         assertThat("Max users should be filled up", firstGameDetails.getMaxPlayers(), equalTo(GameServiceImpl.MAX_USERS));
 
@@ -174,7 +174,7 @@ public class ListGameTest extends GameTestUtil {
         assertThat("Status of first game should be NEW", secondGameDetails.getStatus(), is(GameStatus.NEW.toString()));
         assertFalse("Game should be public", secondGameDetails.isPrivateGame());
         assertThat("Date of game creation should be equal to or less than current time but not less than 60 seconds",
-                secondGameDetails.getDateCreated(), is(both(greaterThan(now - 60000)).and(lessThan(now))));
+                secondGameDetails.getDateCreated(), is(both(greaterThan(now - 80000)).and(lessThan(now))));
         assertThat("Min users should be filled up", secondGameDetails.getMinPlayers(), equalTo(GameServiceImpl.MIN_USERS));
         assertThat("Max users should be filled up", secondGameDetails.getMaxPlayers(), equalTo(GameServiceImpl.MAX_USERS));
 

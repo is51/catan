@@ -4,6 +4,7 @@ import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.types.GameStatus;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,15 @@ public class PlayUtil {
             default:
                 log.debug("Cannot recognize current game stage: {}", game.getStage());
                 throw new GameException(ERROR_CODE_ERROR);
+        }
+    }
+
+    public void finishGameIfTargetVictoryPointsReached(GameUserBean gameUser, GameBean game) {
+        if (gameUser.getMoveOrder() == game.getCurrentMove()) {
+            int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
+            if (realVictoryPoints >= game.getTargetVictoryPoints()) {
+                game.setStatus(GameStatus.FINISHED);
+            }
         }
     }
 
