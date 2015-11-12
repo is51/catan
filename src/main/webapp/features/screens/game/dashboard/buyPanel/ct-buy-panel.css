@@ -3,10 +3,10 @@ ct-buy-panel {
 }
 
 ct-buy-panel .content {
-    top: 30%;
+    top: 10%;
     left: 25%;
     width: 50%;
-    height: 50%;
+    height: 72%;
     background: #fff;
     text-align: center;
 }
