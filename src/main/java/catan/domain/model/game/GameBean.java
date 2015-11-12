@@ -90,6 +90,12 @@ public class GameBean {
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
     private Boolean diceThrown;
 
+    @Column(name = "DICE_FIRST_VALUE", unique = false, nullable = true)
+    private Integer diceFirstValue;
+
+    @Column(name = "DICE_SECOND_VALUE", unique = false, nullable = true)
+    private Integer diceSecondValue;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
@@ -272,6 +278,22 @@ public class GameBean {
 
     public void setDiceThrown(Boolean diceThrown) {
         this.diceThrown = diceThrown;
+    }
+
+    public Integer getDiceFirstValue() {
+        return diceFirstValue;
+    }
+
+    public void setDiceFirstValue(Integer diceFirstValue) {
+        this.diceFirstValue = diceFirstValue;
+    }
+
+    public Integer getDiceSecondValue() {
+        return diceSecondValue;
+    }
+
+    public void setDiceSecondValue(Integer diceSecondValue) {
+        this.diceSecondValue = diceSecondValue;
     }
 
     public Set<EdgeBean> getEdges() {

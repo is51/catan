@@ -20,6 +20,7 @@ import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
+import catan.services.util.random.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+
 @Service("playService")
 @Transactional
 public class PlayServiceImpl implements PlayService {
@@ -38,6 +41,7 @@ public class PlayServiceImpl implements PlayService {
     public static final String ERROR_CODE_ERROR = "ERROR";
 
     private GameDao gameDao;
+    private RandomUtil randomUtil;
     private GameUtil gameUtil;
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
@@ -125,16 +129,22 @@ public class PlayServiceImpl implements PlayService {
             Integer newPreparationCycle = game.getPreparationCycle();
             boolean preparationFinished = newPreparationCycle == null && !game.getCurrentMove().equals(1);
             shouldUpdateNextMove = (preparationFinished || previousPreparationCycle.equals(newPreparationCycle));
+        } else {
+            game.setDiceThrown(false);
+            game.setDiceFirstValue(null);
+            game.setDiceSecondValue(null);
         }
 
         if (shouldUpdateNextMove) {
             playUtil.updateNextMove(game);
-            //TODO: set it only in MAIN stage
-            game.setDiceThrown(false);
         }
     }
 
     private void throwDice(GameBean game) {
+        Integer diceFirstValue = randomUtil.pullRandomDiceNumber(new ArrayList<Integer>(asList(1, 2, 3, 4, 5, 6)));
+        Integer diceSecondValue = randomUtil.pullRandomDiceNumber(new ArrayList<Integer>(asList(1, 2, 3, 4, 5, 6)));
+        game.setDiceFirstValue(diceFirstValue);
+        game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
     }
 
@@ -174,6 +184,11 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setGameDao(GameDao gameDao) {
         this.gameDao = gameDao;
+    }
+
+    @Autowired
+    public void setRandomUtil(RandomUtil randomUtil) {
+        this.randomUtil = randomUtil;
     }
 
     @Autowired
