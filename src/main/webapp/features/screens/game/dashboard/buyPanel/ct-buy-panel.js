@@ -46,7 +46,8 @@ angular.module('catan')
 
                     scope.buyCard = function() {
                         ModalWindowService.hide("BUY_PANEL");
-                        PlayService.buyCard(scope.game).then(function() {
+                        PlayService.buyCard(scope.game).then(function(response) {
+                            alert("Bought card: " + response.data.card);
                             GameService.refresh(scope.game);
                         }, function(response) {
                             alert('Buy Card error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
