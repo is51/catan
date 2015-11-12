@@ -48,10 +48,8 @@ angular.module('catan')
                         ModalWindowService.hide("BUY_PANEL");
                         PlayService.buyCard(scope.game).then(function() {
                             GameService.refresh(scope.game);
-                        }, function(reason) {
-                            if (reason !== "CANCELED") {
-                                alert("Buy card error!");
-                            }
+                        }, function(response) {
+                            alert('Buy Card error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
                         });
                     };
 
