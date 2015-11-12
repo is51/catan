@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctPlayersPanel', [function() {
+        .directive('ctPlayersPanel', ['User', function(User) {
             return {
                 restrict: 'E',
                 scope: {
@@ -12,12 +12,17 @@ angular.module('catan')
                     scope.gameUsers = usersSortedByMoveOrderCurrentUserFirst(scope.game);
 
                     // TODO: replace watchCollection with some nonshitcode style code
+                    // TODO: set :: where it's needed after previous TODO is done
                     scope.$watchCollection("game", function() {
                         scope.gameUsers = usersSortedByMoveOrderCurrentUserFirst(scope.game);
                     });
 
                     scope.isActive = function(gameUser) {
                         return scope.game.currentMove === gameUser.moveOrder;
+                    };
+
+                    scope.isCurrentUser = function(gameUser) {
+                        return User.get().id === gameUser.user.id;
                     };
 
                     function usersSortedByMoveOrderCurrentUserFirst(game) {

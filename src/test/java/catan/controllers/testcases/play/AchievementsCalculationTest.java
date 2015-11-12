@@ -36,6 +36,8 @@ public class AchievementsCalculationTest extends PlayTestUtil {
         }
     }
 
+    //TODO: all test cases from here should be refactored according to new CTF and moved to VictoryPointsTest
+
     @Test
     public void should_successfully_calculate_victory_points_when_build_settlement() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);

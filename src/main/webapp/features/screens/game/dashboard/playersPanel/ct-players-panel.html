@@ -13,7 +13,8 @@
 
     <div class="victory-points">
         <span class="glyphicon glyphicon-star"></span>
-        {{gameUser.achievements.displayVictoryPoints}}
+        <span ng-if="::isCurrentUser(gameUser)">{{gameUser.achievements.realVictoryPoints}}</span>
+        <span ng-if="::!isCurrentUser(gameUser)">{{gameUser.achievements.displayVictoryPoints}}</span>
     </div>
 
 </div>
