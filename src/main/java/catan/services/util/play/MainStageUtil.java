@@ -1,8 +1,14 @@
 package catan.services.util.play;
 
 import catan.domain.exception.GameException;
+import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.HexBean;
+import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.GameStatus;
@@ -28,6 +34,45 @@ public class MainStageUtil {
 
         log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
         game.setCurrentMove(nextMoveNumber);
+    }
+
+    public void distributeResources(GameBean game) {
+        Integer diceValue = game.getDiceFirstValue() != null ? game.getDiceFirstValue() + game.getDiceSecondValue() : 0;
+        for (HexBean hex : game.getHexes()) {
+            if (diceValue.equals(hex.getDice())) {
+                for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
+                    if (node.getBuilding() != null) {
+                        giveResourceToPlayer(node.getBuilding().getBuildingOwner(), node.getBuilding().getBuilt(), hex.getResourceType());
+                    }
+                }
+            }
+        }
+    }
+
+    private void giveResourceToPlayer(GameUserBean gameUser, NodeBuiltType building, HexType resource) {
+        int resourceQuantity = building.equals(NodeBuiltType.SETTLEMENT) ? 1 : 2;
+        switch (resource) {
+            case BRICK:
+                int currentBrickQuantity = gameUser.getResources().getBrick();
+                gameUser.getResources().setBrick(currentBrickQuantity + resourceQuantity);
+                break;
+            case WOOD:
+                int currentWoodQuantity = gameUser.getResources().getWood();
+                gameUser.getResources().setWood(currentWoodQuantity + resourceQuantity);
+                break;
+            case SHEEP:
+                int currentSheepQuantity = gameUser.getResources().getSheep();
+                gameUser.getResources().setSheep(currentSheepQuantity + resourceQuantity);
+                break;
+            case STONE:
+                int currentStoneQuantity = gameUser.getResources().getStone();
+                gameUser.getResources().setStone(currentStoneQuantity + resourceQuantity);
+                break;
+            case WHEAT:
+                int currentWheatQuantity = gameUser.getResources().getWheat();
+                gameUser.getResources().setWheat(currentWheatQuantity + resourceQuantity);
+                break;
+        }
     }
 
     public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {

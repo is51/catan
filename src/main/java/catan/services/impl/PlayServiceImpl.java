@@ -18,6 +18,7 @@ import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
+import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.random.RandomUtil;
@@ -46,6 +47,7 @@ public class PlayServiceImpl implements PlayService {
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
     private PreparationStageUtil preparationStageUtil;
+    private MainStageUtil mainStageUtil;
 
     @Override
     public void processAction(GameUserActionCode action, UserBean user, String gameId) throws PlayException, GameException {
@@ -146,6 +148,9 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
+        if (diceFirstValue + diceSecondValue != 7) {
+            mainStageUtil.distributeResources(game);
+        }
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {
@@ -209,5 +214,10 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setPreparationStageUtil(PreparationStageUtil preparationStageUtil) {
         this.preparationStageUtil = preparationStageUtil;
+    }
+
+    @Autowired
+    public void setMainStageUtil(MainStageUtil mainStageUtil) {
+        this.mainStageUtil = mainStageUtil;
     }
 }
