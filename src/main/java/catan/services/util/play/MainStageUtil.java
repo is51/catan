@@ -36,41 +36,41 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void distributeResources(GameBean game) {
-        Integer diceValue = game.getDiceFirstValue() != null ? game.getDiceFirstValue() + game.getDiceSecondValue() : 0;
+    //TODO: think about refactoring this method to avoid using fourfold enclosure
+    public void produceResources(GameBean game) {
         for (HexBean hex : game.getHexes()) {
-            if (diceValue.equals(hex.getDice())) {
+            if (game.getDiceValue() != null && game.getDiceValue().equals(hex.getDice())) {
                 for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
                     if (node.getBuilding() != null) {
-                        giveResourceToPlayer(node.getBuilding().getBuildingOwner(), node.getBuilding().getBuilt(), hex.getResourceType());
+                        giveResourceToPlayer(node.getBuilding().getBuildingOwner().getResources(), node.getBuilding().getBuilt(), hex.getResourceType());
                     }
                 }
             }
         }
     }
 
-    private void giveResourceToPlayer(GameUserBean gameUser, NodeBuiltType building, HexType resource) {
+    private void giveResourceToPlayer(Resources userResources, NodeBuiltType building, HexType resource) {
         int resourceQuantity = building.equals(NodeBuiltType.SETTLEMENT) ? 1 : 2;
         switch (resource) {
             case BRICK:
-                int currentBrickQuantity = gameUser.getResources().getBrick();
-                gameUser.getResources().setBrick(currentBrickQuantity + resourceQuantity);
+                int currentBrickQuantity = userResources.getBrick();
+                userResources.setBrick(currentBrickQuantity + resourceQuantity);
                 break;
             case WOOD:
-                int currentWoodQuantity = gameUser.getResources().getWood();
-                gameUser.getResources().setWood(currentWoodQuantity + resourceQuantity);
+                int currentWoodQuantity = userResources.getWood();
+                userResources.setWood(currentWoodQuantity + resourceQuantity);
                 break;
             case SHEEP:
-                int currentSheepQuantity = gameUser.getResources().getSheep();
-                gameUser.getResources().setSheep(currentSheepQuantity + resourceQuantity);
+                int currentSheepQuantity = userResources.getSheep();
+                userResources.setSheep(currentSheepQuantity + resourceQuantity);
                 break;
             case STONE:
-                int currentStoneQuantity = gameUser.getResources().getStone();
-                gameUser.getResources().setStone(currentStoneQuantity + resourceQuantity);
+                int currentStoneQuantity = userResources.getStone();
+                userResources.setStone(currentStoneQuantity + resourceQuantity);
                 break;
             case WHEAT:
-                int currentWheatQuantity = gameUser.getResources().getWheat();
-                gameUser.getResources().setWheat(currentWheatQuantity + resourceQuantity);
+                int currentWheatQuantity = userResources.getWheat();
+                userResources.setWheat(currentWheatQuantity + resourceQuantity);
                 break;
         }
     }

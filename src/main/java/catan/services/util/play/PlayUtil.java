@@ -40,6 +40,12 @@ public class PlayUtil {
         }
     }
 
+    public void resetDices (GameBean game) {
+        game.setDiceThrown(false);
+        game.setDiceFirstValue(null);
+        game.setDiceSecondValue(null);
+    }
+
     public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
         switch (game.getStage()) {
             case PREPARATION:

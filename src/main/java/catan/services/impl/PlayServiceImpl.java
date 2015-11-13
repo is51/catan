@@ -41,6 +41,7 @@ public class PlayServiceImpl implements PlayService {
 
     public static final String ERROR_CODE_ERROR = "ERROR";
 
+    //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
     private RandomUtil randomUtil;
     private GameUtil gameUtil;
@@ -121,36 +122,40 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void endTurn(GameBean game) throws GameException {
-        boolean shouldUpdateNextMove = true;
+        switch (game.getStage()) {
 
-        if (game.getStage().equals(GameStage.PREPARATION)) {
-            Integer previousPreparationCycle = game.getPreparationCycle();
-            preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
-            preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
-            preparationStageUtil.updatePreparationCycle(game);
-            Integer newPreparationCycle = game.getPreparationCycle();
-            boolean preparationFinished = newPreparationCycle == null && !game.getCurrentMove().equals(1);
-            shouldUpdateNextMove = (preparationFinished || previousPreparationCycle.equals(newPreparationCycle));
-        } else {
-            game.setDiceThrown(false);
-            game.setDiceFirstValue(null);
-            game.setDiceSecondValue(null);
-        }
+            case PREPARATION:
+                Integer previousPreparationCycle = game.getPreparationCycle();
+                preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
+                preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
+                preparationStageUtil.updatePreparationCycle(game);
+                Integer newPreparationCycle = game.getPreparationCycle();
+                boolean preparationFinished = newPreparationCycle == null && !game.getCurrentMove().equals(1);
+                if (preparationFinished || previousPreparationCycle.equals(newPreparationCycle)) {
+                    playUtil.updateNextMove(game);
+                }
+                break;
 
-        if (shouldUpdateNextMove) {
-            playUtil.updateNextMove(game);
+            case MAIN:
+                playUtil.resetDices(game);
+                playUtil.updateNextMove(game);
+                break;
         }
     }
 
     private void throwDice(GameBean game) {
-        Integer diceFirstValue = randomUtil.pullRandomDiceNumber(new ArrayList<Integer>(asList(1, 2, 3, 4, 5, 6)));
-        Integer diceSecondValue = randomUtil.pullRandomDiceNumber(new ArrayList<Integer>(asList(1, 2, 3, 4, 5, 6)));
+        Integer diceFirstValue = randomUtil.getRandomDiceNumber();
+        Integer diceSecondValue = randomUtil.getRandomDiceNumber();
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
-        if (diceFirstValue + diceSecondValue != 7) {
-            mainStageUtil.distributeResources(game);
+        if (!robberActivity(diceFirstValue, diceSecondValue)) {
+            mainStageUtil.produceResources(game);
         }
+    }
+
+    private boolean robberActivity(Integer diceFirstValue, Integer diceSecondValue) {
+        return diceFirstValue + diceSecondValue == 7;
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {
@@ -184,6 +189,7 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
+
 
 
     @Autowired

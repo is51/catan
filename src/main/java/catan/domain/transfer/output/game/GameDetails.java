@@ -39,7 +39,7 @@ public class GameDetails {
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.currentMove = game.getCurrentMove();
-        this.dice = new DiceDetails(game.getDiceFirstValue(), game.getDiceSecondValue());
+        this.dice = game.getDiceFirstValue() == null ? null : new DiceDetails(game.getDiceValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
         this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
     }
 

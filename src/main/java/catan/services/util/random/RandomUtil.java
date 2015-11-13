@@ -37,10 +37,14 @@ public class RandomUtil {
     }
 
     //TODO: add rule to avoid placing 6 and 8 dice numbers close to each other
-    public int pullRandomDiceNumber(List<Integer> possibleDiceNumbers) {
+    public int pullRandomHexDiceNumber(List<Integer> possibleDiceNumbers) {
         int randomDiceNumber = (int) (rvg.randomValue() * possibleDiceNumbers.size());
 
         return possibleDiceNumbers.remove(randomDiceNumber);
+    }
+
+    public int getRandomDiceNumber() {
+        return (int) Math.ceil(rvg.randomValue() * 6);
     }
 
     @Autowired

@@ -8,8 +8,8 @@ public class DiceDetails {
     public DiceDetails() {
     }
 
-    public DiceDetails(Integer firstValue, Integer secondValue) {
-        this.value = (firstValue != null ? firstValue + secondValue : null);
+    public DiceDetails(Integer value, Integer firstValue, Integer secondValue) {
+        this.value = value;
         this.firstValue = firstValue;
         this.secondValue = secondValue;
     }

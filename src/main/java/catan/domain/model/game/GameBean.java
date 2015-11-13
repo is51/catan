@@ -320,6 +320,14 @@ public class GameBean {
         this.nodes = nodes;
     }
 
+    public Integer getDiceValue() {
+        if (this.diceFirstValue != null && this.diceSecondValue != null) {
+            return this.diceFirstValue + this.diceSecondValue;
+        } else {
+            return null;
+        }
+    }
+
     public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
