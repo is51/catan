@@ -20,6 +20,7 @@ public class GameDetails {
     private int maxPlayers;
     private int targetVictoryPoints;
     private Integer currentMove;
+    private DiceDetails dice;
     private MapDetails map;
 
     public GameDetails() {
@@ -38,6 +39,7 @@ public class GameDetails {
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.currentMove = game.getCurrentMove();
+        this.dice = new DiceDetails(game.getDiceFirstValue(), game.getDiceSecondValue());
         this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
     }
 
@@ -135,6 +137,14 @@ public class GameDetails {
 
     public void setCurrentMove(Integer currentMove) {
         this.currentMove = currentMove;
+    }
+
+    public DiceDetails getDice() {
+        return dice;
+    }
+
+    public void setDice(DiceDetails dice) {
+        this.dice = dice;
     }
 
     public MapDetails getMap() {
