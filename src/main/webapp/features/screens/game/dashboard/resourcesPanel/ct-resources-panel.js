@@ -9,9 +9,9 @@ angular.module('catan')
                 },
                 templateUrl: "/features/screens/game/dashboard/resourcesPanel/ct-resources-panel.html",
                 link: function(scope) {
-                    var currentGameUser = scope.game.getCurrentUser();
-                    if (currentGameUser) {
-                        scope.resources = currentGameUser.resources;
+                    scope.resources = function() {
+                        var currentGameUser = scope.game.getCurrentUser();
+                        return (currentGameUser) ? currentGameUser.resources : {};
                     }
                 }
             };
