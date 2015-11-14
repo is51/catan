@@ -1183,33 +1183,6 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldPassWhenDiceValuesSetAfterDiceThrown() throws GameException, PlayException {
-        //GIVEN
-
-        //Should generate dices values 2 & 6
-        rvg.setNextGeneratedValue(0.3);
-        rvg.setNextGeneratedValue(0.9);
-
-        game.setStage(GameStage.MAIN);
-        game.setDiceThrown(false);
-        allowUserToThrowDice(gameUser1);
-        when(gameDao.getGameByGameId(1)).thenReturn(game);
-
-        //WHEN
-        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
-
-        //THEN
-        assertNotNull(game);
-        assertTrue(game.isDiceThrown());
-        assertNotNull(game.getDiceFirstValue());
-        assertTrue(game.getDiceFirstValue() == 2);
-        assertNotNull(game.getDiceSecondValue());
-        assertTrue(game.getDiceSecondValue() == 6);
-        assertNotNull(game.getDiceValue());
-        assertTrue(game.getDiceValue() == 8);
-    }
-
-    @Test
     public void shouldPassWhenPlayerThrowDice() throws GameException, PlayException {
         //GIVEN
 
