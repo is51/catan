@@ -1,7 +1,6 @@
 package catan.services.util.play;
 
 import catan.domain.exception.GameException;
-import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
@@ -36,15 +35,10 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    //TODO: think about refactoring this method to avoid using fourfold enclosure
     public void produceResources(GameBean game) {
-        for (HexBean hex : game.getHexes()) {
-            if (game.getDiceValue() != null && game.getDiceValue().equals(hex.getDice())) {
-                for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
-                    if (node.getBuilding() != null) {
-                        giveResourceToPlayer(node.getBuilding().getBuildingOwner().getResources(), node.getBuilding().getBuilt(), hex.getResourceType());
-                    }
-                }
+        for (HexBean hex : game.getHexesWithCurrentDiceValue()) {
+            for (NodeBean node : hex.getNodesWithBuildings()) {
+                giveResourceToPlayer(node.getBuilding().getBuildingOwner().getResources(), node.getBuilding().getBuilt(), hex.getResourceType());
             }
         }
     }

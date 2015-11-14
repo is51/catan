@@ -312,6 +312,17 @@ public class GameBean {
         this.hexes = hexes;
     }
 
+    public Set<HexBean> getHexesWithCurrentDiceValue() {
+        Set<HexBean> hexesWithDiceNumber = new HashSet<HexBean>();
+        for (HexBean hex : this.hexes) {
+            if (getDiceValue() != null && getDiceValue().equals(hex.getDice())) {
+                hexesWithDiceNumber.add(hex);
+            }
+        }
+
+        return hexesWithDiceNumber;
+    }
+
     public Set<NodeBean> getNodes() {
         return nodes;
     }
