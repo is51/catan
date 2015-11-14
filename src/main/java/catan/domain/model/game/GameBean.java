@@ -321,11 +321,10 @@ public class GameBean {
     }
 
     public Integer getDiceValue() {
-        if (this.diceFirstValue != null && this.diceSecondValue != null) {
-            return this.diceFirstValue + this.diceSecondValue;
-        } else {
+        if (this.diceFirstValue == null || this.diceSecondValue == null) {
             return null;
         }
+        return this.diceFirstValue + this.diceSecondValue;
     }
 
     public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
