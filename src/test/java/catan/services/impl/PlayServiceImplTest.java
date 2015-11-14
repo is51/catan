@@ -14,7 +14,6 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
-import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -30,6 +29,7 @@ import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueGeneratorMock;
 import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +48,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
@@ -67,8 +68,6 @@ public class PlayServiceImplTest {
     @InjectMocks
     private PlayServiceImpl playService;
     @InjectMocks
-    private RandomUtil randomUtil;
-    @InjectMocks
     private GameUtil gameUtil;
     @InjectMocks
     private PlayUtil playUtil;
@@ -85,11 +84,16 @@ public class PlayServiceImplTest {
     private GameUserBean gameUser1;
     private GameUserBean gameUser2;
 
+    private RandomValueGeneratorMock rvg = new RandomValueGeneratorMock();
+
     private static final Gson GSON = new Gson();
 
 
     @Before
     public void setUp() throws GameException {
+        RandomUtil randomUtil = new RandomUtil();
+        randomUtil.setRvg(rvg);
+
         buildUtil.setGameUtil(gameUtil);
 
         playService.setRandomUtil(randomUtil);
@@ -97,6 +101,7 @@ public class PlayServiceImplTest {
         playService.setPlayUtil(playUtil);
         playService.setBuildUtil(buildUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
+        playService.setMainStageUtil(mainStageUtil);
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
@@ -1175,6 +1180,84 @@ public class PlayServiceImplTest {
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
+    }
+
+    @Test
+    public void shouldPassWhenDiceValuesSetAfterDiceThrown() throws GameException, PlayException {
+        //GIVEN
+
+        //Should generate dices values 2 & 6
+        rvg.setNextGeneratedValue(0.3);
+        rvg.setNextGeneratedValue(0.9);
+
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        //WHEN
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        //THEN
+        assertNotNull(game);
+        assertTrue(game.isDiceThrown());
+        assertNotNull(game.getDiceFirstValue());
+        assertTrue(game.getDiceFirstValue() == 2);
+        assertNotNull(game.getDiceSecondValue());
+        assertTrue(game.getDiceSecondValue() == 6);
+        assertNotNull(game.getDiceValue());
+        assertTrue(game.getDiceValue() == 8);
+    }
+
+    @Test
+    public void shouldPassWhenPlayerThrowDice() throws GameException, PlayException {
+        //GIVEN
+
+        //Should generate dices values 2 & 6
+        rvg.setNextGeneratedValue(0.3);
+        rvg.setNextGeneratedValue(0.9);
+
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+
+        hex_0_0.setDice(8);
+        hex_0_0.setResourceType(HexType.WOOD);
+        hex_0_0.getNodes().getTop().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+        hex_0_0.getNodes().getBottomLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.CITY, gameUser2));
+
+        hex_1_0.setDice(9);
+        hex_1_0.getNodes().getTop().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.CITY, gameUser1));
+        hex_1_0.getNodes().getBottomRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
+
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        //WHEN
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        //THEN
+        assertNotNull(game);
+        assertTrue(game.isDiceThrown());
+        assertNotNull(game.getDiceFirstValue());
+        assertTrue(game.getDiceFirstValue() == 2);
+        assertNotNull(game.getDiceSecondValue());
+        assertTrue(game.getDiceSecondValue() == 6);
+        assertNotNull(game.getDiceValue());
+        assertTrue(game.getDiceValue() == 8);
+
+        assertNotNull(gameUser1.getResources());
+        assertEquals(0, gameUser1.getResources().getBrick());
+        assertEquals(1, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getStone());
+        assertEquals(0, gameUser1.getResources().getWheat());
+
+        assertNotNull(gameUser2.getResources());
+        assertEquals(0, gameUser2.getResources().getBrick());
+        assertEquals(2, gameUser2.getResources().getWood());
+        assertEquals(0, gameUser2.getResources().getSheep());
+        assertEquals(0, gameUser2.getResources().getStone());
+        assertEquals(0, gameUser2.getResources().getWheat());
     }
 
     private void allowUserToThrowDice(GameUserBean user) {
