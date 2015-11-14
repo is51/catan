@@ -3,8 +3,8 @@ package catan.domain.model.dashboard;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @MappedSuperclass
