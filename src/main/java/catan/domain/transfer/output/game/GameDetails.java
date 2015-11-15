@@ -41,7 +41,7 @@ public class GameDetails {
         this.currentMove = game.getCurrentMove();
         this.dice = game.isDiceThrown() == null
                 ? null
-                : new DiceDetails(game.isDiceThrown(), game.calculateDiceValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
+                : new DiceDetails(game.isDiceThrown(), game.calculateDiceSumValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
         this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
     }
 

@@ -4,6 +4,7 @@ import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodeBuiltType;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service("playService")
@@ -145,7 +147,8 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (!isRobbersActivity(diceFirstValue, diceSecondValue)) {
-            mainStageUtil.produceResourcesForUsersThatHaveBuildingsCloseToActiveHexes(game.fetchHexesWithCurrentDiceValue());
+            List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
+            mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
         }
     }
 

@@ -21,7 +21,7 @@ public class DiceDetails {
         }
     }
 
-    public boolean getThrown() {
+    public boolean isThrown() {
         return thrown;
     }
 

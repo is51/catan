@@ -42,15 +42,15 @@ public class MainStageUtil {
         game.setDiceSecondValue(null);
     }
 
-    public void produceResourcesForUsersThatHaveBuildingsCloseToActiveHexes(List<HexBean> hexes) {
+    public void produceResourcesFromActiveDiceHexes(List<HexBean> hexes) {
         for (HexBean hex : hexes) {
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
                 Building<NodeBuiltType> building = node.getBuilding();
                 HexType resourceType = hex.getResourceType();
                 Resources userResources = building.getBuildingOwner().getResources();
-                int currentResourceQuantity = userResources.findResource(resourceType);
+                int currentResourceQuantity = userResources.takeResourceQuantity(resourceType);
                 int resourceQuantityToAdd = building.getBuilt().resourceQuantityToAdd();
-                userResources.updateResource(resourceType, currentResourceQuantity + resourceQuantityToAdd);
+                userResources.updateResourceQuantity(resourceType, currentResourceQuantity + resourceQuantityToAdd);
             }
         }
     }

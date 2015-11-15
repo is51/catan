@@ -76,7 +76,7 @@ public class Resources {
         this.stone = stone;
     }
 
-    public Integer findResource(HexType resource) {
+    public Integer takeResourceQuantity(HexType resource) {
         switch (resource) {
             case BRICK:
                 return getBrick();
@@ -93,7 +93,7 @@ public class Resources {
         }
     }
 
-    public void updateResource(HexType resource, int resourceQuantity) {
+    public void updateResourceQuantity(HexType resource, int resourceQuantity) {
         switch (resource) {
             case BRICK:
                 setBrick(resourceQuantity);
