@@ -29,7 +29,7 @@ angular.module('catan')
                     });
 
                     scope.$watch("game.dice", function(newDice, oldDice) {
-                        if (oldDice !== undefined && !angular.equals(newDice, oldDice)) {
+                        if (oldDice !== undefined && oldDice.thrown === false && newDice.thrown === true) {
                             hexesHighlightTimeout = highlightHexes(element, scope.game.map, newDice.value, hexesHighlightTimeout);
                         }
                     });
