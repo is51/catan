@@ -49,7 +49,7 @@ public class MainStageUtil {
                 HexType resourceType = hex.getResourceType();
                 Resources userResources = building.getBuildingOwner().getResources();
                 int currentResourceQuantity = userResources.takeResourceQuantity(resourceType);
-                int resourceQuantityToAdd = building.getBuilt().resourceQuantityToAdd();
+                int resourceQuantityToAdd = building.getBuilt().defineResourceQuantityToAdd();
                 userResources.updateResourceQuantity(resourceType, currentResourceQuantity + resourceQuantityToAdd);
             }
         }
