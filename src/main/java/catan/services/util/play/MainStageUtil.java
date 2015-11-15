@@ -38,34 +38,11 @@ public class MainStageUtil {
     public void produceResources(GameBean game) {
         for (HexBean hex : game.getHexesWithCurrentDiceValue()) {
             for (NodeBean node : hex.getNodesWithBuildings()) {
-                giveResourceToPlayer(node.getBuilding().getBuildingOwner().getResources(), node.getBuilding().getBuilt(), hex.getResourceType());
+                Resources userResources = node.getBuilding().getBuildingOwner().getResources();
+                int currentResourceQuantity = userResources.getResource(hex.getResourceType());
+                int resourceQuantityToAdd = node.getBuilding().getBuilt().equals(NodeBuiltType.SETTLEMENT) ? 1 : 2;
+                userResources.setResource(hex.getResourceType(), currentResourceQuantity + resourceQuantityToAdd);
             }
-        }
-    }
-
-    private void giveResourceToPlayer(Resources userResources, NodeBuiltType building, HexType resource) {
-        int resourceQuantity = building.equals(NodeBuiltType.SETTLEMENT) ? 1 : 2;
-        switch (resource) {
-            case BRICK:
-                int currentBrickQuantity = userResources.getBrick();
-                userResources.setBrick(currentBrickQuantity + resourceQuantity);
-                break;
-            case WOOD:
-                int currentWoodQuantity = userResources.getWood();
-                userResources.setWood(currentWoodQuantity + resourceQuantity);
-                break;
-            case SHEEP:
-                int currentSheepQuantity = userResources.getSheep();
-                userResources.setSheep(currentSheepQuantity + resourceQuantity);
-                break;
-            case STONE:
-                int currentStoneQuantity = userResources.getStone();
-                userResources.setStone(currentStoneQuantity + resourceQuantity);
-                break;
-            case WHEAT:
-                int currentWheatQuantity = userResources.getWheat();
-                userResources.setWheat(currentWheatQuantity + resourceQuantity);
-                break;
         }
     }
 
