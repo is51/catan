@@ -2,9 +2,11 @@ package catan.domain.transfer.output.game;
 
 import catan.domain.model.game.GameBean;
 import catan.domain.transfer.output.dashboard.MapDetails;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameDetails {
     private int gameId;
     private int creatorId;
@@ -37,7 +39,9 @@ public class GameDetails {
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.currentMove = game.getCurrentMove();
-        this.dice = game.getDiceFirstValue() == null ? null : new DiceDetails(game.getDiceValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
+        this.dice = game.isDiceThrown() == null
+                ? null
+                : new DiceDetails(game.isDiceThrown(), game.calculateDiceValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
         this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
     }
 

@@ -76,7 +76,7 @@ public class Resources {
         this.stone = stone;
     }
 
-    public int getResource(HexType resource) {
+    public Integer findResource(HexType resource) {
         switch (resource) {
             case BRICK:
                 return getBrick();
@@ -89,22 +89,27 @@ public class Resources {
             case WHEAT:
                 return getWheat();
             default:
-                return 0;
+                return null;
         }
     }
 
-    public void setResource(HexType resource, int resourceQuantity) {
+    public void updateResource(HexType resource, int resourceQuantity) {
         switch (resource) {
             case BRICK:
                 setBrick(resourceQuantity);
+                break;
             case WOOD:
                 setWood(resourceQuantity);
+                break;
             case SHEEP:
                 setSheep(resourceQuantity);
+                break;
             case STONE:
                 setStone(resourceQuantity);
+                break;
             case WHEAT:
                 setWheat(resourceQuantity);
+                break;
         }
     }
 

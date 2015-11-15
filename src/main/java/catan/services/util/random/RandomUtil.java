@@ -44,10 +44,10 @@ public class RandomUtil {
     }
 
     public int getRandomDiceNumber() {
-        return (int) Math.ceil(rvg.randomValue() * 6);
+        int diceNumber = (int) Math.ceil(rvg.randomValue() * 6);
+        return diceNumber == 0 ? 1 : diceNumber;
     }
 
-    @Autowired
     public void setRvg(RandomValueGenerator rvg) {
         this.rvg = rvg;
     }

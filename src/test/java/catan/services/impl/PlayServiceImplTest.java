@@ -1215,8 +1215,8 @@ public class PlayServiceImplTest {
         assertTrue(game.getDiceFirstValue() == 2);
         assertNotNull(game.getDiceSecondValue());
         assertTrue(game.getDiceSecondValue() == 6);
-        assertNotNull(game.getDiceValue());
-        assertTrue(game.getDiceValue() == 8);
+        assertNotNull(game.calculateDiceValue());
+        assertTrue(game.calculateDiceValue() == 8);
 
         assertNotNull(gameUser1.getResources());
         assertEquals(0, gameUser1.getResources().getBrick());

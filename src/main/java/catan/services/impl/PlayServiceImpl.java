@@ -123,19 +123,17 @@ public class PlayServiceImpl implements PlayService {
 
             case PREPARATION:
                 Integer previousPreparationCycle = game.getPreparationCycle();
-                preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
                 preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
                 preparationStageUtil.updatePreparationCycle(game);
-                Integer newPreparationCycle = game.getPreparationCycle();
-                boolean preparationFinished = newPreparationCycle == null && !game.getCurrentMove().equals(1);
-                if (preparationFinished || previousPreparationCycle.equals(newPreparationCycle)) {
-                    playUtil.updateNextMove(game);
+                if (game.getPreparationCycle() == null || previousPreparationCycle.equals(game.getPreparationCycle())) {
+                    preparationStageUtil.updateNextMove(game);
                 }
+                preparationStageUtil.updateGameStageToMain(game);
                 break;
 
             case MAIN:
-                playUtil.resetDices(game);
-                playUtil.updateNextMove(game);
+                mainStageUtil.resetDices(game);
+                mainStageUtil.updateNextMove(game);
                 break;
         }
     }
@@ -146,12 +144,12 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
-        if (!robberActivity(diceFirstValue, diceSecondValue)) {
-            mainStageUtil.produceResources(game);
+        if (!isRobbersActivity(diceFirstValue, diceSecondValue)) {
+            mainStageUtil.produceResourcesForUsersThatHaveBuildingsCloseToActiveHexes(game.fetchHexesWithCurrentDiceValue());
         }
     }
 
-    private boolean robberActivity(Integer diceFirstValue, Integer diceSecondValue) {
+    private boolean isRobbersActivity(Integer diceFirstValue, Integer diceSecondValue) {
         return diceFirstValue + diceSecondValue == 7;
     }
 
@@ -186,8 +184,6 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
-
-
 
     @Autowired
     public void setGameDao(GameDao gameDao) {

@@ -16,8 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "HEX")
@@ -132,8 +132,16 @@ public class HexBean implements MapElement{
         this.nodes = nodes;
     }
 
-    public Set<NodeBean> getNodesWithBuildings() {
-        Set<NodeBean> nodesWithBuildings = new HashSet<NodeBean>();
+    public HorizontalLinks<EdgeBean> getEdges() {
+        return edges;
+    }
+
+    public void setEdges(HorizontalLinks<EdgeBean> edges) {
+        this.edges = edges;
+    }
+
+    public List<NodeBean> fetchNodesWithBuildings() {
+        List<NodeBean> nodesWithBuildings = new ArrayList<NodeBean>();
         for (NodeBean node : this.nodes.listAllNotNullItems()) {
             if (node.getBuilding() != null) {
                 nodesWithBuildings.add(node);
@@ -141,14 +149,6 @@ public class HexBean implements MapElement{
         }
 
         return nodesWithBuildings;
-    }
-
-    public HorizontalLinks<EdgeBean> getEdges() {
-        return edges;
-    }
-
-    public void setEdges(HorizontalLinks<EdgeBean> edges) {
-        this.edges = edges;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package catan.services.util.play;
 
 import catan.domain.exception.GameException;
+import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
@@ -35,13 +36,21 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void produceResources(GameBean game) {
-        for (HexBean hex : game.getHexesWithCurrentDiceValue()) {
-            for (NodeBean node : hex.getNodesWithBuildings()) {
-                Resources userResources = node.getBuilding().getBuildingOwner().getResources();
-                int currentResourceQuantity = userResources.getResource(hex.getResourceType());
-                int resourceQuantityToAdd = node.getBuilding().getBuilt().equals(NodeBuiltType.SETTLEMENT) ? 1 : 2;
-                userResources.setResource(hex.getResourceType(), currentResourceQuantity + resourceQuantityToAdd);
+    public void resetDices (GameBean game) {
+        game.setDiceThrown(false);
+        game.setDiceFirstValue(null);
+        game.setDiceSecondValue(null);
+    }
+
+    public void produceResourcesForUsersThatHaveBuildingsCloseToActiveHexes(List<HexBean> hexes) {
+        for (HexBean hex : hexes) {
+            for (NodeBean node : hex.fetchNodesWithBuildings()) {
+                Building<NodeBuiltType> building = node.getBuilding();
+                HexType resourceType = hex.getResourceType();
+                Resources userResources = building.getBuildingOwner().getResources();
+                int currentResourceQuantity = userResources.findResource(resourceType);
+                int resourceQuantityToAdd = building.getBuilt().resourceQuantityToAdd();
+                userResources.updateResource(resourceType, currentResourceQuantity + resourceQuantityToAdd);
             }
         }
     }

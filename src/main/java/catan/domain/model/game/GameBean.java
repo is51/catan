@@ -300,17 +300,6 @@ public class GameBean {
         this.hexes = hexes;
     }
 
-    public Set<HexBean> getHexesWithCurrentDiceValue() {
-        Set<HexBean> hexesWithDiceNumber = new HashSet<HexBean>();
-        for (HexBean hex : this.hexes) {
-            if (getDiceValue() != null && getDiceValue().equals(hex.getDice())) {
-                hexesWithDiceNumber.add(hex);
-            }
-        }
-
-        return hexesWithDiceNumber;
-    }
-
     public Set<NodeBean> getNodes() {
         return nodes;
     }
@@ -319,7 +308,20 @@ public class GameBean {
         this.nodes = nodes;
     }
 
-    public Integer getDiceValue() {
+    public List<HexBean> fetchHexesWithCurrentDiceValue() {
+        List<HexBean> hexesWithDiceNumber = new ArrayList<HexBean>();
+        if (calculateDiceValue() != null) {
+            for (HexBean hex : this.hexes) {
+                if (calculateDiceValue().equals(hex.getDice())) {
+                    hexesWithDiceNumber.add(hex);
+                }
+            }
+        }
+
+        return hexesWithDiceNumber;
+    }
+
+    public Integer calculateDiceValue() {
         if (this.diceFirstValue == null || this.diceSecondValue == null) {
             return null;
         }
