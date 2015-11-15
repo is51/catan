@@ -7,8 +7,10 @@ import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodeBuiltType;
+import catan.domain.model.game.AvailableDevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.UsersDevelopmentCards;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
@@ -56,6 +58,7 @@ public class PlayServiceImpl implements PlayService {
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
         log.debug("{} tries to perform action {} at game with id {} and additional params {}", user, action, gameId, params);
+        Map<String, String> returnedParams = new HashMap<String, String>();
 
         validateUserNotEmpty(user);
 
@@ -65,7 +68,7 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
 
-        Map<String, String> obtainedParams = doAction(action, user, game, params);
+        doAction(action, user, game, params, returnedParams);
 
         playUtil.updateVictoryPoints(gameUser);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
@@ -74,11 +77,10 @@ public class PlayServiceImpl implements PlayService {
         gameDao.updateGame(game);
 
         log.debug("User {} successfully performed action {}", user.getUsername(), action);
-        return obtainedParams;
+        return returnedParams;
     }
 
-    private Map<String, String> doAction(GameUserActionCode action, UserBean user, GameBean game, Map<String, String> params) throws PlayException, GameException {
-        Map<String, String> obtainedParams = new HashMap<String, String>();
+    private void doAction(GameUserActionCode action, UserBean user, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
         switch(action){
             case BUILD_ROAD:
                 buildRoad(user, game, params.get("edgeId"));
@@ -96,10 +98,9 @@ public class PlayServiceImpl implements PlayService {
                 throwDice(game);
                 break;
             case BUY_CARD:
-                obtainedParams = buyCard(user, game);
+                buyCard(user, game, returnedParams);
                 break;
         }
-        return obtainedParams;
     }
 
     private void buildRoad(UserBean user, GameBean game, String edgeId) throws PlayException, GameException {
@@ -150,94 +151,40 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceThrown(true);
     }
 
-    private Map<String, String> buyCard(UserBean user, GameBean game) throws PlayException, GameException {
-        Map<String, String> obtainedParams = new HashMap<String, String>();
+    private void buyCard(UserBean user, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
+        AvailableDevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
 
-        List<DevelopmentCard> availableDevCards = new ArrayList<DevelopmentCard>();
+        DevelopmentCard obtainedDevelopmentCard = pullDevelopmentCard(availableDevelopmentCards);
 
-        int knights = game.getAvailableDevelopmentCards().getKnight();
-        int victoryPoints = game.getAvailableDevelopmentCards().getVictoryPoint();
-        int monopolies = game.getAvailableDevelopmentCards().getMonopoly();
-        int roadBuildings = game.getAvailableDevelopmentCards().getRoadBuilding();
-        int yearsOfPlenty = game.getAvailableDevelopmentCards().getYearOfPlenty();
+        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, game);
+        UsersDevelopmentCards usersDevelopmentCards = gameUserBean.getDevelopmentCards();
+        usersDevelopmentCards.increaseUsersDevCardQuantityByOne(obtainedDevelopmentCard);
+        availableDevelopmentCards.decreaseAvailableDevCardQuantityByOne(obtainedDevelopmentCard);
 
-        formAvailableDevCardsList(availableDevCards, knights, victoryPoints, monopolies, roadBuildings, yearsOfPlenty);
+        returnedParams.put("card", obtainedDevelopmentCard.name());
+    }
 
-        if (availableDevCards.size() == 0) {
+    private DevelopmentCard pullDevelopmentCard(AvailableDevelopmentCards availableDevelopmentCards) throws PlayException {
+        List<DevelopmentCard> availableDevelopmentCardsList = new ArrayList<DevelopmentCard>();
+
+        populateAvailableDevCardsList(availableDevelopmentCardsList, availableDevelopmentCards);
+        validateThereAreAvailableCards(availableDevelopmentCardsList.size());
+
+        return randomUtil.pullRandomDevelopmentCard(availableDevelopmentCardsList);
+    }
+
+    private void validateThereAreAvailableCards(int availableDevelopmentCardsQuantity) throws PlayException {
+        if (availableDevelopmentCardsQuantity == 0) {
             log.debug("No available cards");
             throw new PlayException(CARDS_ARE_OVER_ERROR);
         }
-
-        DevelopmentCard obtainedDevelopmentCard = randomUtil.pullRandomDevelopmentCard(availableDevCards);
-        obtainedParams.put("card", obtainedDevelopmentCard.name());
-
-        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, game);
-        updateUserDevCards(gameUserBean, obtainedDevelopmentCard);
-        updateAvailableDevCards(game, obtainedDevelopmentCard, knights, victoryPoints, monopolies, roadBuildings, yearsOfPlenty);
-
-        return obtainedParams;
     }
 
-    private void updateUserDevCards(GameUserBean gameUserBean, DevelopmentCard obtainedDevelopmentCard) {
-        switch (obtainedDevelopmentCard) {
-            case VICTORY_POINT:
-                int userVictoryPoints = gameUserBean.getDevelopmentCards().getVictoryPoint();
-                gameUserBean.getDevelopmentCards().setVictoryPoint(userVictoryPoints + 1);
-                break;
-            case KNIGHT:
-                int userKnights = gameUserBean.getDevelopmentCards().getKnight();
-                gameUserBean.getDevelopmentCards().setKnight(userKnights + 1);
-                break;
-            case MONOPOLY:
-                int userMonopolies = gameUserBean.getDevelopmentCards().getMonopoly();
-                gameUserBean.getDevelopmentCards().setMonopoly(userMonopolies + 1);
-                break;
-            case ROAD_BUILDING:
-                int userRoadBuildings = gameUserBean.getDevelopmentCards().getRoadBuilding();
-                gameUserBean.getDevelopmentCards().setRoadBuilding(userRoadBuildings + 1);
-                break;
-            case YEAR_OF_PLENTY:
-                int userYearsOfPlenty = gameUserBean.getDevelopmentCards().getYearOfPlenty();
-                gameUserBean.getDevelopmentCards().setYearOfPlenty(userYearsOfPlenty + 1);
-                break;
-        }
-    }
-
-    private void updateAvailableDevCards(GameBean game, DevelopmentCard obtainedDevelopmentCard, int knights, int victoryPoints, int monopolies, int roadBuildings, int yearsOfPlenty) {
-        switch (obtainedDevelopmentCard) {
-            case VICTORY_POINT:
-                game.getAvailableDevelopmentCards().setVictoryPoint(victoryPoints - 1);
-                break;
-            case KNIGHT:
-                game.getAvailableDevelopmentCards().setKnight(knights - 1);
-                break;
-            case MONOPOLY:
-                game.getAvailableDevelopmentCards().setMonopoly(monopolies - 1);
-                break;
-            case ROAD_BUILDING:
-                game.getAvailableDevelopmentCards().setRoadBuilding(roadBuildings - 1);
-                break;
-            case YEAR_OF_PLENTY:
-                game.getAvailableDevelopmentCards().setYearOfPlenty(yearsOfPlenty - 1);
-                break;
-        }
-    }
-
-    private void formAvailableDevCardsList(List<DevelopmentCard> availableDevCards, int knights, int victoryPoints, int monopolies, int roadBuildings, int yearsOfPlenty) {
-        for (int i = victoryPoints; i > 0; i--) {
-            availableDevCards.add(DevelopmentCard.VICTORY_POINT);
-        }
-        for (int i = knights; i > 0; i--) {
-            availableDevCards.add(DevelopmentCard.KNIGHT);
-        }
-        for (int i = monopolies; i > 0; i--) {
-            availableDevCards.add(DevelopmentCard.MONOPOLY);
-        }
-        for (int i = roadBuildings; i > 0; i--) {
-            availableDevCards.add(DevelopmentCard.ROAD_BUILDING);
-        }
-        for (int i = yearsOfPlenty; i > 0; i--) {
-            availableDevCards.add(DevelopmentCard.YEAR_OF_PLENTY);
+    private void populateAvailableDevCardsList(List<DevelopmentCard> availableDevelopmentCardsList, AvailableDevelopmentCards availableDevelopmentCards) {
+        for (DevelopmentCard developmentCard : DevelopmentCard.values()) {
+            for (int i = availableDevelopmentCards.takeAvailableDevCardQuantity(developmentCard); i > 0; i--) {
+                availableDevelopmentCardsList.add(developmentCard);
+            }
         }
     }
 

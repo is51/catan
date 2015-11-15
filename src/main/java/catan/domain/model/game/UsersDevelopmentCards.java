@@ -1,5 +1,6 @@
 package catan.domain.model.game;
 
+import catan.domain.model.game.types.DevelopmentCard;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.Column;
@@ -74,6 +75,53 @@ public class UsersDevelopmentCards {
 
     public void setYearOfPlenty(int yearOfPlenty) {
         this.yearOfPlenty = yearOfPlenty;
+    }
+
+    public Integer takeUsersDevCardQuantity(DevelopmentCard developmentCard) {
+        switch (developmentCard) {
+            case KNIGHT:
+                return getKnight();
+            case VICTORY_POINT:
+                return getVictoryPoint();
+            case ROAD_BUILDING:
+                return getRoadBuilding();
+            case MONOPOLY:
+                return getMonopoly();
+            case YEAR_OF_PLENTY:
+                return getYearOfPlenty();
+            default:
+                return null;
+        }
+    }
+
+    public void decreaseUsersDevCardQuantityByOne(DevelopmentCard developmentCard) {
+        int newQuantityOfDevelopmentCard = takeUsersDevCardQuantity(developmentCard) - 1;
+        updateUsersDevCardQuantity(developmentCard, newQuantityOfDevelopmentCard);
+    }
+
+    public void increaseUsersDevCardQuantityByOne(DevelopmentCard developmentCard) {
+        int newQuantityOfDevelopmentCard = takeUsersDevCardQuantity(developmentCard) + 1;
+        updateUsersDevCardQuantity(developmentCard, newQuantityOfDevelopmentCard);
+    }
+
+    public void updateUsersDevCardQuantity(DevelopmentCard developmentCard, int newQuantityOfDevelopmentCard) {
+        switch (developmentCard) {
+            case KNIGHT:
+                setKnight(newQuantityOfDevelopmentCard);
+                break;
+            case VICTORY_POINT:
+                setVictoryPoint(newQuantityOfDevelopmentCard);
+                break;
+            case ROAD_BUILDING:
+                setRoadBuilding(newQuantityOfDevelopmentCard);
+                break;
+            case MONOPOLY:
+                setMonopoly(newQuantityOfDevelopmentCard);
+                break;
+            case YEAR_OF_PLENTY:
+                setYearOfPlenty(newQuantityOfDevelopmentCard);
+                break;
+        }
     }
 
     @Override
