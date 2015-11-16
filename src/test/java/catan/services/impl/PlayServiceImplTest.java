@@ -14,8 +14,7 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
-import catan.domain.model.game.UsersDevelopmentCards;
-import catan.domain.model.game.AvailableDevelopmentCards;
+import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -26,6 +25,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
+import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
@@ -76,6 +76,8 @@ public class PlayServiceImplTest {
     @InjectMocks
     private BuildUtil buildUtil;
     @InjectMocks
+    private CardUtil cardUtil;
+    @InjectMocks
     private PreparationStageUtil preparationStageUtil;
     @InjectMocks
     private MainStageUtil mainStageUtil;
@@ -93,14 +95,16 @@ public class PlayServiceImplTest {
     public void setUp() throws GameException {
         buildUtil.setGameUtil(gameUtil);
 
-        playService.setRandomUtil(randomUtil);
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);
         playService.setBuildUtil(buildUtil);
+        playService.setCardUtil(cardUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
+
+        cardUtil.setRandomUtil(randomUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
@@ -879,7 +883,7 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setTargetVictoryPoints(4);
         gameUser1.getBuildingsCount().setSettlements(2);
-        gameUser1.setDevelopmentCards(new UsersDevelopmentCards(0, 1, 0, 0, 0));
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 1, 0, 0, 0));
 
         //WHEN
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -1685,7 +1689,7 @@ public class PlayServiceImplTest {
                 edge_2_1, edge_2_2, edge_2_3, edge_2_4, edge_2_5,
                 edge_3_3, edge_3_4, edge_3_5, edge_3_6));
         game.setInitialBuildingsSet("[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
-        game.setAvailableDevelopmentCards(new AvailableDevelopmentCards(14, 5, 2, 2, 2));
+        game.setAvailableDevelopmentCards(new DevelopmentCards(14, 5, 2, 2, 2));
         playUtil.updateAvailableActionsForAllUsers(game);
     }
 }

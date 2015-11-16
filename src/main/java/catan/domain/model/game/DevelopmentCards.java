@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Embeddable
-public class UsersDevelopmentCards {
+public class DevelopmentCards {
 
     @Column(name = "DEV_CARD_KNIGHT", nullable = false)
     private int knight;
@@ -26,10 +26,10 @@ public class UsersDevelopmentCards {
     @Column(name = "DEV_CARD_YEAR_OF_PLENTY", nullable = false)
     private int yearOfPlenty;
 
-    public UsersDevelopmentCards() {
+    public DevelopmentCards() {
     }
 
-    public UsersDevelopmentCards(int knight, int victoryPoint, int roadBuilding, int monopoly, int yearOfPlenty) {
+    public DevelopmentCards(int knight, int victoryPoint, int roadBuilding, int monopoly, int yearOfPlenty) {
         this.knight = knight;
         this.victoryPoint = victoryPoint;
         this.roadBuilding = roadBuilding;
@@ -77,7 +77,7 @@ public class UsersDevelopmentCards {
         this.yearOfPlenty = yearOfPlenty;
     }
 
-    public Integer takeUsersDevCardQuantity(DevelopmentCard developmentCard) {
+    public Integer quantityOf(DevelopmentCard developmentCard) {
         switch (developmentCard) {
             case KNIGHT:
                 return getKnight();
@@ -94,32 +94,32 @@ public class UsersDevelopmentCards {
         }
     }
 
-    public void decreaseUsersDevCardQuantityByOne(DevelopmentCard developmentCard) {
-        int newQuantityOfDevelopmentCard = takeUsersDevCardQuantity(developmentCard) - 1;
-        updateUsersDevCardQuantity(developmentCard, newQuantityOfDevelopmentCard);
+    public void decreaseQuantityByOne(DevelopmentCard developmentCard) {
+        int newQuantity = quantityOf(developmentCard) - 1;
+        updateQuantity(developmentCard, newQuantity);
     }
 
-    public void increaseUsersDevCardQuantityByOne(DevelopmentCard developmentCard) {
-        int newQuantityOfDevelopmentCard = takeUsersDevCardQuantity(developmentCard) + 1;
-        updateUsersDevCardQuantity(developmentCard, newQuantityOfDevelopmentCard);
+    public void increaseQuantityByOne(DevelopmentCard developmentCard) {
+        int newQuantity = quantityOf(developmentCard) + 1;
+        updateQuantity(developmentCard, newQuantity);
     }
 
-    public void updateUsersDevCardQuantity(DevelopmentCard developmentCard, int newQuantityOfDevelopmentCard) {
+    public void updateQuantity(DevelopmentCard developmentCard, int newQuantity) {
         switch (developmentCard) {
             case KNIGHT:
-                setKnight(newQuantityOfDevelopmentCard);
+                setKnight(newQuantity);
                 break;
             case VICTORY_POINT:
-                setVictoryPoint(newQuantityOfDevelopmentCard);
+                setVictoryPoint(newQuantity);
                 break;
             case ROAD_BUILDING:
-                setRoadBuilding(newQuantityOfDevelopmentCard);
+                setRoadBuilding(newQuantity);
                 break;
             case MONOPOLY:
-                setMonopoly(newQuantityOfDevelopmentCard);
+                setMonopoly(newQuantity);
                 break;
             case YEAR_OF_PLENTY:
-                setYearOfPlenty(newQuantityOfDevelopmentCard);
+                setYearOfPlenty(newQuantity);
                 break;
         }
     }

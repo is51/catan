@@ -5,6 +5,7 @@ import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
+import catan.domain.transfer.output.game.BuyCardDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,11 +91,14 @@ public class PlayController {
     @RequestMapping(value = "buy/card",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> buyCard(@RequestParam(value = "token", required = false) String token,
+    public BuyCardDetails buyCard(@RequestParam(value = "token", required = false) String token,
                           @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        return playService.processAction(GameUserActionCode.BUY_CARD, user, gameId);
+        Map<String, String> returnedParams = playService.processAction(GameUserActionCode.BUY_CARD, user, gameId);
+        String developmentCardCode = returnedParams.get("code");
+
+        return new BuyCardDetails(developmentCardCode);
     }
 
     @Autowired

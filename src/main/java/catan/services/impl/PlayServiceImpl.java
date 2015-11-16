@@ -7,10 +7,9 @@ import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodeBuiltType;
-import catan.domain.model.game.AvailableDevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
-import catan.domain.model.game.UsersDevelopmentCards;
+import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
@@ -21,9 +20,9 @@ import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
+import catan.services.util.play.CardUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
-import catan.services.util.random.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service("playService")
@@ -44,10 +42,10 @@ public class PlayServiceImpl implements PlayService {
     public static final String CARDS_ARE_OVER_ERROR = "CARDS_ARE_OVER";
 
     private GameDao gameDao;
-    private RandomUtil randomUtil;
     private GameUtil gameUtil;
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
+    private CardUtil cardUtil;
     private PreparationStageUtil preparationStageUtil;
 
     @Override
@@ -68,7 +66,7 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
 
-        doAction(action, user, game, params, returnedParams);
+        doAction(action, user, gameUser, game, params, returnedParams);
 
         playUtil.updateVictoryPoints(gameUser);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
@@ -80,7 +78,7 @@ public class PlayServiceImpl implements PlayService {
         return returnedParams;
     }
 
-    private void doAction(GameUserActionCode action, UserBean user, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
+    private void doAction(GameUserActionCode action, UserBean user, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
         switch(action){
             case BUILD_ROAD:
                 buildRoad(user, game, params.get("edgeId"));
@@ -98,7 +96,7 @@ public class PlayServiceImpl implements PlayService {
                 throwDice(game);
                 break;
             case BUY_CARD:
-                buyCard(user, game, returnedParams);
+                buyCard(gameUser, game, returnedParams);
                 break;
         }
     }
@@ -151,41 +149,15 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceThrown(true);
     }
 
-    private void buyCard(UserBean user, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
-        AvailableDevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
+    private void buyCard(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
+        DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
+        DevelopmentCard obtainedDevelopmentCard = cardUtil.pullDevelopmentCard(availableDevelopmentCards);
 
-        DevelopmentCard obtainedDevelopmentCard = pullDevelopmentCard(availableDevelopmentCards);
-
-        GameUserBean gameUserBean = gameUtil.getGameUserJoinedToGame(user, game);
-        UsersDevelopmentCards usersDevelopmentCards = gameUserBean.getDevelopmentCards();
-        usersDevelopmentCards.increaseUsersDevCardQuantityByOne(obtainedDevelopmentCard);
-        availableDevelopmentCards.decreaseAvailableDevCardQuantityByOne(obtainedDevelopmentCard);
+        DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
+        usersDevelopmentCards.increaseQuantityByOne(obtainedDevelopmentCard);
+        availableDevelopmentCards.decreaseQuantityByOne(obtainedDevelopmentCard);
 
         returnedParams.put("card", obtainedDevelopmentCard.name());
-    }
-
-    private DevelopmentCard pullDevelopmentCard(AvailableDevelopmentCards availableDevelopmentCards) throws PlayException {
-        List<DevelopmentCard> availableDevelopmentCardsList = new ArrayList<DevelopmentCard>();
-
-        populateAvailableDevCardsList(availableDevelopmentCardsList, availableDevelopmentCards);
-        validateThereAreAvailableCards(availableDevelopmentCardsList.size());
-
-        return randomUtil.pullRandomDevelopmentCard(availableDevelopmentCardsList);
-    }
-
-    private void validateThereAreAvailableCards(int availableDevelopmentCardsQuantity) throws PlayException {
-        if (availableDevelopmentCardsQuantity == 0) {
-            log.debug("No available cards");
-            throw new PlayException(CARDS_ARE_OVER_ERROR);
-        }
-    }
-
-    private void populateAvailableDevCardsList(List<DevelopmentCard> availableDevelopmentCardsList, AvailableDevelopmentCards availableDevelopmentCards) {
-        for (DevelopmentCard developmentCard : DevelopmentCard.values()) {
-            for (int i = availableDevelopmentCards.takeAvailableDevCardQuantity(developmentCard); i > 0; i--) {
-                availableDevelopmentCardsList.add(developmentCard);
-            }
-        }
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {
@@ -227,11 +199,6 @@ public class PlayServiceImpl implements PlayService {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
-        this.randomUtil = randomUtil;
-    }
-
-    @Autowired
     public void setGameUtil(GameUtil gameUtil) {
         this.gameUtil = gameUtil;
     }
@@ -244,6 +211,11 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setBuildUtil(BuildUtil buildUtil) {
         this.buildUtil = buildUtil;
+    }
+
+    @Autowired
+    public void setCardUtil(CardUtil cardUtil) {
+        this.cardUtil = cardUtil;
     }
 
     @Autowired

@@ -92,7 +92,7 @@ public class GameBean {
     private Boolean diceThrown;
 
     @Embedded
-    private AvailableDevelopmentCards availableDevelopmentCards;
+    private DevelopmentCards availableDevelopmentCards;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
@@ -127,7 +127,7 @@ public class GameBean {
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
         this.initialBuildingsSet = initialBuildingsSet;
-        this.availableDevelopmentCards = new AvailableDevelopmentCards(14, 5, 2, 2, 2);
+        this.availableDevelopmentCards = new DevelopmentCards(14, 5, 2, 2, 2);
     }
 
     public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints, String initialBuildingsSet) {
@@ -140,7 +140,7 @@ public class GameBean {
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
         this.initialBuildingsSet = initialBuildingsSet;
-        this.availableDevelopmentCards = new AvailableDevelopmentCards(14, 5, 2, 2, 2);
+        this.availableDevelopmentCards = new DevelopmentCards(14, 5, 2, 2, 2);
     }
 
     public int getGameId() {
@@ -280,11 +280,11 @@ public class GameBean {
         this.diceThrown = diceThrown;
     }
 
-    public AvailableDevelopmentCards getAvailableDevelopmentCards() {
+    public DevelopmentCards getAvailableDevelopmentCards() {
         return availableDevelopmentCards;
     }
 
-    public void setAvailableDevelopmentCards(AvailableDevelopmentCards availableDevelopmentCards) {
+    public void setAvailableDevelopmentCards(DevelopmentCards availableDevelopmentCards) {
         this.availableDevelopmentCards = availableDevelopmentCards;
     }
 

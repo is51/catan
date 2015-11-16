@@ -52,7 +52,7 @@ public class GameUserBean {
     private Resources resources;
 
     @Embedded
-    private UsersDevelopmentCards usersDevelopmentCards;
+    private DevelopmentCards developmentCards;
 
     public GameUserBean() {
     }
@@ -64,7 +64,7 @@ public class GameUserBean {
         this.buildingsCount = new BuildingsCount(0, 0);
         this.achievements = new Achievements(0, 0, 0, 0, 0);
         this.resources = new Resources(0, 0, 0, 0, 0);
-        this.usersDevelopmentCards = new UsersDevelopmentCards(0, 0, 0, 0, 0);
+        this.developmentCards = new DevelopmentCards(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -147,12 +147,12 @@ public class GameUserBean {
         this.resources = resources;
     }
 
-    public UsersDevelopmentCards getDevelopmentCards() {
-        return usersDevelopmentCards;
+    public DevelopmentCards getDevelopmentCards() {
+        return developmentCards;
     }
 
-    public void setDevelopmentCards(UsersDevelopmentCards usersDevelopmentCards) {
-        this.usersDevelopmentCards = usersDevelopmentCards;
+    public void setDevelopmentCards(DevelopmentCards developmentCards) {
+        this.developmentCards = developmentCards;
     }
 
     @Override
