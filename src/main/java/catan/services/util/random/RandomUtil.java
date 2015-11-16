@@ -44,8 +44,7 @@ public class RandomUtil {
     }
 
     public int getRandomDiceNumber() {
-        int diceNumber = (int) Math.ceil(rvg.randomValue() * 6);
-        return diceNumber == 0 ? 1 : diceNumber;
+        return (int) (rvg.randomValue() * 6) + 1;
     }
 
     @Autowired

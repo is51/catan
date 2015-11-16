@@ -125,12 +125,12 @@ public class PlayServiceImpl implements PlayService {
 
             case PREPARATION:
                 Integer previousPreparationCycle = game.getPreparationCycle();
+                preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
                 preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
                 preparationStageUtil.updatePreparationCycle(game);
                 if (game.getPreparationCycle() == null || previousPreparationCycle.equals(game.getPreparationCycle())) {
                     preparationStageUtil.updateNextMove(game);
                 }
-                preparationStageUtil.updateGameStageToMain(game);
                 break;
 
             case MAIN:

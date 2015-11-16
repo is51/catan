@@ -76,7 +76,7 @@ public class Resources {
         this.stone = stone;
     }
 
-    public Integer takeResourceQuantity(HexType resource) {
+    public Integer quantityOf(HexType resource) {
         switch (resource) {
             case BRICK:
                 return getBrick();

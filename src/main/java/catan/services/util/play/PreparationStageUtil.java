@@ -55,7 +55,7 @@ public class PreparationStageUtil {
             Integer numberOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
             Integer currentCycleBuildingNumber = game.getCurrentCycleBuildingNumber();
 
-            if (numberOfBuildingsInCycle.equals(currentCycleBuildingNumber) || isEndOfPreparationStage(game, initialBuildingsSet)) {
+            if (numberOfBuildingsInCycle.equals(currentCycleBuildingNumber)) {
                 game.setCurrentCycleBuildingNumber(null);
             } else if (currentCycleBuildingNumber == null) {
                 game.setCurrentCycleBuildingNumber(1);
@@ -70,7 +70,7 @@ public class PreparationStageUtil {
     public void updateGameStageToMain(GameBean game) {
         List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
 
-        if (isEndOfPreparationStage(game, initialBuildingsSet)) {
+        if (isEndOfPreparationStage(game, initialBuildingsSet.size())) {
             game.setStage(GameStage.MAIN);
             game.setDiceThrown(false);
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
@@ -80,13 +80,14 @@ public class PreparationStageUtil {
     public void updatePreparationCycle(GameBean game) {
         if (isEndOfCycle(game)) {
             List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+            int preparationCyclesQuantity = initialBuildingsSet.size();
 
-            if (isLastCycle(game.getPreparationCycle(), initialBuildingsSet)) {
+            if (isLastCycle(game.getPreparationCycle(), preparationCyclesQuantity)) {
                 game.setPreparationCycle(null);
                 log.debug("Preparation Cycle changed to {}", game.getPreparationCycle());
             } else {
                 game.setPreparationCycle(game.getPreparationCycle() + 1);
-                log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), initialBuildingsSet.size());
+                log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), preparationCyclesQuantity);
             }
         }
     }
@@ -111,8 +112,8 @@ public class PreparationStageUtil {
         }
     }
 
-    private boolean isLastCycle(Integer preparationCycle, List<List<GameUserActionCode>> initialBuildingsSet) {
-        return preparationCycle.equals(initialBuildingsSet.size());
+    private boolean isLastCycle(Integer preparationCycle, int preparationCyclesQuantity) {
+        return preparationCycle.equals(preparationCyclesQuantity);
     }
 
     private boolean isEndOfCycle(GameBean game) {
@@ -123,8 +124,8 @@ public class PreparationStageUtil {
         return firstPlayer && !oddCycle || lastPlayer && oddCycle;
     }
 
-    private boolean isEndOfPreparationStage(GameBean game, List<List<GameUserActionCode>> initialBuildingsSet) {
-        return isEndOfCycle(game) && isLastCycle(game.getPreparationCycle(), initialBuildingsSet);
+    private boolean isEndOfPreparationStage(GameBean game, int preparationCyclesQuantity) {
+        return isEndOfCycle(game) && isLastCycle(game.getPreparationCycle(), preparationCyclesQuantity);
     }
 
     private GameUserActionCode getCurrentActionCode(GameBean game) {

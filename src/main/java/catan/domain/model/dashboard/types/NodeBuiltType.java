@@ -10,7 +10,7 @@ public enum NodeBuiltType{
         this.resourceQuantityToAdd = resourceQuantityToAdd;
     }
 
-    public int defineResourceQuantityToAdd() {
+    public int getResourceQuantityToAdd() {
         return this.resourceQuantityToAdd;
     }
 }
