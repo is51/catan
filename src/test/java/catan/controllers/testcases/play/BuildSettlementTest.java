@@ -1,6 +1,6 @@
 package catan.controllers.testcases.play;
 
-import catan.config.ApplicationConfig;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.ctf.Scenario;
 import catan.controllers.util.PlayTestUtil;
 import org.junit.Before;
@@ -18,9 +18,9 @@ import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class BuildSettlementTest extends PlayTestUtil {
 

@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public class RandomUtil {
 
-    private RandomValueGenerator rvg = new RandomValueGenerator();
+    private RandomValueGenerator rvg;
 
     public String generateRandomPrivateCode(int numberOfDigits) {
         int digits = 1;
@@ -48,6 +48,7 @@ public class RandomUtil {
         return diceNumber == 0 ? 1 : diceNumber;
     }
 
+    @Autowired
     public void setRvg(RandomValueGenerator rvg) {
         this.rvg = rvg;
     }

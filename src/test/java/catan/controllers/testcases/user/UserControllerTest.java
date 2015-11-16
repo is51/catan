@@ -1,6 +1,6 @@
 package catan.controllers.testcases.user;
 
-import catan.config.ApplicationConfig;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.FunctionalTestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class UserControllerTest extends FunctionalTestUtil {
     // TODO: these tests need to be refactored: create methods like "register", "login", ... which will be returning "Response" objects. And use them.

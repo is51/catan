@@ -5,7 +5,6 @@ import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import catan.services.util.random.RandomValueGeneratorMock;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 
-@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class ThrowDiceTest extends PlayTestUtil {

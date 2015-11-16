@@ -1,6 +1,6 @@
 package catan.controllers.testcases.play;
 
-import catan.config.ApplicationConfig;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.config.RequestResponseLogger;
 import catan.controllers.ctf.Scenario;
 import org.junit.Before;
@@ -15,8 +15,8 @@ import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class VictoryPointsTest {
     public static final String USER_NAME_1 = "user1_VictoryPointsTest";

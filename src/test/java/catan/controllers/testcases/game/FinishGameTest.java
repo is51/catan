@@ -1,6 +1,6 @@
 package catan.controllers.testcases.game;
 
-import catan.config.ApplicationConfig;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.ctf.Scenario;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class FinishGameTest {
     public static final String USER_NAME_1 = "user1_FinishGameTest";
