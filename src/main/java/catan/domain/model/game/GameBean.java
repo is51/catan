@@ -310,12 +310,15 @@ public class GameBean {
 
     public List<HexBean> fetchHexesWithCurrentDiceValue() {
         List<HexBean> hexesWithDiceNumber = new ArrayList<HexBean>();
+
         Integer diceSumValue = calculateDiceSumValue();
-        if (diceSumValue != null) {
-            for (HexBean hex : this.hexes) {
-                if (diceSumValue.equals(hex.getDice())) {
-                    hexesWithDiceNumber.add(hex);
-                }
+        if (diceSumValue == null) {
+            return hexesWithDiceNumber;
+        }
+
+        for (HexBean hex : this.hexes) {
+            if (diceSumValue.equals(hex.getDice())) {
+                hexesWithDiceNumber.add(hex);
             }
         }
 
