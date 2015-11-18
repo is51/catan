@@ -20,21 +20,21 @@ public class CardUtil {
 
     private RandomUtil randomUtil;
 
-    public DevelopmentCard pullDevelopmentCard(DevelopmentCards availableDevelopmentCards) throws PlayException {
-        List<DevelopmentCard> availableDevelopmentCardsList = formAvailableDevCardsList(availableDevelopmentCards);
-        validateThereAreAvailableCards(availableDevelopmentCardsList.size());
+    public DevelopmentCard chooseDevelopmentCard(DevelopmentCards availableDevelopmentCards) throws PlayException {
+        List<DevelopmentCard> availableDevelopmentCardsList = listAvailableDevCards(availableDevelopmentCards);
+        validateThereAreAvailableCards(availableDevelopmentCardsList);
 
         return randomUtil.pullRandomDevelopmentCard(availableDevelopmentCardsList);
     }
 
-    private void validateThereAreAvailableCards(int availableDevelopmentCardsQuantity) throws PlayException {
-        if (availableDevelopmentCardsQuantity == 0) {
+    private void validateThereAreAvailableCards(List<DevelopmentCard> availableDevelopmentCardsQuantity) throws PlayException {
+        if (availableDevelopmentCardsQuantity.size() == 0) {
             log.debug("No available cards");
             throw new PlayException(CARDS_ARE_OVER_ERROR);
         }
     }
 
-    private List<DevelopmentCard> formAvailableDevCardsList(DevelopmentCards availableDevelopmentCards) {
+    private List<DevelopmentCard> listAvailableDevCards(DevelopmentCards availableDevelopmentCards) {
         List<DevelopmentCard> availableDevelopmentCardsList = new ArrayList<DevelopmentCard>();
         for (DevelopmentCard developmentCard : DevelopmentCard.values()) {
             for (int i = 0; i < availableDevelopmentCards.quantityOf(developmentCard); i++) {

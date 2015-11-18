@@ -39,7 +39,6 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
-    public static final String CARDS_ARE_OVER_ERROR = "CARDS_ARE_OVER";
 
     private GameDao gameDao;
     private GameUtil gameUtil;
@@ -151,13 +150,13 @@ public class PlayServiceImpl implements PlayService {
 
     private void buyCard(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
         DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
-        DevelopmentCard obtainedDevelopmentCard = cardUtil.pullDevelopmentCard(availableDevelopmentCards);
+        DevelopmentCard chosenDevelopmentCard = cardUtil.chooseDevelopmentCard(availableDevelopmentCards);
 
         DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
-        usersDevelopmentCards.increaseQuantityByOne(obtainedDevelopmentCard);
-        availableDevelopmentCards.decreaseQuantityByOne(obtainedDevelopmentCard);
+        usersDevelopmentCards.increaseQuantityByOne(chosenDevelopmentCard);
+        availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
 
-        returnedParams.put("card", obtainedDevelopmentCard.name());
+        returnedParams.put("card", chosenDevelopmentCard.name());
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {

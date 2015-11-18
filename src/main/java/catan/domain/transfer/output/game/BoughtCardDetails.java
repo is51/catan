@@ -1,12 +1,12 @@
 package catan.domain.transfer.output.game;
 
-public class BuyCardDetails {
+public class BoughtCardDetails {
     private String card;
 
-    public BuyCardDetails() {
+    public BoughtCardDetails() {
     }
 
-    public BuyCardDetails(String card) {
+    public BoughtCardDetails(String card) {
         this.card = card;
     }
 
