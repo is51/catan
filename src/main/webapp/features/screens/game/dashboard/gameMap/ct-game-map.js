@@ -14,8 +14,6 @@ angular.module('catan')
                 },
                 link: function(scope, element) {
 
-                    var hexesHighlightTimeout = null;
-
                     var canvas = angular.element('<div/>')
                             .addClass('canvas')
                             .appendTo(element);
@@ -30,7 +28,7 @@ angular.module('catan')
 
                     scope.$watch("game.dice", function(newDice, oldDice) {
                         if (oldDice !== undefined && oldDice.thrown === false && newDice.thrown === true) {
-                            hexesHighlightTimeout = highlightHexes(element, scope.game.map, newDice.value, hexesHighlightTimeout);
+                            highlightHexes(canvas, scope.game.map, newDice.value);
                         }
                     });
 
@@ -48,22 +46,19 @@ angular.module('catan')
             };
 
             //TODO: move that code to some helper?
-            function highlightHexes(element, map, dice, timeout) {
+            function highlightHexes(canvas, map, dice) {
                 var hexesToHighlight = map.hexes.filter(function(hex) {
                     return (dice === 7) ? hex.robbed : !hex.robbed && hex.dice === dice;
                 });
 
-                $timeout.cancel(timeout);
-                element.find(DrawMapService.HEX_SELECTOR).removeClass(HEXES_HIGHLIGHT_CLASS);
-
                 var elementsToHighlight = angular.element([]);
                 hexesToHighlight.forEach(function(hex) {
-                    elementsToHighlight = elementsToHighlight.add(DrawMapService.HEX_SELECTOR + "[hex-id="+hex.hexId+"]");
+                    elementsToHighlight = elementsToHighlight.add(DrawMapService.HEX_SELECTOR + "[hex-id="+hex.hexId+"]", canvas);
                 });
 
                 elementsToHighlight.addClass(HEXES_HIGHLIGHT_CLASS);
 
-                return $timeout(function() {
+                $timeout(function() {
                     elementsToHighlight.removeClass(HEXES_HIGHLIGHT_CLASS);
                 }, HEXES_HIGHLIGHT_DELAY);
             }
