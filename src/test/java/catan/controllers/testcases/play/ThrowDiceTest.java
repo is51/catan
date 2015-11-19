@@ -5,6 +5,7 @@ import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import catan.services.util.random.RandomValueGeneratorMock;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
@@ -81,6 +84,104 @@ public class ThrowDiceTest extends PlayTestUtil {
 
         playPreparationStage()
                 .throwDice(2).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_game_details_have_dice_information_after_throwing() {
+        playPreparationStage()
+
+                .getGameDetails(1)
+                    .check("dice.thrown", equalTo(false))
+                    .check("dice.value", nullValue())
+                    .check("dice.first", nullValue())
+                    .check("dice.second", nullValue())
+
+                .getGameDetails(2)
+                    .check("dice.thrown", equalTo(false))
+                    .check("dice.value", nullValue())
+                    .check("dice.first", nullValue())
+                    .check("dice.second", nullValue())
+
+                .nextRandomGeneratedValues(asList(2, 6))
+                .throwDice(1)
+
+                .getGameDetails(1)
+                    .check("dice.thrown", equalTo(true))
+                    .check("dice.value", equalTo(8))
+                    .check("dice.first", equalTo(2))
+                    .check("dice.second", equalTo(6))
+
+                .getGameDetails(2)
+                    .check("dice.thrown", equalTo(true))
+                    .check("dice.value", equalTo(8))
+                    .check("dice.first", equalTo(2))
+                    .check("dice.second", equalTo(6))
+
+                .endTurn(1)
+
+                .getGameDetails(1)
+                    .check("dice.thrown", equalTo(false))
+                    .check("dice.value", nullValue())
+                    .check("dice.first", nullValue())
+                    .check("dice.second", nullValue())
+
+                .getGameDetails(2)
+                    .check("dice.thrown", equalTo(false))
+                    .check("dice.value", nullValue())
+                    .check("dice.first", nullValue())
+                    .check("dice.second", nullValue());
+    }
+
+    @Ignore
+    @Test
+    public void should_correctly_give_resources_to_players() {
+        Scenario scenario =  playPreparationStageAndBuildCity();
+
+        // TODO: get resources of all players into some variables
+
+        scenario
+                .nextRandomGeneratedValues(asList(2, 6)) // TODO: set the dice number which is near both some settlement and city
+                .throwDice(1)
+
+                .getGameDetails(1)
+                // TODO: check if player1 resources are correct
+
+                .getGameDetails(2)
+                // TODO: check if player2 resources are correct
+
+                .getGameDetails(3);
+                // TODO: check if player3 resources are correct
+    }
+
+    private Scenario playPreparationStageAndBuildCity() {
+
+        //  TODO: map shouldn't be random
+
+        return playPreparationStage()
+                .nextRandomGeneratedValues(asList(2, 6)) // TODO: set the best dice for player 1
+                .throwDice(1)
+                .buildRoad(1).atEdge(0, -1, "right")
+                .endTurn(1)
+
+                .nextRandomGeneratedValues(asList(2, 6)) // set the best dice for player 1
+                .throwDice(2)
+                .endTurn(2)
+
+                .nextRandomGeneratedValues(asList(2, 6)) // set the best dice for player 1
+                .throwDice(3)
+                .endTurn(3)
+
+                .nextRandomGeneratedValues(asList(2, 6)) // set the best dice for player 1
+                .throwDice(1)
+                .buildSettlement(1).atNode(0, -1, "topLeft")
+                .buildCity(1).atNode(0, -1, "topLeft")
+                .endTurn(1)
+
+                .throwDice(2)
+                .endTurn(2)
+
+                .throwDice(3)
+                .endTurn(3);
     }
 
     private Scenario playPreparationStage() {
