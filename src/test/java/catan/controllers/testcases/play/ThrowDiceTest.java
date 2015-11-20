@@ -185,6 +185,30 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)
 
                 //TODO: set all hex types accordingly
+                /*
+                possible dice values
+
+                2,
+                3, 3,
+                4, 4,
+                5, 5,
+                6, 6,
+                7
+                8, 8,
+                9, 9,
+                10, 10,
+                11, 11,
+                12
+
+                possible hex type values:
+                WOOD, WOOD, WOOD, WOOD,
+                SHEEP, SHEEP, SHEEP, SHEEP,
+                WHEAT, WHEAT, WHEAT, WHEAT,
+                BRICK, BRICK, BRICK,
+                STONE, STONE, STONE,
+                EMPTY
+
+                */
                 .setHex(BRICK, 11).atCoordinates(-1, -1)
                 .setHex(WHEAT, 9).atCoordinates(-1, 1)
                 .setHex(WOOD, 5).atCoordinates(-1, 0)
