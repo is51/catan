@@ -171,11 +171,25 @@ public class Scenario {
         return this;
     }
 
-    public Scenario nextRandomGeneratedValues(List<Integer> nextRandomValues) {
+    public Scenario nextRandomMoveOrderValues(List<Integer> nextRandomValues) {
         for (Integer nextRandomValue : nextRandomValues) {
-            rvg.setNextGeneratedValue(nextRandomValue);
+            double randomMockValue = toRandomMockValue(nextRandomValue, 0, userTokensByName.size());
+            rvg.setNextGeneratedValue(randomMockValue);
         }
 
         return this;
+    }
+
+    public Scenario nextRandomDiceValues(List<Integer> nextRandomValues) {
+        for (Integer nextRandomValue : nextRandomValues) {
+            double randomMockValue = toRandomMockValue(nextRandomValue, 1, 6);
+            rvg.setNextGeneratedValue(randomMockValue);
+        }
+
+        return this;
+    }
+
+    private double toRandomMockValue(int nextRandomValue, int minValue, int maxValue) {
+        return ((double)nextRandomValue - minValue) / (maxValue - minValue + 1);
     }
 }

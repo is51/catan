@@ -102,7 +102,7 @@ public class ThrowDiceTest extends PlayTestUtil {
                     .check("dice.first", nullValue())
                     .check("dice.second", nullValue())
 
-                .nextRandomGeneratedValues(asList(2, 6))
+                .nextRandomDiceValues(asList(2, 6))
                 .throwDice(1)
 
                 .getGameDetails(1)
@@ -140,7 +140,7 @@ public class ThrowDiceTest extends PlayTestUtil {
         // TODO: get resources of all players into some variables
 
         scenario
-                .nextRandomGeneratedValues(asList(2, 6)) // TODO: set the dice number which is near both some settlement and city
+                .nextRandomDiceValues(asList(2, 6)) // TODO: set the dice number which is near both some settlement and city
                 .throwDice(1)
 
                 .getGameDetails(1)
@@ -158,20 +158,20 @@ public class ThrowDiceTest extends PlayTestUtil {
         //  TODO: map shouldn't be random
 
         return playPreparationStage()
-                .nextRandomGeneratedValues(asList(2, 6)) // TODO: set the best dice for player 1
+                .nextRandomDiceValues(asList(2, 6)) // TODO: set the best dice for player 1
                 .throwDice(1)
                 .buildRoad(1).atEdge(0, -1, "right")
                 .endTurn(1)
 
-                .nextRandomGeneratedValues(asList(2, 6)) // set the best dice for player 1
+                .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
                 .throwDice(2)
                 .endTurn(2)
 
-                .nextRandomGeneratedValues(asList(2, 6)) // set the best dice for player 1
+                .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
                 .throwDice(3)
                 .endTurn(3)
 
-                .nextRandomGeneratedValues(asList(2, 6)) // set the best dice for player 1
+                .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
                 .throwDice(1)
                 .buildSettlement(1).atNode(0, -1, "topLeft")
                 .buildCity(1).atNode(0, -1, "topLeft")
@@ -194,8 +194,8 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .joinPublicGame(USER_NAME_2)
                 .joinPublicGame(USER_NAME_3)
 
-                // return random values as 0 each time, when pulling move order from the list to have order: 1, 2, 3
-                .nextRandomGeneratedValues(asList(0, 0, 0))
+                // take last player from the list each time, when pulling move order from the list to have order: 3, 2, 1
+                .nextRandomMoveOrderValues(asList(3, 2, 1))
 
                 .setUserReady(USER_NAME_1)
                 .setUserReady(USER_NAME_2)
@@ -203,9 +203,9 @@ public class ThrowDiceTest extends PlayTestUtil {
 
                 //check that move orders are never changed and users have move orders according to joined order
                 .getGameDetails(1)
-                .gameUser(1).check("user.username", is(USER_NAME_1))
+                .gameUser(3).check("user.username", is(USER_NAME_1))
                 .gameUser(2).check("user.username", is(USER_NAME_2))
-                .gameUser(3).check("user.username", is(USER_NAME_3))
+                .gameUser(1).check("user.username", is(USER_NAME_3))
 
                 .buildSettlement(1).atNode(0, 0, "topLeft")
                 .buildRoad(1).atEdge(0, 0, "topLeft")
