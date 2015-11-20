@@ -96,7 +96,9 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     @Override
     public void updateGameUser(GameUserBean gameUserBean) {
         persist(gameUserBean);
+
         getSession().flush();
+        getSession().clear();
     }
 
 }
