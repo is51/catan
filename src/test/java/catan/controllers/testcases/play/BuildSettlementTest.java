@@ -87,7 +87,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(1).statusIsPlaying().and().node(0, 0, "topLeft").buildingIsEmpty()
 
                 //When
-                .buildSettlement(1).atNode(0, 0, "topLeft")
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
 
                 //Then
                 .getGameDetails(1).node(0, 0, "topLeft").buildingBelongsToPlayer(1);
@@ -97,16 +97,16 @@ public class BuildSettlementTest extends PlayTestUtil {
     public void should_fail_if_try_to_build_settlement_on_existing_settlement_in_preparation_stage() {
         startNewGame()
                 //Given
-                .buildSettlement(1).atNode(0, 0, "topLeft")
-                .buildRoad(1).atEdge(0, 0, "topLeft")
-                .endTurn(1)
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
+                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
+                .END_TURN(1)
 
                         //When                              //Then
-                .buildSettlement(2).atNode(0, 0, "topLeft").failsWithError("ERROR")
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "topLeft").failsWithError("ERROR")
 
                 //Check that this player still can build settlement on empty node
                 .getGameDetails(2).node(0, 0, "topRight").buildingIsEmpty()
-                .buildSettlement(2).atNode(0, 0, "topRight")
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "topRight")
                 .getGameDetails(2).node(0, 0, "topRight").buildingBelongsToPlayer(2);
     }
 
@@ -114,16 +114,16 @@ public class BuildSettlementTest extends PlayTestUtil {
     public void should_fail_if_try_to_build_settlement_close_to_another_settlement_less_than_2_roads_in_preparation_stage() {
         startNewGame()
                 //Given
-                .buildSettlement(1).atNode(0, 0, "topLeft")
-                .buildRoad(1).atEdge(0, 0, "topLeft")
-                .endTurn(1)
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
+                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
+                .END_TURN(1)
 
                         //When                          //Then
-                .buildSettlement(2).atNode(0, 0, "top").failsWithError("ERROR")
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "top").failsWithError("ERROR")
 
                 //Check that this player still can build settlement on empty node
                 .getGameDetails(2).node(0, 0, "topRight").buildingIsEmpty()
-                .buildSettlement(2).atNode(0, 0, "topRight")
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "topRight")
                 .getGameDetails(2).node(0, 0, "topRight").buildingBelongsToPlayer(2);
     }
 

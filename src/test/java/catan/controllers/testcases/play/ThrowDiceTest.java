@@ -3,6 +3,7 @@ package catan.controllers.testcases.play;
 import catan.controllers.ctf.Scenario;
 import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
+import catan.services.util.random.RandomUtil;
 import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -20,7 +21,6 @@ import static catan.domain.model.dashboard.types.HexType.STONE;
 import static catan.domain.model.dashboard.types.HexType.WHEAT;
 import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -42,7 +42,7 @@ public class ThrowDiceTest extends PlayTestUtil {
     private static boolean initialized = false;
 
     @Autowired
-    private RandomUtilMock randomUtil;
+    private RandomUtil randomUtil;
 
     private Scenario scenario;
 
@@ -55,7 +55,7 @@ public class ThrowDiceTest extends PlayTestUtil {
             initialized = true;
         }
 
-        scenario = new Scenario(randomUtil);
+        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
     @Test
@@ -64,32 +64,32 @@ public class ThrowDiceTest extends PlayTestUtil {
         playPreparationStage()
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("THROW_DICE")
-                .throwDice(1).successfully()
+                .THROW_DICE(1).successfully()
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("THROW_DICE")
-                .endTurn(1)
+                .END_TURN(1)
 
                 .getGameDetails(2)
                 .gameUser(2).hasAvailableAction("THROW_DICE")
-                .throwDice(2).successfully()
+                .THROW_DICE(2).successfully()
                 .getGameDetails(2)
                 .gameUser(2).doesntHaveAvailableAction("THROW_DICE")
-                .endTurn(2);
+                .END_TURN(2);
     }
 
     @Test
     public void should_fail_when_user_throw_dice_after_he_has_already_thrown() {
 
         playPreparationStage()
-                .throwDice(1)
-                .throwDice(1).failsWithError("ERROR");
+                .THROW_DICE(1).successfully()
+                .THROW_DICE(1).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_when_user_throw_dice_in_not_his_move() {
 
         playPreparationStage()
-                .throwDice(2).failsWithError("ERROR");
+                .THROW_DICE(2).failsWithError("ERROR");
     }
 
     @Test
@@ -97,45 +97,33 @@ public class ThrowDiceTest extends PlayTestUtil {
         playPreparationStage()
 
                 .getGameDetails(1)
-                    .check("dice.thrown", equalTo(false))
-                    .check("dice.value", nullValue())
-                    .check("dice.first", nullValue())
-                    .check("dice.second", nullValue())
+                .dice().isNotThrown()
+                .dice().hasNoValues()
 
                 .getGameDetails(2)
-                    .check("dice.thrown", equalTo(false))
-                    .check("dice.value", nullValue())
-                    .check("dice.first", nullValue())
-                    .check("dice.second", nullValue())
+                .dice().isNotThrown()
+                .dice().hasNoValues()
 
                 .nextRandomDiceValues(asList(2, 6))
-                .throwDice(1)
+                .THROW_DICE(1)
 
                 .getGameDetails(1)
-                    .check("dice.thrown", equalTo(true))
-                    .check("dice.value", equalTo(8))
-                    .check("dice.first", equalTo(2))
-                    .check("dice.second", equalTo(6))
+                .dice().isThrown()
+                .dice().hasValues(2, 6)
 
                 .getGameDetails(2)
-                    .check("dice.thrown", equalTo(true))
-                    .check("dice.value", equalTo(8))
-                    .check("dice.first", equalTo(2))
-                    .check("dice.second", equalTo(6))
+                .dice().isThrown()
+                .dice().hasValues(2, 6)
 
-                .endTurn(1)
+                .END_TURN(1)
 
                 .getGameDetails(1)
-                    .check("dice.thrown", equalTo(false))
-                    .check("dice.value", nullValue())
-                    .check("dice.first", nullValue())
-                    .check("dice.second", nullValue())
+                .dice().isNotThrown()
+                .dice().hasNoValues()
 
                 .getGameDetails(2)
-                    .check("dice.thrown", equalTo(false))
-                    .check("dice.value", nullValue())
-                    .check("dice.first", nullValue())
-                    .check("dice.second", nullValue());
+                .dice().isNotThrown()
+                .dice().hasNoValues();
     }
 
     @Ignore
@@ -147,7 +135,7 @@ public class ThrowDiceTest extends PlayTestUtil {
 
         scenario
                 .nextRandomDiceValues(asList(2, 6)) // TODO: set the dice number which is near both some settlement and city
-                .throwDice(1)
+                .THROW_DICE(1)
 
                 .getGameDetails(1)
                 // TODO: check if player1 resources are correct
@@ -165,29 +153,29 @@ public class ThrowDiceTest extends PlayTestUtil {
 
         return playPreparationStage()
                 .nextRandomDiceValues(asList(2, 6)) // TODO: set the best dice for player 1
-                .throwDice(1)
-                .buildRoad(1).atEdge(0, -1, "right")
-                .endTurn(1)
+                .THROW_DICE(1)
+                .BUILD_ROAD(1).atEdge(0, -1, "right")
+                .END_TURN(1)
 
                 .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
-                .throwDice(2)
-                .endTurn(2)
+                .THROW_DICE(2)
+                .END_TURN(2)
 
                 .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
-                .throwDice(3)
-                .endTurn(3)
+                .THROW_DICE(3)
+                .END_TURN(3)
 
                 .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
-                .throwDice(1)
-                .buildSettlement(1).atNode(0, -1, "topLeft")
+                .THROW_DICE(1)
+                .BUILD_SETTLEMENT(1).atNode(0, -1, "topLeft")
                 .buildCity(1).atNode(0, -1, "topLeft")
-                .endTurn(1)
+                .END_TURN(1)
 
-                .throwDice(2)
-                .endTurn(2)
+                .THROW_DICE(2)
+                .END_TURN(2)
 
-                .throwDice(3)
-                .endTurn(3);
+                .THROW_DICE(3)
+                .END_TURN(3);
     }
 
     private Scenario playPreparationStage() {
@@ -221,29 +209,29 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .gameUser(2).check("user.username", is(USER_NAME_2))
                 .gameUser(1).check("user.username", is(USER_NAME_3))
 
-                .buildSettlement(1).atNode(0, 0, "topLeft")
-                .buildRoad(1).atEdge(0, 0, "topLeft")
-                .endTurn(1)
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
+                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
+                .END_TURN(1)
 
-                .buildSettlement(2).atNode(0, 0, "topRight")
-                .buildRoad(2).atEdge(0, 0, "right")
-                .endTurn(2)
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "topRight")
+                .BUILD_ROAD(2).atEdge(0, 0, "right")
+                .END_TURN(2)
 
-                .buildSettlement(3).atNode(0, 0, "bottom")
-                .buildRoad(3).atEdge(0, 0, "bottomLeft")
-                .endTurn(3)
+                .BUILD_SETTLEMENT(3).atNode(0, 0, "bottom")
+                .BUILD_ROAD(3).atEdge(0, 0, "bottomLeft")
+                .END_TURN(3)
 
-                .buildSettlement(3).atNode(0, -2, "topLeft")
-                .buildRoad(3).atEdge(0, -2, "topLeft")
-                .endTurn(3)
+                .BUILD_SETTLEMENT(3).atNode(0, -2, "topLeft")
+                .BUILD_ROAD(3).atEdge(0, -2, "topLeft")
+                .END_TURN(3)
 
-                .buildSettlement(2).atNode(0, -2, "topRight")
-                .buildRoad(2).atEdge(0, -2, "right")
-                .endTurn(2)
+                .BUILD_SETTLEMENT(2).atNode(0, -2, "topRight")
+                .BUILD_ROAD(2).atEdge(0, -2, "right")
+                .END_TURN(2)
 
-                .buildSettlement(1).atNode(0, -2, "bottom")
-                .buildRoad(1).atEdge(0, -2, "bottomLeft")
-                .endTurn(1);
+                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottom")
+                .BUILD_ROAD(1).atEdge(0, -2, "bottomLeft")
+                .END_TURN(1);
     }
 
     /*

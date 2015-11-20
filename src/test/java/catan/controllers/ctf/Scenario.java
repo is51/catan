@@ -99,7 +99,7 @@ public class Scenario {
         return this;
     }
 
-    public BuildSettlementAction buildSettlement(int moveOrder) {
+    public BuildSettlementAction BUILD_SETTLEMENT(int moveOrder) {
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildSettlementAction(userToken, this);
     }
@@ -109,18 +109,18 @@ public class Scenario {
         return new BuildCityAction(userToken, this);
     }
 
-    public BuildRoadAction buildRoad(int moveOrder) {
+    public BuildRoadAction BUILD_ROAD(int moveOrder) {
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildRoadAction(userToken, this);
     }
 
-    public Scenario endTurn(int moveOrder) {
+    public Scenario END_TURN(int moveOrder) {
         String userToken = tokensByMoveOrder.get(moveOrder);
         lastApiResponse = PlayTestUtil.endTurn(userToken, gameId);
         return this;
     }
 
-    public Scenario throwDice(int moveOrder) {
+    public Scenario THROW_DICE(int moveOrder) {
         String userToken = tokensByMoveOrder.get(moveOrder);
         lastApiResponse = PlayTestUtil.throwDice(userToken, gameId);
         return this;
@@ -132,6 +132,10 @@ public class Scenario {
 
     public GameUserValidator gameUser(int moveOrder) {
         return new GameUserValidator(this, moveOrder);
+    }
+
+    public DiceValidator dice() {
+        return new DiceValidator(this);
     }
 
     //if custom check is used several times - create a new method for it
