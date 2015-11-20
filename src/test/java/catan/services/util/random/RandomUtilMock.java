@@ -45,11 +45,17 @@ public class RandomUtilMock extends RandomUtil {
     }
 
     public HexType pullRandomHexType(int x, int y, List<HexType> possibleHexTypes) {
-        return hexTypesToGenerate.size() > 0 ? hexTypesToGenerate.remove(new Coordinates(x, y)) : super.pullRandomHexType(x, y, possibleHexTypes);
+        Coordinates coordinatesKey = new Coordinates(x, y);
+        return hexTypesToGenerate.get(coordinatesKey) != null
+                ? hexTypesToGenerate.remove(coordinatesKey)
+                : super.pullRandomHexType(x, y, possibleHexTypes);
     }
 
     public Integer pullRandomHexDiceNumber(int x, int y, List<Integer> possibleDiceNumbers) {
-        return hexDiceNumbersToGenerate.size() > 0 ? hexDiceNumbersToGenerate.remove(new Coordinates(x, y)) : super.pullRandomHexDiceNumber(x, y, possibleDiceNumbers);
+        Coordinates coordinatesKey = new Coordinates(x, y);
+        return hexDiceNumbersToGenerate.get(coordinatesKey) != null
+                ? hexDiceNumbersToGenerate.remove(coordinatesKey)
+                : super.pullRandomHexDiceNumber(x, y, possibleDiceNumbers);
     }
 
     public Integer getRandomDiceNumber() {

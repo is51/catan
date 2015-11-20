@@ -13,6 +13,12 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static catan.domain.model.dashboard.types.HexType.BRICK;
+import static catan.domain.model.dashboard.types.HexType.EMPTY;
+import static catan.domain.model.dashboard.types.HexType.SHEEP;
+import static catan.domain.model.dashboard.types.HexType.STONE;
+import static catan.domain.model.dashboard.types.HexType.WHEAT;
+import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -190,9 +196,13 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)
 
-                //.setHex(BRICK, 11).atCoordinates(-1, 0)
-                //.setHex(WHEAT, 9).atCoordinates(-1, 0)
-                //.setHex(WOOD, 5).atCoordinates(-1, 0)
+                //TODO: set all hex types accordingly
+                .setHex(BRICK, 11).atCoordinates(-1, -1)
+                .setHex(WHEAT, 9).atCoordinates(-1, 1)
+                .setHex(WOOD, 5).atCoordinates(-1, 0)
+                .setHex(SHEEP, 1).atCoordinates(0, -1)
+                .setHex(STONE, 2).atCoordinates(0, 1)
+                .setHex(EMPTY, 7).atCoordinates(0, 0)
 
                 .createNewPublicGameByUser(USER_NAME_1)
                 .joinPublicGame(USER_NAME_2)
