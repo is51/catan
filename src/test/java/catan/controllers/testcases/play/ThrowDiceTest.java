@@ -3,7 +3,7 @@ package catan.controllers.testcases.play;
 import catan.controllers.ctf.Scenario;
 import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomValueGeneratorMock;
+import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class ThrowDiceTest extends PlayTestUtil {
     private static boolean initialized = false;
 
     @Autowired
-    private RandomValueGeneratorMock rvg;
+    private RandomUtilMock randomUtil;
 
     private Scenario scenario;
 
@@ -49,7 +49,7 @@ public class ThrowDiceTest extends PlayTestUtil {
             initialized = true;
         }
 
-        scenario = new Scenario(rvg);
+        scenario = new Scenario(randomUtil);
     }
 
     @Test
@@ -189,6 +189,10 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)
+
+                //.setHex(BRICK, 11).atCoordinates(-1, 0)
+                //.setHex(WHEAT, 9).atCoordinates(-1, 0)
+                //.setHex(WOOD, 5).atCoordinates(-1, 0)
 
                 .createNewPublicGameByUser(USER_NAME_1)
                 .joinPublicGame(USER_NAME_2)

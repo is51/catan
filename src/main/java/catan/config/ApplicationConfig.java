@@ -1,6 +1,6 @@
 package catan.config;
 
-import catan.services.util.random.RandomValueGenerator;
+import catan.services.util.random.RandomUtil;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -20,7 +20,7 @@ public class ApplicationConfig extends SpringBootServletInitializer {
     }
 
     @Bean
-    protected RandomValueGenerator rvg() {
-        return new RandomValueGenerator();
+    protected RandomUtil randomUtil() {
+        return new RandomUtil();
     }
 }

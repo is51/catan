@@ -2,7 +2,8 @@ package catan.controllers.ctf;
 
 import catan.controllers.util.GameTestUtil;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomValueGeneratorMock;
+import catan.domain.model.dashboard.types.HexType;
+import catan.services.util.random.RandomUtilMock;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Matcher;
@@ -15,7 +16,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class Scenario {
 
-    private RandomValueGeneratorMock rvg;
+    RandomUtilMock randomUtil;
 
     int gameId = -1;
     Map<String, String> userTokensByName = new HashMap<String, String>();
@@ -28,8 +29,8 @@ public class Scenario {
 
     }
 
-    public Scenario(RandomValueGeneratorMock rvg) {
-        this.rvg = rvg;
+    public Scenario(RandomUtilMock randomUtil) {
+        this.randomUtil = randomUtil;
     }
 
     public Scenario registerUser(String username, String password) {
@@ -173,8 +174,7 @@ public class Scenario {
 
     public Scenario nextRandomMoveOrderValues(List<Integer> nextRandomValues) {
         for (Integer nextRandomValue : nextRandomValues) {
-            double randomMockValue = toRandomMockValue(nextRandomValue, 0, userTokensByName.size());
-            rvg.setNextGeneratedValue(randomMockValue);
+            randomUtil.setNextMoveOrder(nextRandomValue);
         }
 
         return this;
@@ -182,14 +182,14 @@ public class Scenario {
 
     public Scenario nextRandomDiceValues(List<Integer> nextRandomValues) {
         for (Integer nextRandomValue : nextRandomValues) {
-            double randomMockValue = toRandomMockValue(nextRandomValue, 1, 6);
-            rvg.setNextGeneratedValue(randomMockValue);
+            randomUtil.setNextDiceNumber(nextRandomValue);
         }
 
         return this;
     }
 
-    private double toRandomMockValue(int nextRandomValue, int minValue, int maxValue) {
-        return ((double)nextRandomValue - minValue) / (maxValue - minValue + 1);
+    public HexBuilder setHex(HexType hexType, int diceValue) {
+        return new HexBuilder(this, hexType, diceValue);
     }
+
 }

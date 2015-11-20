@@ -1,15 +1,12 @@
 package catan.services.util.random;
 
 import catan.domain.model.dashboard.types.HexType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class RandomUtil {
 
-    private RandomValueGenerator rvg;
+    private RandomValueGenerator rvg = new RandomValueGenerator();
 
     public String generateRandomPrivateCode(int numberOfDigits) {
         int digits = 1;
@@ -30,24 +27,23 @@ public class RandomUtil {
         return moveOrderSequence.remove(randomMoveOrderId);
     }
 
-    public HexType pullRandomHexType(List<HexType> possibleHexTypes) {
+    public HexType pullRandomHexType(int x, int y, List<HexType> possibleHexTypes) {
         int randomHexTypeId = (int) (rvg.randomValue() * possibleHexTypes.size());
 
         return possibleHexTypes.remove(randomHexTypeId);
     }
 
     //TODO: add rule to avoid placing 6 and 8 dice numbers close to each other
-    public int pullRandomHexDiceNumber(List<Integer> possibleDiceNumbers) {
+    public Integer pullRandomHexDiceNumber(int x, int y, List<Integer> possibleDiceNumbers) {
         int randomDiceNumber = (int) (rvg.randomValue() * possibleDiceNumbers.size());
 
         return possibleDiceNumbers.remove(randomDiceNumber);
     }
 
-    public int getRandomDiceNumber() {
+    public Integer getRandomDiceNumber() {
         return (int) (rvg.randomValue() * 6) + 1;
     }
 
-    @Autowired
     public void setRvg(RandomValueGenerator rvg) {
         this.rvg = rvg;
     }
