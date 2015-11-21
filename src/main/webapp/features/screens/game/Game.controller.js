@@ -6,7 +6,7 @@ angular.module('catan')
             function($scope, $stateParams, $state, GameService)
     {
 
-        var GAME_UPDATE_DELAY = 5000;
+        var GAME_UPDATE_DELAY = 1000;
 
         $scope.game = null;
 

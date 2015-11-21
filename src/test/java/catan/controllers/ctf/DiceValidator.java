@@ -1,7 +1,5 @@
 package catan.controllers.ctf;
 
-import sun.tools.java.ClassDefinition;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
