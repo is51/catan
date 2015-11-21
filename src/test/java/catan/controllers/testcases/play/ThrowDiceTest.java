@@ -300,9 +300,7 @@ public class ThrowDiceTest extends PlayTestUtil {
     *          (X, Y) coordinates of generated map:                          Node position at hex:
     *
     *           *----*----*----*----*----*----*                                      top
-    *           |    11   |     8   |     5   |                          topLeft *----*----* topRight
-    *           |  WOOD   |  BRICK  |   WHEAT |
-    *           | ( 1,-2) | ( 1,-2) | ( 2,-2) |
+    *           | ( 1,-2) | ( 1,-2) | ( 2,-2) |                          topLeft *----*----* topRight
     *      *----*----*----*----*----*----*----*----*                             |         |
     *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                  bottomLeft *----*----* bottomRight
     * *----*----*----*----*----*----*----*----*----*----*                           bottom
