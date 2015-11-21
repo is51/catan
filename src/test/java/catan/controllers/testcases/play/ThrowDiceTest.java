@@ -135,7 +135,7 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .getGameDetails(2).gameUser(2).resourcesChanged(0, 0, 0, 0, 1)
                 .getGameDetails(3).gameUser(3).resourcesChanged(0, 0, 0, 0, 1)
 
-                .nextRandomDiceValues(asList(2, 8))
+                .nextRandomDiceValues(asList(4, 6))
                 .THROW_DICE(2)
                 .END_TURN(2)
 
@@ -300,18 +300,28 @@ public class ThrowDiceTest extends PlayTestUtil {
     *          (X, Y) coordinates of generated map:                          Node position at hex:
     *
     *           *----*----*----*----*----*----*                                      top
-    *           | ( 1,-2) | ( 1,-2) | ( 2,-2) |                          topLeft *----*----* topRight
-    *      *----*----*----*----*----*----*----*----*                             |         |
-    *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                  bottomLeft *----*----* bottomRight
-    * *----*----*----*----*----*----*----*----*----*----*                           bottom
-    * | (-2, 0) | (-1, 0) | ( 0, 0) | ( 1, 0) | ( 2, 0) |
-    * *----*----*----*----*----*----*----*----*----*----*                    Edge position at hex:
+    *           |    6    |    8    |    12   |                          topLeft *----*----* topRight
+    *           |  STONE  |  BRICK  |  WHEAT  |                                  |         |
+    *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                       bottomLeft *----*----* bottomRight
+    *      *----*----*----*----*----*----*----*----*                                bottom
+    *      |    5    |    6    |    10   |    3    |
+    *      |  WHEAT  |   WOOD  |  SHEEP  |  BRICK  |
+    *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                        Edge position at hex:
+    * *----*----*----*----*----*----*----*----*----*----*
+    * |    8    |    4    |         |    3    |    11   |                      topLeft topRight
+    * |   WOOD  |  STONE  |  EMPTY  |  SHEEP  |  STONE  |                        .====.====.
+    * | (-2, 0) | (-1, 0) | ( 0, 0) | ( 1, 0) | ( 2, 0) |                  left ||         || right
+    * *----*----*----*----*----*----*----*----*----*----*                        .====.====.
+    *      |    9    |    9    |    11   |    4    |                        bottomLeft bottomRight
+    *      |  SHEEP  |  BRICK  |  SHEEP  |   WOOD  |
     *      | (-2, 1) | (-1, 1) | ( 0, 1) | ( 1, 1) |
-    *      *----*----*----*----*----*----*----*----*                           topLeft topRight
-    *           | (-2, 2) | (-1, 2) | ( 0, 2) |                                  .====.====.
-    *           *----*----*----*----*----*----*                            left ||         || right
-    *                                                                            .====.====.
-    *                                                                       bottomLeft bottomRight
+    *      *----*----*----*----*----*----*----*----*
+    *           |    10   |    2    |    5    |
+    *           |   WOOD  |  WHEAT  |  WHEAT  |
+    *           | (-2, 2) | (-1, 2) | ( 0, 2) |
+    *           *----*----*----*----*----*----*
+    *
+    *
     */
 
 }
