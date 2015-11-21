@@ -7,9 +7,9 @@ public class HexBuilder {
 
     private final Scenario scenario;
     private final HexType hexType;
-    private final int diceValue;
+    private final Integer diceValue;
 
-    public HexBuilder(Scenario scenario, HexType hexType, int diceValue) {
+    public HexBuilder(Scenario scenario, HexType hexType, Integer diceValue) {
         this.scenario = scenario;
         this.hexType = hexType;
         this.diceValue = diceValue;

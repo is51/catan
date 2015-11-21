@@ -22,7 +22,7 @@ public class GameUserValidator {
     }
 
     // TODO: ability to use any type, not only int   ( <T> ? )
-    public int get(String gameUserAttribute) {
+    public int getValueOf(String gameUserAttribute) {
         return scenario.currentGameDetails.extract().path("gameUsers.find { it.moveOrder == " + moveOrder + "}." + gameUserAttribute);
     }
 
@@ -46,13 +46,14 @@ public class GameUserValidator {
         return scenario;
     }
 
-    public Scenario resources(int brick, int wood, int sheep, int wheat, int stone) {
+    public Scenario resourcesChanged(int brick, int wood, int sheep, int wheat, int stone) {
         check("resources", notNullValue());
-        check("resources.brick", equalTo(brick));
-        check("resources.wood", equalTo(wood));
-        check("resources.sheep", equalTo(sheep));
-        check("resources.wheat", equalTo(wheat));
-        check("resources.stone", equalTo(stone));
+        check("resources.brick", equalTo(scenario.usersResources.get("p" + moveOrder + "Brick") + brick));
+        check("resources.wood", equalTo(scenario.usersResources.get("p" + moveOrder + "Wood") + wood));
+        check("resources.sheep", equalTo(scenario.usersResources.get("p" + moveOrder + "Sheep") + sheep));
+        check("resources.wheat", equalTo(scenario.usersResources.get("p" + moveOrder + "Wheat") + wheat));
+        check("resources.stone", equalTo(scenario.usersResources.get("p" + moveOrder + "Stone") + stone));
+
         return scenario;
     }
 

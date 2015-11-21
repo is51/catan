@@ -6,7 +6,6 @@ import catan.controllers.util.PlayTestUtil;
 import catan.services.util.random.RandomUtil;
 import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,42 +126,22 @@ public class ThrowDiceTest extends PlayTestUtil {
 
     @Test
     public void should_correctly_give_resources_to_players() {
-        playPreparationStageAndBuildCity();
-
-        int p1Brick = scenario.getGameDetails(1).gameUser(1).get("resources.brick");
-        int p1Wood = scenario.getGameDetails(1).gameUser(1).get("resources.wood");
-        int p1Sheep = scenario.getGameDetails(1).gameUser(1).get("resources.sheep");
-        int p1Wheat = scenario.getGameDetails(1).gameUser(1).get("resources.wheat");
-        int p1Stone = scenario.getGameDetails(1).gameUser(1).get("resources.stone");
-
-        int p2Brick = scenario.getGameDetails(2).gameUser(2).get("resources.brick");
-        int p2Wood = scenario.getGameDetails(2).gameUser(2).get("resources.wood");
-        int p2Sheep = scenario.getGameDetails(2).gameUser(2).get("resources.sheep");
-        int p2Wheat = scenario.getGameDetails(2).gameUser(2).get("resources.wheat");
-        int p2Stone = scenario.getGameDetails(2).gameUser(2).get("resources.stone");
-
-        int p3Brick = scenario.getGameDetails(3).gameUser(3).get("resources.brick");
-        int p3Wood = scenario.getGameDetails(3).gameUser(3).get("resources.wood");
-        int p3Sheep = scenario.getGameDetails(3).gameUser(3).get("resources.sheep");
-        int p3Wheat = scenario.getGameDetails(3).gameUser(3).get("resources.wheat");
-        int p3Stone = scenario.getGameDetails(3).gameUser(3).get("resources.stone");
-
-        scenario
+        playPreparationStageAndBuildCity()
                 .nextRandomDiceValues(asList(2, 4))
                 .THROW_DICE(1)
                 .END_TURN(1)
 
-                .getGameDetails(1).gameUser(1).resources(p1Brick, p1Wood + 4,   p1Sheep,        p1Wheat, p1Stone + 1)
-                .getGameDetails(2).gameUser(2).resources(p2Brick, p2Wood,       p2Sheep,        p2Wheat, p2Stone + 1)
-                .getGameDetails(3).gameUser(3).resources(p3Brick, p3Wood,       p3Sheep, p3Wheat, p3Stone + 1)
+                .getGameDetails(1).gameUser(1).resourcesChanged(0, 4, 0, 0, 1)
+                .getGameDetails(2).gameUser(2).resourcesChanged(0, 0, 0, 0, 1)
+                .getGameDetails(3).gameUser(3).resourcesChanged(0, 0, 0, 0, 1)
 
                 .nextRandomDiceValues(asList(2, 8))
                 .THROW_DICE(2)
                 .END_TURN(2)
 
-                .getGameDetails(1).gameUser(1).resources(p1Brick, p1Wood + 4,   p1Sheep + 1,    p1Wheat, p1Stone + 1)
-                .getGameDetails(2).gameUser(2).resources(p2Brick, p2Wood,       p2Sheep + 1,    p2Wheat, p2Stone + 1)
-                .getGameDetails(3).gameUser(3).resources(p3Brick, p3Wood,       p3Sheep,        p3Wheat, p3Stone + 1);
+                .getGameDetails(1).gameUser(1).resourcesChanged(0, 0, 1, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesChanged(0, 0, 1, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesChanged(0, 0, 0, 0, 0);
     }
 
 
@@ -209,7 +188,7 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .BUILD_ROAD(1).atEdge(0, 0, "topLeft")          // P1: -1brick -1wood
                 .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")    // P1: -1brick -1wood -1wheat -1sheep
-                .buildCity(1).atNode(0, 0, "topLeft")           // P1: -2wheat -3stone
+                .BUILD_CITY(1).atNode(0, 0, "topLeft")           // P1: -2wheat -3stone
                 .END_TURN(1)
 
                 .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
@@ -262,7 +241,7 @@ public class ThrowDiceTest extends PlayTestUtil {
 
                 .setHex(WOOD, 8).atCoordinates(-2, 0)
                 .setHex(STONE, 4).atCoordinates(-1, 0)
-                .setHex(EMPTY, 7).atCoordinates(0, 0)
+                .setHex(EMPTY, null).atCoordinates(0, 0)
                 .setHex(SHEEP, 3).atCoordinates(1, 0)
                 .setHex(STONE, 11).atCoordinates(2, 0)
 
@@ -321,7 +300,9 @@ public class ThrowDiceTest extends PlayTestUtil {
     *          (X, Y) coordinates of generated map:                          Node position at hex:
     *
     *           *----*----*----*----*----*----*                                      top
-    *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                          topLeft *----*----* topRight
+    *           |    11   |     8   |     5   |                          topLeft *----*----* topRight
+    *           |  WOOD   |  BRICK  |   WHEAT |
+    *           | ( 1,-2) | ( 1,-2) | ( 2,-2) |
     *      *----*----*----*----*----*----*----*----*                             |         |
     *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                  bottomLeft *----*----* bottomRight
     * *----*----*----*----*----*----*----*----*----*----*                           bottom
