@@ -36,7 +36,7 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void resetDices (GameBean game) {
+    public void resetDices(GameBean game) {
         game.setDiceThrown(false);
         game.setDiceFirstValue(null);
         game.setDiceSecondValue(null);
@@ -47,10 +47,17 @@ public class MainStageUtil {
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
                 Building<NodeBuiltType> building = node.getBuilding();
                 HexType resourceType = hex.getResourceType();
-                Resources userResources = building.getBuildingOwner().getResources();
+                GameUserBean buildingOwner = building.getBuildingOwner();
+                Resources userResources = buildingOwner.getResources();
+
                 int currentResourceQuantity = userResources.quantityOf(resourceType);
                 int resourceQuantityToAdd = building.getBuilt().getResourceQuantityToAdd();
+
                 userResources.updateResourceQuantity(resourceType, currentResourceQuantity + resourceQuantityToAdd);
+
+                log.debug("GameUser " + buildingOwner.getUser().getUsername() + " with colorId: " + buildingOwner.getColorId() +
+                        " got " + resourceType + " of quantity " + resourceQuantityToAdd + " for " + building.getBuilt() +
+                        " at hex with coordinates " + hex.getCoordinates() + " and dice value " + hex.getDice());
             }
         }
     }
@@ -79,43 +86,43 @@ public class MainStageUtil {
     }
 
     private void allowThrowDice(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameNotFinished(game) 
-                && isCurrentUsersMove(gameUser, game) 
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
                 && !game.isDiceThrown()) {
             actionsList.add(new Action(GameUserActionCode.THROW_DICE));
         }
     }
 
     private void allowEndTurn(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameNotFinished(game) 
-                && isCurrentUsersMove(gameUser, game) 
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()) {
             actionsList.add(new Action(GameUserActionCode.END_TURN));
         }
     }
 
     private void allowBuildCity(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameNotFinished(game) 
-                && isCurrentUsersMove(gameUser, game) 
-                && game.isDiceThrown() 
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
                 && userHasResourcesToBuildCity(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
         }
     }
 
     private void allowBuildSettlement(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameNotFinished(game) 
-                && isCurrentUsersMove(gameUser, game) 
-                && game.isDiceThrown() 
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
                 && userHasResourcesForSettlement(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
         }
     }
 
     private void allowBuildRoad(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
-        if (gameNotFinished(game) 
-                && isCurrentUsersMove(gameUser, game) 
-                && game.isDiceThrown() 
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
                 && userHasResourcesToBuildRoad(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
         }
@@ -141,7 +148,7 @@ public class MainStageUtil {
     private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {
         return gameUser.getMoveOrder() == game.getCurrentMove();
     }
-    
+
     private boolean gameNotFinished(GameBean game) {
         return !GameStatus.FINISHED.equals(game.getStatus());
     }

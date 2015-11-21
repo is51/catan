@@ -5,6 +5,7 @@ import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertTrue;
 
 public class GameUserValidator {
 
@@ -47,6 +48,9 @@ public class GameUserValidator {
     }
 
     public Scenario resourcesChanged(int brick, int wood, int sheep, int wheat, int stone) {
+        assertTrue("To check that resources quantity was changed, you should call 'startTrackResourcesQuantity()' method " +
+                "when you want to start tracking of resource quantity and  call 'startTrackResourcesQuantity()' method" +
+                "when you want to stop.", scenario.trackResources);
         check("resources", notNullValue());
         check("resources.brick", equalTo(scenario.usersResources.get("p" + moveOrder + "Brick") + brick));
         check("resources.wood", equalTo(scenario.usersResources.get("p" + moveOrder + "Wood") + wood));

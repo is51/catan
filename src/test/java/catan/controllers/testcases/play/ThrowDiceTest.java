@@ -197,7 +197,8 @@ public class ThrowDiceTest extends PlayTestUtil {
 
                 .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(3)
-                .END_TURN(3);
+                .END_TURN(3)
+                .startTrackResourcesQuantity();
     }
 
     private Scenario playPreparationStage() {

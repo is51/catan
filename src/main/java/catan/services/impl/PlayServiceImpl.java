@@ -143,12 +143,18 @@ public class PlayServiceImpl implements PlayService {
     private void throwDice(GameBean game) {
         Integer diceFirstValue = randomUtil.getRandomDiceNumber();
         Integer diceSecondValue = randomUtil.getRandomDiceNumber();
+        log.info("First dice: " + diceFirstValue);
+        log.info("Second dice: " + diceSecondValue);
+
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (!isRobbersActivity(diceFirstValue, diceSecondValue)) {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
+            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue);
             mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
+        } else{
+            log.debug("Robbers activity due to dice value 7");
         }
     }
 

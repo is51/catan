@@ -25,6 +25,7 @@ public class Scenario {
     Map<String, Integer> usersResources = new HashMap<String, Integer>();
     ValidatableResponse currentGameDetails = null;
     Response lastApiResponse = null;
+    boolean trackResources = false;
 
     public Scenario() {
 
@@ -203,6 +204,9 @@ public class Scenario {
     }
 
     private void saveUsersResourcesValues(){
+        if(!trackResources){
+            return;
+        }
 
         getGameDetails(1);
         int p1Brick = gameUser(1).getValueOf("resources.brick");
@@ -240,5 +244,15 @@ public class Scenario {
         usersResources.put("p3Sheep", p3Sheep);
         usersResources.put("p3Wheat", p3Wheat);
         usersResources.put("p3Stone", p3Stone);
+    }
+
+    public Scenario startTrackResourcesQuantity() {
+        trackResources = true;
+        return this;
+    }
+
+    public Scenario stopTrackResourcesQuantity() {
+        trackResources = false;
+        return this;
     }
 }
