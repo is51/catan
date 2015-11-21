@@ -22,7 +22,6 @@ import static catan.domain.model.dashboard.types.HexType.WHEAT;
 import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
@@ -97,83 +96,127 @@ public class ThrowDiceTest extends PlayTestUtil {
         playPreparationStage()
 
                 .getGameDetails(1)
-                .dice().isNotThrown()
-                .dice().hasNoValues()
+                    .dice().isNotThrown()
+                    .dice().hasNoValues()
 
                 .getGameDetails(2)
-                .dice().isNotThrown()
-                .dice().hasNoValues()
+                    .dice().isNotThrown()
+                    .dice().hasNoValues()
 
                 .nextRandomDiceValues(asList(2, 6))
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                .dice().isThrown()
-                .dice().hasValues(2, 6)
+                    .dice().isThrown()
+                    .dice().hasValues(2, 6)
 
                 .getGameDetails(2)
-                .dice().isThrown()
-                .dice().hasValues(2, 6)
+                    .dice().isThrown()
+                    .dice().hasValues(2, 6)
 
                 .END_TURN(1)
 
                 .getGameDetails(1)
-                .dice().isNotThrown()
-                .dice().hasNoValues()
+                    .dice().isNotThrown()
+                    .dice().hasNoValues()
 
                 .getGameDetails(2)
-                .dice().isNotThrown()
-                .dice().hasNoValues();
+                    .dice().isNotThrown()
+                    .dice().hasNoValues();
     }
 
-    @Ignore
     @Test
     public void should_correctly_give_resources_to_players() {
-        Scenario scenario =  playPreparationStageAndBuildCity();
+        playPreparationStageAndBuildCity();
 
-        // TODO: get resources of all players into some variables
+        int p1Brick = scenario.getGameDetails(1).gameUser(1).get("resources.brick");
+        int p1Wood = scenario.getGameDetails(1).gameUser(1).get("resources.wood");
+        int p1Sheep = scenario.getGameDetails(1).gameUser(1).get("resources.sheep");
+        int p1Wheat = scenario.getGameDetails(1).gameUser(1).get("resources.wheat");
+        int p1Stone = scenario.getGameDetails(1).gameUser(1).get("resources.stone");
+
+        int p2Brick = scenario.getGameDetails(2).gameUser(2).get("resources.brick");
+        int p2Wood = scenario.getGameDetails(2).gameUser(2).get("resources.wood");
+        int p2Sheep = scenario.getGameDetails(2).gameUser(2).get("resources.sheep");
+        int p2Wheat = scenario.getGameDetails(2).gameUser(2).get("resources.wheat");
+        int p2Stone = scenario.getGameDetails(2).gameUser(2).get("resources.stone");
+
+        int p3Brick = scenario.getGameDetails(3).gameUser(3).get("resources.brick");
+        int p3Wood = scenario.getGameDetails(3).gameUser(3).get("resources.wood");
+        int p3Sheep = scenario.getGameDetails(3).gameUser(3).get("resources.sheep");
+        int p3Wheat = scenario.getGameDetails(3).gameUser(3).get("resources.wheat");
+        int p3Stone = scenario.getGameDetails(3).gameUser(3).get("resources.stone");
 
         scenario
-                .nextRandomDiceValues(asList(2, 6)) // TODO: set the dice number which is near both some settlement and city
+                .nextRandomDiceValues(asList(2, 4))
                 .THROW_DICE(1)
+                .END_TURN(1)
 
-                .getGameDetails(1)
-                // TODO: check if player1 resources are correct
+                .getGameDetails(1).gameUser(1).resources(p1Brick, p1Wood + 4,   p1Sheep,        p1Wheat, p1Stone + 1)
+                .getGameDetails(2).gameUser(2).resources(p2Brick, p2Wood,       p2Sheep,        p2Wheat, p2Stone + 1)
+                .getGameDetails(3).gameUser(3).resources(p3Brick, p3Wood,       p3Sheep, p3Wheat, p3Stone + 1)
 
-                .getGameDetails(2)
-                // TODO: check if player2 resources are correct
+                .nextRandomDiceValues(asList(2, 8))
+                .THROW_DICE(2)
+                .END_TURN(2)
 
-                .getGameDetails(3);
-                // TODO: check if player3 resources are correct
+                .getGameDetails(1).gameUser(1).resources(p1Brick, p1Wood + 4,   p1Sheep + 1,    p1Wheat, p1Stone + 1)
+                .getGameDetails(2).gameUser(2).resources(p2Brick, p2Wood,       p2Sheep + 1,    p2Wheat, p2Stone + 1)
+                .getGameDetails(3).gameUser(3).resources(p3Brick, p3Wood,       p3Sheep,        p3Wheat, p3Stone + 1);
     }
+
 
     private Scenario playPreparationStageAndBuildCity() {
 
-        //  TODO: map shouldn't be random
-
         return playPreparationStage()
-                .nextRandomDiceValues(asList(2, 6)) // TODO: set the best dice for player 1
+                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone +2wood
+                .THROW_DICE(1)                      // P2: +1stone
+                .END_TURN(1)                        // P3: +1stone
+
+                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone +2wood
+                .THROW_DICE(2)                      // P2: +1stone
+                .END_TURN(2)                        // P3: +1stone
+
+                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone +2wood
+                .THROW_DICE(3)                      // P2: +1stone
+                .END_TURN(3)                        // P3: +1stone
+
+                .nextRandomDiceValues(asList(2, 6)) // P1: +1brick
+                .THROW_DICE(1)                      // P2: +1brick
+                .END_TURN(1)                        // P3: --
+
+                .nextRandomDiceValues(asList(2, 6)) // P1: +1brick
+                .THROW_DICE(2)                      // P2: +1brick
+                .END_TURN(2)                        // P3: --
+
+                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
+                .THROW_DICE(3)                      // P2: --
+                .END_TURN(3)                        // P3: --
+
+                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
+                .THROW_DICE(1)                      // P2: --
+                .END_TURN(1)                        // P3: --
+
+                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
+                .THROW_DICE(2)                      // P2: --
+                .END_TURN(2)                        // P3: --
+
+                .nextRandomDiceValues(asList(2, 8)) // P1: +1sheep
+                .THROW_DICE(3)                      // P2: +1sheep
+                .END_TURN(3)                        // P3: --
+
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(1)
-                .BUILD_ROAD(1).atEdge(0, -1, "right")
+                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")          // P1: -1brick -1wood
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")    // P1: -1brick -1wood -1wheat -1sheep
+                .buildCity(1).atNode(0, 0, "topLeft")           // P1: -2wheat -3stone
                 .END_TURN(1)
 
-                .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(2)
                 .END_TURN(2)
 
-                .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
-                .THROW_DICE(3)
-                .END_TURN(3)
-
-                .nextRandomDiceValues(asList(2, 6)) // set the best dice for player 1
-                .THROW_DICE(1)
-                .BUILD_SETTLEMENT(1).atNode(0, -1, "topLeft")
-                .buildCity(1).atNode(0, -1, "topLeft")
-                .END_TURN(1)
-
-                .THROW_DICE(2)
-                .END_TURN(2)
-
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(3)
                 .END_TURN(3);
     }
@@ -184,7 +227,6 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)
 
-                //TODO: set all hex types accordingly
                 /*
                 possible dice values
 
@@ -209,12 +251,29 @@ public class ThrowDiceTest extends PlayTestUtil {
                 EMPTY
 
                 */
-                .setHex(BRICK, 11).atCoordinates(-1, -1)
-                .setHex(WHEAT, 9).atCoordinates(-1, 1)
-                .setHex(WOOD, 5).atCoordinates(-1, 0)
-                .setHex(SHEEP, 1).atCoordinates(0, -1)
-                .setHex(STONE, 2).atCoordinates(0, 1)
+                .setHex(STONE, 6).atCoordinates(0, -2)
+                .setHex(BRICK, 8).atCoordinates(1, -2)
+                .setHex(WHEAT, 12).atCoordinates(2, -2)
+
+                .setHex(WHEAT, 5).atCoordinates(-1, -1)
+                .setHex(WOOD, 6).atCoordinates(0, -1)
+                .setHex(SHEEP, 10).atCoordinates(1, -1)
+                .setHex(BRICK, 3).atCoordinates(2, -1)
+
+                .setHex(WOOD, 8).atCoordinates(-2, 0)
+                .setHex(STONE, 4).atCoordinates(-1, 0)
                 .setHex(EMPTY, 7).atCoordinates(0, 0)
+                .setHex(SHEEP, 3).atCoordinates(1, 0)
+                .setHex(STONE, 11).atCoordinates(2, 0)
+
+                .setHex(SHEEP, 9).atCoordinates(-2, 1)
+                .setHex(BRICK, 9).atCoordinates(-1, 1)
+                .setHex(SHEEP, 11).atCoordinates(0, 1)
+                .setHex(WOOD, 4).atCoordinates(1, 1)
+
+                .setHex(WOOD, 10).atCoordinates(-2, 2)
+                .setHex(WHEAT, 2).atCoordinates(-1, 2)
+                .setHex(WHEAT, 5).atCoordinates(0, 2)
 
                 .createNewPublicGameByUser(USER_NAME_1)
                 .joinPublicGame(USER_NAME_2)
@@ -229,12 +288,12 @@ public class ThrowDiceTest extends PlayTestUtil {
 
                 //check that move orders are never changed and users have move orders according to joined order
                 .getGameDetails(1)
-                .gameUser(3).check("user.username", is(USER_NAME_1))
-                .gameUser(2).check("user.username", is(USER_NAME_2))
-                .gameUser(1).check("user.username", is(USER_NAME_3))
+                    .gameUser(3).check("user.username", is(USER_NAME_1))
+                    .gameUser(2).check("user.username", is(USER_NAME_2))
+                    .gameUser(1).check("user.username", is(USER_NAME_3))
 
-                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
-                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
+                .BUILD_SETTLEMENT(1).atNode(0, -1, "topRight")
+                .BUILD_ROAD(1).atEdge(0, -1, "right")
                 .END_TURN(1)
 
                 .BUILD_SETTLEMENT(2).atNode(0, 0, "topRight")
@@ -245,15 +304,15 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .BUILD_ROAD(3).atEdge(0, 0, "bottomLeft")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(3).atNode(0, -2, "topLeft")
+                .BUILD_SETTLEMENT(3).atNode(0, -2, "topLeft") // P3: +1brick (after US-69)
                 .BUILD_ROAD(3).atEdge(0, -2, "topLeft")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(2).atNode(0, -2, "topRight")
+                .BUILD_SETTLEMENT(2).atNode(0, -2, "topRight") // P2: +1brick +1stone (after US-69)
                 .BUILD_ROAD(2).atEdge(0, -2, "right")
                 .END_TURN(2)
 
-                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottom")
+                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottom") // P1: +1stone +1wood +1wheat (after US-69)
                 .BUILD_ROAD(1).atEdge(0, -2, "bottomLeft")
                 .END_TURN(1);
     }
