@@ -14,6 +14,11 @@ ct-game-map .canvas .hex {
     height: 0;
 }
 
+ct-game-map .canvas .hex.highlighted {
+    animation: blinking 1s linear infinite;
+}
+@keyframes blinking { 50% { opacity: 0.5; }, 100% { opacity: 1; } }
+
 ct-game-map .canvas .hex > .inner {
     position: absolute;
     border-radius: 5px;

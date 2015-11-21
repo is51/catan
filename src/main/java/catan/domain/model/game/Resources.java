@@ -1,5 +1,6 @@
 package catan.domain.model.game;
 
+import catan.domain.model.dashboard.types.HexType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -73,6 +74,43 @@ public class Resources {
 
     public void setStone(int stone) {
         this.stone = stone;
+    }
+
+    public Integer quantityOf(HexType resource) {
+        switch (resource) {
+            case BRICK:
+                return getBrick();
+            case WOOD:
+                return getWood();
+            case SHEEP:
+                return getSheep();
+            case STONE:
+                return getStone();
+            case WHEAT:
+                return getWheat();
+            default:
+                return null;
+        }
+    }
+
+    public void updateResourceQuantity(HexType resource, int resourceQuantity) {
+        switch (resource) {
+            case BRICK:
+                setBrick(resourceQuantity);
+                break;
+            case WOOD:
+                setWood(resourceQuantity);
+                break;
+            case SHEEP:
+                setSheep(resourceQuantity);
+                break;
+            case STONE:
+                setStone(resourceQuantity);
+                break;
+            case WHEAT:
+                setWheat(resourceQuantity);
+                break;
+        }
     }
 
     @Override

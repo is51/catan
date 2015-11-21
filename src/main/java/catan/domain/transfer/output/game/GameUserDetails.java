@@ -4,8 +4,10 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.transfer.output.game.actions.AvailableActionsDetails;
 import catan.domain.transfer.output.user.UserDetails;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.gson.Gson;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameUserDetails {
     private int id;
     private UserDetails user;
