@@ -93,10 +93,10 @@ public class MapUtil {
                 boolean robbed = (x == 0 && y == 0);
                 Integer diceNumber = (x == 0 && y == 0)
                         ? null
-                        : randomUtil.pullRandomDiceNumber(possibleDiceNumbers);
+                        : randomUtil.pullRandomHexDiceNumber(x, y, possibleDiceNumbers);
                 HexType hexType = (x == 0 && y == 0)
                         ? HexType.EMPTY
-                        : randomUtil.pullRandomHexType(possibleHexTypes);
+                        : randomUtil.pullRandomHexType(x, y, possibleHexTypes);
 
                 createHex(tempCoordinatesToHexMap, game, x, y, hexPort, portLocation, hexType, diceNumber, robbed);
             }

@@ -5,11 +5,8 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.DevelopmentCard;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-@Component
 public class RandomUtil {
 
     private RandomValueGenerator rvg = new RandomValueGenerator();
@@ -33,17 +30,21 @@ public class RandomUtil {
         return moveOrderSequence.remove(randomMoveOrderId);
     }
 
-    public HexType pullRandomHexType(List<HexType> possibleHexTypes) {
+    public HexType pullRandomHexType(int x, int y, List<HexType> possibleHexTypes) {
         int randomHexTypeId = (int) (rvg.randomValue() * possibleHexTypes.size());
 
         return possibleHexTypes.remove(randomHexTypeId);
     }
 
     //TODO: add rule to avoid placing 6 and 8 dice numbers close to each other
-    public int pullRandomDiceNumber(List<Integer> possibleDiceNumbers) {
-        int randomDiceNumber = (int) (rvg.randomValue() * possibleDiceNumbers.size());
+    public Integer pullRandomHexDiceNumber(int x, int y, List<Integer> possibleDiceNumbers) {
+        int randomDiceNumberId = (int) (rvg.randomValue() * possibleDiceNumbers.size());
 
-        return possibleDiceNumbers.remove(randomDiceNumber);
+        return possibleDiceNumbers.remove(randomDiceNumberId);
+    }
+
+    public Integer getRandomDiceNumber() {
+        return (int) (rvg.randomValue() * 6) + 1;
     }
 
     public DevelopmentCard pullRandomDevelopmentCard(List<DevelopmentCard> availableDevCards) {

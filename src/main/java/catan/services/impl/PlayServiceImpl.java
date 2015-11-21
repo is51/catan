@@ -4,6 +4,7 @@ import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodeBuiltType;
@@ -21,8 +22,10 @@ import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
+import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
+import catan.services.util.random.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service("playService")
@@ -40,12 +44,15 @@ public class PlayServiceImpl implements PlayService {
 
     public static final String ERROR_CODE_ERROR = "ERROR";
 
+    //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
+    private RandomUtil randomUtil;
     private GameUtil gameUtil;
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
     private CardUtil cardUtil;
     private PreparationStageUtil preparationStageUtil;
+    private MainStageUtil mainStageUtil;
 
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId) throws PlayException, GameException {
@@ -125,27 +132,41 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void endTurn(GameBean game) throws GameException {
-        boolean shouldUpdateNextMove = true;
+        switch (game.getStage()) {
 
-        if (game.getStage().equals(GameStage.PREPARATION)) {
-            Integer previousPreparationCycle = game.getPreparationCycle();
-            preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
-            preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
-            preparationStageUtil.updatePreparationCycle(game);
-            Integer newPreparationCycle = game.getPreparationCycle();
-            boolean preparationFinished = newPreparationCycle == null && !game.getCurrentMove().equals(1);
-            shouldUpdateNextMove = (preparationFinished || previousPreparationCycle.equals(newPreparationCycle));
-        } else {
-            game.setDiceThrown(false);
-        }
+            case PREPARATION:
+                Integer previousPreparationCycle = game.getPreparationCycle();
+                preparationStageUtil.updateGameStageToMain(game); //TODO: move it to the end of method calls
+                preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
+                preparationStageUtil.updatePreparationCycle(game);
+                if (game.getPreparationCycle() == null || previousPreparationCycle.equals(game.getPreparationCycle())) {
+                    preparationStageUtil.updateNextMove(game);
+                }
+                break;
 
-        if (shouldUpdateNextMove) {
-            playUtil.updateNextMove(game);
+            case MAIN:
+                mainStageUtil.resetDices(game);
+                mainStageUtil.updateNextMove(game);
+                break;
         }
     }
 
     private void throwDice(GameBean game) {
+        Integer diceFirstValue = randomUtil.getRandomDiceNumber();
+        Integer diceSecondValue = randomUtil.getRandomDiceNumber();
+        log.info("First dice: " + diceFirstValue);
+        log.info("Second dice: " + diceSecondValue);
+
+        game.setDiceFirstValue(diceFirstValue);
+        game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
+        if (!isRobbersActivity(diceFirstValue, diceSecondValue)) {
+            List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
+            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue);
+            mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
+        } else{
+            log.debug("Robbers activity due to dice value 7");
+        }
     }
 
     private void buyCard(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
@@ -157,6 +178,10 @@ public class PlayServiceImpl implements PlayService {
         availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
 
         returnedParams.put("card", chosenDevelopmentCard.name());
+    }
+
+    private boolean isRobbersActivity(Integer diceFirstValue, Integer diceSecondValue) {
+        return diceFirstValue + diceSecondValue == 7;
     }
 
     private void validateUserNotEmpty(UserBean user) throws PlayException {
@@ -191,10 +216,14 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-
     @Autowired
     public void setGameDao(GameDao gameDao) {
         this.gameDao = gameDao;
+    }
+
+    @Autowired
+    public void setRandomUtil(RandomUtil randomUtil) {
+        this.randomUtil = randomUtil;
     }
 
     @Autowired
@@ -220,5 +249,10 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setPreparationStageUtil(PreparationStageUtil preparationStageUtil) {
         this.preparationStageUtil = preparationStageUtil;
+    }
+
+    @Autowired
+    public void setMainStageUtil(MainStageUtil mainStageUtil) {
+        this.mainStageUtil = mainStageUtil;
     }
 }

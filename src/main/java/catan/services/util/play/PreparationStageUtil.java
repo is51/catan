@@ -69,9 +69,8 @@ public class PreparationStageUtil {
 
     public void updateGameStageToMain(GameBean game) {
         List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-        boolean lastCycle = game.getPreparationCycle().equals(initialBuildingsSet.size());
 
-        if (lastCycle && isEndOfCycle(game)) {
+        if (isEndOfPreparationStage(game, initialBuildingsSet.size())) {
             game.setStage(GameStage.MAIN);
             game.setDiceThrown(false);
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
@@ -81,13 +80,14 @@ public class PreparationStageUtil {
     public void updatePreparationCycle(GameBean game) {
         if (isEndOfCycle(game)) {
             List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-            boolean lastCycle = game.getPreparationCycle().equals(initialBuildingsSet.size());
-            if (lastCycle) {
+            int preparationCyclesQuantity = initialBuildingsSet.size();
+
+            if (isLastCycle(game.getPreparationCycle(), preparationCyclesQuantity)) {
                 game.setPreparationCycle(null);
                 log.debug("Preparation Cycle changed to {}", game.getPreparationCycle());
             } else {
                 game.setPreparationCycle(game.getPreparationCycle() + 1);
-                log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), initialBuildingsSet.size());
+                log.debug("Preparation cycle increased by 1. Current preparation cycle is {} of {}", game.getPreparationCycle(), preparationCyclesQuantity);
             }
         }
     }
@@ -112,12 +112,20 @@ public class PreparationStageUtil {
         }
     }
 
+    private boolean isLastCycle(Integer preparationCycle, int preparationCyclesQuantity) {
+        return preparationCycle.equals(preparationCyclesQuantity);
+    }
+
     private boolean isEndOfCycle(GameBean game) {
         boolean firstPlayer = game.getCurrentMove() == 1;
         boolean lastPlayer = game.getCurrentMove() == game.getGameUsers().size();
         boolean oddCycle = game.getPreparationCycle() % 2 > 0;
 
         return firstPlayer && !oddCycle || lastPlayer && oddCycle;
+    }
+
+    private boolean isEndOfPreparationStage(GameBean game, int preparationCyclesQuantity) {
+        return isEndOfCycle(game) && isLastCycle(game.getPreparationCycle(), preparationCyclesQuantity);
     }
 
     private GameUserActionCode getCurrentActionCode(GameBean game) {

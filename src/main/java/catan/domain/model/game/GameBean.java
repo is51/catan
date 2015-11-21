@@ -28,6 +28,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -90,6 +92,12 @@ public class GameBean {
 
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
     private Boolean diceThrown;
+
+    @Column(name = "DICE_FIRST_VALUE", unique = false, nullable = true)
+    private Integer diceFirstValue;
+
+    @Column(name = "DICE_SECOND_VALUE", unique = false, nullable = true)
+    private Integer diceSecondValue;
 
     @Embedded
     private DevelopmentCards availableDevelopmentCards;
@@ -288,6 +296,22 @@ public class GameBean {
         this.availableDevelopmentCards = availableDevelopmentCards;
     }
 
+    public Integer getDiceFirstValue() {
+        return diceFirstValue;
+    }
+
+    public void setDiceFirstValue(Integer diceFirstValue) {
+        this.diceFirstValue = diceFirstValue;
+    }
+
+    public Integer getDiceSecondValue() {
+        return diceSecondValue;
+    }
+
+    public void setDiceSecondValue(Integer diceSecondValue) {
+        this.diceSecondValue = diceSecondValue;
+    }
+
     public Set<EdgeBean> getEdges() {
         return edges;
     }
@@ -310,6 +334,30 @@ public class GameBean {
 
     public void setNodes(Set<NodeBean> nodes) {
         this.nodes = nodes;
+    }
+
+    public List<HexBean> fetchHexesWithCurrentDiceValue() {
+        List<HexBean> hexesWithDiceNumber = new ArrayList<HexBean>();
+
+        Integer diceSumValue = calculateDiceSumValue();
+        if (diceSumValue == null) {
+            return hexesWithDiceNumber;
+        }
+
+        for (HexBean hex : this.hexes) {
+            if (diceSumValue.equals(hex.getDice())) {
+                hexesWithDiceNumber.add(hex);
+            }
+        }
+
+        return hexesWithDiceNumber;
+    }
+
+    public Integer calculateDiceSumValue() {
+        if (this.diceFirstValue == null || this.diceSecondValue == null) {
+            return null;
+        }
+        return this.diceFirstValue + this.diceSecondValue;
     }
 
     public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {

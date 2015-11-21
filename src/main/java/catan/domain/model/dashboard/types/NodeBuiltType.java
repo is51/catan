@@ -1,5 +1,16 @@
 package catan.domain.model.dashboard.types;
 
 public enum NodeBuiltType{
-    SETTLEMENT, CITY
+    SETTLEMENT(1),
+    CITY(2);
+
+    private final int resourceQuantityToAdd;
+
+    NodeBuiltType(int resourceQuantityToAdd) {
+        this.resourceQuantityToAdd = resourceQuantityToAdd;
+    }
+
+    public int getResourceQuantityToAdd() {
+        return this.resourceQuantityToAdd;
+    }
 }

@@ -35,28 +35,28 @@ public class StartAndPreparation extends PlayTestUtil {
                 .setUserReady(USER_NAME_2)
                 .setUserReady(USER_NAME_3)
 
-                .buildSettlement(1).atNode(0, 0, "topLeft")
-                .buildRoad(1).atEdge(0, 0, "topLeft")
-                .endTurn(1)
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
+                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
+                .END_TURN(1)
 
-                .buildSettlement(2).atNode(0, 0, "topRight")
-                .buildRoad(2).atEdge(0, 0, "right")
-                .endTurn(2)
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "topRight")
+                .BUILD_ROAD(2).atEdge(0, 0, "right")
+                .END_TURN(2)
 
-                .buildSettlement(3).atNode(0, 0, "bottom")
-                .buildRoad(3).atEdge(0, 0, "bottomLeft")
-                .endTurn(3)
+                .BUILD_SETTLEMENT(3).atNode(0, 0, "bottom")
+                .BUILD_ROAD(3).atEdge(0, 0, "bottomLeft")
+                .END_TURN(3)
 
-                .buildSettlement(3).atNode(0, -2, "topLeft")
-                .buildRoad(3).atEdge(0, -2, "topLeft")
-                .endTurn(3)
+                .BUILD_SETTLEMENT(3).atNode(0, -2, "topLeft")
+                .BUILD_ROAD(3).atEdge(0, -2, "topLeft")
+                .END_TURN(3)
 
-                .buildSettlement(2).atNode(0, -2, "topRight")
-                .buildRoad(2).atEdge(0, -2, "right")
-                .endTurn(2)
+                .BUILD_SETTLEMENT(2).atNode(0, -2, "topRight")
+                .BUILD_ROAD(2).atEdge(0, -2, "right")
+                .END_TURN(2)
 
-                .buildSettlement(1).atNode(0, -2, "bottom")
-                .buildRoad(1).atEdge(0, -2, "bottomLeft")
-                .endTurn(1);
+                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottom")
+                .BUILD_ROAD(1).atEdge(0, -2, "bottomLeft")
+                .END_TURN(1);
     }
 }

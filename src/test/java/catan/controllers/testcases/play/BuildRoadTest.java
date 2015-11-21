@@ -1,6 +1,6 @@
 package catan.controllers.testcases.play;
 
-import catan.config.ApplicationConfig;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class BuildRoadTest extends PlayTestUtil {
 
