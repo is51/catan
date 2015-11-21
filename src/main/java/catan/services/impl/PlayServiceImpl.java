@@ -67,6 +67,7 @@ public class PlayServiceImpl implements PlayService {
         validateActionIsAllowedForUser(gameUser, action);
         doAction(action, user, game, params);
 
+        playUtil.takeResources(game.getStage(), gameUser.getResources(), action);
         playUtil.updateVictoryPoints(gameUser);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
         playUtil.updateAvailableActionsForAllUsers(game);

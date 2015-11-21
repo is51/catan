@@ -1,6 +1,7 @@
 package catan.services.util.play;
 
 import catan.domain.exception.GameException;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
@@ -34,6 +35,39 @@ public class MainStageUtil {
 
         log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
         game.setCurrentMove(nextMoveNumber);
+    }
+
+    public void takeResources(Resources usersResources, GameUserActionCode action) {
+        switch (action) {
+            case BUILD_CITY:
+                takeResourceFromPlayer(usersResources, HexType.WHEAT, 2);
+                takeResourceFromPlayer(usersResources, HexType.STONE, 3);
+                break;
+            case BUILD_ROAD:
+                takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
+                takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
+                break;
+            case BUILD_SETTLEMENT:
+                takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
+                takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
+                takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
+                takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
+                break;
+            /* TODO: uncomment this part while 70th story merging
+            case BUY_CARD:
+                takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
+                takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
+                takeResourceFromPlayer(usersResources, HexType.STONE, 1);
+                break;
+            */
+            default:
+                break;
+        }
+    }
+
+    private void takeResourceFromPlayer(Resources usersResources, HexType resource, int quantityToDecrease) {
+        int newResourceQuantity = usersResources.quantityOf(resource) - quantityToDecrease;
+        usersResources.updateResourceQuantity(resource, newResourceQuantity);
     }
 
     public void resetDices(GameBean game) {
