@@ -68,15 +68,21 @@ angular.module('catan')
                 (function runTimeout() {
                     updatingTimeout = $timeout(function() {
                         self.refresh(game).then(function() {
+                            var continueUpdating = true;
                             if (onEverySuccess) {
-                                onEverySuccess();
+                                continueUpdating = onEverySuccess() !== false;
                             }
-                            runTimeout();
+                            if (continueUpdating) {
+                                runTimeout();
+                            }
                         }, function() {
+                            var continueUpdating = true;
                             if (onEveryError) {
-                                onEveryError();
+                                continueUpdating = onEveryError() !== false;
                             }
-                            runTimeout();
+                            if (continueUpdating) {
+                                runTimeout();
+                            }
                         });
                     }, delay);
                 })();

@@ -1,7 +1,6 @@
 package catan.controllers.testcases.play;
 
-import catan.config.ApplicationConfig;
-import catan.config.RequestResponseLogger;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.ctf.Scenario;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +14,8 @@ import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class VictoryPointsTest {
     public static final String USER_NAME_1 = "user1_VictoryPointsTest";
@@ -69,24 +68,24 @@ public class VictoryPointsTest {
 
          */
         return scenario
-                .buildSettlement(1).atNode(0, -2, "top")
-                .buildRoad(1).atEdge(0, -2, "topLeft")
-                .endTurn(1)
-                .buildSettlement(2).atNode(0, 0, "top")
-                .buildRoad(2).atEdge(0, 0, "topLeft")
-                .endTurn(2)
-                .buildSettlement(3).atNode(2, -2, "top")
-                .buildRoad(3).atEdge(2, -2, "topLeft")
-                .endTurn(3)
-                .buildSettlement(3).atNode(2, -2, "bottomRight")
-                .buildRoad(3).atEdge(2, -2, "left")
-                .endTurn(3)
-                .buildSettlement(2).atNode(0, 0, "bottomRight")
-                .buildRoad(2).atEdge(0, 0, "left")
-                .endTurn(2)
-                .buildSettlement(1).atNode(0, -2, "bottomRight")
-                .buildRoad(1).atEdge(0, -2, "left")
-                .endTurn(1);
+                .BUILD_SETTLEMENT(1).atNode(0, -2, "top")
+                .BUILD_ROAD(1).atEdge(0, -2, "topLeft")
+                .END_TURN(1)
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "top")
+                .BUILD_ROAD(2).atEdge(0, 0, "topLeft")
+                .END_TURN(2)
+                .BUILD_SETTLEMENT(3).atNode(2, -2, "top")
+                .BUILD_ROAD(3).atEdge(2, -2, "topLeft")
+                .END_TURN(3)
+                .BUILD_SETTLEMENT(3).atNode(2, -2, "bottomRight")
+                .BUILD_ROAD(3).atEdge(2, -2, "left")
+                .END_TURN(3)
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "bottomRight")
+                .BUILD_ROAD(2).atEdge(0, 0, "left")
+                .END_TURN(2)
+                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottomRight")
+                .BUILD_ROAD(1).atEdge(0, -2, "left")
+                .END_TURN(1);
     }
 
     /*
@@ -138,8 +137,8 @@ public class VictoryPointsTest {
         //Given
         startNewGame(3);
         playPreparationStage()
-                .throwDice(1)
-                .buildSettlement(1).atNode(0, -2, "bottomLeft")
+                .THROW_DICE(1)
+                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottomLeft")
                 .getGameDetails(1) //get game details for first user
                 .statusIsFinished()
 

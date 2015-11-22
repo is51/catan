@@ -14,8 +14,9 @@ angular.module('catan')
             .then(function(game) {
                 $scope.game = game;
 
-                    GameService.startRefreshing($scope.game, GAME_UPDATE_DELAY, null, function() {
+                GameService.startRefreshing($scope.game, GAME_UPDATE_DELAY, null, function() {
                     alert('Getting Game Details Error. Probably there is a connection problem');
+                    return false;
                 });
 
             }, function() {

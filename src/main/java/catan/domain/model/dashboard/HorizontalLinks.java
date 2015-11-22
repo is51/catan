@@ -3,6 +3,7 @@ package catan.domain.model.dashboard;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 import java.util.List;
 
 @Embeddable

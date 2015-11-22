@@ -2,23 +2,38 @@ package catan.controllers.ctf;
 
 import catan.controllers.util.GameTestUtil;
 import catan.controllers.util.PlayTestUtil;
+import catan.domain.model.dashboard.types.HexType;
+import catan.services.util.random.RandomUtilMock;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Matcher;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 
 public class Scenario {
 
+    RandomUtilMock randomUtil;
+
     int gameId = -1;
     Map<String, String> userTokensByName = new HashMap<String, String>();
     Map<Integer, String> tokensByMoveOrder = new HashMap<Integer, String>();
     Map<Integer, Integer> gameUserIdsByMoveOrder = new HashMap<Integer, Integer>();
+    Map<String, Integer> usersResources = new HashMap<String, Integer>();
     ValidatableResponse currentGameDetails = null;
     Response lastApiResponse = null;
+    boolean trackResources = false;
+
+    public Scenario() {
+
+    }
+
+    public Scenario(RandomUtilMock randomUtil) {
+        this.randomUtil = randomUtil;
+    }
 
     public Scenario registerUser(String username, String password) {
         GameTestUtil.registerUser(username, password);
@@ -86,28 +101,33 @@ public class Scenario {
         return this;
     }
 
-    public BuildSettlementAction buildSettlement(int moveOrder) {
+    public BuildSettlementAction BUILD_SETTLEMENT(int moveOrder) {
+        saveUsersResourcesValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildSettlementAction(userToken, this);
     }
 
-    public BuildCityAction buildCity(int moveOrder) {
+    public BuildCityAction BUILD_CITY(int moveOrder) {
+        saveUsersResourcesValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildCityAction(userToken, this);
     }
 
-    public BuildRoadAction buildRoad(int moveOrder) {
+    public BuildRoadAction BUILD_ROAD(int moveOrder) {
+        saveUsersResourcesValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildRoadAction(userToken, this);
     }
 
-    public Scenario endTurn(int moveOrder) {
+    public Scenario END_TURN(int moveOrder) {
+        //saveUsersResourcesValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         lastApiResponse = PlayTestUtil.endTurn(userToken, gameId);
         return this;
     }
 
-    public Scenario throwDice(int moveOrder) {
+    public Scenario THROW_DICE(int moveOrder) {
+        saveUsersResourcesValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         lastApiResponse = PlayTestUtil.throwDice(userToken, gameId);
         return this;
@@ -119,6 +139,10 @@ public class Scenario {
 
     public GameUserValidator gameUser(int moveOrder) {
         return new GameUserValidator(this, moveOrder);
+    }
+
+    public DiceValidator dice() {
+        return new DiceValidator(this);
     }
 
     //if custom check is used several times - create a new method for it
@@ -156,6 +180,79 @@ public class Scenario {
     }
 
     public Scenario and() {
+        return this;
+    }
+
+    public Scenario nextRandomMoveOrderValues(List<Integer> nextRandomValues) {
+        for (Integer nextRandomValue : nextRandomValues) {
+            randomUtil.setNextMoveOrder(nextRandomValue);
+        }
+
+        return this;
+    }
+
+    public Scenario nextRandomDiceValues(List<Integer> nextRandomValues) {
+        for (Integer nextRandomValue : nextRandomValues) {
+            randomUtil.setNextDiceNumber(nextRandomValue);
+        }
+
+        return this;
+    }
+
+    public HexBuilder setHex(HexType hexType, Integer diceValue) {
+        return new HexBuilder(this, hexType, diceValue);
+    }
+
+    private void saveUsersResourcesValues(){
+        if(!trackResources){
+            return;
+        }
+
+        getGameDetails(1);
+        int p1Brick = gameUser(1).getValueOf("resources.brick");
+        int p1Wood = gameUser(1).getValueOf("resources.wood");
+        int p1Sheep = gameUser(1).getValueOf("resources.sheep");
+        int p1Wheat = gameUser(1).getValueOf("resources.wheat");
+        int p1Stone = gameUser(1).getValueOf("resources.stone");
+
+        getGameDetails(2);
+        int p2Brick = gameUser(2).getValueOf("resources.brick");
+        int p2Wood = gameUser(2).getValueOf("resources.wood");
+        int p2Sheep = gameUser(2).getValueOf("resources.sheep");
+        int p2Wheat = gameUser(2).getValueOf("resources.wheat");
+        int p2Stone = gameUser(2).getValueOf("resources.stone");
+
+        getGameDetails(3);
+        int p3Brick = gameUser(3).getValueOf("resources.brick");
+        int p3Wood = gameUser(3).getValueOf("resources.wood");
+        int p3Sheep = gameUser(3).getValueOf("resources.sheep");
+        int p3Wheat = gameUser(3).getValueOf("resources.wheat");
+        int p3Stone = gameUser(3).getValueOf("resources.stone");
+
+        usersResources.put("p1Brick", p1Brick);
+        usersResources.put("p1Wood", p1Wood);
+        usersResources.put("p1Sheep", p1Sheep);
+        usersResources.put("p1Wheat", p1Wheat);
+        usersResources.put("p1Stone", p1Stone);
+        usersResources.put("p2Brick", p2Brick);
+        usersResources.put("p2Wood", p2Wood);
+        usersResources.put("p2Sheep", p2Sheep);
+        usersResources.put("p2Wheat", p2Wheat);
+        usersResources.put("p2Stone", p2Stone);
+        usersResources.put("p3Brick", p3Brick);
+        usersResources.put("p3Wood", p3Wood);
+        usersResources.put("p3Sheep", p3Sheep);
+        usersResources.put("p3Wheat", p3Wheat);
+        usersResources.put("p3Stone", p3Stone);
+    }
+
+    public Scenario startTrackResourcesQuantity() {
+        trackResources = true;
+        return this;
+    }
+
+    public Scenario stopTrackResourcesQuantity() {
+        trackResources = false;
         return this;
     }
 }

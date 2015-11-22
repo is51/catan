@@ -26,20 +26,6 @@ public class PlayUtil {
         return GSON.fromJson(availableActionsJson, AvailableActions.class);
     }
 
-    public void updateNextMove(GameBean game) throws GameException {
-        switch (game.getStage()) {
-            case PREPARATION:
-                preparationStageUtil.updateNextMove(game);
-                break;
-            case MAIN:
-                mainStageUtil.updateNextMove(game);
-                break;
-            default:
-                log.debug("Cannot recognize current game stage: {}", game.getStage());
-                throw new GameException(ERROR_CODE_ERROR);
-        }
-    }
-
     public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
         switch (game.getStage()) {
             case PREPARATION:

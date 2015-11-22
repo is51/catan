@@ -1,6 +1,6 @@
 package catan.controllers.testcases.play;
 
-import catan.config.ApplicationConfig;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class AchievementsCalculationTest extends PlayTestUtil {
 

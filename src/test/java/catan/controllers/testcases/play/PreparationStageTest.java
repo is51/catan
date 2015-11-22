@@ -1,6 +1,6 @@
 package catan.controllers.testcases.play;
 
-import catan.config.ApplicationConfig;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
@@ -14,7 +14,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class PreparationStageTest extends PlayTestUtil {
 
