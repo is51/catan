@@ -19,7 +19,7 @@
         <Logger name="org.springframework" level="INFO"/>
         <logger name="org.springframework.boot.context.web.ErrorPageFilter" level="OFF" />
 
-        <logger name="catan.config.RequestResponseLogger" level="OFF" />
+        <logger name="catan.config.RequestResponseLogger" level="DEBUG" />
         <logger name="catan.services.AuthenticationService" level="OFF" />
         <logger name="catan.services.GameService" level="INFO" />
 

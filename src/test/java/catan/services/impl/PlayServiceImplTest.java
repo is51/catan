@@ -1374,7 +1374,7 @@ public class PlayServiceImplTest {
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.CARDS_ARE_OVER_ERROR, e.getErrorCode());
+            assertEquals(CardUtil.CARDS_ARE_OVER_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }

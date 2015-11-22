@@ -2,6 +2,7 @@ package catan.services.util.random;
 
 import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.game.types.DevelopmentCard;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,6 +16,7 @@ public class RandomUtilMock extends RandomUtil {
     private List<Integer> diceNumbersToGenerate = new LinkedList<Integer>();
     private Map<Coordinates, HexType> hexTypesToGenerate = new HashMap<Coordinates, HexType>();
     private Map<Coordinates, Integer> hexDiceNumbersToGenerate = new HashMap<Coordinates, Integer>();
+    private List<DevelopmentCard> developmentCardsToGenerate = new LinkedList<DevelopmentCard>();
 
     public void setNextPrivateCode(String privateCode){
         privateCodesToGenerate.add(privateCode);
@@ -34,6 +36,10 @@ public class RandomUtilMock extends RandomUtil {
 
     public void setNextDiceNumber(Integer diceNumber) {
         diceNumbersToGenerate.add(diceNumber);
+    }
+
+    public void setNextDevelopmentCard(DevelopmentCard devCard) {
+        developmentCardsToGenerate.add(devCard);
     }
 
     public String generateRandomPrivateCode(int numberOfDigits) {
@@ -60,6 +66,11 @@ public class RandomUtilMock extends RandomUtil {
 
     public Integer getRandomDiceNumber() {
         return diceNumbersToGenerate.size() > 0 ? diceNumbersToGenerate.remove(0) : super.getRandomDiceNumber();
+    }
+
+    public DevelopmentCard pullRandomDevelopmentCard(List<DevelopmentCard> availableDevCards) {
+        return developmentCardsToGenerate.size() > 0 ? developmentCardsToGenerate.remove(0) : super.pullRandomDevelopmentCard(availableDevCards);
+
     }
 
 }

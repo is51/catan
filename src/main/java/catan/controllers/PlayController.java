@@ -58,8 +58,8 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void buildCity(@RequestParam(value = "token", required = false) String token,
-                                @RequestParam("gameId") String gameId,
-                                @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
+                          @RequestParam("gameId") String gameId,
+                          @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         HashMap<String, String> params = new HashMap<String, String>();
@@ -82,7 +82,7 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void throwDice(@RequestParam(value = "token", required = false) String token,
-                        @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+                          @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         playService.processAction(GameUserActionCode.THROW_DICE, user, gameId);
@@ -92,7 +92,7 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BoughtCardDetails buyCard(@RequestParam(value = "token", required = false) String token,
-                          @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+                                     @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> returnedParams = playService.processAction(GameUserActionCode.BUY_CARD, user, gameId);

@@ -172,6 +172,7 @@ public class PlayServiceImpl implements PlayService {
     private void buyCard(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
         DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
         DevelopmentCard chosenDevelopmentCard = cardUtil.chooseDevelopmentCard(availableDevelopmentCards);
+        log.debug("Card " + chosenDevelopmentCard + " was chosen from the list: " + availableDevelopmentCards);
 
         DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
         usersDevelopmentCards.increaseQuantityByOne(chosenDevelopmentCard);
