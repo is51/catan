@@ -131,17 +131,17 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .END_TURN(1)
 
-                .getGameDetails(1).gameUser(1).resourcesQuantityChanged(0, 4, 0, 0, 1)
-                .getGameDetails(2).gameUser(2).resourcesQuantityChanged(0, 0, 0, 0, 1)
-                .getGameDetails(3).gameUser(3).resourcesQuantityChanged(0, 0, 0, 0, 1)
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 4, 0, 0, 1)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
 
                 .nextRandomDiceValues(asList(4, 6))
                 .THROW_DICE(2)
                 .END_TURN(2)
 
-                .getGameDetails(1).gameUser(1).resourcesQuantityChanged(0, 0, 1, 0, 0)
-                .getGameDetails(2).gameUser(2).resourcesQuantityChanged(0, 0, 1, 0, 0)
-                .getGameDetails(3).gameUser(3).resourcesQuantityChanged(0, 0, 0, 0, 0);
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
 

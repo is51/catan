@@ -1,6 +1,5 @@
 package catan.controllers.testcases.play;
 
-import catan.config.RequestResponseLogger;
 import catan.controllers.ctf.Scenario;
 import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
@@ -121,24 +120,24 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .startTrackDevCardsQuantity()
 
                 .BUY_CARD(1)
-                .getGameDetails(1).gameUser(1).devCardsQuantityChanged(1, 0, 0, 0, 0)
-                .getGameDetails(2).gameUser(2).devCardsQuantityChanged(0, 0, 0, 0, 0)  // no cards should be increased for other players
-                .getGameDetails(3).gameUser(3).devCardsQuantityChanged(0, 0, 0, 0, 0)  // no cards should be increased for other players
+                .getGameDetails(1).gameUser(1).devCardsQuantityChangedBy(1, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).devCardsQuantityChangedBy(0, 0, 0, 0, 0)  // no cards should be increased for other players
+                .getGameDetails(3).gameUser(3).devCardsQuantityChangedBy(0, 0, 0, 0, 0)  // no cards should be increased for other players
 
                 .BUY_CARD(1)
-                .getGameDetails(1).gameUser(1).devCardsQuantityChanged(1, 0, 0, 0, 0)
+                .getGameDetails(1).gameUser(1).devCardsQuantityChangedBy(1, 0, 0, 0, 0)
 
                 .BUY_CARD(1)
-                .getGameDetails(1).gameUser(1).devCardsQuantityChanged(0, 0, 1, 0, 0)
+                .getGameDetails(1).gameUser(1).devCardsQuantityChangedBy(0, 0, 1, 0, 0)
 
                 .BUY_CARD(1)
-                .getGameDetails(1).gameUser(1).devCardsQuantityChanged(1, 0, 0, 0, 0)
+                .getGameDetails(1).gameUser(1).devCardsQuantityChangedBy(1, 0, 0, 0, 0)
 
                 .BUY_CARD(1)
-                .getGameDetails(1).gameUser(1).devCardsQuantityChanged(0, 0, 0, 0, 1)
+                .getGameDetails(1).gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 1)
 
                 .BUY_CARD(1)
-                .getGameDetails(1).gameUser(1).devCardsQuantityChanged(0, 0, 0, 0, 1);
+                .getGameDetails(1).gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 1);
     }
 
     @Test

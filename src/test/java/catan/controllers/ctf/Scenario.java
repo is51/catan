@@ -233,92 +233,37 @@ public class Scenario {
             return;
         }
 
-        getGameDetails(1);
-        if (trackResources) {
-            int p1Brick = gameUser(1).getValueOf("resources.brick");
-            int p1Wood = gameUser(1).getValueOf("resources.wood");
-            int p1Sheep = gameUser(1).getValueOf("resources.sheep");
-            int p1Wheat = gameUser(1).getValueOf("resources.wheat");
-            int p1Stone = gameUser(1).getValueOf("resources.stone");
+        for(int i = 1; i <= tokensByMoveOrder.size(); i++){
+            getGameDetails(i);
 
-            usersResources.put("p1Brick", p1Brick);
-            usersResources.put("p1Wood", p1Wood);
-            usersResources.put("p1Sheep", p1Sheep);
-            usersResources.put("p1Wheat", p1Wheat);
-            usersResources.put("p1Stone", p1Stone);
+            if (trackResources) {
+                int brick = gameUser(i).getValueOf("resources.brick");
+                int wood = gameUser(i).getValueOf("resources.wood");
+                int sheep = gameUser(i).getValueOf("resources.sheep");
+                int wheat = gameUser(i).getValueOf("resources.wheat");
+                int stone = gameUser(i).getValueOf("resources.stone");
+
+                usersResources.put("user" + i + "brick", brick);
+                usersResources.put("user" + i + "wood", wood);
+                usersResources.put("user" + i + "sheep", sheep);
+                usersResources.put("user" + i + "wheat", wheat);
+                usersResources.put("user" + i + "stone", stone);
+            }
+
+            if (trackCards) {
+                int knight = gameUser(i).getValueOf("developmentCards.knight");
+                int victoryPoint = gameUser(i).getValueOf("developmentCards.victoryPoint");
+                int roadBuilding = gameUser(i).getValueOf("developmentCards.roadBuilding");
+                int monopoly = gameUser(i).getValueOf("developmentCards.monopoly");
+                int yearOfPlenty = gameUser(i).getValueOf("developmentCards.yearOfPlenty");
+
+                usersCards.put("user" + i + "knight", knight);
+                usersCards.put("user" + i + "victoryPoint", victoryPoint);
+                usersCards.put("user" + i + "roadBuilding", roadBuilding);
+                usersCards.put("user" + i + "monopoly", monopoly);
+                usersCards.put("user" + i + "yearOfPlenty", yearOfPlenty);
+            }
         }
-
-        if (trackCards) {
-            int p1knight = gameUser(1).getValueOf("developmentCards.knight");
-            int p1victoryPoint = gameUser(1).getValueOf("developmentCards.victoryPoint");
-            int p1roadBuilding = gameUser(1).getValueOf("developmentCards.roadBuilding");
-            int p1monopoly = gameUser(1).getValueOf("developmentCards.monopoly");
-            int p1yearOfPlenty = gameUser(1).getValueOf("developmentCards.yearOfPlenty");
-
-            usersCards.put("p1knight", p1knight);
-            usersCards.put("p1victoryPoint", p1victoryPoint);
-            usersCards.put("p1roadBuilding", p1roadBuilding);
-            usersCards.put("p1monopoly", p1monopoly);
-            usersCards.put("p1yearOfPlenty", p1yearOfPlenty);
-        }
-
-
-        getGameDetails(2);
-        if (trackResources) {
-            int p2Brick = gameUser(2).getValueOf("resources.brick");
-            int p2Wood = gameUser(2).getValueOf("resources.wood");
-            int p2Sheep = gameUser(2).getValueOf("resources.sheep");
-            int p2Wheat = gameUser(2).getValueOf("resources.wheat");
-            int p2Stone = gameUser(2).getValueOf("resources.stone");
-
-            usersResources.put("p2Brick", p2Brick);
-            usersResources.put("p2Wood", p2Wood);
-            usersResources.put("p2Sheep", p2Sheep);
-            usersResources.put("p2Wheat", p2Wheat);
-            usersResources.put("p2Stone", p2Stone);
-        }
-        if (trackCards) {
-            int p2knight = gameUser(2).getValueOf("developmentCards.knight");
-            int p2victoryPoint = gameUser(2).getValueOf("developmentCards.victoryPoint");
-            int p2roadBuilding = gameUser(2).getValueOf("developmentCards.roadBuilding");
-            int p2monopoly = gameUser(2).getValueOf("developmentCards.monopoly");
-            int p2yearOfPlenty = gameUser(2).getValueOf("developmentCards.yearOfPlenty");
-
-            usersCards.put("p2knight", p2knight);
-            usersCards.put("p2victoryPoint", p2victoryPoint);
-            usersCards.put("p2roadBuilding", p2roadBuilding);
-            usersCards.put("p2monopoly", p2monopoly);
-            usersCards.put("p2yearOfPlenty", p2yearOfPlenty);
-        }
-
-        getGameDetails(3);
-        if (trackResources) {
-            int p3Brick = gameUser(3).getValueOf("resources.brick");
-            int p3Wood = gameUser(3).getValueOf("resources.wood");
-            int p3Sheep = gameUser(3).getValueOf("resources.sheep");
-            int p3Wheat = gameUser(3).getValueOf("resources.wheat");
-            int p3Stone = gameUser(3).getValueOf("resources.stone");
-
-            usersResources.put("p3Brick", p3Brick);
-            usersResources.put("p3Wood", p3Wood);
-            usersResources.put("p3Sheep", p3Sheep);
-            usersResources.put("p3Wheat", p3Wheat);
-            usersResources.put("p3Stone", p3Stone);
-        }
-        if (trackCards) {
-            int p3knight = gameUser(3).getValueOf("developmentCards.knight");
-            int p3victoryPoint = gameUser(3).getValueOf("developmentCards.victoryPoint");
-            int p3roadBuilding = gameUser(3).getValueOf("developmentCards.roadBuilding");
-            int p3monopoly = gameUser(3).getValueOf("developmentCards.monopoly");
-            int p3yearOfPlenty = gameUser(3).getValueOf("developmentCards.yearOfPlenty");
-
-            usersCards.put("p3knight", p3knight);
-            usersCards.put("p3victoryPoint", p3victoryPoint);
-            usersCards.put("p3roadBuilding", p3roadBuilding);
-            usersCards.put("p3monopoly", p3monopoly);
-            usersCards.put("p3yearOfPlenty", p3yearOfPlenty);
-        }
-
     }
 
     public Scenario startTrackResourcesQuantity() {
