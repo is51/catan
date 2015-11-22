@@ -96,7 +96,7 @@ public class PlayController {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> returnedParams = playService.processAction(GameUserActionCode.BUY_CARD, user, gameId);
-        String developmentCardCode = returnedParams.get("code");
+        String developmentCardCode = returnedParams.get("card");
 
         return new BoughtCardDetails(developmentCardCode);
     }
