@@ -163,20 +163,20 @@ public class MainStageUtil {
     }
 
     private boolean userHasResourcesToBuildCity(GameUserBean gameUser) {
-        return gameUser.getResources().getStone() >= 0
-                && gameUser.getResources().getWheat() >= 0;
+        return gameUser.getResources().getStone() >= 3
+                && gameUser.getResources().getWheat() >= 2;
     }
 
     private boolean userHasResourcesForSettlement(GameUserBean gameUser) {
-        return gameUser.getResources().getWood() >= 0
-                && gameUser.getResources().getBrick() >= 0
-                && gameUser.getResources().getSheep() >= 0
-                && gameUser.getResources().getWheat() >= 0;
+        return gameUser.getResources().getWood() >= 1
+                && gameUser.getResources().getBrick() >= 1
+                && gameUser.getResources().getSheep() >= 1
+                && gameUser.getResources().getWheat() >= 1;
     }
 
     private boolean userHasResourcesToBuildRoad(GameUserBean gameUser) {
-        return gameUser.getResources().getWood() >= 0
-                && gameUser.getResources().getBrick() >= 0;
+        return gameUser.getResources().getWood() >= 1
+                && gameUser.getResources().getBrick() >= 1;
     }
 
     private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {

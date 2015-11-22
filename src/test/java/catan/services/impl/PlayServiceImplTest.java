@@ -17,6 +17,7 @@ import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.GameStage;
@@ -1009,6 +1010,7 @@ public class PlayServiceImplTest {
     public void shouldPassWhenBuildCityInMainStageAfterDiceThrown() throws PlayException, GameException{
         // WHEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
+        gameUser1.setResources(new Resources(0, 0, 0, 2, 3));
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         allowUserToThrowDice(gameUser1);
@@ -1034,9 +1036,11 @@ public class PlayServiceImplTest {
     public void shouldPassWhenBuildingSettlementInMainStageOnlyAfterDiceThrown() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
-        when(gameDao.getGameByGameId(1)).thenReturn(game);
+        gameUser1.setResources(new Resources(1, 1, 1, 1, 0));
+        game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
         HashMap<String, String> params = new HashMap<String, String>();
@@ -1071,8 +1075,8 @@ public class PlayServiceImplTest {
     public void shouldPassWhenBuildingRoadNearOwnNeighbourRoadOnlyAfterDiceThrown() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
-        game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableActionsForAllUsers(game);
+        gameUser1.setResources(new Resources(1, 1, 0, 0, 0));
+        game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -1091,8 +1095,6 @@ public class PlayServiceImplTest {
         }
 
         playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
-
-
 
         // WHEN
         playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
@@ -1234,74 +1236,158 @@ public class PlayServiceImplTest {
     }
 
     @Test
-    public void shouldPassWhenBuildingRoadInMainStageAndResourcesTakenFromPlayer() throws GameException, PlayException {
+    public void shouldAllowToBuildRoadOnlyIfPlayerHasEnoughResources() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
-        game.setDiceThrown(true);
-        allowUserToBuildRoad(gameUser1);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        // WHEN
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("edgeId", "7");
 
+        try {
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        gameUser1.setResources(new Resources(1, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+
+        // WHEN
         playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
 
         // THEN
-        assertNotNull(gameUser1);
         assertNotNull(gameUser1.getResources());
-        assertEquals(-1, gameUser1.getResources().getBrick());
-        assertEquals(-1, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getBrick());
+        assertEquals(0, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getStone());
+        assertEquals(0, gameUser1.getResources().getWheat());
     }
 
     @Test
-    public void shouldPassWhenBuildingSettlementInMainStageAndResourcesTakenFromPlayer() throws GameException, PlayException {
+    public void shouldAllowToBuildSettlementOnlyIfPlayerHasEnoughResources() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         game.setStage(GameStage.MAIN);
-        game.setDiceThrown(true);
-        allowUserToBuildSettlement(gameUser1);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        // WHEN
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
+        try {
+            playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        gameUser1.setResources(new Resources(1, 1, 1, 1, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+
+        // WHEN
         playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
 
         // THEN
-        assertNotNull(gameUser1);
         assertNotNull(gameUser1.getResources());
-        assertEquals(-1, gameUser1.getResources().getBrick());
-        assertEquals(-1, gameUser1.getResources().getWood());
-        assertEquals(-1, gameUser1.getResources().getWheat());
-        assertEquals(-1, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getBrick());
+        assertEquals(0, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getStone());
+        assertEquals(0, gameUser1.getResources().getWheat());
     }
 
     @Test
-    public void shouldPassWhenBuildCityInMainStageAndResourcesTakenFromPlayer() throws PlayException, GameException {
-        // GIVEN
+    public void shouldAllowToBuildCityOnlyIfPlayerHasEnoughResources() throws GameException, PlayException {
+        //GIVEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         game.setStage(GameStage.MAIN);
-        game.setDiceThrown(true);
-        allowUserToBuildCity(gameUser1);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        // WHEN
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 
+        try {
+            playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        gameUser1.setResources(new Resources(0, 0, 0, 2, 3));
+        playUtil.updateAvailableActionsForAllUsers(game);
+
+        // WHEN
         playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
 
         // THEN
-        assertNotNull(gameUser1);
         assertNotNull(gameUser1.getResources());
-        assertEquals(-2, gameUser1.getResources().getWheat());
-        assertEquals(-3, gameUser1.getResources().getStone());
+        assertEquals(0, gameUser1.getResources().getBrick());
+        assertEquals(0, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getStone());
+        assertEquals(0, gameUser1.getResources().getWheat());
     }
+
+    /* TODO: uncomment this part while 70th story merging
+    @Test
+    public void shouldAllowToBuyDevelopmentCardOnlyIfPlayerHasEnoughResources() throws GameException, PlayException {
+        //GIVEN
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        try {
+            playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
+            fail("Exception should be thrown should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+
+        gameUser1.setResources(new Resources(0, 0, 1, 1, 1));
+        playUtil.updateAvailableActionsForAllUsers(game);
+
+        // WHEN
+        playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
+
+        // THEN
+        assertNotNull(gameUser1.getResources());
+        assertEquals(0, gameUser1.getResources().getBrick());
+        assertEquals(0, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getStone());
+        assertEquals(0, gameUser1.getResources().getWheat());
+    }
+    */
 
     @Test
     public void shouldPassWhenBuildSomethingInPreparationStageAndResourcesDoesNotTakenFromPlayer() throws PlayException, GameException {
@@ -1329,33 +1415,6 @@ public class PlayServiceImplTest {
         assertEquals(0, gameUser2.getResources().getSheep());
         assertEquals(0, gameUser2.getResources().getStone());
         assertEquals(0, gameUser2.getResources().getWheat());
-    }
-
-    /* TODO: uncomment this part while 70th story merging
-    @Test
-    public void shouldPassWhenBuyDevelopmentCardInMainStageAndResourcesTakenFromPlayer() throws GameException, PlayException {
-        //GIVEN
-        allowUserToBuyDevelopmentCard(gameUser1);
-        when(gameDao.getGameByGameId(1)).thenReturn(game);
-
-        // WHEN
-        playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1", new HashMap<String, String>());
-
-        // THEN
-        assertNotNull(gameUser1);
-        assertNotNull(gameUser1.getResources());
-        assertEquals(-1, gameUser1.getResources().getSheep());
-        assertEquals(-1, gameUser1.getResources().getStone());
-        assertEquals(-1, gameUser1.getResources().getWheat());
-    }
-
-    private void allowUserToBuyDevelopmentCard(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.BUY_CARD));
-    }
-    */
-
-    private void allowUserToBuildRoad(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.BUILD_ROAD));
     }
 
     private void allowUserToThrowDice(GameUserBean user) {
