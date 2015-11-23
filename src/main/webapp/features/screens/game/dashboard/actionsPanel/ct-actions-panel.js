@@ -31,6 +31,10 @@ angular.module('catan')
                     scope.build = function() {
                         ModalWindowService.show("BUY_PANEL");
                     };
+
+                    scope.showCards = function() {
+                        ModalWindowService.show("CARDS_PANEL");
+                    };
                 }
             };
         }]);
