@@ -8,6 +8,11 @@
     Build
 </button>
 
+<button ng-click="showCards()">
+    <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
+    Cards
+</button>
+
 <button ng-click="endTurn()" ng-disabled="!game.isActionEnabledForCurrentUser('END_TURN')">
     <span class="glyphicon glyphicon-hourglass"></span><br>
     End turn

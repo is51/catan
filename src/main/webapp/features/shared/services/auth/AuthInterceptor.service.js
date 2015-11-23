@@ -17,7 +17,7 @@ angular.module('catan')
 
             responseError: function (rejection) {
                 if (rejection.status === 403) {
-                    alert('Error 403: Access denied'); // temp
+                    console.log('Error 403: Access denied'); // temp
                     //$state.go('start'); // needs showing of login form
                 }
                 return $q.reject(rejection);
