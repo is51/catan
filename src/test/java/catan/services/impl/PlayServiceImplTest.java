@@ -1042,7 +1042,6 @@ public class PlayServiceImplTest {
         allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
-        when(gameDao.getGameByGameId(1)).thenReturn(game);
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeId", "3");
 

@@ -5,13 +5,13 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
-import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
@@ -37,37 +37,11 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void takeResources(Resources usersResources, GameUserActionCode action) {
-        switch (action) {
-            case BUILD_CITY:
-                takeResourceFromPlayer(usersResources, HexType.WHEAT, 2);
-                takeResourceFromPlayer(usersResources, HexType.STONE, 3);
-                break;
-            case BUILD_ROAD:
-                takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
-                takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
-                break;
-            case BUILD_SETTLEMENT:
-                takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
-                takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
-                takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
-                takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
-                break;
-            /* TODO: uncomment this part while 70th story merging
-            case BUY_CARD:
-                takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
-                takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
-                takeResourceFromPlayer(usersResources, HexType.STONE, 1);
-                break;
-            */
-            default:
-                break;
+    public void takeResourceFromPlayer(GameStage gameStage, Resources usersResources, HexType resource, int quantityToDecrease) {
+        if (GameStage.MAIN.equals(gameStage)) {
+            int newResourceQuantity = usersResources.quantityOf(resource) - quantityToDecrease;
+            usersResources.updateResourceQuantity(resource, newResourceQuantity);
         }
-    }
-
-    private void takeResourceFromPlayer(Resources usersResources, HexType resource, int quantityToDecrease) {
-        int newResourceQuantity = usersResources.quantityOf(resource) - quantityToDecrease;
-        usersResources.updateResourceQuantity(resource, newResourceQuantity);
     }
 
     public void resetDices(GameBean game) {

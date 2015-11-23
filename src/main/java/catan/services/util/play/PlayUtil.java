@@ -3,11 +3,8 @@ package catan.services.util.play;
 import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
-import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.AvailableActions;
-import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
-import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +37,6 @@ public class PlayUtil {
             default:
                 log.debug("Cannot recognize current game stage: {}", game.getStage());
                 throw new GameException(ERROR_CODE_ERROR);
-        }
-    }
-
-    public void takeResources(GameStage gameStage, Resources usersResources, GameUserActionCode action) {
-        if (GameStage.MAIN.equals(gameStage)) {
-            mainStageUtil.takeResources(usersResources, action);
         }
     }
 
