@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service("gameService")
 @Transactional
@@ -44,8 +46,7 @@ public class GameServiceImpl implements GameService {
     private RandomUtil randomUtil;
     private MapUtil mapUtil;
 
-    private final Object joinGameLock = new Object();
-    private final Object updateUserStatusLock = new Object();
+    private ConcurrentMap<Long, Long> locks = new ConcurrentHashMap<>();
 
     @Override
     public GameBean createNewGame(UserBean creator, boolean isPrivateGame, String inputTargetVictoryPoints, String initialBuildingsSetId) throws GameException {
@@ -99,7 +100,7 @@ public class GameServiceImpl implements GameService {
         validateUserNotEmpty(user);
         validateGameIdNotEmpty(gameId);
 
-        synchronized (joinGameLock) {
+        synchronized (getGameIdSyncObject(Long.parseLong(gameId))) {
             GameBean game = privateGame
                     ? gameUtil.findPrivateGame(gameId)
                     : gameUtil.findPublicGame(gameId);
@@ -186,7 +187,7 @@ public class GameServiceImpl implements GameService {
         validateUserNotEmpty(user);
         validateGameIdNotEmpty(gameId);
 
-        synchronized (updateUserStatusLock) {
+        synchronized (getGameIdSyncObject(Long.parseLong(gameId))) {
 
             GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
             validateGameStatusIsNew(game);
@@ -328,6 +329,12 @@ public class GameServiceImpl implements GameService {
                 MAX_USERS,
                 targetVictoryPoints,
                 initialBuildingsSet);
+    }
+
+    private Object getGameIdSyncObject(final Long id) {
+        locks.putIfAbsent(id, id);
+
+        return locks.get(id);
     }
 
     @Autowired
