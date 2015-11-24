@@ -12,6 +12,10 @@ angular.module('catan')
                 return Remote.play.throwDice({gameId: game.getId()});
             };
 
+            PlayService.buyCard = function (game) {
+                return Remote.play.buyCard({gameId: game.getId()});
+            };
+
             PlayService.buildSettlement = function (game) {
                 var deferred = $q.defer();
 

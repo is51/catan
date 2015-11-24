@@ -5,6 +5,7 @@ import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
+import catan.domain.transfer.output.game.BoughtCardDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -56,8 +58,8 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void buildCity(@RequestParam(value = "token", required = false) String token,
-                                @RequestParam("gameId") String gameId,
-                                @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
+                          @RequestParam("gameId") String gameId,
+                          @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         HashMap<String, String> params = new HashMap<String, String>();
@@ -80,10 +82,23 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void throwDice(@RequestParam(value = "token", required = false) String token,
-                        @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+                          @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         playService.processAction(GameUserActionCode.THROW_DICE, user, gameId);
+    }
+
+    @RequestMapping(value = "buy/card",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public BoughtCardDetails buyCard(@RequestParam(value = "token", required = false) String token,
+                                     @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> returnedParams = playService.processAction(GameUserActionCode.BUY_CARD, user, gameId);
+        String developmentCardCode = returnedParams.get("card");
+
+        return new BoughtCardDetails(developmentCardCode);
     }
 
     @Autowired

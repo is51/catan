@@ -3,6 +3,7 @@ package catan.controllers.ctf;
 import catan.controllers.util.GameTestUtil;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.game.types.DevelopmentCard;
 import catan.services.util.random.RandomUtilMock;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
@@ -23,9 +24,11 @@ public class Scenario {
     Map<Integer, String> tokensByMoveOrder = new HashMap<Integer, String>();
     Map<Integer, Integer> gameUserIdsByMoveOrder = new HashMap<Integer, Integer>();
     Map<String, Integer> usersResources = new HashMap<String, Integer>();
+    Map<String, Integer> usersCards = new HashMap<String, Integer>();
     ValidatableResponse currentGameDetails = null;
     Response lastApiResponse = null;
     boolean trackResources = false;
+    boolean trackCards = false;
 
     public Scenario() {
 
@@ -66,10 +69,10 @@ public class Scenario {
         String userToken = userTokensByName.get(userName);
         lastApiResponse = GameTestUtil.setUserReady(userToken, gameId);
 
-        if(lastApiResponse.getStatusCode() == 200){
+        if (lastApiResponse.getStatusCode() == 200) {
             getGameDetails(userName);
             String status = currentGameDetails.extract().path("status");
-            if("PLAYING".equals(status)){
+            if ("PLAYING".equals(status)) {
                 populateTokensByMoveOrder();
             }
         }
@@ -78,7 +81,7 @@ public class Scenario {
     }
 
     private void populateTokensByMoveOrder() {
-        for(int i = 0; i < (Integer) currentGameDetails.extract().path("gameUsers.size"); i++){
+        for (int i = 0; i < (Integer) currentGameDetails.extract().path("gameUsers.size"); i++) {
             Integer currentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].moveOrder");
             Integer gameUserIdOfPlayerWithCurrentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].id");
             String userNameWithCurrentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].user.username");
@@ -102,34 +105,48 @@ public class Scenario {
     }
 
     public BuildSettlementAction BUILD_SETTLEMENT(int moveOrder) {
-        saveUsersResourcesValues();
+        saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildSettlementAction(userToken, this);
     }
 
     public BuildCityAction BUILD_CITY(int moveOrder) {
-        saveUsersResourcesValues();
+        saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildCityAction(userToken, this);
     }
 
     public BuildRoadAction BUILD_ROAD(int moveOrder) {
-        saveUsersResourcesValues();
+        saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         return new BuildRoadAction(userToken, this);
     }
 
     public Scenario END_TURN(int moveOrder) {
-        //saveUsersResourcesValues();
+        //saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         lastApiResponse = PlayTestUtil.endTurn(userToken, gameId);
         return this;
     }
 
     public Scenario THROW_DICE(int moveOrder) {
-        saveUsersResourcesValues();
+        saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
         lastApiResponse = PlayTestUtil.throwDice(userToken, gameId);
+        return this;
+    }
+
+    public Scenario BUY_CARD(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.buyCard(userToken, gameId);
+        return this;
+    }
+
+    public Scenario boughtCardIs(DevelopmentCard card) {
+        lastApiResponse.then()
+                .statusCode(200)
+                .body("card", equalTo(card.name()));
         return this;
     }
 
@@ -199,51 +216,54 @@ public class Scenario {
         return this;
     }
 
+    public Scenario nextRandomDevelopmentCards(List<DevelopmentCard> nextCards) {
+        for (DevelopmentCard nextCard : nextCards) {
+            randomUtil.setNextDevelopmentCard(nextCard);
+        }
+
+        return this;
+    }
+
     public HexBuilder setHex(HexType hexType, Integer diceValue) {
         return new HexBuilder(this, hexType, diceValue);
     }
 
-    private void saveUsersResourcesValues(){
-        if(!trackResources){
+    private void saveUsersResourcesAndCardsValues() {
+        if (!trackResources && !trackCards) {
             return;
         }
 
-        getGameDetails(1);
-        int p1Brick = gameUser(1).getValueOf("resources.brick");
-        int p1Wood = gameUser(1).getValueOf("resources.wood");
-        int p1Sheep = gameUser(1).getValueOf("resources.sheep");
-        int p1Wheat = gameUser(1).getValueOf("resources.wheat");
-        int p1Stone = gameUser(1).getValueOf("resources.stone");
+        for(int i = 1; i <= tokensByMoveOrder.size(); i++){
+            getGameDetails(i);
 
-        getGameDetails(2);
-        int p2Brick = gameUser(2).getValueOf("resources.brick");
-        int p2Wood = gameUser(2).getValueOf("resources.wood");
-        int p2Sheep = gameUser(2).getValueOf("resources.sheep");
-        int p2Wheat = gameUser(2).getValueOf("resources.wheat");
-        int p2Stone = gameUser(2).getValueOf("resources.stone");
+            if (trackResources) {
+                int brick = gameUser(i).getValueOf("resources.brick");
+                int wood = gameUser(i).getValueOf("resources.wood");
+                int sheep = gameUser(i).getValueOf("resources.sheep");
+                int wheat = gameUser(i).getValueOf("resources.wheat");
+                int stone = gameUser(i).getValueOf("resources.stone");
 
-        getGameDetails(3);
-        int p3Brick = gameUser(3).getValueOf("resources.brick");
-        int p3Wood = gameUser(3).getValueOf("resources.wood");
-        int p3Sheep = gameUser(3).getValueOf("resources.sheep");
-        int p3Wheat = gameUser(3).getValueOf("resources.wheat");
-        int p3Stone = gameUser(3).getValueOf("resources.stone");
+                usersResources.put("user" + i + "brick", brick);
+                usersResources.put("user" + i + "wood", wood);
+                usersResources.put("user" + i + "sheep", sheep);
+                usersResources.put("user" + i + "wheat", wheat);
+                usersResources.put("user" + i + "stone", stone);
+            }
 
-        usersResources.put("p1Brick", p1Brick);
-        usersResources.put("p1Wood", p1Wood);
-        usersResources.put("p1Sheep", p1Sheep);
-        usersResources.put("p1Wheat", p1Wheat);
-        usersResources.put("p1Stone", p1Stone);
-        usersResources.put("p2Brick", p2Brick);
-        usersResources.put("p2Wood", p2Wood);
-        usersResources.put("p2Sheep", p2Sheep);
-        usersResources.put("p2Wheat", p2Wheat);
-        usersResources.put("p2Stone", p2Stone);
-        usersResources.put("p3Brick", p3Brick);
-        usersResources.put("p3Wood", p3Wood);
-        usersResources.put("p3Sheep", p3Sheep);
-        usersResources.put("p3Wheat", p3Wheat);
-        usersResources.put("p3Stone", p3Stone);
+            if (trackCards) {
+                int knight = gameUser(i).getValueOf("developmentCards.knight");
+                int victoryPoint = gameUser(i).getValueOf("developmentCards.victoryPoint");
+                int roadBuilding = gameUser(i).getValueOf("developmentCards.roadBuilding");
+                int monopoly = gameUser(i).getValueOf("developmentCards.monopoly");
+                int yearOfPlenty = gameUser(i).getValueOf("developmentCards.yearOfPlenty");
+
+                usersCards.put("user" + i + "knight", knight);
+                usersCards.put("user" + i + "victoryPoint", victoryPoint);
+                usersCards.put("user" + i + "roadBuilding", roadBuilding);
+                usersCards.put("user" + i + "monopoly", monopoly);
+                usersCards.put("user" + i + "yearOfPlenty", yearOfPlenty);
+            }
+        }
     }
 
     public Scenario startTrackResourcesQuantity() {
@@ -253,6 +273,16 @@ public class Scenario {
 
     public Scenario stopTrackResourcesQuantity() {
         trackResources = false;
+        return this;
+    }
+
+    public Scenario startTrackDevCardsQuantity() {
+        trackCards = true;
+        return this;
+    }
+
+    public Scenario stopTrackDevCardsQuantity() {
+        trackCards = false;
         return this;
     }
 }

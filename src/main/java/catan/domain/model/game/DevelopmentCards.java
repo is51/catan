@@ -1,5 +1,6 @@
 package catan.domain.model.game;
 
+import catan.domain.model.game.types.DevelopmentCard;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.Column;
@@ -74,6 +75,53 @@ public class DevelopmentCards {
 
     public void setYearOfPlenty(int yearOfPlenty) {
         this.yearOfPlenty = yearOfPlenty;
+    }
+
+    public Integer quantityOf(DevelopmentCard developmentCard) {
+        switch (developmentCard) {
+            case KNIGHT:
+                return getKnight();
+            case VICTORY_POINT:
+                return getVictoryPoint();
+            case ROAD_BUILDING:
+                return getRoadBuilding();
+            case MONOPOLY:
+                return getMonopoly();
+            case YEAR_OF_PLENTY:
+                return getYearOfPlenty();
+            default:
+                return null;
+        }
+    }
+
+    public void decreaseQuantityByOne(DevelopmentCard developmentCard) {
+        int newQuantity = quantityOf(developmentCard) - 1;
+        updateQuantity(developmentCard, newQuantity);
+    }
+
+    public void increaseQuantityByOne(DevelopmentCard developmentCard) {
+        int newQuantity = quantityOf(developmentCard) + 1;
+        updateQuantity(developmentCard, newQuantity);
+    }
+
+    public void updateQuantity(DevelopmentCard developmentCard, int newQuantity) {
+        switch (developmentCard) {
+            case KNIGHT:
+                setKnight(newQuantity);
+                break;
+            case VICTORY_POINT:
+                setVictoryPoint(newQuantity);
+                break;
+            case ROAD_BUILDING:
+                setRoadBuilding(newQuantity);
+                break;
+            case MONOPOLY:
+                setMonopoly(newQuantity);
+                break;
+            case YEAR_OF_PLENTY:
+                setYearOfPlenty(newQuantity);
+                break;
+        }
     }
 
     @Override

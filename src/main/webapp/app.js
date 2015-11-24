@@ -99,6 +99,7 @@ angular.module('catan', [
             .setRequest('play', 'buildSettlement', { url: '/api/play/build/settlement'})
             .setRequest('play', 'buildCity', { url: '/api/play/build/city'})
             .setRequest('play', 'buildRoad', { url: '/api/play/build/road'})
+            .setRequest('play', 'buyCard', { url: '/api/play/buy/card'})
             .setRequest('play', 'throwDice', { url: '/api/play/throw-dice'});
     }])
 
