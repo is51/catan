@@ -1,21 +1,26 @@
 package catan.controllers.testcases.play;
 
+import catan.controllers.ctf.Scenario;
 import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
+import catan.domain.model.dashboard.types.HexType;
+import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
-@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
@@ -30,6 +35,11 @@ public class BuildRoadTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
+    @Autowired
+    private RandomUtil randomUtil;
+
+    private Scenario scenario;
+
     @Before
     public void setup() {
         if (!initialized) {
@@ -38,8 +48,51 @@ public class BuildRoadTest extends PlayTestUtil {
             registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
+
+        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
+    @Test
+    public void should_successfully_build_road_even_if_user_does_not_have_resources_in_preparation_stage() {
+        startNewGame()
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+
+                .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
+
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft").successfully()
+
+                .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wood", is(0));
+    }
+
+    @Test
+    public void should_successfully_build_road_if_user_has_enough_resources_in_main_stage() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForRoadBuilding(1)
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+
+                .getGameDetails(1).gameUser(1).check("resources.brick", is(1))
+                .getGameDetails(1).gameUser(1).check("resources.wood", is(1))
+
+                .BUILD_ROAD(1).atEdge(2, -2, "topRight").successfully()
+
+                .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wood", is(0));
+    }
+
+    @Test
+    public void should_fail_when_build_road_if_user_does_not_have_resources_in_main_stage() {
+        startNewGame();
+        playPreparationStage()
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft").failsWithError("ERROR");
+    }
+
+    @Ignore
     @Test
     public void should_successfully_build_road_on_empty_edge_if_has_neighbour_settlement_that_belongs_to_this_player() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -82,6 +135,7 @@ public class BuildRoadTest extends PlayTestUtil {
 
     }
 
+    @Ignore
     @Test
     public void should_successfully_build_road_on_empty_edge_if_has_neighbour_road_that_belongs_to_this_player() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -145,6 +199,7 @@ public class BuildRoadTest extends PlayTestUtil {
 
     }
 
+    @Ignore
     @Test
     public void should_fail_if_try_to_build_road_on_existing_road() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -191,6 +246,7 @@ public class BuildRoadTest extends PlayTestUtil {
 
     }
 
+    @Ignore
     @Test
     public void should_fail_if_player_try_to_build_road_without_any_connection_to_settlement_or_city_or_road() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -221,6 +277,7 @@ public class BuildRoadTest extends PlayTestUtil {
 
     }
 
+    @Ignore
     @Test
     public void should_fail_if_player_try_to_build_road_without_any_connection_to_his_settlement_or_city_or_road_but_connected_with_opponents_settlement() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -254,6 +311,7 @@ public class BuildRoadTest extends PlayTestUtil {
 
     }
 
+    @Ignore
     @Test
     public void should_fail_if_player_try_to_build_road_without_any_connection_to_his_settlement_or_city_or_road_but_connected_with_opponents_road() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -305,6 +363,7 @@ public class BuildRoadTest extends PlayTestUtil {
 
     }
 
+    @Ignore
     @Test
     public void should_fail_if_edge_does_not_belong_to_this_game() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -327,7 +386,7 @@ public class BuildRoadTest extends PlayTestUtil {
 
     }
 
-
+    @Ignore
     @Test
     public void should_fail_if_edge_has_connection_to_neighbour_road_but_opposite_node_has_building_that_belongs_to_another_player() {
         String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
@@ -379,4 +438,136 @@ public class BuildRoadTest extends PlayTestUtil {
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
     }
+
+    private Scenario startNewGame() {
+        return scenario
+                .loginUser(USER_NAME_1, USER_PASSWORD_1)
+                .loginUser(USER_NAME_2, USER_PASSWORD_2)
+                .loginUser(USER_NAME_3, USER_PASSWORD_3)
+
+                /*
+                possible dice values
+
+                2,
+                3, 3,
+                4, 4,
+                5, 5,
+                6, 6,
+                7
+                8, 8,
+                9, 9,
+                10, 10,
+                11, 11,
+                12
+
+                possible hex type values:
+                WOOD, WOOD, WOOD, WOOD,
+                SHEEP, SHEEP, SHEEP, SHEEP,
+                WHEAT, WHEAT, WHEAT, WHEAT,
+                BRICK, BRICK, BRICK,
+                STONE, STONE, STONE,
+                EMPTY
+
+                */
+                .setHex(HexType.EMPTY, null).atCoordinates(0, -2)
+                .setHex(HexType.BRICK, 2).atCoordinates(1, -2)
+                .setHex(HexType.WOOD, 2).atCoordinates(2, -2)
+
+                .setHex(HexType.EMPTY, null).atCoordinates(-1, -1)
+                .setHex(HexType.WOOD, 6).atCoordinates(0, -1)
+                .setHex(HexType.SHEEP, 10).atCoordinates(1, -1)
+                .setHex(HexType.BRICK, 4).atCoordinates(2, -1)
+
+                .setHex(HexType.EMPTY, null).atCoordinates(-2, 0)
+                .setHex(HexType.STONE, 4).atCoordinates(-1, 0)
+                .setHex(HexType.EMPTY, null).atCoordinates(0, 0)
+                .setHex(HexType.SHEEP, 3).atCoordinates(1, 0)
+                .setHex(HexType.WOOD, 4).atCoordinates(2, 0)
+
+                .setHex(HexType.SHEEP, 9).atCoordinates(-2, 1)
+                .setHex(HexType.BRICK, 9).atCoordinates(-1, 1)
+                .setHex(HexType.SHEEP, 11).atCoordinates(0, 1)
+                .setHex(HexType.WOOD, 6).atCoordinates(1, 1)
+
+                .setHex(HexType.WOOD, 10).atCoordinates(-2, 2)
+                .setHex(HexType.WHEAT, 2).atCoordinates(-1, 2)
+                .setHex(HexType.BRICK, 6).atCoordinates(0, 2)
+
+                .createNewPublicGameByUser(USER_NAME_1)
+                .joinPublicGame(USER_NAME_2)
+                .joinPublicGame(USER_NAME_3)
+
+                        // take last player from the list each time, when pulling move order from the list to have order: 3, 2, 1
+                .nextRandomMoveOrderValues(asList(3, 2, 1))
+
+                .setUserReady(USER_NAME_1)
+                .setUserReady(USER_NAME_2)
+                .setUserReady(USER_NAME_3);
+    }
+
+    private Scenario playPreparationStage() {
+        return scenario
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(2, -1, "bottomRight")
+                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, 2, "topRight")
+                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
+                .END_TURN(3)
+
+                .BUILD_SETTLEMENT(3).atNode(0, -2, "topLeft")
+                .BUILD_ROAD(3).atEdge(0, -2, "topLeft")
+                .END_TURN(3)
+
+                .BUILD_SETTLEMENT(2).atNode(-1, -1, "topLeft")
+                .BUILD_ROAD(2).atEdge(-1, -1, "topLeft")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(1).atNode(-2, 0, "topLeft")
+                .BUILD_ROAD(1).atEdge(-2, 0, "topLeft")
+                .END_TURN(1);
+    }
+
+    private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
+        return scenario
+                .nextRandomDiceValues(asList(moveOrder, moveOrder, 6, 6, 6, 6))
+                .THROW_DICE(moveOrder)
+                .END_TURN(moveOrder)
+                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+    }
+
+    /*
+    *          (X, Y) coordinates of generated map:                          Node position at hex:
+    *
+    *           *----*----*----*----*----*----*                                      top
+    *           |         |    2    |     2   |                          topLeft *----*----* topRight
+    *           |  EMPTY  |  BRICK  |   WOOD  |                                  |         |
+    *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                       bottomLeft *----*----* bottomRight
+    *      *----*----*----*----*----*----*----*----*                                bottom
+    *      |         |    3    |    10   |    4    |
+    *      |  EMPTY  |   WOOD  |  SHEEP  |  BRICK  |
+    *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                        Edge position at hex:
+    * *----*----*----*----*----*----*----*----*----*----*
+    * |         |    4    |         |    3    |    4    |                      topLeft topRight
+    * |  EMPTY  |  STONE  |  EMPTY  |  SHEEP  |   WOOD  |                        .====.====.
+    * | (-2, 0) | (-1, 0) | ( 0, 0) | ( 1, 0) | ( 2, 0) |                  left ||         || right
+    * *----*----*----*----*----*----*----*----*----*----*                        .====.====.
+    *      |    9    |    9    |    11   |    6    |                        bottomLeft bottomRight
+    *      |  SHEEP  |  BRICK  |  SHEEP  |   WOOD  |
+    *      | (-2, 1) | (-1, 1) | ( 0, 1) | ( 1, 1) |
+    *      *----*----*----*----*----*----*----*----*
+    *           |    10   |    2    |    6    |
+    *           |   WOOD  |  WHEAT  |  BRICK  |
+    *           | (-2, 2) | (-1, 2) | ( 0, 2) |
+    *           *----*----*----*----*----*----*
+    *
+    *
+    */
 }
