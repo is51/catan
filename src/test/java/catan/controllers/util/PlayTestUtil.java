@@ -11,6 +11,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
     protected static final String URL_BUILD_CITY = "/api/play/build/city";
     protected static final String URL_END_TURN = "/api/play/end-turn";
     protected static final String URL_THROW_DICE = "/api/play/throw-dice";
+    protected static final String URL_BUY_CARD = "/api/play/buy/card";
 
     public static Response buildSettlement(String token, int gameId, int nodeId) {
         return given()
@@ -57,4 +58,12 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .post(URL_THROW_DICE);
     }
 
+    public static Response buyCard(String token, int gameId) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId)
+                .when()
+                .post(URL_BUY_CARD);
+    }
 }

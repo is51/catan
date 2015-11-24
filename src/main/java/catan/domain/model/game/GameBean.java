@@ -13,6 +13,21 @@ import catan.domain.transfer.output.game.GameUserDetails;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import javax.persistence.*;
 
 import java.util.ArrayList;
@@ -84,6 +99,9 @@ public class GameBean {
     @Column(name = "DICE_SECOND_VALUE", unique = false, nullable = true)
     private Integer diceSecondValue;
 
+    @Embedded
+    private DevelopmentCards availableDevelopmentCards;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("colorId ASC")
     private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
@@ -117,6 +135,7 @@ public class GameBean {
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
         this.initialBuildingsSet = initialBuildingsSet;
+        this.availableDevelopmentCards = new DevelopmentCards(14, 5, 2, 2, 2);
     }
 
     public GameBean(UserBean creator, String privateCode, Date dateCreated, GameStatus status, int minPlayers, int maxPlayers, int targetVictoryPoints, String initialBuildingsSet) {
@@ -129,6 +148,7 @@ public class GameBean {
         this.maxPlayers = maxPlayers;
         this.targetVictoryPoints = targetVictoryPoints;
         this.initialBuildingsSet = initialBuildingsSet;
+        this.availableDevelopmentCards = new DevelopmentCards(14, 5, 2, 2, 2);
     }
 
     public int getGameId() {
@@ -266,6 +286,14 @@ public class GameBean {
 
     public void setDiceThrown(Boolean diceThrown) {
         this.diceThrown = diceThrown;
+    }
+
+    public DevelopmentCards getAvailableDevelopmentCards() {
+        return availableDevelopmentCards;
+    }
+
+    public void setAvailableDevelopmentCards(DevelopmentCards availableDevelopmentCards) {
+        this.availableDevelopmentCards = availableDevelopmentCards;
     }
 
     public Integer getDiceFirstValue() {

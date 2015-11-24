@@ -11,9 +11,11 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
@@ -21,6 +23,7 @@ import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.BuildUtil;
+import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
@@ -49,17 +52,19 @@ public class PlayServiceImpl implements PlayService {
     private GameUtil gameUtil;
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
+    private CardUtil cardUtil;
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
 
     @Override
-    public void processAction(GameUserActionCode action, UserBean user, String gameId) throws PlayException, GameException {
-        processAction(action, user, gameId, new HashMap<String, String>());
+    public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId) throws PlayException, GameException {
+        return processAction(action, user, gameId, new HashMap<String, String>());
     }
 
     @Override
-    public void processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
+    public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
         log.debug("{} tries to perform action {} at game with id {} and additional params {}", user, action, gameId, params);
+        Map<String, String> returnedParams = new HashMap<String, String>();
 
         validateUserNotEmpty(user);
 
@@ -68,7 +73,8 @@ public class PlayServiceImpl implements PlayService {
 
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
-        doAction(action, user, gameUser, game, params);
+        
+        doAction(action, user, gameUser, game, params, returnedParams);
 
         playUtil.updateVictoryPoints(gameUser);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
@@ -77,9 +83,10 @@ public class PlayServiceImpl implements PlayService {
         gameDao.updateGame(game);
 
         log.debug("User {} successfully performed action {}", user.getUsername(), action);
+        return returnedParams;
     }
-
-    private void doAction(GameUserActionCode action, UserBean user, GameUserBean gameUser, GameBean game, Map<String, String> params) throws PlayException, GameException {
+    
+    private void doAction(GameUserActionCode action, UserBean user, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
         Resources usersResources = gameUser.getResources();
         switch(action){
             case BUILD_ROAD:
@@ -96,6 +103,9 @@ public class PlayServiceImpl implements PlayService {
                 break;
             case THROW_DICE:
                 throwDice(game);
+                break;
+            case BUY_CARD:
+                buyCard(gameUser, game, returnedParams);
                 break;
         }
     }
@@ -176,6 +186,18 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
+    private void buyCard(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
+        DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
+        DevelopmentCard chosenDevelopmentCard = cardUtil.chooseDevelopmentCard(availableDevelopmentCards);
+        log.debug("Card " + chosenDevelopmentCard + " was chosen from the list: " + availableDevelopmentCards);
+
+        DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
+        usersDevelopmentCards.increaseQuantityByOne(chosenDevelopmentCard);
+        availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
+
+        returnedParams.put("card", chosenDevelopmentCard.name());
+    }
+
     private boolean isRobbersActivity(Integer diceFirstValue, Integer diceSecondValue) {
         return diceFirstValue + diceSecondValue == 7;
     }
@@ -235,6 +257,11 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setBuildUtil(BuildUtil buildUtil) {
         this.buildUtil = buildUtil;
+    }
+
+    @Autowired
+    public void setCardUtil(CardUtil cardUtil) {
+        this.cardUtil = cardUtil;
     }
 
     @Autowired

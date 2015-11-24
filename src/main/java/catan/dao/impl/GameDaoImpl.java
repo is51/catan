@@ -3,8 +3,8 @@ package catan.dao.impl;
 import catan.dao.AbstractDao;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
-import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -91,11 +91,17 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     @Override
     public void updateGame(GameBean game) {
         update(game);
+
+        getSession().flush();
+        getSession().clear();
     }
 
     @Override
     public void updateGameUser(GameUserBean gameUserBean) {
         persist(gameUserBean);
+
+        getSession().flush();
+        getSession().clear();
     }
 
 }

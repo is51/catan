@@ -60,7 +60,7 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("gameUsers[" + gameUserNumber + "].availableActions.isMandatory", equalTo(false))
                 .body("gameUsers[" + gameUserNumber + "].availableActions.list", hasSize(actionCodes.length));
 
-        for (String actionCode: actionCodes) {
+        for (String actionCode : actionCodes) {
             game.body("gameUsers[" + gameUserNumber + "].availableActions.list.find {it.code == '" + actionCode + "'}", notNullValue());
         }
     }
@@ -95,7 +95,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActionsThrowDice);
         throwDice(userTokens[activeUserNumber], gameId);
 
-        String[] availableActions = {"BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD", "END_TURN"};
+        String[] availableActions = {"BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD", "END_TURN", "BUY_CARD"};
 
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActions);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");

@@ -47,16 +47,32 @@ public class GameUserValidator {
         return scenario;
     }
 
-    public Scenario resourcesChanged(int brick, int wood, int sheep, int wheat, int stone) {
+    public Scenario resourcesQuantityChangedBy(int brickDiff, int woodDiff, int sheepDiff, int wheatDiff, int stoneDiff) {
         assertTrue("To check that resources quantity was changed, you should call 'startTrackResourcesQuantity()' method " +
-                "when you want to start tracking of resource quantity and  call 'startTrackResourcesQuantity()' method" +
+                "when you want to start tracking of resource quantity and  call 'stopTrackResourcesQuantity()' method" +
                 "when you want to stop.", scenario.trackResources);
+
         check("resources", notNullValue());
-        check("resources.brick", equalTo(scenario.usersResources.get("p" + moveOrder + "Brick") + brick));
-        check("resources.wood", equalTo(scenario.usersResources.get("p" + moveOrder + "Wood") + wood));
-        check("resources.sheep", equalTo(scenario.usersResources.get("p" + moveOrder + "Sheep") + sheep));
-        check("resources.wheat", equalTo(scenario.usersResources.get("p" + moveOrder + "Wheat") + wheat));
-        check("resources.stone", equalTo(scenario.usersResources.get("p" + moveOrder + "Stone") + stone));
+        check("resources.brick", equalTo(scenario.usersResources.get("user" + moveOrder + "brick") + brickDiff));
+        check("resources.wood",  equalTo(scenario.usersResources.get("user" + moveOrder + "wood") + woodDiff));
+        check("resources.sheep", equalTo(scenario.usersResources.get("user" + moveOrder + "sheep") + sheepDiff));
+        check("resources.wheat", equalTo(scenario.usersResources.get("user" + moveOrder + "wheat") + wheatDiff));
+        check("resources.stone", equalTo(scenario.usersResources.get("user" + moveOrder + "stone") + stoneDiff));
+
+        return scenario;
+    }
+
+    public Scenario devCardsQuantityChangedBy(int knightDiff, int victoryPointDiff, int roadBuildingDiff, int monopolyDiff, int yearOfPlentyDiff) {
+        assertTrue("To check that dev cards quantity was changed, you should call 'startTrackDevCardsQuantity()' method " +
+                "when you want to start tracking of dev cards quantity and call 'stopTrackDevCardsQuantity()' method" +
+                "when you want to stop.", scenario.trackCards);
+
+        check("developmentCards", notNullValue());
+        check("developmentCards.knight",        equalTo(scenario.usersCards.get("user" + moveOrder + "knight") + knightDiff));
+        check("developmentCards.victoryPoint",  equalTo(scenario.usersCards.get("user" + moveOrder + "victoryPoint") + victoryPointDiff));
+        check("developmentCards.roadBuilding",  equalTo(scenario.usersCards.get("user" + moveOrder + "roadBuilding") + roadBuildingDiff));
+        check("developmentCards.monopoly",      equalTo(scenario.usersCards.get("user" + moveOrder + "monopoly") + monopolyDiff));
+        check("developmentCards.yearOfPlenty",  equalTo(scenario.usersCards.get("user" + moveOrder + "yearOfPlenty") + yearOfPlentyDiff));
 
         return scenario;
     }
