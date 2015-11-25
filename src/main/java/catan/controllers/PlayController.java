@@ -34,7 +34,7 @@ public class PlayController {
                           @RequestParam("edgeId") String edgeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        HashMap<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<String, String>();
         params.put("edgeId", edgeId);
 
         playService.processAction(GameUserActionCode.BUILD_ROAD, user, gameId, params);
@@ -48,7 +48,7 @@ public class PlayController {
                                 @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        HashMap<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<String, String>();
         params.put("nodeId", nodeId);
 
         playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, user, gameId, params);
@@ -62,7 +62,7 @@ public class PlayController {
                           @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
-        HashMap<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<String, String>();
         params.put("nodeId", nodeId);
 
         playService.processAction(GameUserActionCode.BUILD_CITY, user, gameId, params);
@@ -99,6 +99,22 @@ public class PlayController {
         String developmentCardCode = returnedParams.get("card");
 
         return new BoughtCardDetails(developmentCardCode);
+    }
+
+    @RequestMapping(value = "use-card/year-of-plenty",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void useCardYearOfPlenty(@RequestParam(value = "token", required = false) String token,
+                          @RequestParam("gameId") String gameId,
+                          @RequestParam("firstResource") String firstResource,
+                          @RequestParam("secondResource") String secondResource) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("firstResource", firstResource);
+        params.put("secondResource", secondResource);
+
+        playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, user, gameId, params);
     }
 
     @Autowired

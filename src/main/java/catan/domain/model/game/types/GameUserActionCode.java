@@ -6,5 +6,6 @@ public enum GameUserActionCode {
     BUILD_SETTLEMENT,
     BUILD_CITY,
     BUILD_ROAD,
-    END_TURN
+    END_TURN,
+    USE_CARD_YEAR_OF_PLENTY
 }

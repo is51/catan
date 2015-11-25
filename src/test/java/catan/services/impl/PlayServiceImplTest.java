@@ -1380,6 +1380,88 @@ public class PlayServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldPassWhenUserUseCardYearOfPlentyIfActionIsAllowed() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 0, 0, 1));
+        allowUserToUseCardYearOfPlenty(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("firstResource", "WOOD");
+        params.put("secondResource", "BRICK");
+
+        // WHEN
+        playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser1.getUser(), "1", params);
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(gameUser1);
+        assertEquals(0, gameUser1.getDevelopmentCards().getYearOfPlenty());
+        assertEquals(1, gameUser1.getResources().getBrick());
+        assertEquals(1, gameUser1.getResources().getWood());
+    }
+
+    @Test
+    public void shouldFailWhenUserUseCardYearOfPlentyAtHisTurnButActionIsNotAllowed() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("firstResource", "WOOD");
+        params.put("secondResource", "BRICK");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserUseCardYearOfPlentyNotAtHisTurn() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("firstResource", "WOOD");
+        params.put("secondResource", "BRICK");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser2.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    private void allowUserToUseCardYearOfPlenty(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY));
+    }
+
     private void allowUserToBuyCard(GameUserBean user) {
         allowUserAction(user, new Action(GameUserActionCode.BUY_CARD));
     }

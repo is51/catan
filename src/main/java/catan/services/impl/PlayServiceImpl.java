@@ -7,10 +7,12 @@ import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.DevelopmentCards;
+import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
@@ -104,6 +106,9 @@ public class PlayServiceImpl implements PlayService {
             case BUY_CARD:
                 buyCard(gameUser, game, returnedParams);
                 break;
+            case USE_CARD_YEAR_OF_PLENTY:
+                useCardYearOfPlenty(gameUser, params.get("firstResource"), params.get("secondResource"));
+                break;
         }
     }
 
@@ -179,6 +184,28 @@ public class PlayServiceImpl implements PlayService {
         availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
 
         returnedParams.put("card", chosenDevelopmentCard.name());
+    }
+
+    private void useCardYearOfPlenty(GameUserBean gameUser, String firstResourceString, String secondResourceString) throws PlayException, GameException {
+        HexType firstResource = validateResourceType(firstResourceString);
+        HexType secondResource = validateResourceType(secondResourceString);
+
+        Resources userResources = gameUser.getResources();
+        int currentFirstResourceQuantity = userResources.quantityOf(firstResource);
+        userResources.updateResourceQuantity(firstResource, currentFirstResourceQuantity + 1);
+        int currentSecondResourceQuantity = userResources.quantityOf(secondResource);
+        userResources.updateResourceQuantity(secondResource, currentSecondResourceQuantity + 1);
+
+        gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+    }
+
+    private HexType validateResourceType(String resourceString) throws PlayException {
+        try {
+            return HexType.valueOf(resourceString);
+        } catch (Exception e) {
+            log.debug("Illegal resource type: {}", resourceString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
     }
 
     private boolean isRobbersActivity(Integer diceFirstValue, Integer diceSecondValue) {
