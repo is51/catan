@@ -109,7 +109,7 @@ public class ListGameTest extends GameTestUtil {
                 .then()
                 .statusCode(200)
                 .extract()
-                .path("findall.size()");
+                .path("findAll.size()");
 
         createNewGame(firstUserToken, false);
         createNewGame(secondUserToken, false);

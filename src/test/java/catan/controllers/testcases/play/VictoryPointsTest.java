@@ -41,14 +41,15 @@ public class VictoryPointsTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
-
-        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
     @Test
@@ -189,6 +190,51 @@ public class VictoryPointsTest extends PlayTestUtil {
                 .gameUser(3).check("achievements.displayVictoryPoints", is(2));
     }
 
+    private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
+        return scenario
+                .nextRandomDiceValues(asList(moveOrder, moveOrder))
+                .THROW_DICE(moveOrder)
+                .END_TURN(moveOrder)
+
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+    }
+
+    private Scenario giveResourcesToPlayerForSettlementBuilding(int moveOrder) {
+        return scenario
+                .nextRandomDiceValues(asList(moveOrder, moveOrder))
+                .THROW_DICE(moveOrder)
+                .END_TURN(moveOrder)
+
+                .nextRandomDiceValues(asList(moveOrder, moveOrder == 3 ? moveOrder + 2 : moveOrder + 1))
+                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+    }
+
+    private Scenario giveResourcesToFirstPlayerForCityBuilding(int moveOrder) {
+        return scenario
+                .nextRandomDiceValues(asList(1, 2))
+                .THROW_DICE(moveOrder)
+                .END_TURN(moveOrder)
+
+                .nextRandomDiceValues(asList(1, 2))
+                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+
+                .nextRandomDiceValues(asList(1, 2))
+                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+    }
+
     private Scenario startNewGame(int targetVictoryPoints, int initialBuildingSet) {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
@@ -256,39 +302,6 @@ public class VictoryPointsTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(1).atNode(0, -2, "bottom")
                 .BUILD_ROAD(1).atEdge(0, -2, "bottomLeft")
                 .END_TURN(1);
-    }
-
-    private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
-        return scenario
-                .nextRandomDiceValues(asList(moveOrder, moveOrder, 6, 6, 6, 6))
-                .THROW_DICE(moveOrder)
-                .END_TURN(moveOrder)
-                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
-    }
-
-    private Scenario giveResourcesToPlayerForSettlementBuilding(int moveOrder) {
-        return scenario
-                .nextRandomDiceValues(asList(moveOrder, moveOrder, moveOrder, moveOrder, moveOrder, moveOrder == 3 ? moveOrder + 2 : moveOrder + 1))
-                .THROW_DICE(moveOrder)
-                .END_TURN(moveOrder)
-                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
-    }
-
-    private Scenario giveResourcesToFirstPlayerForCityBuilding(int moveOrder) {
-        return scenario
-                .nextRandomDiceValues(asList(1, 2, 1, 2, 1, 2))
-                .THROW_DICE(moveOrder)
-                .END_TURN(moveOrder)
-                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
     }
 
     /*

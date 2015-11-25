@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -45,14 +46,40 @@ public class BuildSettlementTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
+    }
 
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+    @Test
+    public void should_not_take_resources_from_player_when_build_settlement_in_preparation_stage() {
+        startNewGame()
+                .startTrackResourcesQuantity()
+
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully()
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_successfully_take_resources_from_player_when_build_settlement_in_main_stage() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForRoadBuilding(1);
+        giveResourcesToPlayerForSettlementBuilding(1)
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+                .BUILD_ROAD(1).atEdge(2, -2, "topRight")
+
+                .startTrackResourcesQuantity()
+
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully()
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(-1, -1, -1, -1, 0);
     }
 
     @Test
@@ -63,12 +90,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
                 .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
 
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully()
-
-                .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0));
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully();
     }
 
     @Test
@@ -81,17 +103,12 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight")
 
-                .getGameDetails(1).gameUser(1).check("resources.brick", is(1))
-                .getGameDetails(1).gameUser(1).check("resources.wood", is(1))
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(1))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(1))
+                .getGameDetails(1).gameUser(1).check("resources.brick", greaterThanOrEqualTo(1))
+                .getGameDetails(1).gameUser(1).check("resources.wood", greaterThanOrEqualTo(1))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", greaterThanOrEqualTo(1))
 
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully()
-
-                .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0));
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully();
     }
 
     @Test
@@ -102,6 +119,12 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight")
+
+                .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
+                .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUILD_SETTLEMENT")
 
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").failsWithError("ERROR");
     }
@@ -205,6 +228,36 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
     */
 
+    private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
+        return scenario
+                .nextRandomDiceValues(asList(moveOrder, moveOrder))
+                .THROW_DICE(moveOrder)
+                .END_TURN(moveOrder)
+
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+    }
+
+    private Scenario giveResourcesToPlayerForSettlementBuilding(int moveOrder) {
+        return scenario
+                .nextRandomDiceValues(asList(moveOrder, moveOrder))
+                .THROW_DICE(moveOrder)
+                .END_TURN(moveOrder)
+
+                .nextRandomDiceValues(asList(moveOrder, moveOrder == 3 ? moveOrder + 2 : moveOrder + 1))
+                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+    }
+
     private Scenario startNewGame() {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
@@ -272,28 +325,6 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(1).atNode(0, 0, "top")
                 .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
                 .END_TURN(1);
-    }
-
-    private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
-        return scenario
-                .nextRandomDiceValues(asList(moveOrder, moveOrder, 6, 6, 6, 6))
-                .THROW_DICE(moveOrder)
-                .END_TURN(moveOrder)
-                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
-    }
-
-    private Scenario giveResourcesToPlayerForSettlementBuilding(int moveOrder) {
-        return scenario
-                .nextRandomDiceValues(asList(moveOrder, moveOrder, moveOrder, moveOrder == 3 ? moveOrder + 2 : moveOrder + 1, 6, 6))
-                .THROW_DICE(moveOrder)
-                .END_TURN(moveOrder)
-                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
     }
 
     /*

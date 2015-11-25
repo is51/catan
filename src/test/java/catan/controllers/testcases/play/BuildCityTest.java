@@ -15,10 +15,8 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,18 +43,54 @@ public class BuildCityTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
-
-        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
     @Test
-    public void should_successfully_build_city_even_if_user_does_not_have_resources_in_preparation_stage() {
+    public void should_not_take_resources_from_player_when_build_city_in_preparation_stage() {
+        startNewGame(12, 2)
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(2, -1, "bottomRight")
+                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, 2, "topRight")
+                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
+                .END_TURN(3)
+
+                .startTrackResourcesQuantity()
+
+                .BUILD_CITY(3).atNode(0, 0, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_successfully_take_resources_from_player_when_build_city_in_main_stage() {
+        startNewGame(12, 1);
+        playPreparationStage();
+        giveResourcesToFirstPlayerForCityBuilding()
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+
+                .startTrackResourcesQuantity()
+
+                .BUILD_CITY(1).atNode(1, -1, "top")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, -2, -3);
+    }
+
+    @Test
+     public void should_successfully_build_city_even_if_user_does_not_have_resources_in_preparation_stage() {
         startNewGame(12, 2)
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
                 .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
@@ -73,10 +107,7 @@ public class BuildCityTest extends PlayTestUtil {
                 .getGameDetails(3).gameUser(3).check("resources.wheat", is(0))
                 .getGameDetails(3).gameUser(3).check("resources.stone", is(0))
 
-                .BUILD_CITY(3).atNode(0, 0, "bottomRight").successfully()
-
-                .getGameDetails(3).gameUser(3).check("resources.wheat", is(0))
-                .getGameDetails(3).gameUser(3).check("resources.stone", is(0));
+                .BUILD_CITY(3).atNode(0, 0, "bottomRight").successfully();
     }
 
     @Test
@@ -87,13 +118,10 @@ public class BuildCityTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(2))
-                .getGameDetails(1).gameUser(1).check("resources.stone", is(3))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", greaterThanOrEqualTo(2))
+                .getGameDetails(1).gameUser(1).check("resources.stone", greaterThanOrEqualTo(3))
 
-                .BUILD_CITY(1).atNode(1, -1, "top").successfully()
-
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.stone", is(0));
+                .BUILD_CITY(1).atNode(1, -1, "top").successfully();
     }
 
     @Test
@@ -103,7 +131,26 @@ public class BuildCityTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
+                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.stone", is(0))
+                .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUILD_CITY")
+
                 .BUILD_CITY(1).atNode(1, -1, "top").failsWithError("ERROR");
+    }
+
+    private Scenario giveResourcesToFirstPlayerForCityBuilding() {
+        return scenario
+                .nextRandomDiceValues(asList(5, 6))
+                .THROW_DICE(1)
+                .END_TURN(1)
+
+                .nextRandomDiceValues(asList(5, 5))
+                .THROW_DICE(2)
+                .END_TURN(2)
+
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(3)
+                .END_TURN(3);
     }
 
     private Scenario startNewGame(int targetVictoryPoints, int initialBuildingSet) {
@@ -173,17 +220,6 @@ public class BuildCityTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(1).atNode(1, -1, "top")
                 .BUILD_ROAD(1).atEdge(1, -1, "topLeft")
                 .END_TURN(1);
-    }
-
-    private Scenario giveResourcesToFirstPlayerForCityBuilding() {
-        return scenario
-                .nextRandomDiceValues(asList(5, 6, 5, 5, 6, 6))
-                .THROW_DICE(1)
-                .END_TURN(1)
-                .THROW_DICE(2)
-                .END_TURN(2)
-                .THROW_DICE(3)
-                .END_TURN(3);
     }
 
     /*

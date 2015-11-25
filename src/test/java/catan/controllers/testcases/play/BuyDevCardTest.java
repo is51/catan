@@ -26,6 +26,7 @@ import static catan.domain.model.game.types.DevelopmentCard.ROAD_BUILDING;
 import static catan.domain.model.game.types.DevelopmentCard.VICTORY_POINT;
 import static catan.domain.model.game.types.DevelopmentCard.YEAR_OF_PLENTY;
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -51,14 +52,29 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
+    }
 
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+    @Test
+    public void should_successfully_take_resources_from_player_when_he_buy_card() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 1)
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+
+                .startTrackResourcesQuantity()
+
+                .BUY_CARD(1).successfully()
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, -1, -1, -1);
     }
 
     @Test
@@ -84,15 +100,11 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(1))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(1))
-                .getGameDetails(1).gameUser(1).check("resources.stone", is(1))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", greaterThanOrEqualTo(1))
+                .getGameDetails(1).gameUser(1).check("resources.stone", greaterThanOrEqualTo(1))
 
-                .BUY_CARD(1).successfully()
-
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.stone", is(0));
+                .BUY_CARD(1).successfully();
     }
 
     @Test
@@ -225,6 +237,24 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .BUY_CARD(1).failsWithError("CARDS_ARE_OVER");
     }
 
+    private Scenario giveResourcesToPlayerForDevCardBuying(int moveOrder, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            scenario
+                    .nextRandomDiceValues(asList(moveOrder, moveOrder))
+                    .THROW_DICE(moveOrder)
+                    .END_TURN(moveOrder)
+
+                    .nextRandomDiceValues(asList(6, 6))
+                    .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                    .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+
+                    .nextRandomDiceValues(asList(6, 6))
+                    .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                    .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+        }
+        return scenario;
+    }
+
     private Scenario startNewGame() {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
@@ -292,20 +322,6 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(1).atNode(0, 2, "topLeft")
                 .BUILD_ROAD(1).atEdge(0, 2, "topLeft")
                 .END_TURN(1);
-    }
-
-    private Scenario giveResourcesToPlayerForDevCardBuying(int moveOrder, int quantity) {
-        for (int i = 0; i < quantity; i++) {
-            scenario
-                    .nextRandomDiceValues(asList(moveOrder, moveOrder, 6, 6, 6, 6))
-                    .THROW_DICE(moveOrder)
-                    .END_TURN(moveOrder)
-                    .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                    .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                    .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                    .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
-        }
-        return scenario;
     }
 
     /*
