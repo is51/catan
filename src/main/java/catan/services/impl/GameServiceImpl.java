@@ -92,19 +92,19 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameBean joinGameByIdentifier(UserBean user, String gameId, boolean privateGame) throws GameException {
+    public GameBean joinGameByIdentifier(UserBean user, String gameIdentifier, boolean privateGame) throws GameException {
         log.info("Join " + user + " to "
                 + (privateGame ? "private" : "public") + " game with "
-                + (privateGame ? "privateCode" : "id") + " '" + gameId + "' ...");
+                + (privateGame ? "privateCode" : "gameId") + " '" + gameIdentifier + "' ...");
 
         validateUserNotEmpty(user);
-        validateGameIdNotEmpty(gameId);
+        validateGameIdNotEmpty(gameIdentifier);
 
-        synchronized (getGameIdSyncObject(Long.parseLong(gameId))) {
-            GameBean game = privateGame
-                    ? gameUtil.findPrivateGame(gameId)
-                    : gameUtil.findPublicGame(gameId);
+        GameBean game = privateGame
+                ? gameUtil.findPrivateGame(gameIdentifier)
+                : gameUtil.findPublicGame(gameIdentifier);
 
+        synchronized (getGameIdSyncObject((long) game.getGameId())) {
             validateGameStatusIsNew(game);
             validateMaxPlayersLimitNotReached(game);
 
