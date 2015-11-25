@@ -211,30 +211,6 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)
 
-                /*
-                possible dice values
-
-                2,
-                3, 3,
-                4, 4,
-                5, 5,
-                6, 6,
-                7
-                8, 8,
-                9, 9,
-                10, 10,
-                11, 11,
-                12
-
-                possible hex type values:
-                WOOD, WOOD, WOOD, WOOD,
-                SHEEP, SHEEP, SHEEP, SHEEP,
-                WHEAT, WHEAT, WHEAT, WHEAT,
-                BRICK, BRICK, BRICK,
-                STONE, STONE, STONE,
-                EMPTY
-
-                */
                 .setHex(HexType.STONE, 11).atCoordinates(0, -2)
                 .setHex(HexType.BRICK, 2).atCoordinates(1, -2)
                 .setHex(HexType.WOOD, 2).atCoordinates(2, -2)

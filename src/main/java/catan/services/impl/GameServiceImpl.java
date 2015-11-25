@@ -46,7 +46,7 @@ public class GameServiceImpl implements GameService {
     private RandomUtil randomUtil;
     private MapUtil mapUtil;
 
-    private ConcurrentMap<Long, Long> locks = new ConcurrentHashMap<>();
+    private ConcurrentMap<Long, Long> locks = new ConcurrentHashMap<Long, Long>();
 
     @Override
     public GameBean createNewGame(UserBean creator, boolean isPrivateGame, String inputTargetVictoryPoints, String initialBuildingsSetId) throws GameException {

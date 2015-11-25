@@ -1463,6 +1463,7 @@ public class PlayServiceImplTest {
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(0, 0, 25, 25, 25));
         allowUserToBuyCard(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -1496,6 +1497,7 @@ public class PlayServiceImplTest {
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(0, 0, 1, 1, 1));
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -1518,6 +1520,7 @@ public class PlayServiceImplTest {
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(true);
+        gameUser2.setResources(new Resources(0, 0, 1, 1, 1));
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -1540,6 +1543,7 @@ public class PlayServiceImplTest {
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(0, 0, 26, 26, 26));
         allowUserToBuyCard(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 

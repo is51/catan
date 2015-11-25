@@ -164,9 +164,9 @@ public class MainStageUtil {
     }
 
     private boolean userHasResourcesToBuyCard(GameUserBean gameUser) {
-        return gameUser.getResources().getStone() >= 0
-                && gameUser.getResources().getSheep() >= 0
-                && gameUser.getResources().getWheat() >= 0;
+        return gameUser.getResources().getStone() >= 1
+                && gameUser.getResources().getSheep() >= 1
+                && gameUser.getResources().getWheat() >= 1;
     }
 
     private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {

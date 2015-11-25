@@ -105,7 +105,7 @@ public class PlayServiceImpl implements PlayService {
                 throwDice(game);
                 break;
             case BUY_CARD:
-                buyCard(gameUser, game, returnedParams);
+                buyCard(gameUser, game, usersResources, returnedParams);
                 break;
         }
     }
@@ -186,7 +186,7 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void buyCard(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
+    private void buyCard(GameUserBean gameUser, GameBean game, Resources usersResources, Map<String, String> returnedParams) throws PlayException, GameException {
         DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
         DevelopmentCard chosenDevelopmentCard = cardUtil.chooseDevelopmentCard(availableDevelopmentCards);
         log.debug("Card " + chosenDevelopmentCard + " was chosen from the list: " + availableDevelopmentCards);
@@ -196,6 +196,11 @@ public class PlayServiceImpl implements PlayService {
         availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
 
         returnedParams.put("card", chosenDevelopmentCard.name());
+
+        GameStage gameStage = game.getStage();
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.SHEEP, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.STONE, 1);
     }
 
     private boolean isRobbersActivity(Integer diceFirstValue, Integer diceSecondValue) {
