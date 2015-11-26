@@ -45,6 +45,9 @@ public class GameUserBean {
     @Embedded
     private DevelopmentCards developmentCards;
 
+    @Embedded
+    private DevelopmentCards developmentCardsReadyForUsing;
+
     public GameUserBean() {
     }
 
@@ -56,6 +59,7 @@ public class GameUserBean {
         this.achievements = new Achievements(0, 0, 0, 0, 0);
         this.resources = new Resources(0, 0, 0, 0, 0);
         this.developmentCards = new DevelopmentCards(0, 0, 0, 0, 0);
+        this.developmentCardsReadyForUsing = new DevelopmentCards(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -144,6 +148,14 @@ public class GameUserBean {
 
     public void setDevelopmentCards(DevelopmentCards developmentCards) {
         this.developmentCards = developmentCards;
+    }
+
+    public DevelopmentCards getDevelopmentCardsReadyForUsing() {
+        return developmentCardsReadyForUsing;
+    }
+
+    public void setDevelopmentCardsReadyForUsing(DevelopmentCards developmentCardsReadyForUsing) {
+        this.developmentCardsReadyForUsing = developmentCardsReadyForUsing;
     }
 
     @Override

@@ -99,6 +99,9 @@ public class GameBean {
     @Column(name = "DICE_SECOND_VALUE", unique = false, nullable = true)
     private Integer diceSecondValue;
 
+    @Column(name = "DEV_CARD_USED", unique = false, nullable = true)
+    private Boolean developmentCardUsed;
+
     @Embedded
     private DevelopmentCards availableDevelopmentCards;
 
@@ -286,6 +289,14 @@ public class GameBean {
 
     public void setDiceThrown(Boolean diceThrown) {
         this.diceThrown = diceThrown;
+    }
+
+    public Boolean isDevelopmentCardUsed() {
+        return developmentCardUsed;
+    }
+
+    public void setDevelopmentCardUsed(Boolean developmentCardUsed) {
+        this.developmentCardUsed = developmentCardUsed;
     }
 
     public DevelopmentCards getAvailableDevelopmentCards() {

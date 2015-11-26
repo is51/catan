@@ -11,6 +11,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
@@ -77,6 +78,7 @@ public class MainStageUtil {
         allowEndTurn(gameUser, game, actionsList);
         allowThrowDice(gameUser, game, actionsList);
         allowBuyCard(gameUser, game, actionsList);
+        allowUseCardYearOfPlenty(gameUser, game, actionsList);
 
         AvailableActions availableActions = new AvailableActions();
         availableActions.setList(actionsList);
@@ -136,6 +138,20 @@ public class MainStageUtil {
                 && userHasResourcesToBuyCard(gameUser)) {
             actionsList.add(new Action(GameUserActionCode.BUY_CARD));
         }
+    }
+
+    private void allowUseCardYearOfPlenty(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
+                && !game.isDevelopmentCardUsed()
+                && userHasCardBoughtNotInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY)) {
+            actionsList.add(new Action(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY));
+        }
+    }
+
+    private boolean userHasCardBoughtNotInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) {
+        return gameUser.getDevelopmentCardsReadyForUsing().quantityOf(developmentCard) > 0;
     }
 
     private boolean userHasResourcesToBuildCity(GameUserBean gameUser) {

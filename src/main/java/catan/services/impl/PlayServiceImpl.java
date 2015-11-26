@@ -98,7 +98,7 @@ public class PlayServiceImpl implements PlayService {
                 buildCity(user, game, params.get("nodeId"));
                 break;
             case END_TURN:
-                endTurn(game);
+                endTurn(gameUser, game);
                 break;
             case THROW_DICE:
                 throwDice(game);
@@ -107,7 +107,7 @@ public class PlayServiceImpl implements PlayService {
                 buyCard(gameUser, game, returnedParams);
                 break;
             case USE_CARD_YEAR_OF_PLENTY:
-                useCardYearOfPlenty(gameUser, params.get("firstResource"), params.get("secondResource"));
+                useCardYearOfPlenty(gameUser, game, params.get("firstResource"), params.get("secondResource"));
                 break;
         }
     }
@@ -136,7 +136,7 @@ public class PlayServiceImpl implements PlayService {
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
     }
 
-    private void endTurn(GameBean game) throws GameException {
+    private void endTurn(GameUserBean gameUser, GameBean game) throws GameException {
         switch (game.getStage()) {
 
             case PREPARATION:
@@ -151,6 +151,8 @@ public class PlayServiceImpl implements PlayService {
 
             case MAIN:
                 mainStageUtil.resetDices(game);
+                gameUser.setDevelopmentCardsReadyForUsing(gameUser.getDevelopmentCards());
+                game.setDevelopmentCardUsed(false);
                 mainStageUtil.updateNextMove(game);
                 break;
         }
@@ -186,7 +188,7 @@ public class PlayServiceImpl implements PlayService {
         returnedParams.put("card", chosenDevelopmentCard.name());
     }
 
-    private void useCardYearOfPlenty(GameUserBean gameUser, String firstResourceString, String secondResourceString) throws PlayException, GameException {
+    private void useCardYearOfPlenty(GameUserBean gameUser, GameBean game, String firstResourceString, String secondResourceString) throws PlayException, GameException {
         HexType firstResource = validateResourceType(firstResourceString);
         HexType secondResource = validateResourceType(secondResourceString);
 
@@ -196,7 +198,10 @@ public class PlayServiceImpl implements PlayService {
         int currentSecondResourceQuantity = userResources.quantityOf(secondResource);
         userResources.updateResourceQuantity(secondResource, currentSecondResourceQuantity + 1);
 
+        log.debug("Player got resources: {}, {}", firstResource, secondResource);
+
         gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+        game.setDevelopmentCardUsed(true);
     }
 
     private HexType validateResourceType(String resourceString) throws PlayException {
