@@ -144,14 +144,13 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
-                && !game.isDevelopmentCardUsed()
-                && userHasCardBoughtNotInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY)) {
+                && userHasCard(gameUser, DevelopmentCard.YEAR_OF_PLENTY)) {
             actionsList.add(new Action(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY));
         }
     }
 
-    private boolean userHasCardBoughtNotInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) {
-        return gameUser.getDevelopmentCardsReadyForUsing().quantityOf(developmentCard) > 0;
+    private boolean userHasCard(GameUserBean gameUser, DevelopmentCard developmentCard) {
+        return gameUser.getDevelopmentCards().quantityOf(developmentCard) > 0;
     }
 
     private boolean userHasResourcesToBuildCity(GameUserBean gameUser) {

@@ -1390,6 +1390,7 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(true);
         gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 0, 0, 1));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 0, 0, 1));
         allowUserToUseCardYearOfPlenty(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -1434,10 +1435,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + PlayServiceImpl.CARD_BOUGHT_IN_CURRENT_TURN_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(PlayServiceImpl.CARD_BOUGHT_IN_CURRENT_TURN_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1496,10 +1497,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + PlayServiceImpl.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(PlayServiceImpl.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }

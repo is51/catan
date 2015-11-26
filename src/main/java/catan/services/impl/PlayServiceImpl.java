@@ -45,6 +45,8 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR = "CARD_ALREADY_USED_IN_CURRENT_TURN";
+    public static final String CARD_BOUGHT_IN_CURRENT_TURN_ERROR = "CARD_BOUGHT_IN_CURRENT_TURN";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -189,6 +191,9 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void useCardYearOfPlenty(GameUserBean gameUser, GameBean game, String firstResourceString, String secondResourceString) throws PlayException, GameException {
+        validateUserDidNotUsedCardsInCurrentTurn(game);
+        validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
+
         HexType firstResource = validateResourceType(firstResourceString);
         HexType secondResource = validateResourceType(secondResourceString);
 
@@ -201,7 +206,22 @@ public class PlayServiceImpl implements PlayService {
         log.debug("Player got resources: {}, {}", firstResource, secondResource);
 
         gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+        gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
         game.setDevelopmentCardUsed(true);
+    }
+
+    private void validateUserDidNotBoughtCardInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) throws PlayException {
+        if (gameUser.getDevelopmentCardsReadyForUsing().quantityOf(developmentCard) == 0) {
+            log.debug("Cannot use card. It was bought in current turn: {}", developmentCard);
+            throw new PlayException(CARD_BOUGHT_IN_CURRENT_TURN_ERROR);
+        }
+    }
+
+    private void validateUserDidNotUsedCardsInCurrentTurn(GameBean game) throws PlayException {
+        if (game.isDevelopmentCardUsed()) {
+            log.debug("Cannot use card. It was already used in current turn");
+            throw new PlayException(CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR);
+        }
     }
 
     private HexType validateResourceType(String resourceString) throws PlayException {
