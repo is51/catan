@@ -43,9 +43,23 @@ public class GameUserBean {
     private Resources resources;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "knight", column = @Column(name = "DEV_CARD_ALL_KNIGHT")),
+            @AttributeOverride(name = "victoryPoint", column = @Column(name = "DEV_CARD_ALL_VICTORY_POINT")),
+            @AttributeOverride(name = "roadBuilding", column = @Column(name = "DEV_CARD_ALL_ROAD_BUILDING")),
+            @AttributeOverride(name = "monopoly", column = @Column(name = "DEV_CARD_ALL_MONOPOLY")),
+            @AttributeOverride(name = "yearOfPlenty", column = @Column(name = "DEV_CARD_ALL_YEAR_OF_PLENTY"))
+    })
     private DevelopmentCards developmentCards;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "knight", column = @Column(name = "DEV_CARD_READY_KNIGHT")),
+            @AttributeOverride(name = "victoryPoint", column = @Column(name = "DEV_CARD_READY_VICTORY_POINT")),
+            @AttributeOverride(name = "roadBuilding", column = @Column(name = "DEV_CARD_READY_ROAD_BUILDING")),
+            @AttributeOverride(name = "monopoly", column = @Column(name = "DEV_CARD_READY_MONOPOLY")),
+            @AttributeOverride(name = "yearOfPlenty", column = @Column(name = "DEV_CARD_READY_YEAR_OF_PLENTY"))
+    })
     private DevelopmentCards developmentCardsReadyForUsing;
 
     public GameUserBean() {
