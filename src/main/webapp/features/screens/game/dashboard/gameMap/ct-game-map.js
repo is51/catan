@@ -2,7 +2,7 @@
 
 angular.module('catan')
 
-        .directive('ctGameMap', ['DrawMapService', 'SelectMapObjectService', '$timeout', function(DrawMapService, SelectMapObjectService, $timeout) {
+        .directive('ctGameMap', ['DrawMapService', 'SelectService', '$timeout', function(DrawMapService, SelectService, $timeout) {
 
             var HEXES_HIGHLIGHT_DELAY = 3000;
             var HEXES_HIGHLIGHT_CLASS = "highlighted";
@@ -34,12 +34,12 @@ angular.module('catan')
 
                     element.on('click', DrawMapService.NODE_SELECTOR, function(event) {
                         var nodeId = angular.element(event.target).closest(DrawMapService.NODE_SELECTOR).attr('node-id');
-                        SelectMapObjectService.select('node', nodeId);
+                        SelectService.select('node', nodeId);
                     });
 
                     element.on('click', DrawMapService.EDGE_SELECTOR, function(event) {
                         var edgeId = angular.element(event.target).closest(DrawMapService.EDGE_SELECTOR).attr('edge-id');
-                        SelectMapObjectService.select('edge', edgeId);
+                        SelectService.select('edge', edgeId);
                     });
 
                 }
