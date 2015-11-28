@@ -143,6 +143,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario USE_CARD_YEAR_OF_PLENTY(int moveOrder, String firstResource, String secondResource) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.useCardYearOfPlenty(userToken, gameId, firstResource, secondResource);
+        return this;
+    }
+
     public Scenario boughtCardIs(DevelopmentCard card) {
         lastApiResponse.then()
                 .statusCode(200)
