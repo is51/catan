@@ -3,6 +3,7 @@ package catan.controllers.testcases.play;
 import catan.controllers.ctf.Scenario;
 import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
+import catan.domain.model.dashboard.types.HexType;
 import catan.services.util.random.RandomUtil;
 import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import static catan.domain.model.game.types.DevelopmentCard.ROAD_BUILDING;
 import static catan.domain.model.game.types.DevelopmentCard.VICTORY_POINT;
 import static catan.domain.model.game.types.DevelopmentCard.YEAR_OF_PLENTY;
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,19 +52,66 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
+    }
 
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+    @Test
+    public void should_successfully_take_resources_from_player_when_he_buy_card() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 1)
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+
+                .startTrackResourcesQuantity()
+
+                .BUY_CARD(1).successfully()
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, -1, -1, -1);
+    }
+
+    @Test
+    public void should_fail_when_trying_to_buy_card_if_user_does_not_have_resources() {
+        startNewGame();
+        playPreparationStage()
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+
+                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.stone", is(0))
+                .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUY_CARD")
+
+                .BUY_CARD(1).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_successfully_buy_card_if_user_has_enough_resources() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 1)
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+
+                .getGameDetails(1).gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", greaterThanOrEqualTo(1))
+                .getGameDetails(1).gameUser(1).check("resources.stone", greaterThanOrEqualTo(1))
+
+                .BUY_CARD(1).successfully();
     }
 
     @Test
     public void should_fail_when_trying_to_buy_card_before_dice_is_thrown() {
-        playPreparationStage()
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 1)
 
                 .getGameDetails(1).gameUser(1).hasAvailableAction("THROW_DICE")
                 .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUY_CARD")
@@ -72,6 +121,7 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Test
     public void should_fail_when_trying_to_buy_card_not_in_players_turn() {
+        startNewGame();
         playPreparationStage()
 
                 .BUY_CARD(2).failsWithError("ERROR");
@@ -79,8 +129,10 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Test
     public void should_successfully_buy_card_after_dice_was_thrown() {
-        playPreparationStage()
-
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 1)
+                .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
                 .getGameDetails(1).gameUser(1).hasAvailableAction("BUY_CARD")
 
@@ -89,8 +141,10 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Test
     public void should_successfully_buy_second_card_after_first_card_was_already_bought_in_current_turn() {
-        playPreparationStage()
-
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 2)
+                .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
                 .BUY_CARD(1).successfully()
@@ -99,9 +153,12 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Test
     public void should_return_bought_card_in_response() {
-        playPreparationStage()
-
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 5)
+                .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
+
                 .nextRandomDevelopmentCards(asList(KNIGHT, VICTORY_POINT, ROAD_BUILDING, MONOPOLY, YEAR_OF_PLENTY))
 
                 .BUY_CARD(1).boughtCardIs(KNIGHT)
@@ -113,9 +170,12 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Test
     public void should_increase_development_cards_when_user_buys_a_new_one() {
-        playPreparationStage()
-
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 6)
+                .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
+
                 .nextRandomDevelopmentCards(asList(KNIGHT, KNIGHT, ROAD_BUILDING, KNIGHT, YEAR_OF_PLENTY, YEAR_OF_PLENTY))
                 .startTrackDevCardsQuantity()
 
@@ -142,8 +202,10 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     @Test
     public void should_fail_when_cards_are_over() {
-        playPreparationStage()
-
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 26)
+                .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
                 .BUY_CARD(1)
@@ -175,116 +237,53 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .BUY_CARD(1).failsWithError("CARDS_ARE_OVER");
     }
 
-    //TODO: use this method when user will require resources for buying cards
-    private Scenario playPreparationStageAndBuildCity() {
+    private Scenario giveResourcesToPlayerForDevCardBuying(int moveOrder, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            scenario
+                    .nextRandomDiceValues(asList(moveOrder, moveOrder))
+                    .THROW_DICE(moveOrder)
+                    .END_TURN(moveOrder)
 
-        return playPreparationStage()
-                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone +2wood
-                .THROW_DICE(1)                      // P2: +1stone
-                .END_TURN(1)                        // P3: +1stone
+                    .nextRandomDiceValues(asList(6, 6))
+                    .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                    .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
 
-                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone +2wood
-                .THROW_DICE(2)                      // P2: +1stone
-                .END_TURN(2)                        // P3: +1stone
-
-                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone +2wood
-                .THROW_DICE(3)                      // P2: +1stone
-                .END_TURN(3)                        // P3: +1stone
-
-                .nextRandomDiceValues(asList(2, 6)) // P1: +1brick
-                .THROW_DICE(1)                      // P2: +1brick
-                .END_TURN(1)                        // P3: --
-
-                .nextRandomDiceValues(asList(2, 6)) // P1: +1brick
-                .THROW_DICE(2)                      // P2: +1brick
-                .END_TURN(2)                        // P3: --
-
-                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
-                .THROW_DICE(3)                      // P2: --
-                .END_TURN(3)                        // P3: --
-
-                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
-                .THROW_DICE(1)                      // P2: --
-                .END_TURN(1)                        // P3: --
-
-                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
-                .THROW_DICE(2)                      // P2: --
-                .END_TURN(2)                        // P3: --
-
-                .nextRandomDiceValues(asList(2, 8)) // P1: +1sheep
-                .THROW_DICE(3)                      // P2: +1sheep
-                .END_TURN(3)                        // P3: --
-
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
-                .THROW_DICE(1)
-                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")          // P1: -1brick -1wood
-                .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")    // P1: -1brick -1wood -1wheat -1sheep
-                .BUILD_CITY(1).atNode(0, 0, "topLeft")           // P1: -2wheat -3stone
-                .END_TURN(1)
-
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
-                .THROW_DICE(2)
-                .END_TURN(2)
-
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
-                .THROW_DICE(3)
-                .END_TURN(3)
-                .startTrackResourcesQuantity();
+                    .nextRandomDiceValues(asList(6, 6))
+                    .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                    .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+        }
+        return scenario;
     }
 
-    private Scenario playPreparationStage() {
+    private Scenario startNewGame() {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)
 
-                /*
-                possible dice values
+                .setHex(HexType.STONE, 2).atCoordinates(0, -2)
+                .setHex(HexType.WHEAT, 2).atCoordinates(1, -2)
+                .setHex(HexType.WHEAT, 4).atCoordinates(2, -2)
 
-                2,
-                3, 3,
-                4, 4,
-                5, 5,
-                6, 6,
-                7
-                8, 8,
-                9, 9,
-                10, 10,
-                11, 11,
-                12
+                .setHex(HexType.WHEAT, 6).atCoordinates(-1, -1)
+                .setHex(HexType.SHEEP, 2).atCoordinates(0, -1)
+                .setHex(HexType.SHEEP, 4).atCoordinates(1, -1)
+                .setHex(HexType.STONE, 4).atCoordinates(2, -1)
 
-                possible hex type values:
-                WOOD, WOOD, WOOD, WOOD,
-                SHEEP, SHEEP, SHEEP, SHEEP,
-                WHEAT, WHEAT, WHEAT, WHEAT,
-                BRICK, BRICK, BRICK,
-                STONE, STONE, STONE,
-                EMPTY
+                .setHex(HexType.SHEEP, 6).atCoordinates(-2, 0)
+                .setHex(HexType.STONE, 6).atCoordinates(-1, 0)
+                .setHex(HexType.EMPTY, null).atCoordinates(0, 0)
+                .setHex(HexType.SHEEP, 3).atCoordinates(1, 0)
+                .setHex(HexType.STONE, 11).atCoordinates(2, 0)
 
-                */
-                .setHex(STONE, 6).atCoordinates(0, -2)
-                .setHex(BRICK, 8).atCoordinates(1, -2)
-                .setHex(WHEAT, 12).atCoordinates(2, -2)
+                .setHex(HexType.SHEEP, 9).atCoordinates(-2, 1)
+                .setHex(HexType.BRICK, 9).atCoordinates(-1, 1)
+                .setHex(HexType.SHEEP, 11).atCoordinates(0, 1)
+                .setHex(HexType.WOOD, 5).atCoordinates(1, 1)
 
-                .setHex(WHEAT, 5).atCoordinates(-1, -1)
-                .setHex(WOOD, 6).atCoordinates(0, -1)
-                .setHex(SHEEP, 10).atCoordinates(1, -1)
-                .setHex(BRICK, 3).atCoordinates(2, -1)
-
-                .setHex(WOOD, 8).atCoordinates(-2, 0)
-                .setHex(STONE, 4).atCoordinates(-1, 0)
-                .setHex(EMPTY, null).atCoordinates(0, 0)
-                .setHex(SHEEP, 3).atCoordinates(1, 0)
-                .setHex(STONE, 11).atCoordinates(2, 0)
-
-                .setHex(SHEEP, 9).atCoordinates(-2, 1)
-                .setHex(BRICK, 9).atCoordinates(-1, 1)
-                .setHex(SHEEP, 11).atCoordinates(0, 1)
-                .setHex(WOOD, 4).atCoordinates(1, 1)
-
-                .setHex(WOOD, 10).atCoordinates(-2, 2)
-                .setHex(WHEAT, 2).atCoordinates(-1, 2)
-                .setHex(WHEAT, 5).atCoordinates(0, 2)
+                .setHex(HexType.WOOD, 10).atCoordinates(-2, 2)
+                .setHex(HexType.WHEAT, 3).atCoordinates(-1, 2)
+                .setHex(HexType.BRICK, 5).atCoordinates(0, 2)
 
                 .createNewPublicGameByUser(USER_NAME_1)
                 .joinPublicGame(USER_NAME_2)
@@ -295,36 +294,33 @@ public class BuyDevCardTest extends PlayTestUtil {
 
                 .setUserReady(USER_NAME_1)
                 .setUserReady(USER_NAME_2)
-                .setUserReady(USER_NAME_3)
+                .setUserReady(USER_NAME_3);
+    }
 
-                        //check that move orders are never changed and users have move orders according to joined order
-                .getGameDetails(1)
-                .gameUser(3).check("user.username", is(USER_NAME_1))
-                .gameUser(2).check("user.username", is(USER_NAME_2))
-                .gameUser(1).check("user.username", is(USER_NAME_3))
-
-                .BUILD_SETTLEMENT(1).atNode(0, -1, "topRight")
-                .BUILD_ROAD(1).atEdge(0, -1, "right")
+    private Scenario playPreparationStage() {
+        return scenario
+                .BUILD_SETTLEMENT(1).atNode(0, -1, "top")
+                .BUILD_ROAD(1).atEdge(0, -1, "topRight")
                 .END_TURN(1)
 
-                .BUILD_SETTLEMENT(2).atNode(0, 0, "topRight")
-                .BUILD_ROAD(2).atEdge(0, 0, "right")
+                .BUILD_SETTLEMENT(2).atNode(2, -2, "bottom")
+                .BUILD_ROAD(2).atEdge(2, -2, "bottomRight")
                 .END_TURN(2)
 
-                .BUILD_SETTLEMENT(3).atNode(0, 0, "bottom")
-                .BUILD_ROAD(3).atEdge(0, 0, "bottomLeft")
+                .BUILD_SETTLEMENT(3).atNode(-1, -1, "bottom")
+                .BUILD_ROAD(3).atEdge(-1, -1, "bottomRight")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(3).atNode(0, -2, "topLeft") // P3: +1brick (after US-69)
-                .BUILD_ROAD(3).atEdge(0, -2, "topLeft")
+                .BUILD_SETTLEMENT(3).atNode(-2, 2, "topLeft")
+                .BUILD_ROAD(3).atEdge(-2, 2, "topLeft")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(2).atNode(0, -2, "topRight") // P2: +1brick +1stone (after US-69)
-                .BUILD_ROAD(2).atEdge(0, -2, "right")
+                .BUILD_SETTLEMENT(2).atNode(-1, 2, "topLeft")
+                .BUILD_ROAD(2).atEdge(-1, 2, "topLeft")
                 .END_TURN(2)
 
-                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottom") // P1: +1stone +1wood +1wheat (after US-69)
-                .BUILD_ROAD(1).atEdge(0, -2, "bottomLeft")
+                .BUILD_SETTLEMENT(1).atNode(0, 2, "topLeft")
+                .BUILD_ROAD(1).atEdge(0, 2, "topLeft")
                 .END_TURN(1);
     }
 
@@ -332,23 +328,23 @@ public class BuyDevCardTest extends PlayTestUtil {
     *          (X, Y) coordinates of generated map:                          Node position at hex:
     *
     *           *----*----*----*----*----*----*                                      top
-    *           |    6    |    8    |    12   |                          topLeft *----*----* topRight
-    *           |  STONE  |  BRICK  |  WHEAT  |                                  |         |
+    *           |    2    |    2    |    4    |                          topLeft *----*----* topRight
+    *           |  STONE  |  WHEAT  |  WHEAT  |                                  |         |
     *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                       bottomLeft *----*----* bottomRight
     *      *----*----*----*----*----*----*----*----*                                bottom
-    *      |    5    |    6    |    10   |    3    |
-    *      |  WHEAT  |   WOOD  |  SHEEP  |  BRICK  |
+    *      |    6    |    2    |    4    |    4    |
+    *      |  WHEAT  |  SHEEP  |  SHEEP  |  STONE  |
     *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                        Edge position at hex:
     * *----*----*----*----*----*----*----*----*----*----*
-    * |    8    |    4    |         |    3    |    11   |                      topLeft topRight
-    * |   WOOD  |  STONE  |  EMPTY  |  SHEEP  |  STONE  |                        .====.====.
+    * |    6    |    6    |         |    3    |    11   |                      topLeft topRight
+    * |  SHEEP  |  STONE  |  EMPTY  |  SHEEP  |  STONE  |                        .====.====.
     * | (-2, 0) | (-1, 0) | ( 0, 0) | ( 1, 0) | ( 2, 0) |                  left ||         || right
     * *----*----*----*----*----*----*----*----*----*----*                        .====.====.
-    *      |    9    |    9    |    11   |    4    |                        bottomLeft bottomRight
+    *      |    9    |    9    |    11   |    5    |                        bottomLeft bottomRight
     *      |  SHEEP  |  BRICK  |  SHEEP  |   WOOD  |
     *      | (-2, 1) | (-1, 1) | ( 0, 1) | ( 1, 1) |
     *      *----*----*----*----*----*----*----*----*
-    *           |    10   |    2    |    5    |
+    *           |    10   |    3    |    5    |
     *           |   WOOD  |  WHEAT  |  WHEAT  |
     *           | (-2, 2) | (-1, 2) | ( 0, 2) |
     *           *----*----*----*----*----*----*

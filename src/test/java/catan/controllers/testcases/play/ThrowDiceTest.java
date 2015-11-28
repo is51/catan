@@ -46,14 +46,15 @@ public class ThrowDiceTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
-
-        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
     @Test

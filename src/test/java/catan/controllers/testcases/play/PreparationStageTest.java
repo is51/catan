@@ -95,7 +95,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActionsThrowDice);
         throwDice(userTokens[activeUserNumber], gameId);
 
-        String[] availableActions = {"BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD", "END_TURN", "BUY_CARD"};
+        String[] availableActions = {"END_TURN"};
 
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActions);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");

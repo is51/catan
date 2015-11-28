@@ -31,7 +31,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
         return createNewGame(token, privateGame, targetVictoryPoints, DEFAULT_INITIAL_BUILDINGS_SET_ID);
     }
 
-    protected static Response createNewGame(String token, boolean privateGame, int targetVictoryPoints, int initialBuildingsSetId) {
+    public static Response createNewGame(String token, boolean privateGame, int targetVictoryPoints, int initialBuildingsSetId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)

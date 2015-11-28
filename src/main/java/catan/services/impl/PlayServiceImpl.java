@@ -7,10 +7,12 @@ import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.DevelopmentCards;
+import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
@@ -71,7 +73,7 @@ public class PlayServiceImpl implements PlayService {
 
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
-
+        
         doAction(action, user, gameUser, game, params, returnedParams);
 
         playUtil.updateVictoryPoints(gameUser);
@@ -83,17 +85,18 @@ public class PlayServiceImpl implements PlayService {
         log.debug("User {} successfully performed action {}", user.getUsername(), action);
         return returnedParams;
     }
-
+    
     private void doAction(GameUserActionCode action, UserBean user, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
+        Resources usersResources = gameUser.getResources();
         switch(action){
             case BUILD_ROAD:
-                buildRoad(user, game, params.get("edgeId"));
+                buildRoad(user, game, usersResources, params.get("edgeId"));
                 break;
             case BUILD_SETTLEMENT:
-                buildSettlement(user, game, params.get("nodeId"));
+                buildSettlement(user, game, usersResources, params.get("nodeId"));
                 break;
             case BUILD_CITY:
-                buildCity(user, game, params.get("nodeId"));
+                buildCity(user, game, usersResources, params.get("nodeId"));
                 break;
             case END_TURN:
                 endTurn(game);
@@ -102,33 +105,47 @@ public class PlayServiceImpl implements PlayService {
                 throwDice(game);
                 break;
             case BUY_CARD:
-                buyCard(gameUser, game, returnedParams);
+                buyCard(gameUser, game, usersResources, returnedParams);
                 break;
         }
     }
 
-    private void buildRoad(UserBean user, GameBean game, String edgeId) throws PlayException, GameException {
+    private void buildRoad(UserBean user, GameBean game, Resources usersResources, String edgeId) throws PlayException, GameException {
         EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeId, new ArrayList<MapElement>(game.getEdges()));
         buildUtil.validateUserCanBuildRoadOnEdge(user, edgeToBuildOn);
         buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
+
+        GameStage gameStage = game.getStage();
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.BRICK, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WOOD, 1);
     }
 
-    private void buildSettlement(UserBean user, GameBean game, String nodeId) throws PlayException, GameException {
+    private void buildSettlement(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildSettlementOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
+
+        GameStage gameStage = game.getStage();
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.BRICK, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WOOD, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.SHEEP, 1);
     }
 
-    private void buildCity(UserBean user, GameBean game, String nodeId) throws PlayException, GameException {
+    private void buildCity(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildCityOnNode(user, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
+
+        GameStage gameStage = game.getStage();
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 2);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.STONE, 3);
     }
 
     private void endTurn(GameBean game) throws GameException {
@@ -169,7 +186,7 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void buyCard(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
+    private void buyCard(GameUserBean gameUser, GameBean game, Resources usersResources, Map<String, String> returnedParams) throws PlayException, GameException {
         DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
         DevelopmentCard chosenDevelopmentCard = cardUtil.chooseDevelopmentCard(availableDevelopmentCards);
         log.debug("Card " + chosenDevelopmentCard + " was chosen from the list: " + availableDevelopmentCards);
@@ -179,6 +196,11 @@ public class PlayServiceImpl implements PlayService {
         availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
 
         returnedParams.put("card", chosenDevelopmentCard.name());
+
+        GameStage gameStage = game.getStage();
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.SHEEP, 1);
+        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.STONE, 1);
     }
 
     private boolean isRobbersActivity(Integer diceFirstValue, Integer diceSecondValue) {
