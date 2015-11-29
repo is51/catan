@@ -31,11 +31,11 @@ import static org.hamcrest.Matchers.is;
 @WebIntegrationTest("server.port:8091")
 public class UseCardYearOfPlentyTest extends PlayTestUtil {
 
-    public static final String USER_NAME_1 = "user1_ThrowDiceTest";
+    public static final String USER_NAME_1 = "user1_UseCardYearOfPlentyTest";
     public static final String USER_PASSWORD_1 = "password1";
-    public static final String USER_NAME_2 = "user2_ThrowDiceTest";
+    public static final String USER_NAME_2 = "user2_UseCardYearOfPlentyTest";
     public static final String USER_PASSWORD_2 = "password2";
-    public static final String USER_NAME_3 = "user3_ThrowDiceTest";
+    public static final String USER_NAME_3 = "user3_UseCardYearOfPlentyTest";
     public static final String USER_PASSWORD_3 = "password3";
 
     private static boolean initialized = false;
