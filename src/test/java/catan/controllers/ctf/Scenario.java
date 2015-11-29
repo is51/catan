@@ -54,8 +54,12 @@ public class Scenario {
     }
 
     public Scenario createNewPublicGameByUser(String userName, int targetVictoryPoints) {
+        return createNewPublicGameByUser(userName, targetVictoryPoints, 1);
+    }
+
+    public Scenario createNewPublicGameByUser(String userName, int targetVictoryPoints, int initialBuildingSet) {
         String userToken = userTokensByName.get(userName);
-        gameId = GameTestUtil.createNewGame(userToken, false, targetVictoryPoints).then().statusCode(200).extract().path("gameId");
+        gameId = GameTestUtil.createNewGame(userToken, false, targetVictoryPoints, initialBuildingSet).then().statusCode(200).extract().path("gameId");
         return this;
     }
 

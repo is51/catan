@@ -12,6 +12,7 @@ import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
@@ -35,6 +36,13 @@ public class MainStageUtil {
 
         log.debug("Next move order in {} stage is changing from {} to {}", game.getStage(), game.getCurrentMove(), nextMoveNumber);
         game.setCurrentMove(nextMoveNumber);
+    }
+
+    public void takeResourceFromPlayer(GameStage gameStage, Resources usersResources, HexType resource, int quantityToDecrease) {
+        if (GameStage.MAIN.equals(gameStage)) {
+            int newResourceQuantity = usersResources.quantityOf(resource) - quantityToDecrease;
+            usersResources.updateResourceQuantity(resource, newResourceQuantity);
+        }
     }
 
     public void resetDices(GameBean game) {
@@ -154,26 +162,26 @@ public class MainStageUtil {
     }
 
     private boolean userHasResourcesToBuildCity(GameUserBean gameUser) {
-        return gameUser.getResources().getStone() >= 0
-                && gameUser.getResources().getWheat() >= 0;
+        return gameUser.getResources().getStone() >= 3
+                && gameUser.getResources().getWheat() >= 2;
     }
 
     private boolean userHasResourcesForSettlement(GameUserBean gameUser) {
-        return gameUser.getResources().getWood() >= 0
-                && gameUser.getResources().getBrick() >= 0
-                && gameUser.getResources().getSheep() >= 0
-                && gameUser.getResources().getWheat() >= 0;
+        return gameUser.getResources().getWood() >= 1
+                && gameUser.getResources().getBrick() >= 1
+                && gameUser.getResources().getSheep() >= 1
+                && gameUser.getResources().getWheat() >= 1;
     }
 
     private boolean userHasResourcesToBuildRoad(GameUserBean gameUser) {
-        return gameUser.getResources().getWood() >= 0
-                && gameUser.getResources().getBrick() >= 0;
+        return gameUser.getResources().getWood() >= 1
+                && gameUser.getResources().getBrick() >= 1;
     }
 
     private boolean userHasResourcesToBuyCard(GameUserBean gameUser) {
-        return gameUser.getResources().getStone() >= 0
-                && gameUser.getResources().getSheep() >= 0
-                && gameUser.getResources().getWheat() >= 0;
+        return gameUser.getResources().getStone() >= 1
+                && gameUser.getResources().getSheep() >= 1
+                && gameUser.getResources().getWheat() >= 1;
     }
 
     private boolean isCurrentUsersMove(GameUserBean gameUser, GameBean game) {
