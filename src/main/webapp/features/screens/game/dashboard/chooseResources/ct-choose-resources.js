@@ -22,12 +22,12 @@ angular.module('catan')
 
             function init(scope, type) {
 
-                var MAX_RESOURCES_COUNT_LIMIT = getMaxResourcesCountLimit(type);
-                var MAX_RESOURCES_COUNT_FOR_APPLY = getMaxResourcesCountForApply(type);
-                var MIN_RESOURCES_COUNT_LIMIT = getMinResourcesCountLimit(type);
-                var MIN_RESOURCES_COUNT_FOR_APPLY = getMinResourcesCountForApply(type);
+                var maxResourcesCountLimit = getMaxResourcesCountLimit(type);
+                var maxResourcesCountForApply = getMaxResourcesCountForApply(type);
+                var minResourcesCountLimit = getMinResourcesCountLimit(type);
+                var minResourcesCountForApply = getMinResourcesCountForApply(type);
 
-                var REMOVE_OTHER_RESOURCE_WHEN_LIMIT = getRemoveOtherResourceWhenLimit(type);
+                var removeOtherResourceWhenLimit = getRemoveOtherResourceWhenLimit(type);
 
                 scope.resources = {
                     BRICK: 0,
@@ -46,9 +46,9 @@ angular.module('catan')
                 };
 
                 scope.addResource = function(resourceType) {
-                    if (scope.getTotalCount() < MAX_RESOURCES_COUNT_LIMIT) {
+                    if (scope.getTotalCount() < maxResourcesCountLimit) {
                         scope.resources[resourceType]++;
-                    } else if (REMOVE_OTHER_RESOURCE_WHEN_LIMIT) {
+                    } else if (removeOtherResourceWhenLimit) {
                         if (scope.removeOtherResource(resourceType)) {
                             scope.resources[resourceType]++;
                         }
@@ -56,7 +56,7 @@ angular.module('catan')
                 };
 
                 scope.removeResource = function(resourceType) {
-                    if (scope.getTotalCount() > MIN_RESOURCES_COUNT_LIMIT) {
+                    if (scope.getTotalCount() > minResourcesCountLimit) {
                         scope.resources[resourceType]--;
                     }
                 };
@@ -73,7 +73,7 @@ angular.module('catan')
 
                 scope.okDisabled = function() {
                     var count = scope.getTotalCount();
-                    return  count < MIN_RESOURCES_COUNT_FOR_APPLY || count > MAX_RESOURCES_COUNT_FOR_APPLY;
+                    return  count < minResourcesCountForApply || count > maxResourcesCountForApply;
                 };
 
                 scope.cancel = function() {
