@@ -144,7 +144,17 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
     public void should_fail_when_resource_type_is_incorrect() {
         playPreparationStageAndBuyCardYearOfPlentyAndPassCycle()
                 .startTrackResourcesQuantity()
+
                 .USE_CARD_YEAR_OF_PLENTY(1, "XXX", "STONE").failsWithError("ERROR")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+
+                .USE_CARD_YEAR_OF_PLENTY(1, "STONE", "YYY").failsWithError("ERROR")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+
+                .USE_CARD_YEAR_OF_PLENTY(1, "XXX", "YYY").failsWithError("ERROR")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+
+                .USE_CARD_YEAR_OF_PLENTY(1, "", "").failsWithError("ERROR")
                 .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
