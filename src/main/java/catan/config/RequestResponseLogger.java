@@ -38,7 +38,7 @@ public class RequestResponseLogger implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest plainRequest, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+        public void doFilter(ServletRequest plainRequest, ServletResponse plainResponse, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) plainRequest;
         if (logger.isDebugEnabled()) {
             StringBuilder sbAppender = new StringBuilder();
@@ -82,14 +82,16 @@ public class RequestResponseLogger implements Filter {
             logger.debug(sbAppender.toString());
         }
 
-        if (response.getCharacterEncoding() == null) {
-            response.setCharacterEncoding("UTF-8");
+        if (plainResponse.getCharacterEncoding() == null) {
+            plainResponse.setCharacterEncoding("UTF-8");
         }
 
-        HttpServletResponseCopier responseCopier = new HttpServletResponseCopier((HttpServletResponse) response);
+        HttpServletResponse response = (HttpServletResponse) plainResponse;
+        HttpServletResponseCopier responseCopier = new HttpServletResponseCopier(response);
 
         try {
             chain.doFilter(request, responseCopier);
+            response.flushBuffer();
             responseCopier.flushBuffer();
         } finally {
             if (logger.isDebugEnabled()) {
@@ -114,7 +116,7 @@ public class RequestResponseLogger implements Filter {
                 }
                 sbAppender
                         .append("    Body : ")
-                        .append(new String(copy, response.getCharacterEncoding()))
+                        .append(new String(copy, plainResponse.getCharacterEncoding()))
                         .append("\n\n");
 
                 logger.debug(sbAppender.toString());
