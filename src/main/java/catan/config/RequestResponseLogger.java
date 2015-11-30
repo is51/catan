@@ -38,7 +38,7 @@ public class RequestResponseLogger implements Filter {
     }
 
     @Override
-        public void doFilter(ServletRequest plainRequest, ServletResponse plainResponse, FilterChain chain) throws ServletException, IOException {
+    public void doFilter(ServletRequest plainRequest, ServletResponse plainResponse, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) plainRequest;
         if (logger.isDebugEnabled()) {
             StringBuilder sbAppender = new StringBuilder();
