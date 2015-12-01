@@ -61,16 +61,22 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
     public void should_successfully_give_two_different_resources() {
         playPreparationStageAndBuyCardYearOfPlentyAndPassCycle()
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
     }
 
     @Test
     public void should_successfully_give_two_same_resources() {
         playPreparationStageAndBuyCardYearOfPlentyAndPassCycle()
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
                 .USE_CARD_YEAR_OF_PLENTY(1, "WHEAT", "WHEAT").successfully()
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 2, 0);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 2, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
     }
 
     @Test
@@ -80,16 +86,22 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
                 .BUY_CARD(1)
 
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
                 .USE_CARD_YEAR_OF_PLENTY(1, "SHEEP", "WOOD").successfully()
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 1, 1, 0, 0);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 1, 1, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
     }
 
     @Test
     public void should_fail_if_player_bought_the_card_in_the_current_move() {
         playPreparationStageAndBuyCardYearOfPlenty()
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").failsWithError("CARD_BOUGHT_IN_CURRENT_TURN")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     @Test
@@ -111,16 +123,22 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
 
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").failsWithError("CARD_ALREADY_USED_IN_CURRENT_TURN")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     @Test
     public void should_fail_if_player_does_not_have_the_card() {
         playPreparationStage()
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").failsWithError("ERROR")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     @Test
@@ -136,26 +154,53 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
 
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").failsWithError("ERROR")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_fail_if_it_is_not_players_turn() {
+        playPreparationStageAndBuyCardYearOfPlentyAndPassCycle()
+                .END_TURN(1)
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(2)
+
+                .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
+                .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").failsWithError("ERROR")
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     @Test
     public void should_fail_when_resource_type_is_incorrect() {
         playPreparationStageAndBuyCardYearOfPlentyAndPassCycle()
                 .startTrackResourcesQuantity()
+                .startTrackDevCardsQuantity()
 
                 .USE_CARD_YEAR_OF_PLENTY(1, "XXX", "STONE").failsWithError("ERROR")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .USE_CARD_YEAR_OF_PLENTY(1, "STONE", "YYY").failsWithError("ERROR")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .USE_CARD_YEAR_OF_PLENTY(1, "XXX", "YYY").failsWithError("ERROR")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .USE_CARD_YEAR_OF_PLENTY(1, "", "").failsWithError("ERROR")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .getGameDetails(1)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     private Scenario playPreparationStageAndBuyCardYearOfPlentyAndPassCycle() {
