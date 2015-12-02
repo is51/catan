@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 @Service("playService")
 @Transactional
@@ -45,8 +46,6 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
-    public static final String CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR = "CARD_ALREADY_USED_IN_CURRENT_TURN";
-    public static final String CARD_BOUGHT_IN_CURRENT_TURN_ERROR = "CARD_BOUGHT_IN_CURRENT_TURN";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -113,6 +112,7 @@ public class PlayServiceImpl implements PlayService {
                 useCardYearOfPlenty(gameUser, game, params.get("firstResource"), params.get("secondResource"));
                 break;
             case USE_CARD_MONOPOLY:
+                useCardMonopoly(gameUser, game, params.get("resource"), returnedParams);
                 break;
         }
     }
@@ -200,9 +200,7 @@ public class PlayServiceImpl implements PlayService {
         DevelopmentCard chosenDevelopmentCard = cardUtil.chooseDevelopmentCard(availableDevelopmentCards);
         log.debug("Card " + chosenDevelopmentCard + " was chosen from the list: " + availableDevelopmentCards);
 
-        DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
-        usersDevelopmentCards.increaseQuantityByOne(chosenDevelopmentCard);
-        availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
+        cardUtil.giveDevelopmentCardToUser(gameUser, availableDevelopmentCards, chosenDevelopmentCard);
 
         returnedParams.put("card", chosenDevelopmentCard.name());
 
@@ -213,37 +211,32 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void useCardYearOfPlenty(GameUserBean gameUser, GameBean game, String firstResourceString, String secondResourceString) throws PlayException, GameException {
-        validateUserDidNotUsedCardsInCurrentTurn(game);
-        validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
+        cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
+        cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
 
         HexType firstResource = validateResourceType(firstResourceString);
         HexType secondResource = validateResourceType(secondResourceString);
 
-        Resources userResources = gameUser.getResources();
-        int currentFirstResourceQuantity = userResources.quantityOf(firstResource);
-        userResources.updateResourceQuantity(firstResource, currentFirstResourceQuantity + 1);
-        int currentSecondResourceQuantity = userResources.quantityOf(secondResource);
-        userResources.updateResourceQuantity(secondResource, currentSecondResourceQuantity + 1);
-
+        cardUtil.giveTwoResourcesToPlayer(gameUser, firstResource, secondResource);
         log.debug("Player got resources: {}, {}", firstResource, secondResource);
 
-        gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
-        gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+        cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
         game.setDevelopmentCardUsed(true);
     }
 
-    private void validateUserDidNotBoughtCardInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) throws PlayException {
-        if (gameUser.getDevelopmentCardsReadyForUsing().quantityOf(developmentCard) == 0) {
-            log.debug("Cannot use card. It was bought in current turn: {}", developmentCard);
-            throw new PlayException(CARD_BOUGHT_IN_CURRENT_TURN_ERROR);
-        }
-    }
+    private void useCardMonopoly(final GameUserBean gameUser, GameBean game, String resourceString, Map<String, String> returnedParams) throws PlayException, GameException {
+        cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
+        cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.MONOPOLY);
 
-    private void validateUserDidNotUsedCardsInCurrentTurn(GameBean game) throws PlayException {
-        if (game.isDevelopmentCardUsed()) {
-            log.debug("Cannot use card. It was already used in current turn");
-            throw new PlayException(CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR);
-        }
+        HexType resource = validateResourceType(resourceString);
+
+        Integer takenResourcesCount = cardUtil.takeResourceFromRivalsAndGiveItAwayToPlayer(gameUser, game, resource);
+        log.debug("Player got {} of {} resources", takenResourcesCount, resource);
+
+        returnedParams.put("resourcesCount", takenResourcesCount.toString());
+
+        cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.MONOPOLY);
+        game.setDevelopmentCardUsed(true);
     }
 
     private HexType validateResourceType(String resourceString) throws PlayException {
