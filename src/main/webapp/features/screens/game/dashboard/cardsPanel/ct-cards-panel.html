@@ -15,7 +15,7 @@
             <span class="badge">{{cards().roadBuilding}}</span>
         </button>
 
-        <button ng-disabled="cards().monopoly===0">
+        <button ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_MONOPOLY')">
             <span class="glyphicon glyphicon-globe"></span><br>
             Monopoly<br><br>
             <span class="badge">{{cards().monopoly}}</span>
