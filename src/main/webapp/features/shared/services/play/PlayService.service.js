@@ -113,6 +113,34 @@ angular.module('catan')
                 return deferred.promise;
             };
 
+            PlayService.useCardMonopoly = function (game) {
+                var deferred = $q.defer();
+
+                var windowAndSelectionId = "CARD_MONOPOLY";
+
+                ChooseResourcesWindowService.show(windowAndSelectionId);
+
+                SelectService.requestSelection(windowAndSelectionId).then(
+                        function(response) {
+                            Remote.play.useCardMonopoly({
+                                gameId: game.getId(),
+                                resource: response.resource
+                            }).then(function() {
+                                deferred.resolve();
+                            }, function(response) {
+                                deferred.reject(response);
+                            });
+
+                            ChooseResourcesWindowService.hide();
+                        },
+                        function(response) {
+                            deferred.reject(response);
+                            ChooseResourcesWindowService.hide();
+                        });
+
+                return deferred.promise;
+            };
+
 
             return PlayService;
         }]);

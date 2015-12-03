@@ -25,6 +25,17 @@ angular.module('catan')
                             }
                         });
                     };
+
+                    scope.useCardMonopoly = function() {
+                        ModalWindowService.hide("CARDS_PANEL");
+                        PlayService.useCardMonopoly(scope.game).then(function() {
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert('Error: ' + ((reason.data.errorCode) ? reason.data.errorCode : 'unknown'));
+                            }
+                        });
+                    };
                 }
             };
         }]);
