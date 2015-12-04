@@ -125,8 +125,8 @@ angular.module('catan')
                             Remote.play.useCardMonopoly({
                                 gameId: game.getId(),
                                 resource: response.resource
-                            }).then(function() {
-                                deferred.resolve();
+                            }).then(function(response) {
+                                deferred.resolve(response);
                             }, function(response) {
                                 deferred.reject(response);
                             });

@@ -29,7 +29,7 @@ angular.module('catan')
                     scope.useCardMonopoly = function() {
                         ModalWindowService.hide("CARDS_PANEL");
                         PlayService.useCardMonopoly(scope.game).then(function(response) {
-                            var count = response.resourcesCount;
+                            var count = response.data.resourcesCount;
                             if (count === 0) {
                                 alert("You received " + count + " resources because players don't have this type of resource");
                             } else {
