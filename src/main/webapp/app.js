@@ -101,7 +101,8 @@ angular.module('catan', [
             .setRequest('play', 'buildRoad', { url: '/api/play/build/road'})
             .setRequest('play', 'buyCard', { url: '/api/play/buy/card'})
             .setRequest('play', 'throwDice', { url: '/api/play/throw-dice'})
-            .setRequest('play', 'useCardYearOfPlenty', { url: '/api/play/use-card/year-of-plenty'});
+            .setRequest('play', 'useCardYearOfPlenty', { url: '/api/play/use-card/year-of-plenty'})
+            .setRequest('play', 'useCardRoadBuilding', { url: '/api/play/use-card/road-building'});
     }])
 
     .run(['$rootScope', 'User', function($rootScope, User) {

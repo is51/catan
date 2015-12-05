@@ -113,6 +113,9 @@ angular.module('catan')
                 return deferred.promise;
             };
 
+            PlayService.useCardRoadBuilding = function (game) {
+                return Remote.play.useCardRoadBuilding({gameId: game.getId()});
+            };
 
             return PlayService;
         }]);

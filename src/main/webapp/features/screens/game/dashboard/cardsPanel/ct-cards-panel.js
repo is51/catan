@@ -25,6 +25,16 @@ angular.module('catan')
                             }
                         });
                     };
+
+                    scope.useCardRoadBuilding = function() {
+                        ModalWindowService.hide("CARDS_PANEL");
+                        PlayService.useCardRoadBuilding(scope.game).then(function(response) {
+                            alert("Build " + response.data.roadsCount + " roads");
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            alert('Error: ' + ((reason.data.errorCode) ? reason.data.errorCode : 'unknown'));
+                        });
+                    };
                 }
             };
         }]);
