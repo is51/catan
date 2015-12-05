@@ -1,0 +1,16 @@
+<ct-modal-window modal-window-id="CHOOSE_RESOURCES">
+
+    <div class="ct-modal-window-bg" ng-click="cancel()"></div>
+    <div class="ct-modal-window-content content">
+
+        <div class="resource {{::resourceType|lowercase}}" ng-repeat="(resourceType, count) in resources">
+            <button ng-disabled="count===0" ng-click="removeResource(resourceType)">{{count}}</button>
+            <button ng-click="addResource(resourceType)"><span class="glyphicon glyphicon-plus"></span></button>
+        </div>
+
+        <a ng-click="cancel()" class="btn btn-default cancel">Cancel</a>
+        <a ng-click="ok()" ng-disabled="okDisabled()" class="btn btn-primary ok">OK</a>
+
+    </div>
+
+</ct-modal-window>

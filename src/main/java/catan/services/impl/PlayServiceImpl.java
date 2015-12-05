@@ -45,6 +45,8 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR = "CARD_ALREADY_USED_IN_CURRENT_TURN";
+    public static final String CARD_BOUGHT_IN_CURRENT_TURN_ERROR = "CARD_BOUGHT_IN_CURRENT_TURN";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -99,13 +101,16 @@ public class PlayServiceImpl implements PlayService {
                 buildCity(user, game, usersResources, params.get("nodeId"));
                 break;
             case END_TURN:
-                endTurn(game);
+                endTurn(gameUser, game);
                 break;
             case THROW_DICE:
                 throwDice(game);
                 break;
             case BUY_CARD:
                 buyCard(gameUser, game, usersResources, returnedParams);
+                break;
+            case USE_CARD_YEAR_OF_PLENTY:
+                useCardYearOfPlenty(gameUser, game, params.get("firstResource"), params.get("secondResource"));
                 break;
         }
     }
@@ -148,7 +153,7 @@ public class PlayServiceImpl implements PlayService {
         mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.STONE, 3);
     }
 
-    private void endTurn(GameBean game) throws GameException {
+    private void endTurn(GameUserBean gameUser, GameBean game) throws GameException {
         switch (game.getStage()) {
 
             case PREPARATION:
@@ -163,6 +168,8 @@ public class PlayServiceImpl implements PlayService {
 
             case MAIN:
                 mainStageUtil.resetDices(game);
+                gameUser.setDevelopmentCardsReadyForUsing(gameUser.getDevelopmentCards());
+                game.setDevelopmentCardUsed(false);
                 mainStageUtil.updateNextMove(game);
                 break;
         }
@@ -201,6 +208,49 @@ public class PlayServiceImpl implements PlayService {
         mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 1);
         mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.SHEEP, 1);
         mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.STONE, 1);
+    }
+
+    private void useCardYearOfPlenty(GameUserBean gameUser, GameBean game, String firstResourceString, String secondResourceString) throws PlayException, GameException {
+        validateUserDidNotUsedCardsInCurrentTurn(game);
+        validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
+
+        HexType firstResource = validateResourceType(firstResourceString);
+        HexType secondResource = validateResourceType(secondResourceString);
+
+        Resources userResources = gameUser.getResources();
+        int currentFirstResourceQuantity = userResources.quantityOf(firstResource);
+        userResources.updateResourceQuantity(firstResource, currentFirstResourceQuantity + 1);
+        int currentSecondResourceQuantity = userResources.quantityOf(secondResource);
+        userResources.updateResourceQuantity(secondResource, currentSecondResourceQuantity + 1);
+
+        log.debug("Player got resources: {}, {}", firstResource, secondResource);
+
+        gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+        gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+        game.setDevelopmentCardUsed(true);
+    }
+
+    private void validateUserDidNotBoughtCardInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) throws PlayException {
+        if (gameUser.getDevelopmentCardsReadyForUsing().quantityOf(developmentCard) == 0) {
+            log.debug("Cannot use card. It was bought in current turn: {}", developmentCard);
+            throw new PlayException(CARD_BOUGHT_IN_CURRENT_TURN_ERROR);
+        }
+    }
+
+    private void validateUserDidNotUsedCardsInCurrentTurn(GameBean game) throws PlayException {
+        if (game.isDevelopmentCardUsed()) {
+            log.debug("Cannot use card. It was already used in current turn");
+            throw new PlayException(CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR);
+        }
+    }
+
+    private HexType validateResourceType(String resourceString) throws PlayException {
+        try {
+            return HexType.valueOf(resourceString);
+        } catch (Exception e) {
+            log.debug("Illegal resource type: {}", resourceString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
     }
 
     private boolean isRobbersActivity(Integer diceFirstValue, Integer diceSecondValue) {

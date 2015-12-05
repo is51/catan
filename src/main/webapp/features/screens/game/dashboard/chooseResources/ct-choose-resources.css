@@ -1,0 +1,78 @@
+ct-choose-resources {
+
+}
+
+ct-choose-resources .content {
+    top: 17%;
+    left: 15%;
+    width: 70%;
+    height: 62%;
+    background: #fff;
+    text-align: center;
+}
+
+ct-choose-resources .resource {
+    display: block;
+    float: left;
+    background: #f5f5f5;
+    color: #68a;
+    border: none;
+    font-size: 15px;
+    width: 66px;
+    height: 162px;
+    margin: 20px 0 0 15px;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+ct-choose-resources button {
+    display: block;
+    border-radius: 40px;
+    border: 3px solid #f5f5f5;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    margin: 8px;
+    padding: 0;
+    color: #fff;
+}
+
+ct-choose-resources button:hover {
+    border-color: #ccc;
+}
+
+ct-choose-resources button[disabled] {
+    visibility: hidden;
+}
+
+ct-choose-resources .btn.cancel {
+    position: absolute;
+    bottom: 15px;
+    left: 17px;
+}
+
+ct-choose-resources .btn.ok {
+    position: absolute;
+    bottom: 15px;
+    right: 17px;
+}
+
+ct-choose-resources .brick button {
+    background-color: #e16a17;
+}
+
+ct-choose-resources .wood button {
+    background-color: #40b22f;
+}
+
+ct-choose-resources .sheep button {
+    background-color: #4bec38;
+}
+
+ct-choose-resources .wheat button {
+    background-color: #ecd320;
+}
+
+ct-choose-resources .stone button {
+    background-color: #8e6f36;
+}

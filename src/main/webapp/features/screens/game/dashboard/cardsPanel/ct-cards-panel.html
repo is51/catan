@@ -21,7 +21,7 @@
             <span class="badge">{{cards().monopoly}}</span>
         </button>
 
-        <button ng-disabled="cards().yearOfPlenty===0">
+        <button ng-click="useCardYearOfPlenty()" ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_YEAR_OF_PLENTY')">
             <span class="glyphicon glyphicon-grain"></span><br>
             Year Of Plenty<br>
             <span class="badge">{{cards().yearOfPlenty}}</span>

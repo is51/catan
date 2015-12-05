@@ -73,6 +73,7 @@ public class PreparationStageUtil {
         if (isEndOfPreparationStage(game, initialBuildingsSet.size())) {
             game.setStage(GameStage.MAIN);
             game.setDiceThrown(false);
+            game.setDevelopmentCardUsed(false);
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
         }
     }
