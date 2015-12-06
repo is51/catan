@@ -28,7 +28,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -101,6 +100,9 @@ public class GameBean {
 
     @Column(name = "DEV_CARD_USED", unique = false, nullable = true)
     private Boolean developmentCardUsed;
+
+    @Column(name = "ROADS_TO_BUILD_MANDATORY", unique = false, nullable = true)
+    private Integer roadsToBuildMandatory;
 
     @Embedded
     private DevelopmentCards availableDevelopmentCards;
@@ -297,6 +299,14 @@ public class GameBean {
 
     public void setDevelopmentCardUsed(Boolean developmentCardUsed) {
         this.developmentCardUsed = developmentCardUsed;
+    }
+
+    public Integer getRoadsToBuildMandatory() {
+        return roadsToBuildMandatory;
+    }
+
+    public void setRoadsToBuildMandatory(Integer roadsToBuildMandatory) {
+        this.roadsToBuildMandatory = roadsToBuildMandatory;
     }
 
     public DevelopmentCards getAvailableDevelopmentCards() {

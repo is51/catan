@@ -112,7 +112,7 @@ public class PlayServiceImpl implements PlayService {
                 buyCard(gameUser, game, usersResources, returnedParams);
                 break;
             case USE_CARD_YEAR_OF_PLENTY:
-                useCardYearOfPlenty(gameUser, game, params.get("firstResource"), params.get("secondResource"));
+                useCardYearOfPlenty(gameUser, game, usersResources, params.get("firstResource"), params.get("secondResource"));
                 break;
             case USE_CARD_ROAD_BUILDING:
                 useCardRoadBuilding(gameUser, game, returnedParams);
@@ -127,9 +127,15 @@ public class PlayServiceImpl implements PlayService {
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
-        GameStage gameStage = game.getStage();
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.BRICK, 1);
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WOOD, 1);
+        Integer mandatoryRoads = game.getRoadsToBuildMandatory();
+        if (mandatoryRoads > 0) {
+            game.setRoadsToBuildMandatory(mandatoryRoads - 1);
+        }
+
+        if (GameStage.MAIN.equals(game.getStage()) && mandatoryRoads == 0) {
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
+        }
     }
 
     private void buildSettlement(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
@@ -139,11 +145,12 @@ public class PlayServiceImpl implements PlayService {
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
-        GameStage gameStage = game.getStage();
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.BRICK, 1);
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WOOD, 1);
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 1);
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.SHEEP, 1);
+        if (GameStage.MAIN.equals(game.getStage())) {
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
+        }
     }
 
     private void buildCity(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
@@ -153,9 +160,10 @@ public class PlayServiceImpl implements PlayService {
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
-        GameStage gameStage = game.getStage();
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 2);
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.STONE, 3);
+        if (GameStage.MAIN.equals(game.getStage())) {
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 2);
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.STONE, 3);
+        }
     }
 
     private void endTurn(GameUserBean gameUser, GameBean game) throws GameException {
@@ -209,20 +217,20 @@ public class PlayServiceImpl implements PlayService {
 
         returnedParams.put("card", chosenDevelopmentCard.name());
 
-        GameStage gameStage = game.getStage();
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.WHEAT, 1);
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.SHEEP, 1);
-        mainStageUtil.takeResourceFromPlayer(gameStage, usersResources, HexType.STONE, 1);
+        if (GameStage.MAIN.equals(game.getStage())) {
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
+            mainStageUtil.takeResourceFromPlayer(usersResources, HexType.STONE, 1);
+        }
     }
 
-    private void useCardYearOfPlenty(GameUserBean gameUser, GameBean game, String firstResourceString, String secondResourceString) throws PlayException, GameException {
+    private void useCardYearOfPlenty(GameUserBean gameUser, GameBean game, Resources userResources, String firstResourceString, String secondResourceString) throws PlayException, GameException {
         validateUserDidNotUsedCardsInCurrentTurn(game);
         validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
 
         HexType firstResource = toValidResourceType(firstResourceString);
         HexType secondResource = toValidResourceType(secondResourceString);
 
-        Resources userResources = gameUser.getResources();
         int currentFirstResourceQuantity = userResources.quantityOf(firstResource);
         userResources.updateResourceQuantity(firstResource, currentFirstResourceQuantity + 1);
         int currentSecondResourceQuantity = userResources.quantityOf(secondResource);
@@ -258,6 +266,7 @@ public class PlayServiceImpl implements PlayService {
                 break;
         }
 
+        game.setRoadsToBuildMandatory(Integer.parseInt(roadsCount));
         log.debug("Player can build {} road(s) using development card", roadsCount);
 
         returnedParams.put("roadsCount", roadsCount);

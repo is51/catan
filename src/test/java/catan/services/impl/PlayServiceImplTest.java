@@ -2117,6 +2117,7 @@ public class PlayServiceImplTest {
         game.setInitialBuildingsSet("[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setAvailableDevelopmentCards(new DevelopmentCards(14, 5, 2, 2, 2));
         game.setDevelopmentCardUsed(false);
+        game.setRoadsToBuildMandatory(0);
         playUtil.updateAvailableActionsForAllUsers(game);
     }
 }
