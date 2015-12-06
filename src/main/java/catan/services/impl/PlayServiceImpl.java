@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service("playService")
 @Transactional
@@ -47,6 +48,7 @@ public class PlayServiceImpl implements PlayService {
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR = "CARD_ALREADY_USED_IN_CURRENT_TURN";
     public static final String CARD_BOUGHT_IN_CURRENT_TURN_ERROR = "CARD_BOUGHT_IN_CURRENT_TURN";
+    public static final String ROAD_CANNOT_BE_BUILT_ERROR = "ROAD_CANNOT_BE_BUILT";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -113,6 +115,7 @@ public class PlayServiceImpl implements PlayService {
                 useCardYearOfPlenty(gameUser, game, params.get("firstResource"), params.get("secondResource"));
                 break;
             case USE_CARD_ROAD_BUILDING:
+                useCardRoadBuilding(gameUser, game, returnedParams);
                 break;
         }
     }
@@ -216,8 +219,8 @@ public class PlayServiceImpl implements PlayService {
         validateUserDidNotUsedCardsInCurrentTurn(game);
         validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
 
-        HexType firstResource = validateResourceType(firstResourceString);
-        HexType secondResource = validateResourceType(secondResourceString);
+        HexType firstResource = toValidResourceType(firstResourceString);
+        HexType secondResource = toValidResourceType(secondResourceString);
 
         Resources userResources = gameUser.getResources();
         int currentFirstResourceQuantity = userResources.quantityOf(firstResource);
@@ -229,6 +232,38 @@ public class PlayServiceImpl implements PlayService {
 
         gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
         gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+        game.setDevelopmentCardUsed(true);
+    }
+
+    private void useCardRoadBuilding(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
+        validateUserDidNotUsedCardsInCurrentTurn(game);
+        validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.ROAD_BUILDING);
+
+        List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoad(gameUser));
+        String roadsCount;
+        switch (availableEdges.size()) {
+            case 0:
+                log.debug("There are no available edges build road for current player");
+                throw new PlayException(ROAD_CANNOT_BE_BUILT_ERROR);
+            case 1:
+                Set<EdgeBean> edgesNextToAvailable = availableEdges.get(0).fetchNeighborEdgesAccessibleForBuildingRoad(gameUser);
+                if (edgesNextToAvailable.size() > 0) {
+                    roadsCount = "2";
+                } else {
+                    roadsCount = "1";
+                }
+                break;
+            default:
+                roadsCount = "2";
+                break;
+        }
+
+        log.debug("Player can build {} road(s) using development card", roadsCount);
+
+        returnedParams.put("roadsCount", roadsCount);
+
+        gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.ROAD_BUILDING);
+        gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
     }
 
@@ -246,7 +281,7 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private HexType validateResourceType(String resourceString) throws PlayException {
+    private HexType toValidResourceType(String resourceString) throws PlayException {
         try {
             return HexType.valueOf(resourceString);
         } catch (Exception e) {
