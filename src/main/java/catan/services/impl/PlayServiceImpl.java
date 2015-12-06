@@ -112,6 +112,8 @@ public class PlayServiceImpl implements PlayService {
             case USE_CARD_YEAR_OF_PLENTY:
                 useCardYearOfPlenty(gameUser, game, params.get("firstResource"), params.get("secondResource"));
                 break;
+            case USE_CARD_ROAD_BUILDING:
+                break;
         }
     }
 
