@@ -87,6 +87,7 @@ public class MainStageUtil {
         allowThrowDice(gameUser, game, actionsList);
         allowBuyCard(gameUser, game, actionsList);
         allowUseCardYearOfPlenty(gameUser, game, actionsList);
+        allowUseCardRoadBuilding(gameUser, game, actionsList);
 
         AvailableActions availableActions = new AvailableActions();
         availableActions.setList(actionsList);
@@ -154,6 +155,15 @@ public class MainStageUtil {
                 && game.isDiceThrown()
                 && userHasCard(gameUser, DevelopmentCard.YEAR_OF_PLENTY)) {
             actionsList.add(new Action(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY));
+        }
+    }
+
+    private void allowUseCardRoadBuilding(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
+                && userHasCard(gameUser, DevelopmentCard.ROAD_BUILDING)) {
+            actionsList.add(new Action(GameUserActionCode.USE_CARD_ROAD_BUILDING));
         }
     }
 
