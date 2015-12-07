@@ -147,6 +147,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario USE_CARD_MONOPOLY(int moveOrder, String resource) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.useCardMonopoly(userToken, gameId, resource);
+        return this;
+    }
+
     public Scenario USE_CARD_YEAR_OF_PLENTY(int moveOrder, String firstResource, String secondResource) {
         saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
