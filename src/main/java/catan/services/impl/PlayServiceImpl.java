@@ -213,8 +213,8 @@ public class PlayServiceImpl implements PlayService {
         cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
         cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
 
-        HexType firstResource = validateResourceType(firstResourceString);
-        HexType secondResource = validateResourceType(secondResourceString);
+        HexType firstResource = toValidResourceType(firstResourceString);
+        HexType secondResource = toValidResourceType(secondResourceString);
 
         cardUtil.giveTwoResourcesToPlayer(gameUser, firstResource, secondResource);
         log.debug("Player got resources: {}, {}", firstResource, secondResource);
@@ -227,7 +227,7 @@ public class PlayServiceImpl implements PlayService {
         cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
         cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.MONOPOLY);
 
-        HexType resource = validateResourceType(resourceString);
+        HexType resource = toValidResourceType(resourceString);
 
         Integer takenResourcesCount = cardUtil.takeResourceFromRivalsAndGiveItAwayToPlayer(gameUser, game, resource);
         log.debug("Player got {} of {} resources", takenResourcesCount, resource);
@@ -238,7 +238,7 @@ public class PlayServiceImpl implements PlayService {
         game.setDevelopmentCardUsed(true);
     }
 
-    private HexType validateResourceType(String resourceString) throws PlayException {
+    private HexType toValidResourceType(String resourceString) throws PlayException {
         try {
             return HexType.valueOf(resourceString);
         } catch (Exception e) {
