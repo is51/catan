@@ -52,6 +52,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
@@ -1741,8 +1742,294 @@ public class PlayServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldPassWhenUserUseCardRoadBuildingIfActionIsAllowed() throws PlayException, GameException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 1, 0, 0));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 1, 0, 0));
+        allowUserToUseCardRoadBuilding(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        // WHEN
+        String roadsCount = playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1").get("roadsCount");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(gameUser1);
+        assertEquals(0, gameUser1.getDevelopmentCards().getRoadBuilding());
+        assertEquals("2", roadsCount);
+        assertTrue(game.getRoadsToBuildMandatory() == 2);
+        assertTrue(gameUser1.getAvailableActions().contains("\"code\":\"BUILD_ROAD\""));
+        assertTrue(gameUser1.getAvailableActions().contains("\"isMandatory\":true"));
+    }
+
+    @Test
+    public void shouldFailWhenUserUseCardRoadBuildingButItWasBoughtInThisTurn() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 0, 0, 0));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 0, 0, 0));
+        gameUser1.setResources(new Resources(0, 0, 25, 25, 25));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        while (!"ROAD_BUILDING".equals(playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1").get("card"))) {}
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.CARD_BOUGHT_IN_CURRENT_TURN_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.CARD_BOUGHT_IN_CURRENT_TURN_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldPassWhenUserUseCardRoadBuildingAlthoughAnotherOneRoadBuildingCardWasBoughtInThisTurn() throws PlayException, GameException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 1, 0, 0));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 1, 0, 0));
+        gameUser1.setResources(new Resources(0, 0, 25, 25, 25));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        while (!"ROAD_BUILDING".equals(playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1").get("card"))) {}
+
+        // WHEN
+        playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
+
+        // THEN
+        assertNotNull(game);
+        assertNotNull(gameUser1);
+        assertEquals(1, gameUser1.getDevelopmentCards().getRoadBuilding());
+    }
+
+    @Test
+    public void shouldFailWhenUserUseCardRoadBuildingButOneOfCardsAlreadyUsedInThisTurn() throws PlayException, GameException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 1, 0, 1));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 1, 0, 1));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("firstResource", "WOOD");
+        params.put("secondResource", "BRICK");
+
+        playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser1.getUser(), "1", params);
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserUseCardRoadBuildingAtHisTurnButActionIsNotAllowed() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserUseCardRoadBuildingNotAtHisTurn() throws PlayException, GameException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser2.getUser(), "1");
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldPassWhenBuildTwoMandatoryRoadsWhenUsingRoadBuildingCardAndThereAreMoreThenOneAvailableEdges() throws PlayException, GameException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 1, 0, 0));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 1, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+
+        // WHEN
+        playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
+        params.put("edgeId", "1");
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+        params.put("edgeId", "6");
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+
+        try {
+            params.put("edgeId", "5");
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        } finally {
+            assertNotNull(game);
+            assertNotNull(gameUser1);
+            assertEquals(0, gameUser1.getDevelopmentCards().getRoadBuilding());
+            assertTrue(game.getRoadsToBuildMandatory() == 0);
+
+            assertNotNull(hex_0_0.getEdges().getTopLeft().getBuilding());
+            assertEquals(hex_0_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+            assertEquals(hex_0_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+
+            assertNotNull(hex_0_0.getEdges().getLeft().getBuilding());
+            assertEquals(hex_0_0.getEdges().getLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+            assertEquals(hex_0_0.getEdges().getLeft().getBuilding().getBuildingOwner(), gameUser1);
+
+            assertNull(hex_0_0.getEdges().getBottomLeft().getBuilding());
+        }
+    }
+
+    @Test
+    public void shouldPassWhenBuildOneMandatoryRoadWhenUsingRoadBuildingCardAndThereIsOnlyOneAvailableEdge() throws PlayException, GameException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        hex_0_0.getEdges().getRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+        hex_0_0.getEdges().getLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+        hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 1, 0, 0));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 1, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+
+        // WHEN
+        String roadsCount = playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1").get("roadsCount");
+        params.put("edgeId", "1");
+        playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+
+        try {
+            params.put("edgeId", "6");
+            playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        } finally {
+            assertNotNull(game);
+            assertNotNull(gameUser1);
+            assertEquals(0, gameUser1.getDevelopmentCards().getRoadBuilding());
+            assertTrue(game.getRoadsToBuildMandatory() == 0);
+            assertEquals("1", roadsCount);
+
+            assertNotNull(hex_0_0.getEdges().getTopLeft().getBuilding());
+            assertEquals(hex_0_0.getEdges().getTopLeft().getBuilding().getBuilt(), EdgeBuiltType.ROAD);
+            assertEquals(hex_0_0.getEdges().getTopLeft().getBuilding().getBuildingOwner(), gameUser1);
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUsingRoadBuildingCardAndThereAreNoAvailableEdges() throws PlayException, GameException {
+        //GIVEN
+        hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
+        hex_0_0.getEdges().getRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+        hex_0_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+        hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setDevelopmentCards(new DevelopmentCards(0, 0, 1, 0, 0));
+        gameUser1.setDevelopmentCardsReadyForUsing(new DevelopmentCards(0, 0, 1, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        try {
+            //WHEN
+            playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
+            fail("PlayException with error code '" + PlayServiceImpl.ROAD_CANNOT_BE_BUILT_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ROAD_CANNOT_BE_BUILT_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        } finally {
+            assertNotNull(game);
+            assertNotNull(gameUser1);
+            assertEquals(1, gameUser1.getDevelopmentCards().getRoadBuilding());
+            assertTrue(game.getRoadsToBuildMandatory() == 0);
+        }
+    }
+
     private void allowUserToUseCardYearOfPlenty(GameUserBean user) {
         allowUserAction(user, new Action(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY));
+    }
+
+    private void allowUserToUseCardRoadBuilding(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.USE_CARD_ROAD_BUILDING));
     }
 
     private void allowUserToBuyCard(GameUserBean user) {
