@@ -8,5 +8,6 @@ public enum GameUserActionCode {
     BUILD_ROAD,
     END_TURN,
     USE_CARD_YEAR_OF_PLENTY,
+    USE_CARD_MONOPOLY,
     USE_CARD_ROAD_BUILDING
 }

@@ -6,6 +6,7 @@ import catan.domain.exception.PlayException;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.BoughtCardDetails;
+import catan.domain.transfer.output.game.MonopolyCardUsageDetails;
 import catan.domain.transfer.output.game.RoadBuildingCardUsageDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
@@ -116,6 +117,23 @@ public class PlayController {
         params.put("secondResource", secondResource);
 
         playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, user, gameId, params);
+    }
+
+    @RequestMapping(value = "use-card/monopoly",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public MonopolyCardUsageDetails useCardMonopoly(@RequestParam(value = "token", required = false) String token,
+                                    @RequestParam("gameId") String gameId,
+                                    @RequestParam("resource") String resource) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("resource", resource);
+
+        Map<String, String> returnedParams = playService.processAction(GameUserActionCode.USE_CARD_MONOPOLY, user, gameId, params);
+        Integer resourcesCount = Integer.parseInt(returnedParams.get("resourcesCount"));
+
+        return new MonopolyCardUsageDetails(resourcesCount);
     }
 
     @RequestMapping(value = "use-card/road-building",
