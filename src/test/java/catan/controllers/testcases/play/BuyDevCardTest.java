@@ -93,6 +93,20 @@ public class BuyDevCardTest extends PlayTestUtil {
     }
 
     @Test
+    public void should_fail_when_trying_to_buy_card_when_game_is_finished(){
+        startNewGame(3, 1);
+        playPreparationStage();
+        giveResourcesToPlayerForDevCardBuying(1, 1)
+                .nextRandomDiceValues(asList(6, 6))
+                .nextRandomDevelopmentCards(asList(VICTORY_POINT))
+
+                //when
+                .THROW_DICE(1)
+                .BUY_CARD(1).successfully()             //reaching 3 points and finishing game
+                .BUY_CARD(1).failsWithError("ERROR");   //game already finished
+    }
+
+    @Test
     public void should_successfully_buy_card_if_user_has_enough_resources() {
         startNewGame();
         playPreparationStage();
@@ -256,6 +270,10 @@ public class BuyDevCardTest extends PlayTestUtil {
     }
 
     private Scenario startNewGame() {
+        return startNewGame(12, 1);
+    }
+
+    private Scenario startNewGame(int targetVictoryPoints, int initialBuildingSet) {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
@@ -285,7 +303,7 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .setHex(HexType.WHEAT, 3).atCoordinates(-1, 2)
                 .setHex(HexType.BRICK, 5).atCoordinates(0, 2)
 
-                .createNewPublicGameByUser(USER_NAME_1)
+                .createNewPublicGameByUser(USER_NAME_1, targetVictoryPoints, initialBuildingSet)
                 .joinPublicGame(USER_NAME_2)
                 .joinPublicGame(USER_NAME_3)
 
