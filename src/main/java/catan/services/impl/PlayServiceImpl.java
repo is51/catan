@@ -46,8 +46,6 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
-    public static final String CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR = "CARD_ALREADY_USED_IN_CURRENT_TURN";
-    public static final String CARD_BOUGHT_IN_CURRENT_TURN_ERROR = "CARD_BOUGHT_IN_CURRENT_TURN";
     public static final String ROAD_CANNOT_BE_BUILT_ERROR = "ROAD_CANNOT_BE_BUILT";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
@@ -113,6 +111,9 @@ public class PlayServiceImpl implements PlayService {
                 break;
             case USE_CARD_YEAR_OF_PLENTY:
                 useCardYearOfPlenty(gameUser, game, usersResources, params.get("firstResource"), params.get("secondResource"));
+                break;
+            case USE_CARD_MONOPOLY:
+                useCardMonopoly(gameUser, game, params.get("resource"), returnedParams);
                 break;
             case USE_CARD_ROAD_BUILDING:
                 useCardRoadBuilding(gameUser, game, returnedParams);
@@ -211,9 +212,7 @@ public class PlayServiceImpl implements PlayService {
         DevelopmentCard chosenDevelopmentCard = cardUtil.chooseDevelopmentCard(availableDevelopmentCards);
         log.debug("Card " + chosenDevelopmentCard + " was chosen from the list: " + availableDevelopmentCards);
 
-        DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
-        usersDevelopmentCards.increaseQuantityByOne(chosenDevelopmentCard);
-        availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
+        cardUtil.giveDevelopmentCardToUser(gameUser, availableDevelopmentCards, chosenDevelopmentCard);
 
         returnedParams.put("card", chosenDevelopmentCard.name());
 
@@ -225,27 +224,37 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void useCardYearOfPlenty(GameUserBean gameUser, GameBean game, Resources userResources, String firstResourceString, String secondResourceString) throws PlayException, GameException {
-        validateUserDidNotUsedCardsInCurrentTurn(game);
-        validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
+        cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
+        cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
 
         HexType firstResource = toValidResourceType(firstResourceString);
         HexType secondResource = toValidResourceType(secondResourceString);
 
-        int currentFirstResourceQuantity = userResources.quantityOf(firstResource);
-        userResources.updateResourceQuantity(firstResource, currentFirstResourceQuantity + 1);
-        int currentSecondResourceQuantity = userResources.quantityOf(secondResource);
-        userResources.updateResourceQuantity(secondResource, currentSecondResourceQuantity + 1);
-
+        cardUtil.giveTwoResourcesToPlayer(gameUser, userResources, firstResource, secondResource);
         log.debug("Player got resources: {}, {}", firstResource, secondResource);
 
-        gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
-        gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(DevelopmentCard.YEAR_OF_PLENTY);
+        cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
+        game.setDevelopmentCardUsed(true);
+    }
+
+    private void useCardMonopoly(final GameUserBean gameUser, GameBean game, String resourceString, Map<String, String> returnedParams) throws PlayException, GameException {
+        cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
+        cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.MONOPOLY);
+
+        HexType resource = toValidResourceType(resourceString);
+
+        Integer takenResourcesCount = cardUtil.takeResourceFromRivalsAndGiveItAwayToPlayer(gameUser, game, resource);
+        log.debug("Player got {} of {} resources", takenResourcesCount, resource);
+
+        returnedParams.put("resourcesCount", takenResourcesCount.toString());
+
+        cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.MONOPOLY);
         game.setDevelopmentCardUsed(true);
     }
 
     private void useCardRoadBuilding(GameUserBean gameUser, GameBean game, Map<String, String> returnedParams) throws PlayException, GameException {
-        validateUserDidNotUsedCardsInCurrentTurn(game);
-        validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.ROAD_BUILDING);
+        cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
+        cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.ROAD_BUILDING);
 
         List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoad(gameUser));
         String roadsCount;
@@ -271,23 +280,8 @@ public class PlayServiceImpl implements PlayService {
 
         returnedParams.put("roadsCount", roadsCount);
 
-        gameUser.getDevelopmentCards().decreaseQuantityByOne(DevelopmentCard.ROAD_BUILDING);
-        gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(DevelopmentCard.ROAD_BUILDING);
+        cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
-    }
-
-    private void validateUserDidNotBoughtCardInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) throws PlayException {
-        if (gameUser.getDevelopmentCardsReadyForUsing().quantityOf(developmentCard) == 0) {
-            log.debug("Cannot use card. It was bought in current turn: {}", developmentCard);
-            throw new PlayException(CARD_BOUGHT_IN_CURRENT_TURN_ERROR);
-        }
-    }
-
-    private void validateUserDidNotUsedCardsInCurrentTurn(GameBean game) throws PlayException {
-        if (game.isDevelopmentCardUsed()) {
-            log.debug("Cannot use card. It was already used in current turn");
-            throw new PlayException(CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR);
-        }
     }
 
     private HexType toValidResourceType(String resourceString) throws PlayException {
