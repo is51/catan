@@ -101,7 +101,7 @@ public class GameBean {
     @Column(name = "DEV_CARD_USED", unique = false, nullable = true)
     private Boolean developmentCardUsed;
 
-    @Column(name = "ROADS_TO_BUILD_MANDATORY", unique = false, nullable = true)
+    @Column(name = "MANDATORY_ROADS_TO_BUILD", unique = false, nullable = true)
     private Integer roadsToBuildMandatory;
 
     @Embedded

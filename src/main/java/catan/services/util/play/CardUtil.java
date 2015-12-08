@@ -73,20 +73,17 @@ public class CardUtil {
 
     public Integer defineRoadsQuantityToBuild(GameUserBean gameUser, GameBean game) throws PlayException {
         List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoad(gameUser));
-        switch (availableEdges.size()) {
-            case 0:
-                log.debug("There are no available edges build road for current player");
-                throw new PlayException(ROAD_CANNOT_BE_BUILT_ERROR);
-            case 1:
-                Set<EdgeBean> edgesNextToAvailable = availableEdges.get(0).fetchNeighborEdgesAccessibleForBuildingRoad(gameUser);
-                if (edgesNextToAvailable.size() > 0) {
-                    return 2;
-                } else {
-                    return 1;
-                }
-            default:
-                return 2;
+
+        if (availableEdges.isEmpty()) {
+            log.debug("There are no available edges build road for current player");
+            throw new PlayException(ROAD_CANNOT_BE_BUILT_ERROR);
         }
+
+        if (availableEdges.size() == 1 && availableEdges.get(0).fetchNeighborEdgesAccessibleForBuildingRoad(gameUser).size() == 0) {
+            return 1;
+        }
+
+        return 2;
     }
 
     public void validateUserDidNotBoughtCardInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) throws PlayException {
