@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service("playService")
 @Transactional
@@ -46,7 +45,6 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
-    public static final String ROAD_CANNOT_BE_BUILT_ERROR = "ROAD_CANNOT_BE_BUILT";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -230,7 +228,7 @@ public class PlayServiceImpl implements PlayService {
         HexType firstResource = toValidResourceType(firstResourceString);
         HexType secondResource = toValidResourceType(secondResourceString);
 
-        cardUtil.giveTwoResourcesToPlayer(gameUser, userResources, firstResource, secondResource);
+        cardUtil.giveTwoResourcesToPlayer(userResources, firstResource, secondResource);
         log.debug("Player got resources: {}, {}", firstResource, secondResource);
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
@@ -256,25 +254,7 @@ public class PlayServiceImpl implements PlayService {
         cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
         cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.ROAD_BUILDING);
 
-        List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoad(gameUser));
-        String roadsCount;
-        switch (availableEdges.size()) {
-            case 0:
-                log.debug("There are no available edges build road for current player");
-                throw new PlayException(ROAD_CANNOT_BE_BUILT_ERROR);
-            case 1:
-                Set<EdgeBean> edgesNextToAvailable = availableEdges.get(0).fetchNeighborEdgesAccessibleForBuildingRoad(gameUser);
-                if (edgesNextToAvailable.size() > 0) {
-                    roadsCount = "2";
-                } else {
-                    roadsCount = "1";
-                }
-                break;
-            default:
-                roadsCount = "2";
-                break;
-        }
-
+        String roadsCount = cardUtil.defineRoadsQuantityToBuild(gameUser, game);
         game.setRoadsToBuildMandatory(Integer.parseInt(roadsCount));
         log.debug("Player can build {} road(s) using development card", roadsCount);
 

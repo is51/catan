@@ -1961,10 +1961,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.CARD_BOUGHT_IN_CURRENT_TURN_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + CardUtil.CARD_BOUGHT_IN_CURRENT_TURN_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.CARD_BOUGHT_IN_CURRENT_TURN_ERROR, e.getErrorCode());
+            assertEquals(CardUtil.CARD_BOUGHT_IN_CURRENT_TURN_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2018,10 +2018,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + CardUtil.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR, e.getErrorCode());
+            assertEquals(CardUtil.CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2184,10 +2184,10 @@ public class PlayServiceImplTest {
         try {
             //WHEN
             playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
-            fail("PlayException with error code '" + PlayServiceImpl.ROAD_CANNOT_BE_BUILT_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + CardUtil.ROAD_CANNOT_BE_BUILT_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ROAD_CANNOT_BE_BUILT_ERROR, e.getErrorCode());
+            assertEquals(CardUtil.ROAD_CANNOT_BE_BUILT_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
