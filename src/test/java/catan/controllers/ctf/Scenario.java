@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 public class Scenario {
 
@@ -165,6 +166,13 @@ public class Scenario {
         lastApiResponse.then()
                 .statusCode(200)
                 .body("card", equalTo(card.name()));
+        return this;
+    }
+
+    public Scenario takenResourcesQuantityIs(int takenResourcesQuantity) {
+        lastApiResponse.then()
+                .statusCode(200)
+                .body("resourcesCount", is(takenResourcesQuantity));
         return this;
     }
 

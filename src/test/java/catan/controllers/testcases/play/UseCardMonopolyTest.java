@@ -46,14 +46,15 @@ public class UseCardMonopolyTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
-
-        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
     @Test
@@ -72,6 +73,16 @@ public class UseCardMonopolyTest extends PlayTestUtil {
                 .getGameDetails(3)
                     .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -2)
                     .gameUser(3).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_successfully_get_quantity_of_taken_resources() {
+        playPreparationStageAndBuyCardMonopolyAndPassCycle()
+                .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+
+                .USE_CARD_MONOPOLY(1, "STONE").successfully()
+
+                .takenResourcesQuantityIs(4);
     }
 
     @Test
