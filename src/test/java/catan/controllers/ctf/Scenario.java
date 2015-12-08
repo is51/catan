@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 public class Scenario {
 
@@ -147,6 +148,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario USE_CARD_MONOPOLY(int moveOrder, String resource) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.useCardMonopoly(userToken, gameId, resource);
+        return this;
+    }
+
     public Scenario USE_CARD_YEAR_OF_PLENTY(int moveOrder, String firstResource, String secondResource) {
         saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
@@ -158,6 +166,13 @@ public class Scenario {
         lastApiResponse.then()
                 .statusCode(200)
                 .body("card", equalTo(card.name()));
+        return this;
+    }
+
+    public Scenario takenResourcesQuantityIs(int takenResourcesQuantity) {
+        lastApiResponse.then()
+                .statusCode(200)
+                .body("resourcesCount", is(takenResourcesQuantity));
         return this;
     }
 

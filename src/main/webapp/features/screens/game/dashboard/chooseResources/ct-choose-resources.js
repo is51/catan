@@ -86,10 +86,12 @@ angular.module('catan')
             }
 
             function convertResourcesToSelection(type, resources) {
+                var i;
+
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         var selection = {};
-                        for (var i in resources) {
+                        for (i in resources) {
                             if (resources[i] > 0) {
                                 selection.firstResource = i;
                                 resources[i]--;
@@ -102,6 +104,12 @@ angular.module('catan')
                             }
                         }
                         return selection;
+                    case "CARD_MONOPOLY":
+                        for (i in resources) {
+                            if (resources[i] > 0) {
+                                return {resource: i};
+                            }
+                        }
                 }
             }
 
@@ -109,6 +117,8 @@ angular.module('catan')
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return 2;
+                    case "CARD_MONOPOLY":
+                        return 1;
                 }
             }
 
@@ -116,12 +126,16 @@ angular.module('catan')
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return 2;
+                    case "CARD_MONOPOLY":
+                        return 1;
                 }
             }
 
             function getMinResourcesCountLimit(type) {
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
+                        return 0;
+                    case "CARD_MONOPOLY":
                         return 0;
                 }
             }
@@ -130,6 +144,8 @@ angular.module('catan')
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return 2;
+                    case "CARD_MONOPOLY":
+                        return 1;
                 }
             }
 
@@ -137,6 +153,8 @@ angular.module('catan')
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return true; //TODO: or 'false' for 'year of plenty'?
+                    case "CARD_MONOPOLY":
+                        return true;
                 }
             }
 
