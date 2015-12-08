@@ -71,7 +71,7 @@ public class CardUtil {
         return takenResourcesCount;
     }
 
-    public String defineRoadsQuantityToBuild(GameUserBean gameUser, GameBean game) throws PlayException {
+    public Integer defineRoadsQuantityToBuild(GameUserBean gameUser, GameBean game) throws PlayException {
         List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoad(gameUser));
         switch (availableEdges.size()) {
             case 0:
@@ -80,12 +80,12 @@ public class CardUtil {
             case 1:
                 Set<EdgeBean> edgesNextToAvailable = availableEdges.get(0).fetchNeighborEdgesAccessibleForBuildingRoad(gameUser);
                 if (edgesNextToAvailable.size() > 0) {
-                    return "2";
+                    return 2;
                 } else {
-                    return "1";
+                    return 1;
                 }
             default:
-                return "2";
+                return 2;
         }
     }
 

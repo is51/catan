@@ -254,11 +254,11 @@ public class PlayServiceImpl implements PlayService {
         cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
         cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.ROAD_BUILDING);
 
-        String roadsCount = cardUtil.defineRoadsQuantityToBuild(gameUser, game);
-        game.setRoadsToBuildMandatory(Integer.parseInt(roadsCount));
+        Integer roadsCount = cardUtil.defineRoadsQuantityToBuild(gameUser, game);
+        game.setRoadsToBuildMandatory(roadsCount);
         log.debug("Player can build {} road(s) using development card", roadsCount);
 
-        returnedParams.put("roadsCount", roadsCount);
+        returnedParams.put("roadsCount", roadsCount.toString());
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
