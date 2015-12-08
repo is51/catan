@@ -12,6 +12,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
     protected static final String URL_END_TURN = "/api/play/end-turn";
     protected static final String URL_THROW_DICE = "/api/play/throw-dice";
     protected static final String URL_BUY_CARD = "/api/play/buy/card";
+    protected static final String URL_USE_CARD_MONOPOLY= "/api/play/use-card/monopoly";
     protected static final String URL_USE_CARD_YEAR_OF_PLENTY = "/api/play/use-card/year-of-plenty";
 
     public static Response buildSettlement(String token, int gameId, int nodeId) {
@@ -66,6 +67,15 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .parameters("token", token, "gameId", gameId)
                 .when()
                 .post(URL_BUY_CARD);
+    }
+
+    public static Response useCardMonopoly(String token, int gameId, String resource) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId, "resource", resource)
+                .when()
+                .post(URL_USE_CARD_MONOPOLY);
     }
 
     public static Response useCardYearOfPlenty(String token, int gameId, String firstResource, String secondResource) {
