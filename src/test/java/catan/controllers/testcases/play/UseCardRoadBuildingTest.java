@@ -46,14 +46,15 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
-
-        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
     @Test
@@ -95,12 +96,41 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     @Test
     public void should_fail_if_player_tries_to_use_card_and_does_not_have_place_to_build_any_road() {
         playPreparationStageAndBuyCardRoadBuilding()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_ROAD_BUILDING(1).failsWithError("CARD_BOUGHT_IN_CURRENT_TURN")
+                .END_TURN(1).nextRandomDiceValues(asList(4, 4)) // P1: +2wood
+                .THROW_DICE(2)
+
+                .BUILD_ROAD(2).atEdge(0, -2, "right")
+                .BUILD_ROAD(2).atEdge(0, -2, "bottomLeft")
+                .BUILD_ROAD(2).atEdge(0, -2, "left")
+
+                .END_TURN(2).nextRandomDiceValues(asList(4, 4)) // P1: +2wood
+                .THROW_DICE(3)
+                .END_TURN(3).nextRandomDiceValues(asList(3, 3)) // P1: +1brick
+                .THROW_DICE(1)
+                .END_TURN(1).nextRandomDiceValues(asList(3, 3)) // P1: +2wood
+                .THROW_DICE(2)
+                                                          /*
+                                                                          .BUILD_ROAD(2).atEdge(0, -2, "topLeft")
+
+                .BUILD_ROAD(2).atEdge(0, -2, "topRight")
+                .BUILD_ROAD(2).atEdge(2, -2, "bottomRight")
+                .BUILD_ROAD(2).atEdge(2, -2, "left")
+                .BUILD_ROAD(2).atEdge(2, -2, "bottomLeft")
+                                                            */
+                .END_TURN(2).nextRandomDiceValues(asList(3, 3)) // P1: +2wood
+                .THROW_DICE(3)
+                .END_TURN(3).nextRandomDiceValues(asList(3, 3)) // P1: +1brick
+                .THROW_DICE(1)
+
+
+                    .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+
+                .USE_CARD_ROAD_BUILDING(1)
+                    .failsWithError("ROAD_CANNOT_BE_BUILT")
+
                 .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD");
     }
 
     @Test
@@ -110,34 +140,31 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("CARD_BOUGHT_IN_CURRENT_TURN")
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     @Test
     public void should_fail_if_player_already_used_some_card_in_the_current_move() {
         playPreparationStageAndBuyCardRoadBuilding()
-                .nextRandomDevelopmentCards(asList(ROAD_BUILDING))
-                .BUY_CARD(1)
 
-                .END_TURN(1)
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .END_TURN(1).nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(2)
-                .END_TURN(2)
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .END_TURN(2).nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(3)
-                .END_TURN(3)
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .END_TURN(3).nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(1)
 
                 .USE_CARD_ROAD_BUILDING(1).successfully()
+                .BUILD_ROAD(1).atEdge(-1, -1, "topLeft")
+                .BUILD_ROAD(1).atEdge(-1, -1, "left")
 
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
+                .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("CARD_ALREADY_USED_IN_CURRENT_TURN")
+
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD");
     }
 
     @Test
@@ -147,7 +174,6 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("ERROR")
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
@@ -167,7 +193,6 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("ERROR")
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
@@ -182,7 +207,6 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("ERROR")
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
@@ -205,27 +229,27 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     private Scenario playPreparationStageAndBuyCardRoadBuilding() {
 
         return playPreparationStage()
-                .nextRandomDiceValues(asList(4, 6)) // P1: +1sheep
+                .nextRandomDiceValues(asList(3, 3)) // P1: +1stone
                 .THROW_DICE(1)
                 .END_TURN(1)
 
-                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
+                .nextRandomDiceValues(asList(4, 4)) // P1: +2sheep
                 .THROW_DICE(2)
                 .END_TURN(2)
 
-                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone (and +2wood)
+                .nextRandomDiceValues(asList(6, 6)) // P1: +1wheat
                 .THROW_DICE(3)
                 .END_TURN(3)
 
-                .nextRandomDiceValues(asList(4, 6)) // P1: +1sheep
+                .nextRandomDiceValues(asList(3, 3)) // P1: +1stone
                 .THROW_DICE(1)
                 .END_TURN(1)
 
-                .nextRandomDiceValues(asList(2, 3)) // P1: +1wheat
+                .nextRandomDiceValues(asList(4, 4)) // P1: +2sheep
                 .THROW_DICE(2)
                 .END_TURN(2)
 
-                .nextRandomDiceValues(asList(2, 4)) // P1: +1stone (and +2wood)
+                .nextRandomDiceValues(asList(6, 6)) // P1: +1wheat
                 .THROW_DICE(3)
                 .END_TURN(3)
 
@@ -266,25 +290,25 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 EMPTY
 
                 */
-                .setHex(STONE, 6).atCoordinates(0, -2)
-                .setHex(BRICK, 8).atCoordinates(1, -2)
+                .setHex(STONE, 6) .atCoordinates(0, -2)
+                .setHex(SHEEP, 8) .atCoordinates(1, -2)
                 .setHex(WHEAT, 12).atCoordinates(2, -2)
 
                 .setHex(WHEAT, 5).atCoordinates(-1, -1)
-                .setHex(WOOD, 6).atCoordinates(0, -1)
-                .setHex(SHEEP, 10).atCoordinates(1, -1)
+                .setHex(BRICK, 6).atCoordinates(0, -1)
+                .setHex(WOOD,  8).atCoordinates(1, -1)
                 .setHex(BRICK, 3).atCoordinates(2, -1)
 
-                .setHex(WOOD, 8).atCoordinates(-2, 0)
-                .setHex(STONE, 4).atCoordinates(-1, 0)
+                .setHex(WOOD,  10) .atCoordinates(-2, 0)
+                .setHex(STONE, 4) .atCoordinates(-1, 0)
                 .setHex(EMPTY, null).atCoordinates(0, 0)
-                .setHex(SHEEP, 3).atCoordinates(1, 0)
+                .setHex(SHEEP, 3) .atCoordinates(1, 0)
                 .setHex(STONE, 11).atCoordinates(2, 0)
 
-                .setHex(SHEEP, 9).atCoordinates(-2, 1)
-                .setHex(BRICK, 9).atCoordinates(-1, 1)
+                .setHex(SHEEP, 9) .atCoordinates(-2, 1)
+                .setHex(BRICK, 9) .atCoordinates(-1, 1)
                 .setHex(SHEEP, 11).atCoordinates(0, 1)
-                .setHex(WOOD, 4).atCoordinates(1, 1)
+                .setHex(WOOD,  4) .atCoordinates(1, 1)
 
                 .setHex(WOOD, 10).atCoordinates(-2, 2)
                 .setHex(WHEAT, 2).atCoordinates(-1, 2)
@@ -298,44 +322,44 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .setUserReady(USER_NAME_2)
                 .setUserReady(USER_NAME_3)
 
-                .BUILD_SETTLEMENT(1).atNode(0, -1, "topRight")
-                .BUILD_ROAD(1).atEdge(0, -1, "right")
+                .BUILD_SETTLEMENT(1).atNode(1, -2, "topLeft") // P2: +1brick (after US-69)
+                .BUILD_ROAD(1).atEdge(1, -2, "topLeft")
                 .END_TURN(1)
 
-                .BUILD_SETTLEMENT(2).atNode(0, 0, "topRight")
-                .BUILD_ROAD(2).atEdge(0, 0, "right")
+                .BUILD_SETTLEMENT(2).atNode(1, -2, "bottom")
+                .BUILD_ROAD(2).atEdge(1, -2, "bottomRight")
                 .END_TURN(2)
 
                 .BUILD_SETTLEMENT(3).atNode(0, 0, "bottom")
                 .BUILD_ROAD(3).atEdge(0, 0, "bottomLeft")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(3).atNode(0, -2, "topLeft") // P3: +1brick (after US-69)
-                .BUILD_ROAD(3).atEdge(0, -2, "topLeft")
+                .BUILD_SETTLEMENT(3).atNode(0, 0, "topRight")
+                .BUILD_ROAD(3).atEdge(0, 0, "right")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(2).atNode(0, -2, "topRight") // P2: +1brick +1stone (after US-69)
-                .BUILD_ROAD(2).atEdge(0, -2, "right")
+                .BUILD_SETTLEMENT(2).atNode(0, -2, "bottom") // P1: +1stone +1wood +1wheat (after US-69)
+                .BUILD_ROAD(2).atEdge(0, -2, "bottomRight")
                 .END_TURN(2)
 
-                .BUILD_SETTLEMENT(1).atNode(0, -2, "bottom") // P1: +1stone +1wood +1wheat (after US-69)
-                .BUILD_ROAD(1).atEdge(0, -2, "bottomLeft")
+                .BUILD_SETTLEMENT(1).atNode(1, -2, "topRight") // P2: +1brick +1stone (after US-69)
+                .BUILD_ROAD(1).atEdge(1, -2, "topRight")
                 .END_TURN(1);
     }
 
     /*
     *          (X, Y) coordinates of generated map:                          Node position at hex:
     *
-    *          (3)xxx*---(2)---*----*----*----*                                      top
-    *           |    6    X    8    |    12   |                          topLeft *----*----* topRight
-    *           |  STONE  X  BRICK  |  WHEAT  |                                  |         |
-    *           | ( 0,-2) X ( 1,-2) | ( 2,-2) |                       bottomLeft *----*----* bottomRight
-    *      *----*xxx(1)---*---(1)---*----*----*----*                                bottom
-    *      |    5    |    6    X    10   |    3    |
-    *      |  WHEAT  |   WOOD  X  SHEEP  |  BRICK  |
-    *      | (-1,-1) | ( 0,-1) X ( 1,-1) | ( 2,-1) |                        Edge position at hex:
-    * *----*----*----*----*----*---(2)---*----*----*----*
-    * |    8    |    4    |         X    3    |    11   |                      topLeft topRight
+    *           *----*---(1)xxx*xxx(1)---*----*                                      top
+    *           |    6    |    8    |    12   |                          topLeft *----*----* topRight
+    *           |  STONE  |  SHEEP  |  WHEAT  |                                  |         |
+    *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                       bottomLeft *----*----* bottomRight
+    *      *----*---(2)xxx*---(2)xxx*----*----*----*                                bottom
+    *      |    5    |    6    |    8    |    3    |
+    *      |  WHEAT  |  BRICK  |  WOOD   |  BRICK  |
+    *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                        Edge position at hex:
+    * *----*----*----*----*----*---(3)---*----*----*----*
+    * |    10   |    4    |         X    3    |    11   |                      topLeft topRight
     * |   WOOD  |  STONE  |  EMPTY  X  SHEEP  |  STONE  |                        .====.====.
     * | (-2, 0) | (-1, 0) | ( 0, 0) X ( 1, 0) | ( 2, 0) |                  left ||         || right
     * *----*----*----*----*xxx(3)---*----*----*----*----*                        .====.====.
