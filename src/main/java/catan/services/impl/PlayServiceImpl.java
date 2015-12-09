@@ -116,6 +116,9 @@ public class PlayServiceImpl implements PlayService {
             case USE_CARD_ROAD_BUILDING:
                 useCardRoadBuilding(gameUser, game, returnedParams);
                 break;
+            case MOVE_ROBBER:
+                moveRobber(game, params.get("hexId"));
+                break;
         }
     }
 
@@ -263,6 +266,41 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
+    }
+
+    private void moveRobber(GameBean game, final String hexId) throws PlayException, GameException {
+        HexBean hexToRob = toValidHex(game, hexId);
+        validateHexCouldBeRobbed(hexToRob);
+
+        game.getHexes().stream().filter(HexBean::isRobbed).forEach(hex -> hex.setRobbed(false));
+        hexToRob.setRobbed(true);
+        log.error("Hex {} successfully robbed", hexId);
+        game.setRobberShouldBeMovedMandatory(false);
+    }
+
+    private void validateHexCouldBeRobbed(HexBean hexToRob) throws GameException {
+        if (hexToRob.isRobbed() || hexToRob.getResourceType().equals(HexType.EMPTY)) {
+            log.error("Hex {} cannot be robbed", hexToRob.getId());
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private HexBean toValidHex(GameBean game, String hexIdString) throws GameException {
+        int hexId;
+        try {
+            hexId = Integer.parseInt(hexIdString);
+        } catch (Exception e) {
+            log.error("Cannot convert hexId to integer value");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        HexBean hexToRob = game.getHexes().stream().filter(hex -> hex.getId() == hexId).findAny().orElse(null);
+        if (hexToRob == null) {
+            log.error("Hex {} does not belong to game {}", hexId, game.getGameId());
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+
+        return hexToRob;
     }
 
     private HexType toValidResourceType(String resourceString) throws PlayException {
