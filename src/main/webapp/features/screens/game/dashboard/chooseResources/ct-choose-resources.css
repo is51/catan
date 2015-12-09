@@ -25,7 +25,7 @@ ct-choose-resources .resource {
     border-radius: 10px;
 }
 
-ct-choose-resources button {
+ct-choose-resources .resource > button {
     display: block;
     border-radius: 40px;
     border: 3px solid #f5f5f5;
@@ -37,11 +37,11 @@ ct-choose-resources button {
     color: #fff;
 }
 
-ct-choose-resources button:hover {
+ct-choose-resources .resource > button:hover {
     border-color: #ccc;
 }
 
-ct-choose-resources button[disabled] {
+ct-choose-resources .resource > button[disabled] {
     visibility: hidden;
 }
 
