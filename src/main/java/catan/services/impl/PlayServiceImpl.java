@@ -200,7 +200,8 @@ public class PlayServiceImpl implements PlayService {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
             log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue);
             mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
-        } else{
+        } else {
+            game.setRobberShouldBeMovedMandatory(true);
             log.debug("Robbers activity due to dice value 7");
         }
     }

@@ -202,6 +202,7 @@ public class GameUtil {
         game.setPreparationCycle(1);
         game.setCurrentCycleBuildingNumber(1);
         game.setRoadsToBuildMandatory(0);
+        game.setRobberShouldBeMovedMandatory(false);
         game.setDateStarted(new Date());
         playUtil.updateAvailableActionsForAllUsers(game);
 

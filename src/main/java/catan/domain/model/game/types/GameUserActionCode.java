@@ -9,5 +9,6 @@ public enum GameUserActionCode {
     END_TURN,
     USE_CARD_YEAR_OF_PLENTY,
     USE_CARD_MONOPOLY,
-    USE_CARD_ROAD_BUILDING
+    USE_CARD_ROAD_BUILDING,
+    MOVE_ROBBER
 }
