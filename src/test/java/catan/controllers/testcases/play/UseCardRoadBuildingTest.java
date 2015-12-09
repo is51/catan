@@ -96,32 +96,32 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     @Test
     public void should_fail_if_player_tries_to_use_card_and_does_not_have_place_to_build_any_road() {
         playPreparationStageAndBuyCardRoadBuilding()
-                .END_TURN(1).nextRandomDiceValues(asList(4, 4)) // P1: +2wood
+                .END_TURN(1).nextRandomDiceValues(asList(4, 4))
                 .THROW_DICE(2)
+                .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+                .THROW_DICE(3)                                  // P2: 4brick, 4 wood
+                .END_TURN(3).nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(1)
+                .END_TURN(1).nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(2)
+                .END_TURN(2).nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(3)
+                .END_TURN(3).nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(1)                                 // P2: 12brick, 4 wood
+
+
 
                 .BUILD_ROAD(2).atEdge(0, -2, "right")
                 .BUILD_ROAD(2).atEdge(0, -2, "bottomLeft")
                 .BUILD_ROAD(2).atEdge(0, -2, "left")
 
-                .END_TURN(2).nextRandomDiceValues(asList(4, 4)) // P1: +2wood
-                .THROW_DICE(3)
-                .END_TURN(3).nextRandomDiceValues(asList(3, 3)) // P1: +1brick
-                .THROW_DICE(1)
-                .END_TURN(1).nextRandomDiceValues(asList(3, 3)) // P1: +2wood
-                .THROW_DICE(2)
-                                                          /*
-                                                                          .BUILD_ROAD(2).atEdge(0, -2, "topLeft")
-
+                /*
+                .BUILD_ROAD(2).atEdge(0, -2, "topLeft")
                 .BUILD_ROAD(2).atEdge(0, -2, "topRight")
                 .BUILD_ROAD(2).atEdge(2, -2, "bottomRight")
                 .BUILD_ROAD(2).atEdge(2, -2, "left")
                 .BUILD_ROAD(2).atEdge(2, -2, "bottomLeft")
                                                             */
-                .END_TURN(2).nextRandomDiceValues(asList(3, 3)) // P1: +2wood
-                .THROW_DICE(3)
-                .END_TURN(3).nextRandomDiceValues(asList(3, 3)) // P1: +1brick
-                .THROW_DICE(1)
-
 
                     .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
 
