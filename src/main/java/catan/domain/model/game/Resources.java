@@ -115,6 +115,12 @@ public class Resources {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
+        return "Resources{" +
+                "brick=" + brick +
+                ", wood=" + wood +
+                ", sheep=" + sheep +
+                ", wheat=" + wheat +
+                ", stone=" + stone +
+                '}';
     }
 }

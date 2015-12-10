@@ -58,25 +58,170 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_build_2_available_roads() {
+    public void should_successfully_build_2_available_roads_that_can_be_built_separately() {
         playPreparationStageAndBuyCardRoadBuildingAndPassCycle()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_ROAD_BUILDING(1).successfully()
+                .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
-                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
+                    .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD")
+
+                .USE_CARD_ROAD_BUILDING(1).successfully()
+                .roadsToBuildQuantityIs(2)
+
+                .getGameDetails(1)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, -1, 0, 0)
+                    .gameUser(1).hasAvailableAction("BUILD_ROAD")
+
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .getGameDetails(1)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).hasAvailableAction("BUILD_ROAD")
+
+                .BUILD_ROAD(1).atEdge(2, -2, "left")
+                .getGameDetails(1)
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD");
+    }
+
+    @Test
+    public void should_successfully_build_2_available_roads_that_should_be_build_one_by_one() {
+            playPreparationStageAndBuyCardRoadBuilding()
+                    .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(2)
+                    .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(3)
+                    .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(1)
+                    .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(2)
+                    .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(3)
+                    .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(1)
+                    .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(2)
+                    .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(3)
+                    .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+                    .THROW_DICE(1)                                 // P2: 4brick, 11 wood
+                    .END_TURN(1).nextRandomDiceValues(asList(3, 3))
+                    .THROW_DICE(2)
+                    .END_TURN(2).nextRandomDiceValues(asList(3, 3))
+                    .THROW_DICE(3)
+                    .END_TURN(3).nextRandomDiceValues(asList(3, 3))
+                    .THROW_DICE(1)
+                    .END_TURN(1).nextRandomDiceValues(asList(3, 3))
+                    .THROW_DICE(2)                                 // P2: 12brick, 11 wood
+
+                    .BUILD_ROAD(2).atEdge(0, -2, "right")
+                    .BUILD_ROAD(2).atEdge(0, -2, "bottomLeft")
+                    .BUILD_ROAD(2).atEdge(0, -2, "left")
+                    .BUILD_ROAD(2).atEdge(0, -2, "topLeft")
+                    //.BUILD_ROAD(2).atEdge(0, -2, "topRight")
+                    .BUILD_ROAD(2).atEdge(2, -2, "left")
+                    .BUILD_ROAD(2).atEdge(2, -2, "bottomLeft")
+                    .BUILD_ROAD(2).atEdge(2, -2, "bottomRight")
+                    .BUILD_ROAD(2).atEdge(2, -2, "right")
+                    .BUILD_ROAD(2).atEdge(2, -2, "topRight")
+                    //.BUILD_ROAD(2).atEdge(2, -2, "topLeft")
+
+                    .END_TURN(2).nextRandomDiceValues(asList(1, 1))
+                    .THROW_DICE(3)
+                    .END_TURN(3).nextRandomDiceValues(asList(1, 1))
+                    .THROW_DICE(1)
+
+
+                    .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+                    .getGameDetails(1)
+                        .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD")
+
+                    .USE_CARD_ROAD_BUILDING(1).successfully()
+                    .roadsToBuildQuantityIs(2)
+
+                    .getGameDetails(1)
+                        .gameUser(1).devCardsQuantityChangedBy(0, 0, -1, 0, 0)
+                        .gameUser(1).hasAvailableAction("BUILD_ROAD")
+
+                    .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                    .getGameDetails(1)
+                        .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                        .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                        .gameUser(1).hasAvailableAction("BUILD_ROAD")
+
+                    .BUILD_ROAD(1).atEdge(0, -2, "topRight")
+                    .getGameDetails(1)
+                        .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                        .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                        .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD");
+
     }
 
     @Test
     public void should_successfully_build_1_available_road() {
-        playPreparationStageAndBuyCardRoadBuildingAndPassCycle()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_ROAD_BUILDING(1).successfully()
-                .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 2, 0)
-                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
+        playPreparationStageAndBuyCardRoadBuilding()
+            .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(2)
+            .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(3)
+            .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(1)
+            .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(2)
+            .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(3)
+            .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(1)
+            .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(2)
+            .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(3)
+            .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+            .THROW_DICE(1)                                 // P2: 4brick, 11 wood
+            .END_TURN(1).nextRandomDiceValues(asList(3, 3))
+            .THROW_DICE(2)
+            .END_TURN(2).nextRandomDiceValues(asList(3, 3))
+            .THROW_DICE(3)
+            .END_TURN(3).nextRandomDiceValues(asList(3, 3))
+            .THROW_DICE(1)
+            .END_TURN(1).nextRandomDiceValues(asList(3, 3))
+            .THROW_DICE(2)                                 // P2: 12brick, 11 wood
+
+            .BUILD_ROAD(2).atEdge(0, -2, "right")
+            .BUILD_ROAD(2).atEdge(0, -2, "bottomLeft")
+            .BUILD_ROAD(2).atEdge(0, -2, "left")
+            .BUILD_ROAD(2).atEdge(0, -2, "topLeft")
+            .BUILD_ROAD(2).atEdge(0, -2, "topRight")
+            .BUILD_ROAD(2).atEdge(2, -2, "left")
+            .BUILD_ROAD(2).atEdge(2, -2, "bottomLeft")
+            .BUILD_ROAD(2).atEdge(2, -2, "bottomRight")
+            .BUILD_ROAD(2).atEdge(2, -2, "right")
+            .BUILD_ROAD(2).atEdge(2, -2, "topRight")
+                    //.BUILD_ROAD(2).atEdge(2, -2, "topLeft")
+
+            .END_TURN(2).nextRandomDiceValues(asList(1, 1))
+            .THROW_DICE(3)
+            .END_TURN(3).nextRandomDiceValues(asList(1, 1))
+            .THROW_DICE(1)
+
+
+            .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+            .getGameDetails(1)
+            .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD")
+
+            .USE_CARD_ROAD_BUILDING(1).successfully()
+            .roadsToBuildQuantityIs(1)
+
+            .getGameDetails(1)
+            .gameUser(1).devCardsQuantityChangedBy(0, 0, -1, 0, 0)
+            .gameUser(1).hasAvailableAction("BUILD_ROAD")
+
+            .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+            .getGameDetails(1)
+            .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+            .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+            .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD");
+
     }
 
     @Test
@@ -85,12 +230,14 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .nextRandomDevelopmentCards(asList(ROAD_BUILDING))
                 .BUY_CARD(1)
 
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
+                .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+                .getGameDetails(1)
+                    .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD")
+
                 .USE_CARD_ROAD_BUILDING(1).successfully()
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 1, 1, 0, 0)
-                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, -1, 0, 0)
+                    .gameUser(1).hasAvailableAction("BUILD_ROAD");
     }
 
     @Test
@@ -99,29 +246,47 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .END_TURN(1).nextRandomDiceValues(asList(4, 4))
                 .THROW_DICE(2)
                 .END_TURN(2).nextRandomDiceValues(asList(4, 4))
-                .THROW_DICE(3)                                  // P2: 4brick, 4 wood
-                .END_TURN(3).nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(3)
+                .END_TURN(3).nextRandomDiceValues(asList(4, 4))
                 .THROW_DICE(1)
+                .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+                .THROW_DICE(2)
+                .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+                .THROW_DICE(3)
+                .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+                .THROW_DICE(1)
+                .END_TURN(1).nextRandomDiceValues(asList(4, 4))
+                .THROW_DICE(2)
+                .END_TURN(2).nextRandomDiceValues(asList(4, 4))
+                .THROW_DICE(3)
+                .END_TURN(3).nextRandomDiceValues(asList(4, 4))
+                .THROW_DICE(1)                                 // P2: 4brick, 11 wood
                 .END_TURN(1).nextRandomDiceValues(asList(3, 3))
                 .THROW_DICE(2)
                 .END_TURN(2).nextRandomDiceValues(asList(3, 3))
                 .THROW_DICE(3)
                 .END_TURN(3).nextRandomDiceValues(asList(3, 3))
-                .THROW_DICE(1)                                 // P2: 12brick, 4 wood
-
-
+                .THROW_DICE(1)
+                .END_TURN(1).nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(2)                                 // P2: 12brick, 11 wood
 
                 .BUILD_ROAD(2).atEdge(0, -2, "right")
                 .BUILD_ROAD(2).atEdge(0, -2, "bottomLeft")
                 .BUILD_ROAD(2).atEdge(0, -2, "left")
-
-                /*
                 .BUILD_ROAD(2).atEdge(0, -2, "topLeft")
                 .BUILD_ROAD(2).atEdge(0, -2, "topRight")
-                .BUILD_ROAD(2).atEdge(2, -2, "bottomRight")
                 .BUILD_ROAD(2).atEdge(2, -2, "left")
                 .BUILD_ROAD(2).atEdge(2, -2, "bottomLeft")
-                                                            */
+                .BUILD_ROAD(2).atEdge(2, -2, "bottomRight")
+                .BUILD_ROAD(2).atEdge(2, -2, "right")
+                .BUILD_ROAD(2).atEdge(2, -2, "topRight")
+                .BUILD_ROAD(2).atEdge(2, -2, "topLeft")
+
+                .END_TURN(2).nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(3)
+                .END_TURN(3).nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
 
                     .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
 
@@ -146,6 +311,8 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     @Test
     public void should_fail_if_player_already_used_some_card_in_the_current_move() {
         playPreparationStageAndBuyCardRoadBuilding()
+                .nextRandomDevelopmentCards(asList(ROAD_BUILDING))
+                .BUY_CARD(1)
 
                 .END_TURN(1).nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(2)
@@ -155,8 +322,8 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .USE_CARD_ROAD_BUILDING(1).successfully()
-                .BUILD_ROAD(1).atEdge(-1, -1, "topLeft")
-                .BUILD_ROAD(1).atEdge(-1, -1, "left")
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .BUILD_ROAD(1).atEdge(2, -2, "left")
 
                 .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
 

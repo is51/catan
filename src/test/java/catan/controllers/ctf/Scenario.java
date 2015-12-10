@@ -183,6 +183,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario roadsToBuildQuantityIs(int roadsCount) {
+        lastApiResponse.then()
+                .statusCode(200)
+                .body("roadsCount", is(roadsCount));
+        return this;
+    }
+
     public MapValidator node(int x, int y, String nodePosition) {
         return new MapValidator(this, x, y, nodePosition, "node");
     }

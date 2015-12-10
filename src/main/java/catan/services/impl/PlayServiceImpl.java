@@ -303,8 +303,7 @@ public class PlayServiceImpl implements PlayService {
         }
 
         if (!actionAllowed) {
-            log.debug("Required action {} is not allowed for {}, current move in game is {}",
-                    requiredAction.name(), gameUser, gameUser.getGame().getCurrentMove());
+            log.debug("Required action {} is not allowed for {}", requiredAction.name(), gameUser);
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
