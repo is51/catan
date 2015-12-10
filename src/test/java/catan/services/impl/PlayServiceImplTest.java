@@ -2404,6 +2404,220 @@ public class PlayServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldFailWhenDiceValueIsSevenAndUserMoveRobberBeforeAllPlayersKickOffHalfOfTheirResources() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        gameUser2.setResources(new Resources(10, 0, 0, 0, 0));
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        //Should generate dices values 2 & 5
+        rvg.setNextGeneratedValue(0.3);
+        rvg.setNextGeneratedValue(0.8);
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("hexId", Integer.toString(hex_1_0.getId()));
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldPassWhenDiceValueIsSevenAndUsersKickOffHalfOfTheirResources() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        gameUser1.setResources(new Resources(9, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(5, 0, 0, 0, 5));
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        //Should generate dices values 2 & 5
+        rvg.setNextGeneratedValue(0.3);
+        rvg.setNextGeneratedValue(0.8);
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "4");
+        params.put("wood", "0");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
+
+        params.put("brick", "3");
+        params.put("stone", "2");
+        playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser2.getUser(), "1", params);
+
+        assertNotNull(game);
+        assertNotNull(gameUser1);
+        assertEquals(5, gameUser1.getResources().getBrick());
+        assertEquals(0, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getWheat());
+        assertEquals(0, gameUser1.getResources().getStone());
+
+        assertNotNull(gameUser2);
+        assertEquals(2, gameUser2.getResources().getBrick());
+        assertEquals(0, gameUser2.getResources().getWood());
+        assertEquals(0, gameUser2.getResources().getSheep());
+        assertEquals(0, gameUser2.getResources().getWheat());
+        assertEquals(3, gameUser2.getResources().getStone());
+    }
+
+    @Test
+    public void shouldPassWhenDiceValueIsSevenAndUserMoveRobberAfterAllPlayersKickOffHalfOfTheirResources() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(10, 0, 0, 0, 0));
+        allowUserToThrowDice(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        //Should generate dices values 2 & 5
+        rvg.setNextGeneratedValue(0.3);
+        rvg.setNextGeneratedValue(0.8);
+
+        playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "5");
+        params.put("wood", "0");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
+
+        playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser2.getUser(), "1", params);
+
+
+        params.put("hexId", Integer.toString(hex_1_0.getId()));
+        playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
+
+        assertNotNull(game);
+        assertTrue(hex_1_0.isRobbed());
+    }
+
+    @Test
+    public void shouldFailWhenUserKickOffNotHalfOfHisResources() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        allowUserKickOffResources(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "4");
+        params.put("wood", "0");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserKickOffResourcesButQuantityIsNotInteger() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        allowUserKickOffResources(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "5");
+        params.put("wood", "0");
+        params.put("sheep", "XXX");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserKickOffResourcesButQuantityIsBelowZero() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(false);
+        gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        allowUserKickOffResources(gameUser1);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "6");
+        params.put("wood", "-1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    private void allowUserKickOffResources(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES));
+    }
+
     private void allowUserToMoveRobber(GameUserBean user) {
         allowUserAction(user, new Action(GameUserActionCode.MOVE_ROBBER));
     }
@@ -2464,7 +2678,7 @@ public class PlayServiceImplTest {
 
         hex_0_0 = new HexBean(game, new Coordinates(0, 0), HexType.BRICK, 2, false);
         hex_1_0 = new HexBean(game, new Coordinates(1, 0), HexType.WOOD, 10, false);
-        HexBean hex_0_1 = new HexBean(game, new Coordinates(0, 1), HexType.STONE, 11, true);
+        HexBean hex_0_1 = new HexBean(game, new Coordinates(0, 1), HexType.STONE, 11, false);
 
         NodeBean node_1_1 = new NodeBean(game, NodePortType.ANY);
         NodeBean node_1_2 = new NodeBean(game, NodePortType.NONE);
