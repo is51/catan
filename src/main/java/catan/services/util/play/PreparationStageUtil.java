@@ -76,7 +76,7 @@ public class PreparationStageUtil {
             game.setDevelopmentCardUsed(false);
             game.setRoadsToBuildMandatory(0);
             for (GameUserBean gameUser : game.getGameUsers()) {
-                gameUser.setKickingOfResourcesMandatory(false);
+                gameUser.setKickingOffResourcesMandatory(false);
             }
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
         }

@@ -79,7 +79,7 @@ public class MainStageUtil {
         List<Action> actionsList = new ArrayList<Action>();
         boolean isMandatory = false;
 
-        allowKickingOfResourcesMandatory(gameUser, game, actionsList);
+        allowKickingOffResourcesMandatory(gameUser, game, actionsList);
         allowMoveRobberMandatory(gameUser, game, actionsList);
         allowBuildRoadMandatory(gameUser, game, actionsList);
         if (actionsList.size() > 0) {
@@ -104,9 +104,9 @@ public class MainStageUtil {
         gameUser.setAvailableActions(availableActionsString);
     }
 
-    private void allowKickingOfResourcesMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+    private void allowKickingOffResourcesMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameNotFinished(game)
-                && gameUser.isKickingOfResourcesMandatory()) {
+                && gameUser.isKickingOffResourcesMandatory()) {
             actionsList.add(new Action(GameUserActionCode.KICK_OFF_RESOURCES));
         }
     }
@@ -243,7 +243,7 @@ public class MainStageUtil {
 
     private boolean noOneNeedsToKickOfResources (GameBean game) {
         for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.isKickingOfResourcesMandatory()) {
+            if (gameUser.isKickingOffResourcesMandatory()) {
                 return false;
             }
         }

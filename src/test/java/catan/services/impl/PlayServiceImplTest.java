@@ -2504,18 +2504,22 @@ public class PlayServiceImplTest {
         gameUser1.setGameUserId(1);
         gameUser1.setMoveOrder(1);
         gameUser1.setReady(true);
+        gameUser1.setKickingOffResourcesMandatory(false);
 
         gameUser2.setGameUserId(2);
         gameUser2.setMoveOrder(2);
         gameUser2.setReady(true);
+        gameUser2.setKickingOffResourcesMandatory(false);
 
         gameUser3.setGameUserId(3);
         gameUser3.setMoveOrder(3);
         gameUser3.setReady(true);
+        gameUser3.setKickingOffResourcesMandatory(false);
 
         gameUser4.setGameUserId(4);
         gameUser4.setMoveOrder(4);
         gameUser4.setReady(true);
+        gameUser4.setKickingOffResourcesMandatory(false);
 
 
         //
