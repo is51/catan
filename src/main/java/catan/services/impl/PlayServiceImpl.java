@@ -199,13 +199,13 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
-        if (!isRobbersActivity(diceFirstValue, diceSecondValue)) {
-            List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
-            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue);
-            mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
-        } else {
+        if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
             game.setRobberShouldBeMovedMandatory(true);
             log.debug("Robbers activity due to dice value 7");
+        } else {
+            List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
+            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue.toString());
+            mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
         }
     }
 
