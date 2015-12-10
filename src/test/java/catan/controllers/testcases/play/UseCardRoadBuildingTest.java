@@ -81,7 +81,9 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .getGameDetails(1)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
                     .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                    .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD");
+                    .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD")
+
+                .BUILD_ROAD(1).atEdge(2, -2, "topRight").failsWithError("ERROR");
     }
 
     @Test
@@ -230,7 +232,7 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .nextRandomDevelopmentCards(asList(ROAD_BUILDING))
                 .BUY_CARD(1)
 
-                .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+                .startTrackDevCardsQuantity()
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD")
 
@@ -288,7 +290,7 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
 
-                    .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+                .startTrackDevCardsQuantity()
 
                 .USE_CARD_ROAD_BUILDING(1)
                     .failsWithError("ROAD_CANNOT_BE_BUILT")
@@ -301,7 +303,7 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     @Test
     public void should_fail_if_player_bought_the_card_in_the_current_move() {
         playPreparationStageAndBuyCardRoadBuilding()
-                .startTrackResourcesQuantity()
+
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("CARD_BOUGHT_IN_CURRENT_TURN")
                 .getGameDetails(1)
@@ -325,7 +327,7 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
                 .BUILD_ROAD(1).atEdge(2, -2, "left")
 
-                .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+                .startTrackDevCardsQuantity()
 
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("CARD_ALREADY_USED_IN_CURRENT_TURN")
 
@@ -337,7 +339,6 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     @Test
     public void should_fail_if_player_does_not_have_the_card() {
         playPreparationStage()
-                .startTrackResourcesQuantity()
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("ERROR")
                 .getGameDetails(1)
@@ -356,7 +357,6 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .END_TURN(3)
                 .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
 
-                .startTrackResourcesQuantity()
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("ERROR")
                 .getGameDetails(1)
@@ -370,7 +370,6 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(2)
 
-                .startTrackResourcesQuantity()
                 .startTrackDevCardsQuantity()
                 .USE_CARD_ROAD_BUILDING(1).failsWithError("ERROR")
                 .getGameDetails(1)
