@@ -200,8 +200,20 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
-            game.setRobberShouldBeMovedMandatory(true);
-            log.debug("Robbers activity due to dice value 7");
+            log.debug("Current dice value is 7");
+            for (GameUserBean gameUser : game.getGameUsers()) {
+                Resources usersResources = gameUser.getResources();
+                if (usersResources.getWood() + usersResources.getBrick() + usersResources.getWheat() + usersResources.getSheep() + usersResources.getStone() > 7) {
+                    gameUser.setKickingOfResourcesMandatory(true);
+                }
+            }
+            /*TODO: Use this line instead of line before when getTotalResources achievements would be calculated correctly
+            * for (GameUserBean gameUser : game.getGameUsers()) {
+            *     if (gameUser.getAchievements().getTotalResources() > 7) {
+            *         gameUser.setKickingOfResourcesMandatory(true);
+            *     }
+            * }
+            */
         } else {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
             log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue.toString());

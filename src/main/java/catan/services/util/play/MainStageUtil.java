@@ -79,11 +79,12 @@ public class MainStageUtil {
         List<Action> actionsList = new ArrayList<Action>();
         boolean isMandatory = false;
 
+        allowKickingOfResourcesMandatory(gameUser, game, actionsList);
         allowMoveRobberMandatory(gameUser, game, actionsList);
         allowBuildRoadMandatory(gameUser, game, actionsList);
         if (actionsList.size() > 0) {
             isMandatory = true;
-        } else {
+        } else if (noOneNeedsToKickOfResources(game)) {
             allowBuildSettlement(gameUser, game, actionsList);
             allowBuildCity(gameUser, game, actionsList);
             allowBuildRoad(gameUser, game, actionsList);
@@ -101,6 +102,13 @@ public class MainStageUtil {
 
         String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
         gameUser.setAvailableActions(availableActionsString);
+    }
+
+    private void allowKickingOfResourcesMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && gameUser.isKickingOfResourcesMandatory()) {
+            actionsList.add(new Action(GameUserActionCode.KICK_OFF_RESOURCES));
+        }
     }
 
     private void allowMoveRobberMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
@@ -231,5 +239,14 @@ public class MainStageUtil {
 
     private boolean gameNotFinished(GameBean game) {
         return !GameStatus.FINISHED.equals(game.getStatus());
+    }
+
+    private boolean noOneNeedsToKickOfResources (GameBean game) {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.isKickingOfResourcesMandatory()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
