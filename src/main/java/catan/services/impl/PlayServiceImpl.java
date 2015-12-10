@@ -272,10 +272,19 @@ public class PlayServiceImpl implements PlayService {
         HexBean hexToRob = toValidHex(game, hexId);
         validateHexCouldBeRobbed(hexToRob);
 
-        game.getHexes().stream().filter(HexBean::isRobbed).forEach(hex -> hex.setRobbed(false));
-        hexToRob.setRobbed(true);
+        changeRobbedHex(game, hexToRob);
         log.error("Hex {} successfully robbed", hexId);
         game.setRobberShouldBeMovedMandatory(false);
+    }
+
+    private void changeRobbedHex(GameBean game, HexBean hexToRob) {
+        for (HexBean hex : game.getHexes()) {
+            if (hex.isRobbed()) {
+                hex.setRobbed(false);
+                break;
+            }
+        }
+        hexToRob.setRobbed(true);
     }
 
     private void validateHexCouldBeRobbed(HexBean hexToRob) throws PlayException {
@@ -294,13 +303,14 @@ public class PlayServiceImpl implements PlayService {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        HexBean hexToRob = game.getHexes().stream().filter(hex -> hex.getId() == hexId).findAny().orElse(null);
-        if (hexToRob == null) {
-            log.error("Hex {} does not belong to game {}", hexId, game.getGameId());
-            throw new PlayException(ERROR_CODE_ERROR);
+        for (HexBean hex : game.getHexes()) {
+            if (hex.getId() == hexId) {
+                return hex;
+            }
         }
 
-        return hexToRob;
+        log.error("Hex {} does not belong to game {}", hexId, game.getGameId());
+        throw new PlayException(ERROR_CODE_ERROR);
     }
 
     private HexType toValidResourceType(String resourceString) throws PlayException {
