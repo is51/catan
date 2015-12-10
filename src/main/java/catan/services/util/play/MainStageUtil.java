@@ -38,11 +38,9 @@ public class MainStageUtil {
         game.setCurrentMove(nextMoveNumber);
     }
 
-    public void takeResourceFromPlayer(GameStage gameStage, Resources usersResources, HexType resource, int quantityToDecrease) {
-        if (GameStage.MAIN.equals(gameStage)) {
-            int newResourceQuantity = usersResources.quantityOf(resource) - quantityToDecrease;
-            usersResources.updateResourceQuantity(resource, newResourceQuantity);
-        }
+    public void takeResourceFromPlayer(Resources usersResources, HexType resource, int quantityToDecrease) {
+        int newResourceQuantity = usersResources.quantityOf(resource) - quantityToDecrease;
+        usersResources.updateResourceQuantity(resource, newResourceQuantity);
     }
 
     public void resetDices(GameBean game) {
@@ -79,22 +77,37 @@ public class MainStageUtil {
 
     private void updateAvailableActionsForUser(GameUserBean gameUser, GameBean game) {
         List<Action> actionsList = new ArrayList<Action>();
+        boolean isMandatory = false;
 
-        allowBuildSettlement(gameUser, game, actionsList);
-        allowBuildCity(gameUser, game, actionsList);
-        allowBuildRoad(gameUser, game, actionsList);
-        allowEndTurn(gameUser, game, actionsList);
-        allowThrowDice(gameUser, game, actionsList);
-        allowBuyCard(gameUser, game, actionsList);
-        allowUseCardYearOfPlenty(gameUser, game, actionsList);
-        allowUseCardMonopoly(gameUser, game, actionsList);
+        allowBuildRoadMandatory(gameUser, game, actionsList);
+        if (actionsList.size() > 0) {
+            isMandatory = true;
+        } else {
+            allowBuildSettlement(gameUser, game, actionsList);
+            allowBuildCity(gameUser, game, actionsList);
+            allowBuildRoad(gameUser, game, actionsList);
+            allowEndTurn(gameUser, game, actionsList);
+            allowThrowDice(gameUser, game, actionsList);
+            allowBuyCard(gameUser, game, actionsList);
+            allowUseCardYearOfPlenty(gameUser, game, actionsList);
+            allowUseCardMonopoly(gameUser, game, actionsList);
+            allowUseCardRoadBuilding(gameUser, game, actionsList);
+        }
 
         AvailableActions availableActions = new AvailableActions();
         availableActions.setList(actionsList);
-        availableActions.setIsMandatory(false);
+        availableActions.setIsMandatory(isMandatory);
 
         String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
         gameUser.setAvailableActions(availableActionsString);
+    }
+
+    private void allowBuildRoadMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.getRoadsToBuildMandatory() > 0) {
+            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
+        }
     }
 
     private void allowThrowDice(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
@@ -164,6 +177,15 @@ public class MainStageUtil {
                 && game.isDiceThrown()
                 && userHasCard(gameUser, DevelopmentCard.MONOPOLY)) {
             actionsList.add(new Action(GameUserActionCode.USE_CARD_MONOPOLY));
+        }
+    }
+
+    private void allowUseCardRoadBuilding(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
+                && userHasCard(gameUser, DevelopmentCard.ROAD_BUILDING)) {
+            actionsList.add(new Action(GameUserActionCode.USE_CARD_ROAD_BUILDING));
         }
     }
 

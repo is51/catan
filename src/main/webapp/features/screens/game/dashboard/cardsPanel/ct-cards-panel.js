@@ -43,6 +43,17 @@ angular.module('catan')
                             }
                         });
                     };
+
+                    scope.useCardRoadBuilding = function() {
+                        ModalWindowService.hide("CARDS_PANEL");
+                        PlayService.useCardRoadBuilding(scope.game).then(function(response) {
+                            var count = response.data.roadsCount;
+                            alert("Build " + count + " road" + ((count===1)?"":"s"));
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            alert('Error: ' + ((reason.data.errorCode) ? reason.data.errorCode : 'unknown'));
+                        });
+                    };
                 }
             };
         }]);

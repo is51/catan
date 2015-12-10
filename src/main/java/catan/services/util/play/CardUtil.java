@@ -1,6 +1,7 @@
 package catan.services.util.play;
 
 import catan.domain.exception.PlayException;
+import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class CardUtil {
@@ -23,6 +25,7 @@ public class CardUtil {
     public static final String CARDS_ARE_OVER_ERROR = "CARDS_ARE_OVER";
     public static final String CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR = "CARD_ALREADY_USED_IN_CURRENT_TURN";
     public static final String CARD_BOUGHT_IN_CURRENT_TURN_ERROR = "CARD_BOUGHT_IN_CURRENT_TURN";
+    public static final String ROAD_CANNOT_BE_BUILT_ERROR = "ROAD_CANNOT_BE_BUILT";
 
     private RandomUtil randomUtil;
 
@@ -44,8 +47,7 @@ public class CardUtil {
         gameUser.getDevelopmentCardsReadyForUsing().decreaseQuantityByOne(developmentCard);
     }
 
-    public void giveTwoResourcesToPlayer(GameUserBean gameUser, HexType firstResource, HexType secondResource) {
-        Resources userResources = gameUser.getResources();
+    public void giveTwoResourcesToPlayer(Resources userResources, HexType firstResource, HexType secondResource) {
         int currentFirstResourceQuantity = userResources.quantityOf(firstResource);
         userResources.updateResourceQuantity(firstResource, currentFirstResourceQuantity + 1);
         int currentSecondResourceQuantity = userResources.quantityOf(secondResource);
@@ -67,6 +69,21 @@ public class CardUtil {
             currentGameUser.getResources().updateResourceQuantity(resource, currentUsersResourceQuantity + takenResourcesCount);
         }
         return takenResourcesCount;
+    }
+
+    public Integer defineRoadsQuantityToBuild(GameUserBean gameUser, GameBean game) throws PlayException {
+        List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoad(gameUser));
+
+        if (availableEdges.isEmpty()) {
+            log.debug("There are no available edges build road for current player");
+            throw new PlayException(ROAD_CANNOT_BE_BUILT_ERROR);
+        }
+
+        if (availableEdges.size() == 1 && availableEdges.get(0).fetchNeighborEdgesAccessibleForBuildingRoad(gameUser).size() == 0) {
+            return 1;
+        }
+
+        return 2;
     }
 
     public void validateUserDidNotBoughtCardInCurrentTurn(GameUserBean gameUser, DevelopmentCard developmentCard) throws PlayException {

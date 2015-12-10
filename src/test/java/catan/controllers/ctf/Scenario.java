@@ -162,6 +162,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario USE_CARD_ROAD_BUILDING(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.useCardRoadBuilding(userToken, gameId);
+        return this;
+    }
+
     public Scenario boughtCardIs(DevelopmentCard card) {
         lastApiResponse.then()
                 .statusCode(200)
@@ -173,6 +180,13 @@ public class Scenario {
         lastApiResponse.then()
                 .statusCode(200)
                 .body("resourcesCount", is(takenResourcesQuantity));
+        return this;
+    }
+
+    public Scenario roadsToBuildQuantityIs(int roadsCount) {
+        lastApiResponse.then()
+                .statusCode(200)
+                .body("roadsCount", is(roadsCount));
         return this;
     }
 

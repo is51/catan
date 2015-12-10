@@ -9,7 +9,7 @@
             <span class="badge">{{cards().knight}}</span>
         </button>
 
-        <button ng-disabled="cards().roadBuilding===0">
+        <button ng-click="useCardRoadBuilding()" ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_ROAD_BUILDING')">
             <span class="glyphicon glyphicon-road"></span><br>
             Road Building<br>
             <span class="badge">{{cards().roadBuilding}}</span>

@@ -28,7 +28,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -101,6 +100,9 @@ public class GameBean {
 
     @Column(name = "DEV_CARD_USED", unique = false, nullable = true)
     private Boolean developmentCardUsed;
+
+    @Column(name = "MANDATORY_ROADS_TO_BUILD", unique = false, nullable = true)
+    private Integer roadsToBuildMandatory;
 
     @Embedded
     private DevelopmentCards availableDevelopmentCards;
@@ -299,6 +301,14 @@ public class GameBean {
         this.developmentCardUsed = developmentCardUsed;
     }
 
+    public Integer getRoadsToBuildMandatory() {
+        return roadsToBuildMandatory;
+    }
+
+    public void setRoadsToBuildMandatory(Integer roadsToBuildMandatory) {
+        this.roadsToBuildMandatory = roadsToBuildMandatory;
+    }
+
     public DevelopmentCards getAvailableDevelopmentCards() {
         return availableDevelopmentCards;
     }
@@ -362,6 +372,26 @@ public class GameBean {
         }
 
         return hexesWithDiceNumber;
+    }
+
+    public List<EdgeBean> fetchEdgesWithBuildingsBelongsToGameUser(GameUserBean gameUser) {
+        List<EdgeBean> edgesWithBuildingsBelongsToGameUser = new ArrayList<EdgeBean>();
+        for (EdgeBean edge : this.edges) {
+            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
+                edgesWithBuildingsBelongsToGameUser.add(edge);
+            }
+        }
+
+        return edgesWithBuildingsBelongsToGameUser;
+    }
+
+    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoad(GameUserBean gameUser) {
+        Set<EdgeBean> edges = new HashSet<EdgeBean>();
+        for (EdgeBean edge : this.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
+            edges.addAll(edge.fetchNeighborEdgesAccessibleForBuildingRoad(gameUser));
+        }
+
+        return edges;
     }
 
     public Integer calculateDiceSumValue() {

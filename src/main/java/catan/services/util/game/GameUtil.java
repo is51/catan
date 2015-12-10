@@ -201,6 +201,7 @@ public class GameUtil {
         game.setStage(GameStage.PREPARATION);
         game.setPreparationCycle(1);
         game.setCurrentCycleBuildingNumber(1);
+        game.setRoadsToBuildMandatory(0);
         game.setDateStarted(new Date());
         playUtil.updateAvailableActionsForAllUsers(game);
 

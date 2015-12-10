@@ -7,6 +7,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.BoughtCardDetails;
 import catan.domain.transfer.output.game.MonopolyCardUsageDetails;
+import catan.domain.transfer.output.game.RoadBuildingCardUsageDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +134,19 @@ public class PlayController {
         Integer resourcesCount = Integer.parseInt(returnedParams.get("resourcesCount"));
 
         return new MonopolyCardUsageDetails(resourcesCount);
+    }
+
+    @RequestMapping(value = "use-card/road-building",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public RoadBuildingCardUsageDetails useCardRoadBuilding(@RequestParam(value = "token", required = false) String token,
+                                                            @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> returnedParams = playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, user, gameId);
+        Integer roadsCount = Integer.parseInt(returnedParams.get("roadsCount"));
+
+        return new RoadBuildingCardUsageDetails(roadsCount);
     }
 
     @Autowired
