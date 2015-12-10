@@ -204,6 +204,7 @@ public class GameUserBean {
                 ", ready: " + ready +
                 ", moveOrder: " + moveOrder +
                 ", availableActions: " + availableActions +
+                ", resources: " + resources +
                "]";
     }
 }
