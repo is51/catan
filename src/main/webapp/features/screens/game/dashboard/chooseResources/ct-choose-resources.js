@@ -5,7 +5,9 @@ angular.module('catan')
 
             return {
                 restrict: 'E',
-                scope: {},
+                scope: {
+                    game: "="
+                },
                 templateUrl: "/features/screens/game/dashboard/chooseResources/ct-choose-resources.html",
                 link: function(scope) {
 
@@ -22,19 +24,23 @@ angular.module('catan')
 
             function init(scope, type) {
 
-                var maxResourcesCountLimit = getMaxResourcesCountLimit(type);
-                var maxResourcesCountForApply = getMaxResourcesCountForApply(type);
-                var minResourcesCountLimit = getMinResourcesCountLimit(type);
-                var minResourcesCountForApply = getMinResourcesCountForApply(type);
+                var playerResources = scope.game.getCurrentUser().resources;
+
+                var maxResourcesCountLimit = getMaxResourcesCountLimit(type, playerResources);
+                var maxResourcesCountForApply = getMaxResourcesCountForApply(type, playerResources);
+                var minResourcesCountLimit = getMinResourcesCountLimit(type, playerResources);
+                var minResourcesCountForApply = getMinResourcesCountForApply(type, playerResources);
 
                 var removeOtherResourceWhenLimit = getRemoveOtherResourceWhenLimit(type);
 
+                scope.balanceType = getBalanceType(type);
+
                 scope.resources = {
-                    BRICK: 0,
-                    WOOD: 0,
-                    SHEEP: 0,
-                    WHEAT: 0,
-                    STONE: 0
+                    brick: 0,
+                    wood: 0,
+                    sheep: 0,
+                    wheat: 0,
+                    stone: 0
                 };
 
                 scope.getTotalCount = function() {
@@ -56,7 +62,7 @@ angular.module('catan')
                 };
 
                 scope.removeResource = function(resourceType) {
-                    if (scope.getTotalCount() > minResourcesCountLimit) {
+                    if (scope.getTotalCount() > minResourcesCountLimit && playerResources[resourceType] + scope.resources[resourceType] > 0) {
                         scope.resources[resourceType]--;
                     }
                 };
@@ -93,59 +99,76 @@ angular.module('catan')
                         var selection = {};
                         for (i in resources) {
                             if (resources[i] > 0) {
-                                selection.firstResource = i;
+                                selection.firstResource = i.toUpperCase();
                                 resources[i]--;
                                 break;
                             }
                         }
                         for (i in resources) {
                             if (resources[i] > 0) {
-                                selection.secondResource = i;
+                                selection.secondResource = i.toUpperCase();
                             }
                         }
                         return selection;
                     case "CARD_MONOPOLY":
                         for (i in resources) {
                             if (resources[i] > 0) {
-                                return {resource: i};
+                                return {resource: i.toUpperCase()};
                             }
                         }
+                        return;
+                    case "KICK_OFF_RESOURCES":
+                        return {
+                            brick: -resources.brick,
+                            wood: -resources.wood,
+                            sheep: -resources.sheep,
+                            wheat: -resources.wheat,
+                            stone: -resources.stone
+                        };
                 }
             }
 
-            function getMaxResourcesCountLimit(type) {
+            function getMaxResourcesCountLimit(type, playerResources) {
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return 2;
                     case "CARD_MONOPOLY":
                         return 1;
+                    case "KICK_OFF_RESOURCES":
+                        return 0;
                 }
             }
 
-            function getMaxResourcesCountForApply(type) {
+            function getMaxResourcesCountForApply(type, playerResources) {
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return 2;
                     case "CARD_MONOPOLY":
                         return 1;
+                    case "KICK_OFF_RESOURCES":
+                        return -calculateCountForKickOff(playerResources);
                 }
             }
 
-            function getMinResourcesCountLimit(type) {
+            function getMinResourcesCountLimit(type, playerResources) {
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return 0;
                     case "CARD_MONOPOLY":
                         return 0;
+                    case "KICK_OFF_RESOURCES":
+                        return -calculateCountForKickOff(playerResources);
                 }
             }
 
-            function getMinResourcesCountForApply(type) {
+            function getMinResourcesCountForApply(type, playerResources) {
                 switch (type) {
                     case "CARD_YEAR_OF_PLENTY":
                         return 2;
                     case "CARD_MONOPOLY":
                         return 1;
+                    case "KICK_OFF_RESOURCES":
+                        return -calculateCountForKickOff(playerResources);
                 }
             }
 
@@ -155,8 +178,28 @@ angular.module('catan')
                         return true; //TODO: or 'false' for 'year of plenty'?
                     case "CARD_MONOPOLY":
                         return true;
+                    case "KICK_OFF_RESOURCES":
+                        return false;
                 }
             }
 
+            function getBalanceType(type) {
+                switch (type) {
+                    case "CARD_YEAR_OF_PLENTY":
+                        return "POSITIVE";
+                    case "CARD_MONOPOLY":
+                        return "POSITIVE";
+                    case "KICK_OFF_RESOURCES":
+                        return "NEGATIVE";
+                }
+            }
+
+            function calculateCountForKickOff(resources) {
+                var sum = 0;
+                for (var i in resources) {
+                    sum += resources[i];
+                }
+                return Math.floor(sum / 2);
+            }
 
         }]);

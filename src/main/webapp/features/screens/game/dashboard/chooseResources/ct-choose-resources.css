@@ -37,6 +37,20 @@ ct-choose-resources .resource > button {
     color: #fff;
 }
 
+ct-choose-resources .resource > button.plus {
+    border-radius: 40px 40px 0 0;
+    height: 20px;
+    border-width: 1px;
+    margin-bottom: 0;
+}
+
+ct-choose-resources .resource > button.minus {
+    border-radius: 0 0 40px 40px;
+    height: 20px;
+    border-width: 1px;
+    margin-top: 0;
+}
+
 ct-choose-resources .resource > button:hover {
     border-color: #ccc;
 }
