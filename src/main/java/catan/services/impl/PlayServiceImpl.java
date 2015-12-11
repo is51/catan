@@ -119,6 +119,8 @@ public class PlayServiceImpl implements PlayService {
             case MOVE_ROBBER:
                 moveRobber(game, params.get("hexId"));
                 break;
+            case CHOOSE_PLAYER_TO_ROB:
+                break;
         }
     }
 
