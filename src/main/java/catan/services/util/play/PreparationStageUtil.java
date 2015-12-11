@@ -74,6 +74,7 @@ public class PreparationStageUtil {
             game.setStage(GameStage.MAIN);
             game.setDiceThrown(false);
             game.setDevelopmentCardUsed(false);
+            game.setChoosePlayerToRobMandatory(false);
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
         }
     }

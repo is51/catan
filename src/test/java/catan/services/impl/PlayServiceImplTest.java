@@ -2793,6 +2793,7 @@ public class PlayServiceImplTest {
         game.setAvailableDevelopmentCards(new DevelopmentCards(14, 5, 2, 2, 2));
         game.setDevelopmentCardUsed(false);
         game.setRobberShouldBeMovedMandatory(false);
+        game.setChoosePlayerToRobMandatory(false);
         game.setRoadsToBuildMandatory(0);
         playUtil.updateAvailableActionsForAllUsers(game);
     }
