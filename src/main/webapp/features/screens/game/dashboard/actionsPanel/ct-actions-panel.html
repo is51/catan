@@ -13,6 +13,11 @@
     Cards
 </button>
 
+<button ng-click="moveRobber()" ng-disabled="!game.isActionEnabledForCurrentUser('MOVE_ROBBER')">
+    <span class="glyphicon glyphicon-fire"></span><br>
+    Move rob
+</button>
+
 <button ng-click="endTurn()" ng-disabled="!game.isActionEnabledForCurrentUser('END_TURN')">
     <span class="glyphicon glyphicon-hourglass"></span><br>
     End turn
