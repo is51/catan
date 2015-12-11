@@ -13,7 +13,7 @@
     Cards
 </button>
 
-<button ng-click="moveRobber()" ng-disabled="!game.isActionEnabledForCurrentUser('MOVE_ROBBER')">
+<button ng-click="moveRobber()" ng-disabled="!game.isActionEnabledForCurrentUser('MOVE_ROBBER')" ng-show="game.isActionEnabledForCurrentUser('MOVE_ROBBER')">
     <span class="glyphicon glyphicon-fire"></span><br>
     Move rob
 </button>
