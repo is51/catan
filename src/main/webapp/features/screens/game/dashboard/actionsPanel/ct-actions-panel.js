@@ -38,6 +38,16 @@ angular.module('catan')
                         });
                     };
 
+                    scope.choosePlayerToRob = function() {
+                        PlayService.choosePlayerToRob(scope.game).then(function() {
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert("Choose Player To Rob error!");
+                            }
+                        });
+                    };
+
                     scope.build = function() {
                         ModalWindowService.show("BUY_PANEL");
                     };
