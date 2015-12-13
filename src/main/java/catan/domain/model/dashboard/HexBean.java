@@ -2,6 +2,7 @@ package catan.domain.model.dashboard;
 
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameUserBean;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
@@ -17,7 +18,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "HEX")
@@ -149,6 +152,18 @@ public class HexBean implements MapElement{
         }
 
         return nodesWithBuildings;
+    }
+
+    public Set<GameUserBean> fetchGameUsersWithBuildingsAtNodes() {
+        Set<GameUserBean> gameUsersWithBuildingsAtNodes = new HashSet<GameUserBean>();
+        for (NodeBean node : this.nodes.listAllNotNullItems()) {
+            if (node.getBuilding() != null) {
+                gameUsersWithBuildingsAtNodes.add(node.getBuilding().getBuildingOwner());
+            }
+        }
+
+        return gameUsersWithBuildingsAtNodes;
+
     }
 
     @Override
