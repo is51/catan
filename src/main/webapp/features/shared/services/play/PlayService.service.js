@@ -166,6 +166,36 @@ angular.module('catan')
                 return deferred.promise;
             };
 
+            PlayService.choosePlayerToRob = function (game) {
+                var deferred = $q.defer();
+
+                SelectService.requestSelection('node').then(
+                        function(nodeId) {
+                            var node = game.getMapObjectById('node', nodeId);
+
+                            if (node.building) {
+                                var gameUserId = node.building.ownerGameUserId;
+
+                                Remote.play.choosePlayerToRob({
+                                    gameId: game.getId(),
+                                    gameUserId: gameUserId
+                                }).then(function() {
+                                    deferred.resolve();
+                                }, function(response) {
+                                    deferred.reject(response);
+                                });
+                            } else {
+                                deferred.reject();
+                            }
+                        },
+                        function(response) {
+                            deferred.reject(response);
+                        }
+                );
+
+                return deferred.promise;
+            };
+
 
             return PlayService;
         }]);

@@ -18,6 +18,11 @@
     Move rob
 </button>
 
+<button ng-click="choosePlayerToRob()" ng-disabled="!game.isActionEnabledForCurrentUser('CHOOSE_PLAYER_TO_ROB')" ng-show="game.isActionEnabledForCurrentUser('CHOOSE_PLAYER_TO_ROB')">
+    <span class="glyphicon glyphicon-map-marker"></span><br>
+    Choose
+</button>
+
 <button ng-click="endTurn()" ng-disabled="!game.isActionEnabledForCurrentUser('END_TURN')">
     <span class="glyphicon glyphicon-hourglass"></span><br>
     End turn
