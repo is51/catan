@@ -124,6 +124,10 @@ public class DevelopmentCards {
         }
     }
 
+    public int calculateSum() {
+        return knight + victoryPoint + roadBuilding + monopoly + yearOfPlenty;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);

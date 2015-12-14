@@ -49,7 +49,27 @@ public class PlayUtil {
         }
     }
 
-    public void updateVictoryPoints(GameUserBean gameUser) throws GameException {
+    public void updateAchievements(GameBean game) throws GameException {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (game.getCurrentMove().equals(gameUser.getMoveOrder())) {
+                updateVictoryPoints(gameUser);
+                updateTotalDevCards(gameUser);
+            }
+            updateTotalResources(gameUser);
+        }
+    }
+
+    private void updateTotalDevCards(GameUserBean gameUser) {
+        int totalCards = gameUser.getDevelopmentCards().calculateSum();
+        gameUser.getAchievements().setTotalCards(totalCards);
+    }
+
+    private void updateTotalResources(GameUserBean gameUser) {
+        int totalResources = gameUser.getResources().calculateSum();
+        gameUser.getAchievements().setTotalResources(totalResources);
+    }
+
+    private void updateVictoryPoints(GameUserBean gameUser) throws GameException {
 
         int settlementsCount = gameUser.getBuildingsCount().getSettlements();
         int citiesCount = gameUser.getBuildingsCount().getCities();
