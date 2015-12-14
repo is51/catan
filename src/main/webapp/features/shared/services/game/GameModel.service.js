@@ -70,9 +70,10 @@ angular.module('catan')
                         array = this.map[arrayName],
                         primaryKey = type + 'Id',
                         elem,
-                        i;
+                        i,
+                        l;
 
-                    for (i in array) {
+                    for (i = 0, l = array.length; i < l; i++) {
                         elem = array[i];
                         if (elem[primaryKey] === id) {
                             return elem;
