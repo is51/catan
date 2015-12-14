@@ -19,11 +19,33 @@ public class MapValidator {
     private String mapElementType;
 
     public MapValidator(Scenario scenario, int x, int y, String mapElementPosition, String mapElementType) {
+        this(scenario, x, y, mapElementType);
+        this.mapElementPosition = mapElementPosition;
+    }
+
+    public MapValidator(Scenario scenario, int x, int y, String mapElementType) {
         this.scenario = scenario;
         this.x = x;
         this.y = y;
-        this.mapElementPosition = mapElementPosition;
         this.mapElementType = mapElementType;
+    }
+
+    public Scenario isRobbed() {
+        scenario.currentGameDetails.body(
+                "map.hexes" +
+                        ".findAll { it.x == " + x + " }" +
+                        ".find { it.y == " + y + " }" +
+                        ".robbed", equalTo(true));
+        return scenario;
+    }
+
+    public Scenario isNotRobbed() {
+        scenario.currentGameDetails.body(
+                "map.hexes" +
+                        ".findAll { it.x == " + x + " }" +
+                        ".find { it.y == " + y + " }" +
+                        ".robbed", equalTo(false));
+        return scenario;
     }
 
     public Scenario buildingIsEmpty() {

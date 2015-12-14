@@ -169,6 +169,12 @@ public class Scenario {
         return this;
     }
 
+    public MoveRobberAction MOVE_ROBBER(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new MoveRobberAction(userToken, this);
+    }
+
     public Scenario boughtCardIs(DevelopmentCard card) {
         lastApiResponse.then()
                 .statusCode(200)
@@ -192,6 +198,10 @@ public class Scenario {
 
     public MapValidator node(int x, int y, String nodePosition) {
         return new MapValidator(this, x, y, nodePosition, "node");
+    }
+
+    public MapValidator hex(int x, int y) {
+        return new MapValidator(this, x, y, "hex");
     }
 
     public GameUserValidator gameUser(int moveOrder) {
