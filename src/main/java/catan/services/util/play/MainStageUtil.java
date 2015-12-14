@@ -79,6 +79,7 @@ public class MainStageUtil {
         List<Action> actionsList = new ArrayList<Action>();
         boolean isMandatory = false;
 
+        allowMoveRobberMandatory(gameUser, game, actionsList);
         allowBuildRoadMandatory(gameUser, game, actionsList);
         if (actionsList.size() > 0) {
             isMandatory = true;
@@ -100,6 +101,14 @@ public class MainStageUtil {
 
         String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
         gameUser.setAvailableActions(availableActionsString);
+    }
+
+    private void allowMoveRobberMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isRobberShouldBeMovedMandatory()) {
+            actionsList.add(new Action(GameUserActionCode.MOVE_ROBBER));
+        }
     }
 
     private void allowBuildRoadMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {

@@ -149,6 +149,20 @@ public class PlayController {
         return new RoadBuildingCardUsageDetails(roadsCount);
     }
 
+    @RequestMapping(value = "robbery/move-robber",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void moveRobber(@RequestParam(value = "token", required = false) String token,
+                                    @RequestParam("gameId") String gameId,
+                                    @RequestParam("hexId") String hexId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("hexId", hexId);
+
+        playService.processAction(GameUserActionCode.MOVE_ROBBER, user, gameId, params);
+    }
+
     @Autowired
     public void setPlayService(PlayService playService) {
         this.playService = playService;

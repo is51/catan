@@ -144,6 +144,28 @@ angular.module('catan')
                 return deferred.promise;
             };
 
+            PlayService.moveRobber = function (game) {
+                var deferred = $q.defer();
+
+                SelectService.requestSelection('hex').then(
+                        function(hexId) {
+                            Remote.play.moveRobber({
+                                gameId: game.getId(),
+                                hexId: hexId
+                            }).then(function() {
+                                deferred.resolve();
+                            }, function(response) {
+                                deferred.reject(response);
+                            });
+                        },
+                        function(response) {
+                            deferred.reject(response);
+                        }
+                );
+
+                return deferred.promise;
+            };
+
 
             return PlayService;
         }]);

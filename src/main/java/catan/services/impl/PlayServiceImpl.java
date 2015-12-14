@@ -116,6 +116,9 @@ public class PlayServiceImpl implements PlayService {
             case USE_CARD_ROAD_BUILDING:
                 useCardRoadBuilding(gameUser, game, returnedParams);
                 break;
+            case MOVE_ROBBER:
+                moveRobber(game, params.get("hexId"));
+                break;
         }
     }
 
@@ -196,12 +199,13 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
-        if (!isRobbersActivity(diceFirstValue, diceSecondValue)) {
-            List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
-            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue);
-            mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
-        } else{
+        if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
+            game.setRobberShouldBeMovedMandatory(true);
             log.debug("Robbers activity due to dice value 7");
+        } else {
+            List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
+            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue.toString());
+            mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
         }
     }
 
@@ -262,6 +266,51 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
+    }
+
+    private void moveRobber(GameBean game, final String hexId) throws PlayException, GameException {
+        HexBean hexToRob = toValidHex(game, hexId);
+        validateHexCouldBeRobbed(hexToRob);
+
+        changeRobbedHex(game, hexToRob);
+        log.error("Hex {} successfully robbed", hexId);
+        game.setRobberShouldBeMovedMandatory(false);
+    }
+
+    private void changeRobbedHex(GameBean game, HexBean hexToRob) {
+        for (HexBean hex : game.getHexes()) {
+            if (hex.isRobbed()) {
+                hex.setRobbed(false);
+                break;
+            }
+        }
+        hexToRob.setRobbed(true);
+    }
+
+    private void validateHexCouldBeRobbed(HexBean hexToRob) throws PlayException {
+        if (hexToRob.isRobbed() || hexToRob.getResourceType().equals(HexType.EMPTY)) {
+            log.error("Hex {} cannot be robbed", hexToRob.getId());
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private HexBean toValidHex(GameBean game, String hexIdString) throws PlayException {
+        int hexId;
+        try {
+            hexId = Integer.parseInt(hexIdString);
+        } catch (Exception e) {
+            log.error("Cannot convert hexId to integer value");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        for (HexBean hex : game.getHexes()) {
+            if (hex.getId() == hexId) {
+                return hex;
+            }
+        }
+
+        log.error("Hex {} does not belong to game {}", hexId, game.getGameId());
+        throw new PlayException(ERROR_CODE_ERROR);
     }
 
     private HexType toValidResourceType(String resourceString) throws PlayException {

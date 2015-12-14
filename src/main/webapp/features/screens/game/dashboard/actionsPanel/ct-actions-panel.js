@@ -28,6 +28,16 @@ angular.module('catan')
                                 });
                     };
 
+                    scope.moveRobber = function() {
+                        PlayService.moveRobber(scope.game).then(function() {
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert("Move robber error!");
+                            }
+                        });
+                    };
+
                     scope.build = function() {
                         ModalWindowService.show("BUY_PANEL");
                     };

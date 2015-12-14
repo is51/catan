@@ -42,6 +42,11 @@ angular.module('catan')
                         SelectService.select('edge', edgeId);
                     });
 
+                    element.on('click', DrawMapService.HEX_SELECTOR, function(event) {
+                        var hexId = angular.element(event.target).closest(DrawMapService.HEX_SELECTOR).attr('hex-id');
+                        SelectService.select('hex', hexId);
+                    });
+
                 }
             };
 
