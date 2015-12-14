@@ -13,6 +13,11 @@
     Cards
 </button>
 
+<button ng-click="showTradePanel()" ng-disabled="!game.isActionGroupEnabledForCurrentUser('TRADE')">
+    <span class="glyphicon glyphicon-retweet"></span><br>
+    Trade
+</button>
+
 <button ng-click="endTurn()" ng-disabled="!game.isActionEnabledForCurrentUser('END_TURN')">
     <span class="glyphicon glyphicon-hourglass"></span><br>
     End turn
