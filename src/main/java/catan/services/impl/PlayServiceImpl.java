@@ -296,11 +296,8 @@ public class PlayServiceImpl implements PlayService {
         int stoneQuantityToKickOff = toValidResourceQuantity(stoneString, usersStoneQuantity);
 
         int sumOfResourcesKickingOff = brickQuantityToKickOff + woodQuantityToKickOff + sheepQuantityToKickOff + wheatQuantityToKickOff + stoneQuantityToKickOff;
-
-        //TODO: throw into validateSumOfResources() a "gameUser.getAchievements()" instead of "sumOfUsersResources" when getTotalResources achievements would be calculated correctly
-        int sumOfUsersResources = usersBrickQuantity + usersWoodQuantity + usersSheepQuantity + usersWheatQuantity + usersStoneQuantity;
+        int sumOfUsersResources = gameUser.getAchievements().getTotalResources();
         validateSumOfResources(sumOfUsersResources, sumOfResourcesKickingOff);
-        //validateSumOfResources(gameUser.getAchievements(), sumOfResourcesKickingOff);
 
         userResources.setBrick(usersBrickQuantity - brickQuantityToKickOff);
         userResources.setWood(usersWoodQuantity - woodQuantityToKickOff);
@@ -322,7 +319,6 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void validateSumOfResources(int sumOfUsersResources, int sumOfResourcesKickingOff) throws PlayException {
-        //if (sumOfResourcesKickingOff != userAchievements.getTotalResources() / 2) {
         if (sumOfResourcesKickingOff != sumOfUsersResources / 2) {
             log.error("Wrong resources quantity: {}", sumOfResourcesKickingOff);
             throw new PlayException(ERROR_CODE_ERROR);
@@ -354,20 +350,11 @@ public class PlayServiceImpl implements PlayService {
     private void checkIfPlayersShouldKickOffResources(GameBean game) {
         boolean noOneNeedsToKickOfResources = true;
         for (GameUserBean gameUser : game.getGameUsers()) {
-            Resources usersResources = gameUser.getResources();
-            if (usersResources.getWood() + usersResources.getBrick() + usersResources.getWheat() + usersResources.getSheep() + usersResources.getStone() > 7) {
+            if (gameUser.getAchievements().getTotalResources() > 7) {
                 gameUser.setKickingOffResourcesMandatory(true);
                 noOneNeedsToKickOfResources = false;
             }
         }
-        /*TODO: Use this cycle instead of cycle before when getTotalResources achievements would be calculated correctly
-        * for (GameUserBean gameUser : game.getGameUsers()) {
-        *     if (gameUser.getAchievements().getTotalResources() > 7) {
-        *         gameUser.setKickingOffResourcesMandatory(true);
-        *         noOneNeedsToKickOfResources = false;
-        *     }
-        * }
-        */
 
         if (noOneNeedsToKickOfResources) {
             game.setRobberShouldBeMovedMandatory(true);

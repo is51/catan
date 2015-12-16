@@ -14,6 +14,7 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
+import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -2412,6 +2413,7 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         gameUser2.setResources(new Resources(10, 0, 0, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 10, 0, 0, 0));
         allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -2445,7 +2447,9 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         gameUser1.setResources(new Resources(9, 0, 0, 0, 0));
+        gameUser1.setAchievements(new Achievements(0, 9, 0, 0, 0));
         gameUser2.setResources(new Resources(5, 0, 0, 0, 5));
+        gameUser2.setAchievements(new Achievements(0, 10, 0, 0, 0));
         allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -2492,7 +2496,9 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        gameUser1.setAchievements(new Achievements(0, 10, 0, 0, 0));
         gameUser2.setResources(new Resources(10, 0, 0, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 10, 0, 0, 0));
         allowUserToThrowDice(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -2529,6 +2535,7 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        gameUser1.setAchievements(new Achievements(0, 10, 0, 0, 0));
         allowUserKickOffResources(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -2560,6 +2567,7 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        gameUser1.setAchievements(new Achievements(0, 10, 0, 0, 0));
         allowUserKickOffResources(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -2591,6 +2599,7 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         gameUser1.setResources(new Resources(10, 0, 0, 0, 0));
+        gameUser1.setAchievements(new Achievements(0, 10, 0, 0, 0));
         allowUserKickOffResources(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
