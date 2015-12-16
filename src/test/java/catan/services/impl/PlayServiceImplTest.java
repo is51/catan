@@ -14,6 +14,7 @@ import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
+import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -2411,6 +2412,7 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
@@ -2434,6 +2436,7 @@ public class PlayServiceImplTest {
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         hex_0_0.getNodes().getTopLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
@@ -2457,7 +2460,9 @@ public class PlayServiceImplTest {
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         hex_0_0.getNodes().getTopLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser3));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         gameUser3.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser3.setAchievements(new Achievements(0, 1, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
@@ -2485,6 +2490,7 @@ public class PlayServiceImplTest {
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         hex_0_0.getNodes().getTopLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser3));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         gameUser3.setResources(new Resources(0, 0, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
@@ -2523,7 +2529,9 @@ public class PlayServiceImplTest {
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         hex_0_0.getNodes().getTopLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser3));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         gameUser3.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser3.setAchievements(new Achievements(0, 1, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
@@ -2557,8 +2565,11 @@ public class PlayServiceImplTest {
         hex_0_0.getNodes().getTopLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser3));
         hex_1_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser4));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         gameUser3.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser3.setAchievements(new Achievements(0, 1, 0, 0, 0));
         gameUser4.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser4.setAchievements(new Achievements(0, 1, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
@@ -2591,7 +2602,9 @@ public class PlayServiceImplTest {
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         hex_0_0.getNodes().getTopLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser3));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         gameUser3.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser3.setAchievements(new Achievements(0, 1, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);
@@ -2624,7 +2637,9 @@ public class PlayServiceImplTest {
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
         hex_0_0.getNodes().getTopLeft().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser3));
         gameUser2.setResources(new Resources(0, 0, 1, 0, 0));
+        gameUser2.setAchievements(new Achievements(0, 1, 0, 0, 0));
         gameUser3.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser3.setAchievements(new Achievements(0, 1, 0, 0, 0));
         game.setCurrentMove(gameUser1.getMoveOrder());
         game.setCurrentCycleBuildingNumber(null);
         game.setStage(GameStage.MAIN);

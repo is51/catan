@@ -300,9 +300,9 @@ public class PlayServiceImpl implements PlayService {
         GameUserBean robbedGameUser = gameUtil.getGameUserById(gameUserId, game);
         validateGameUserCouldBeRobbed(gameUser, game, robbedGameUser);
 
-        Resources robbedUsersResources = robbedGameUser.getResources();
-        HexType stolenResourceType = randomUtil.getRandomUsersResource(robbedUsersResources);
-        if (stolenResourceType != null) {
+        if (robbedGameUser.getAchievements().getTotalResources() > 0) {
+            Resources robbedUsersResources = robbedGameUser.getResources();
+            HexType stolenResourceType = randomUtil.getRandomUsersResource(robbedUsersResources);
             int stolenResourceQuantity = robbedUsersResources.quantityOf(stolenResourceType);
             robbedUsersResources.updateResourceQuantity(stolenResourceType, stolenResourceQuantity - 1);
             int obtainedResourceQuantity = currentUsersResources.quantityOf(stolenResourceType);
