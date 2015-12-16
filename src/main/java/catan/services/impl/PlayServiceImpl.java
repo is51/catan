@@ -76,7 +76,7 @@ public class PlayServiceImpl implements PlayService {
         
         doAction(action, user, gameUser, game, params, returnedParams);
 
-        playUtil.updateVictoryPoints(gameUser);
+        playUtil.updateAchievements(game);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
         playUtil.updateAvailableActionsForAllUsers(game);
 

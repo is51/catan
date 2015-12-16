@@ -113,6 +113,10 @@ public class Resources {
         }
     }
 
+    public int calculateSum() {
+        return brick + wood + sheep + stone + wheat;
+    }
+
     @Override
     public String toString() {
         return "Resources{" +
