@@ -292,12 +292,14 @@ public class Scenario {
                 int sheep = gameUser(i).getValueOf("resources.sheep");
                 int wheat = gameUser(i).getValueOf("resources.wheat");
                 int stone = gameUser(i).getValueOf("resources.stone");
+                int totalResources = gameUser(i).getValueOf("achievements.totalResources");
 
                 usersResources.put("user" + i + "brick", brick);
                 usersResources.put("user" + i + "wood", wood);
                 usersResources.put("user" + i + "sheep", sheep);
                 usersResources.put("user" + i + "wheat", wheat);
                 usersResources.put("user" + i + "stone", stone);
+                usersResources.put("user" + i + "totalResources", totalResources);
             }
 
             if (trackCards) {
@@ -306,12 +308,14 @@ public class Scenario {
                 int roadBuilding = gameUser(i).getValueOf("developmentCards.roadBuilding");
                 int monopoly = gameUser(i).getValueOf("developmentCards.monopoly");
                 int yearOfPlenty = gameUser(i).getValueOf("developmentCards.yearOfPlenty");
+                int totalCards = gameUser(i).getValueOf("achievements.totalCards");
 
                 usersCards.put("user" + i + "knight", knight);
                 usersCards.put("user" + i + "victoryPoint", victoryPoint);
                 usersCards.put("user" + i + "roadBuilding", roadBuilding);
                 usersCards.put("user" + i + "monopoly", monopoly);
                 usersCards.put("user" + i + "yearOfPlenty", yearOfPlenty);
+                usersCards.put("user" + i + "totalCards", totalCards);
             }
         }
     }
