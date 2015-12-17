@@ -61,6 +61,7 @@ public class RandomUtil {
         int stone = userResources.getStone();
         int totalResourcesInSequence = brick + wood + sheep + wheat + stone;
 
+        //TODO: it should never happen since we check the same condition above
         if (totalResourcesInSequence == 0) {
             return null;
         }

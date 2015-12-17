@@ -276,15 +276,15 @@ public class PlayServiceImpl implements PlayService {
         validateHexCouldBeRobbed(hexToRob);
 
         changeRobbedHex(game, hexToRob);
-        log.error("Hex {} successfully robbed", hexId);
+        log.info("Hex {} successfully robbed", hexId);
         game.setRobberShouldBeMovedMandatory(false);
 
         List<GameUserBean> playersAtHex = new ArrayList<GameUserBean>(hexToRob.fetchGameUsersWithBuildingsAtNodes());
         playersAtHex.remove(gameUser);
         int playersToRobQuantity = playersAtHex.size();
         if (playersToRobQuantity == 1) {
-            int robbedGameUserId = playersAtHex.get(0).getGameUserId();
-            choosePlayerToRob(gameUser, game, userResources, robbedGameUserId);
+            GameUserBean playerToRob = playersAtHex.get(0);
+            choosePlayerToRob(gameUser, game, userResources, playerToRob.getGameUserId());
         }
         if (playersToRobQuantity > 1) {
             game.setChoosePlayerToRobMandatory(true);
@@ -298,11 +298,15 @@ public class PlayServiceImpl implements PlayService {
 
     private void choosePlayerToRob(GameUserBean gameUser, GameBean game, Resources currentUsersResources, int gameUserId) throws PlayException, GameException {
         GameUserBean robbedGameUser = gameUtil.getGameUserById(gameUserId, game);
+        log.info("Robbing player: {}", robbedGameUser);
+
         validateGameUserCouldBeRobbed(gameUser, game, robbedGameUser);
 
         if (robbedGameUser.getAchievements().getTotalResources() > 0) {
             Resources robbedUsersResources = robbedGameUser.getResources();
             HexType stolenResourceType = randomUtil.getRandomUsersResource(robbedUsersResources);
+            log.info("Resource to rob is {}", stolenResourceType);
+
             int stolenResourceQuantity = robbedUsersResources.quantityOf(stolenResourceType);
             robbedUsersResources.updateResourceQuantity(stolenResourceType, stolenResourceQuantity - 1);
             int obtainedResourceQuantity = currentUsersResources.quantityOf(stolenResourceType);
