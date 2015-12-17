@@ -82,7 +82,7 @@ public class PlayServiceImpl implements PlayService {
 
         gameDao.updateGame(game);
 
-        log.debug("User {} successfully performed action {}", user.getUsername(), action);
+        log.debug("Action {} was successfully performed by user {}", action, gameUser);
         return returnedParams;
     }
     
