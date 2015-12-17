@@ -21,7 +21,6 @@ import static catan.domain.model.dashboard.types.HexType.WHEAT;
 import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static catan.domain.model.game.types.DevelopmentCard.YEAR_OF_PLENTY;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
@@ -47,14 +46,15 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
 
     @Before
     public void setup() {
+        scenario = new Scenario((RandomUtilMock) randomUtil);
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
-
-        scenario = new Scenario((RandomUtilMock) randomUtil);
     }
 
     @Test

@@ -2,15 +2,21 @@ package catan.controllers.testcases.play;
 
 import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
+import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomUtilMock;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
+
 import static com.jayway.restassured.RestAssured.given;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,6 +32,9 @@ public class PreparationStageTest extends PlayTestUtil {
     public static final String USER_PASSWORD_3 = "password3";
 
     private static boolean initialized = false;
+
+    @Autowired
+    private RandomUtil randomUtil;
 
     @Before
     public void setup() {
@@ -93,6 +102,8 @@ public class PreparationStageTest extends PlayTestUtil {
 
         String[] availableActionsThrowDice = {"THROW_DICE"};
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActionsThrowDice);
+
+        nextRandomDiceValues(asList(1,1));
         throwDice(userTokens[activeUserNumber], gameId);
 
         String[] availableActions = {"END_TURN"};
@@ -410,5 +421,10 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("findall.size()", greaterThan(0));
     }
 
+    public void nextRandomDiceValues(List<Integer> nextRandomValues) {
+        for (Integer nextRandomValue : nextRandomValues) {
+            ((RandomUtilMock)randomUtil).setNextDiceNumber(nextRandomValue);
+        }
+    }
 
 }

@@ -63,6 +63,7 @@ public class ThrowDiceTest extends PlayTestUtil {
         playPreparationStage()
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("THROW_DICE")
+                .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1).successfully()
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("THROW_DICE")
@@ -70,6 +71,7 @@ public class ThrowDiceTest extends PlayTestUtil {
 
                 .getGameDetails(2)
                 .gameUser(2).hasAvailableAction("THROW_DICE")
+                .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(2).successfully()
                 .getGameDetails(2)
                 .gameUser(2).doesntHaveAvailableAction("THROW_DICE")
@@ -80,6 +82,7 @@ public class ThrowDiceTest extends PlayTestUtil {
     public void should_fail_when_user_throw_dice_after_he_has_already_thrown() {
 
         playPreparationStage()
+                .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1).successfully()
                 .THROW_DICE(1).failsWithError("ERROR");
     }
