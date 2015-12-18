@@ -91,6 +91,7 @@ public class PlayServiceImplTest {
     private GameBean game;
     private HexBean hex_0_0;
     private HexBean hex_1_0;
+    private HexBean hex_0_1;
     private GameUserBean gameUser1;
     private GameUserBean gameUser2;
 
@@ -2277,7 +2278,6 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         allowUserToThrowDice(gameUser1);
-        hex_1_0.setRobbed(true);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         //Should generate dices values 2 & 5
@@ -2293,7 +2293,7 @@ public class PlayServiceImplTest {
 
         assertNotNull(game);
         assertTrue(hex_0_0.isRobbed());
-        assertFalse(hex_1_0.isRobbed());
+        assertFalse(hex_0_1.isRobbed());
     }
 
     @Test
@@ -2304,7 +2304,6 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         allowUserToMoveRobber(gameUser1);
-        hex_1_0.setRobbed(true);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
@@ -2331,7 +2330,6 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         allowUserToMoveRobber(gameUser1);
-        hex_1_0.setRobbed(true);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
@@ -2358,11 +2356,10 @@ public class PlayServiceImplTest {
         game.setStage(GameStage.MAIN);
         game.setDiceThrown(false);
         allowUserToMoveRobber(gameUser1);
-        hex_1_0.setRobbed(true);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_1_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_1.getId()));
 
         try {
             // WHEN
@@ -2464,7 +2461,7 @@ public class PlayServiceImplTest {
 
         hex_0_0 = new HexBean(game, new Coordinates(0, 0), HexType.BRICK, 2, false);
         hex_1_0 = new HexBean(game, new Coordinates(1, 0), HexType.WOOD, 10, false);
-        HexBean hex_0_1 = new HexBean(game, new Coordinates(0, 1), HexType.STONE, 11, true);
+        hex_0_1 = new HexBean(game, new Coordinates(0, 1), HexType.STONE, 11, true);
 
         NodeBean node_1_1 = new NodeBean(game, NodePortType.ANY);
         NodeBean node_1_2 = new NodeBean(game, NodePortType.NONE);
