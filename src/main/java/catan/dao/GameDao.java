@@ -12,6 +12,8 @@ public interface GameDao {
 
     GameBean getGameByPrivateCode(String privateCode);
 
+    void refreshGameBean(GameBean gameBean);
+
     List<GameBean> getGamesByCreatorId(int creatorId);
 
     List<GameBean> getGamesWithJoinedUser(int userId);
