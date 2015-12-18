@@ -173,4 +173,18 @@ public class HexBean implements MapElement{
         
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "HexBean{" +
+                "id=" + id +
+                ", gameId=" + game.getGameId() +
+                ", coordinates=" + coordinates +
+                ", resourceType=" + resourceType +
+                ", dice=" + dice +
+                ", robbed=" + robbed +
+                ", nodes=" + nodes +
+                ", edges=" + edges +
+                '}';
+    }
 }

@@ -36,6 +36,7 @@ public class Scenario {
     }
 
     public Scenario(RandomUtilMock randomUtil) {
+        randomUtil.resetMock();
         this.randomUtil = randomUtil;
     }
 

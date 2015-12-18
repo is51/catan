@@ -18,6 +18,15 @@ public class RandomUtilMock extends RandomUtil {
     private Map<Coordinates, Integer> hexDiceNumbersToGenerate = new HashMap<Coordinates, Integer>();
     private List<DevelopmentCard> developmentCardsToGenerate = new LinkedList<DevelopmentCard>();
 
+    public void resetMock(){
+        privateCodesToGenerate = new LinkedList<String>();
+        moveOrdersToGenerate = new LinkedList<Integer>();
+        diceNumbersToGenerate = new LinkedList<Integer>();
+        hexTypesToGenerate = new HashMap<Coordinates, HexType>();
+        hexDiceNumbersToGenerate = new HashMap<Coordinates, Integer>();
+        developmentCardsToGenerate = new LinkedList<DevelopmentCard>();
+    }
+
     public void setNextPrivateCode(String privateCode){
         privateCodesToGenerate.add(privateCode);
     }
