@@ -297,7 +297,7 @@ public class PlayServiceImpl implements PlayService {
 
         int sumOfResourcesKickingOff = brickQuantityToKickOff + woodQuantityToKickOff + sheepQuantityToKickOff + wheatQuantityToKickOff + stoneQuantityToKickOff;
         int sumOfUsersResources = gameUser.getAchievements().getTotalResources();
-        validateSumOfResources(sumOfUsersResources, sumOfResourcesKickingOff);
+        validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(sumOfUsersResources, sumOfResourcesKickingOff);
 
         userResources.setBrick(usersBrickQuantity - brickQuantityToKickOff);
         userResources.setWood(usersWoodQuantity - woodQuantityToKickOff);
@@ -318,7 +318,7 @@ public class PlayServiceImpl implements PlayService {
         game.setRobberShouldBeMovedMandatory(true);
     }
 
-    private void validateSumOfResources(int sumOfUsersResources, int sumOfResourcesKickingOff) throws PlayException {
+    private void validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(int sumOfUsersResources, int sumOfResourcesKickingOff) throws PlayException {
         if (sumOfResourcesKickingOff != sumOfUsersResources / 2) {
             log.error("Wrong resources quantity: {}", sumOfResourcesKickingOff);
             throw new PlayException(ERROR_CODE_ERROR);
