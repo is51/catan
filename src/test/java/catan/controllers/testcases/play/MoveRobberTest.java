@@ -13,8 +13,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Collections;
-
 import static catan.domain.model.dashboard.types.HexType.BRICK;
 import static catan.domain.model.dashboard.types.HexType.EMPTY;
 import static catan.domain.model.dashboard.types.HexType.SHEEP;
@@ -81,7 +79,7 @@ public class MoveRobberTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_move_robber_hex_with_one_building_and_dont_steal_resource_from_player_when_he_has_no_resources() {
+    public void should_successfully_move_robber_hex_with_1_building_and_dont_steal_resource_from_player_when_he_has_no_resources() {
         playPreparationStage()
                 .nextRandomDiceValues(asList(4, 3))
                 .THROW_DICE(1)
@@ -163,7 +161,7 @@ public class MoveRobberTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_move_robber_to_hex_with_2_buildings_and_steal_1_resource_from_chosen_player_when_he_has_2_different_resources() {
+    public void should_successfully_move_robber_to_hex_with_3_buildings_and_steal_1_resource_from_chosen_player_when_he_has_2_different_resources() {
         playPreparationStage()
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
@@ -210,7 +208,7 @@ public class MoveRobberTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_move_robber_to_hex_with_2_buildings_and_dont_steal_any_resources_from_chosen_player_when_he_has_no_resources() {
+    public void should_successfully_move_robber_to_hex_with_3_buildings_and_dont_steal_any_resources_from_chosen_player_when_he_has_no_resources() {
         playPreparationStage()
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
@@ -247,6 +245,75 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).hasAvailableAction("END_TURN")
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                 .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_successfully_rob_player_when_he_is_only_one_rival_at_robbed_hex_and_current_user_has_his_own_building_at_robbed_hex() {
+        playPreparationStage()
+                .nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .END_TURN(1)
+                .startTrackResourcesQuantity()
+
+                .nextRandomDiceValues(asList(4, 4))//Give 1 brick to second player
+                .THROW_DICE(2)
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(1, 0, 0, 0, 0)
+
+                .END_TURN(2)
+                .nextRandomDiceValues(asList(1, 2)) //Give 1 sheep to second player
+                .THROW_DICE(3)
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
+
+                .END_TURN(3)
+                .nextRandomDiceValues(asList(4, 3)) //Robbers action
+                .THROW_DICE(1)
+
+                .nextRandomStolenResources(asList(BRICK))   //Resource to steal
+                .MOVE_ROBBER(1).toCoordinates(1, -2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 0)
+                .gameUser(1).hasAvailableAction("END_TURN")
+                .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
+                .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(-1, 0, 0, 0, 0)
+
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_fail_when_user_rob_himself() {
+        playPreparationStage()
+                .nextRandomDiceValues(asList(4, 3))
+                .startTrackResourcesQuantity()
+                .THROW_DICE(1)
+
+                .MOVE_ROBBER(1).toCoordinates(0, -2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN")
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
+
+                .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(1).failsWithError("ERROR")
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN")
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
 
                 .getGameDetails(2)
                 .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
