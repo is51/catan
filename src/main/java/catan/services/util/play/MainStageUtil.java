@@ -80,6 +80,7 @@ public class MainStageUtil {
         boolean isMandatory = false;
 
         allowMoveRobberMandatory(gameUser, game, actionsList);
+        allowChoosePlayerToRob(gameUser, game, actionsList);
         allowBuildRoadMandatory(gameUser, game, actionsList);
         if (actionsList.size() > 0) {
             isMandatory = true;
@@ -108,6 +109,14 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isRobberShouldBeMovedMandatory()) {
             actionsList.add(new Action(GameUserActionCode.MOVE_ROBBER));
+        }
+    }
+
+    private void allowChoosePlayerToRob(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isChoosePlayerToRobMandatory()) {
+            actionsList.add(new Action(GameUserActionCode.CHOOSE_PLAYER_TO_ROB));
         }
     }
 
