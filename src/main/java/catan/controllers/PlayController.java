@@ -123,8 +123,8 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public MonopolyCardUsageDetails useCardMonopoly(@RequestParam(value = "token", required = false) String token,
-                                    @RequestParam("gameId") String gameId,
-                                    @RequestParam("resource") String resource) throws AuthenticationException, GameException, PlayException {
+                                                    @RequestParam("gameId") String gameId,
+                                                    @RequestParam("resource") String resource) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> params = new HashMap<String, String>();
@@ -161,6 +161,20 @@ public class PlayController {
         params.put("hexId", hexId);
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, user, gameId, params);
+    }
+
+    @RequestMapping(value = "robbery/choose-player-to-rob",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void choosePlayerToRob(@RequestParam(value = "token", required = false) String token,
+                                  @RequestParam("gameId") String gameId,
+                                  @RequestParam("gameUserId") String gameUserId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("gameUserId", gameUserId);
+
+        playService.processAction(GameUserActionCode.CHOOSE_PLAYER_TO_ROB, user, gameId, params);
     }
 
     @RequestMapping(value = "robbery/kick-off-resources",

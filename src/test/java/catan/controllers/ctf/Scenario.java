@@ -176,6 +176,12 @@ public class Scenario {
         return new MoveRobberAction(userToken, this);
     }
 
+    public ChoosePlayerToRobAction CHOOSE_PLAYER_TO_ROB(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new ChoosePlayerToRobAction(userToken, this);
+    }
+
     public Scenario boughtCardIs(DevelopmentCard card) {
         lastApiResponse.then()
                 .statusCode(200)
@@ -270,6 +276,13 @@ public class Scenario {
     public Scenario nextRandomDevelopmentCards(List<DevelopmentCard> nextCards) {
         for (DevelopmentCard nextCard : nextCards) {
             randomUtil.setNextDevelopmentCard(nextCard);
+        }
+
+        return this;
+    }
+    public Scenario nextRandomStolenResources(List<HexType> resources) {
+        for (HexType resource : resources) {
+            randomUtil.setNextStolenResource(resource);
         }
 
         return this;

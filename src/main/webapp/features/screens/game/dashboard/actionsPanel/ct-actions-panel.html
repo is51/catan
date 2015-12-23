@@ -18,6 +18,11 @@
     Move rob
 </button>
 
+<button ng-click="choosePlayerToRob()" ng-disabled="!game.isActionEnabledForCurrentUser('CHOOSE_PLAYER_TO_ROB')" ng-show="game.isActionEnabledForCurrentUser('CHOOSE_PLAYER_TO_ROB')">
+    <span class="glyphicon glyphicon-map-marker"></span><br>
+    Choose
+</button>
+
 <button ng-click="kickOffResources()" ng-disabled="!game.isActionEnabledForCurrentUser('KICK_OFF_RESOURCES')" ng-show="game.isActionEnabledForCurrentUser('KICK_OFF_RESOURCES')">
     <span class="glyphicon glyphicon-download-alt"></span><br>
     Kick res
