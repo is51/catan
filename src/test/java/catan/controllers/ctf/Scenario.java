@@ -170,6 +170,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario KICK_OFF_RESOURCES(int moveOrder, int brick, int wood, int sheep, int wheat, int stone) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.kickOffResources(userToken, gameId, brick, wood, sheep, wheat, stone);
+        return this;
+    }
+
     public MoveRobberAction MOVE_ROBBER(int moveOrder) {
         saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
