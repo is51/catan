@@ -12,7 +12,6 @@ import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
-import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
@@ -51,6 +50,9 @@ public class MainStageUtil {
 
     public void produceResourcesFromActiveDiceHexes(List<HexBean> hexes) {
         for (HexBean hex : hexes) {
+            if (hex.isRobbed()) {
+                continue;
+            }
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
                 Building<NodeBuiltType> building = node.getBuilding();
                 HexType resourceType = hex.getResourceType();
