@@ -16,6 +16,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
     protected static final String URL_USE_CARD_YEAR_OF_PLENTY = "/api/play/use-card/year-of-plenty";
     protected static final String URL_USE_CARD_ROAD_BUILDING = "/api/play/use-card/road-building";
     protected static final String URL_MOVE_ROBBER = "/api/play/robbery/move-robber";
+    protected static final String CHOOSE_PLAYER_TO_ROB = "/api/play/robbery/choose-player-to-rob";
 
     public static Response buildSettlement(String token, int gameId, int nodeId) {
         return given()
@@ -105,5 +106,14 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .parameters("token", token, "gameId", gameId, "hexId", hexId)
                 .when()
                 .post(URL_MOVE_ROBBER);
+    }
+
+    public static Response choosePlayerToRob(String token, int gameId, int gameUserId) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId, "gameUserId", gameUserId)
+                .when()
+                .post(CHOOSE_PLAYER_TO_ROB);
     }
 }
