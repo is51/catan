@@ -196,6 +196,38 @@ angular.module('catan')
                 return deferred.promise;
             };
 
+            PlayService.kickOffResources = function (game) {
+                var deferred = $q.defer();
+
+                var windowAndSelectionId = "KICK_OFF_RESOURCES";
+
+                ChooseResourcesWindowService.show(windowAndSelectionId);
+
+                SelectService.requestSelection(windowAndSelectionId).then(
+                        function(response) {
+                            Remote.play.kickOffResources({
+                                gameId: game.getId(),
+                                brick: response.brick,
+                                wood: response.wood,
+                                sheep: response.sheep,
+                                wheat: response.wheat,
+                                stone: response.stone
+                            }).then(function(response) {
+                                deferred.resolve(response);
+                            }, function(response) {
+                                deferred.reject(response);
+                            });
+
+                            ChooseResourcesWindowService.hide();
+                        },
+                        function(response) {
+                            deferred.reject(response);
+                            ChooseResourcesWindowService.hide();
+                        });
+
+                return deferred.promise;
+            };
+
 
             return PlayService;
         }]);

@@ -122,6 +122,9 @@ public class PlayServiceImpl implements PlayService {
             case CHOOSE_PLAYER_TO_ROB:
                 choosePlayerToRob(gameUser, game, usersResources, params.get("gameUserId"));
                 break;
+            case KICK_OFF_RESOURCES:
+                kickOffResources(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                break;
         }
     }
 
@@ -203,8 +206,8 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
-            game.setRobberShouldBeMovedMandatory(true);
-            log.debug("Robbers activity due to dice value 7");
+            log.debug("Current dice value is 7");
+            checkIfPlayersShouldKickOffResources(game);
         } else {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
             log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue.toString());
@@ -342,6 +345,87 @@ public class PlayServiceImpl implements PlayService {
             throw new GameException(ERROR_CODE_ERROR);
         }
         return gameUserId;
+    }
+
+    private void kickOffResources(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+
+
+        int usersBrickQuantity = userResources.getBrick();
+        int usersWoodQuantity = userResources.getWood();
+        int usersSheepQuantity = userResources.getSheep();
+        int usersWheatQuantity = userResources.getWheat();
+        int usersStoneQuantity = userResources.getStone();
+
+        int brickQuantityToKickOff = toValidResourceQuantity(brickString, usersBrickQuantity);
+        int woodQuantityToKickOff = toValidResourceQuantity(woodString, usersWoodQuantity);
+        int sheepQuantityToKickOff = toValidResourceQuantity(sheepString, usersSheepQuantity);
+        int wheatQuantityToKickOff = toValidResourceQuantity(wheatString, usersWheatQuantity);
+        int stoneQuantityToKickOff = toValidResourceQuantity(stoneString, usersStoneQuantity);
+
+        int sumOfResourcesKickingOff = brickQuantityToKickOff + woodQuantityToKickOff + sheepQuantityToKickOff + wheatQuantityToKickOff + stoneQuantityToKickOff;
+        int sumOfUsersResources = gameUser.getAchievements().getTotalResources();
+        validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(sumOfUsersResources, sumOfResourcesKickingOff);
+
+        userResources.setBrick(usersBrickQuantity - brickQuantityToKickOff);
+        userResources.setWood(usersWoodQuantity - woodQuantityToKickOff);
+        userResources.setSheep(usersSheepQuantity - sheepQuantityToKickOff);
+        userResources.setWheat(usersWheatQuantity - wheatQuantityToKickOff);
+        userResources.setStone(usersStoneQuantity - stoneQuantityToKickOff);
+
+        gameUser.setKickingOffResourcesMandatory(false);
+        checkRobberShouldBeMovedMandatory(game);
+    }
+
+    private void checkRobberShouldBeMovedMandatory(GameBean game) {
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            if (gameUserIterated.isKickingOffResourcesMandatory()) {
+                return;
+            }
+        }
+        game.setRobberShouldBeMovedMandatory(true);
+    }
+
+    private void validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(int sumOfUsersResources, int sumOfResourcesKickingOff) throws PlayException {
+        if (sumOfResourcesKickingOff != sumOfUsersResources / 2) {
+            log.error("Wrong resources quantity: {}", sumOfResourcesKickingOff);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private int toValidResourceQuantity(String resourceQuantityString, int usersResourceQuantity) throws PlayException {
+        int resourceQuantity;
+        try {
+            resourceQuantity = Integer.parseInt(resourceQuantityString);
+        } catch (Exception e) {
+            log.error("Cannot convert resourceQuantity to integer value: {}", resourceQuantityString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (resourceQuantity < 0) {
+            log.error("Resource quantity could not be below 0");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (resourceQuantity > usersResourceQuantity) {
+            log.error("User cannot kick of more resources than he has: {} / {}", resourceQuantity, usersResourceQuantity);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+        return resourceQuantity;
+    }
+
+
+    private void checkIfPlayersShouldKickOffResources(GameBean game) {
+        boolean noOneNeedsToKickOfResources = true;
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getAchievements().getTotalResources() > 7) {
+                gameUser.setKickingOffResourcesMandatory(true);
+                noOneNeedsToKickOfResources = false;
+            }
+        }
+
+        if (noOneNeedsToKickOfResources) {
+            game.setRobberShouldBeMovedMandatory(true);
+        }
     }
 
     private void changeRobbedHex(GameBean game, HexBean hexToRob) {

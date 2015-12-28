@@ -48,6 +48,16 @@ angular.module('catan')
                         });
                     };
 
+                    scope.kickOffResources = function() {
+                        PlayService.kickOffResources(scope.game).then(function() {
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            if (reason !== "CANCELED") {
+                                alert("Kick Off Resources error!");
+                            }
+                        });
+                    };
+
                     scope.build = function() {
                         ModalWindowService.show("BUY_PANEL");
                     };

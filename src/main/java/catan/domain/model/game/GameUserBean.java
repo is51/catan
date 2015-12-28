@@ -33,6 +33,9 @@ public class GameUserBean {
     @Column(name = "AVAILABLE_ACTIONS", unique = false, nullable = true)
     private String availableActions;
 
+    @Column(name = "MANDATORY_KICK_OFF_RESOURCES", unique = false, nullable = true)
+    private Boolean kickingOffResourcesMandatory;
+
     @Embedded
     private Achievements achievements;
 
@@ -130,6 +133,14 @@ public class GameUserBean {
 
     public void setAvailableActions(String availableActions) {
         this.availableActions = availableActions;
+    }
+
+    public Boolean isKickingOffResourcesMandatory() {
+        return kickingOffResourcesMandatory;
+    }
+
+    public void setKickingOffResourcesMandatory(Boolean kickingOffResourcesMandatory) {
+        this.kickingOffResourcesMandatory = kickingOffResourcesMandatory;
     }
 
     public Achievements getAchievements() {
