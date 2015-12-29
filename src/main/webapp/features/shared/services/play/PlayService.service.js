@@ -116,6 +116,7 @@ angular.module('catan')
             PlayService.useCardRoadBuilding = function (game) {
                 return Remote.play.useCardRoadBuilding({gameId: game.getId()});
             };
+
             PlayService.useCardMonopoly = function (game) {
                 var deferred = $q.defer();
 
@@ -142,6 +143,10 @@ angular.module('catan')
                         });
 
                 return deferred.promise;
+            };
+
+            PlayService.useCardKnight = function (game) {
+                return Remote.play.useCardKnight({gameId: game.getId()});
             };
 
             PlayService.moveRobber = function (game) {

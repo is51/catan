@@ -104,6 +104,7 @@ angular.module('catan', [
             .setRequest('play', 'useCardYearOfPlenty', { url: '/api/play/use-card/year-of-plenty'})
             .setRequest('play', 'useCardRoadBuilding', { url: '/api/play/use-card/road-building'})
             .setRequest('play', 'useCardMonopoly', { url: '/api/play/use-card/monopoly'})
+            .setRequest('play', 'useCardKnight', { url: '/api/play/use-card/knight'})
             .setRequest('play', 'moveRobber', { url: '/api/play/robbery/move-robber'})
             .setRequest('play', 'choosePlayerToRob', { url: '/api/play/robbery/choose-player-to-rob'})
             .setRequest('play', 'kickOffResources', { url: '/api/play/robbery/kick-off-resources'});
