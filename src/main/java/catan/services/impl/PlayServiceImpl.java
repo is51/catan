@@ -9,9 +9,9 @@ import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
+import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
-import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
@@ -73,7 +73,7 @@ public class PlayServiceImpl implements PlayService {
 
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
-        
+
         doAction(action, user, gameUser, game, params, returnedParams);
 
         playUtil.updateAchievements(game);
@@ -85,10 +85,10 @@ public class PlayServiceImpl implements PlayService {
         log.debug("Action {} was successfully performed by user {}", action, gameUser);
         return returnedParams;
     }
-    
+
     private void doAction(GameUserActionCode action, UserBean user, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
         Resources usersResources = gameUser.getResources();
-        switch(action){
+        switch (action) {
             case BUILD_ROAD:
                 buildRoad(user, game, usersResources, params.get("edgeId"));
                 break;
@@ -115,6 +115,9 @@ public class PlayServiceImpl implements PlayService {
                 break;
             case USE_CARD_ROAD_BUILDING:
                 useCardRoadBuilding(gameUser, game, returnedParams);
+                break;
+            case USE_CARD_KNIGHT:
+                useCardKnight(gameUser, game);
                 break;
             case MOVE_ROBBER:
                 moveRobber(gameUser, game, usersResources, params.get("hexId"));
@@ -272,6 +275,10 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
+    }
+
+    private void useCardKnight(GameUserBean gameUser, GameBean game) throws PlayException, GameException {
+        //TODO: implement
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {
