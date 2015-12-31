@@ -278,7 +278,12 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void useCardKnight(GameUserBean gameUser, GameBean game) throws PlayException, GameException {
-        //TODO: implement
+        cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
+        cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.KNIGHT);
+        cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.KNIGHT);
+
+        game.setRobberShouldBeMovedMandatory(true);
+        game.setDevelopmentCardUsed(true);
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {

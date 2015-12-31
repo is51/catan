@@ -12,7 +12,6 @@ import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
-import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
@@ -95,6 +94,7 @@ public class MainStageUtil {
             allowUseCardYearOfPlenty(gameUser, game, actionsList);
             allowUseCardMonopoly(gameUser, game, actionsList);
             allowUseCardRoadBuilding(gameUser, game, actionsList);
+            allowUseCardKnight(gameUser, game, actionsList);
         }
 
         AvailableActions availableActions = new AvailableActions();
@@ -212,6 +212,15 @@ public class MainStageUtil {
                 && game.isDiceThrown()
                 && userHasCard(gameUser, DevelopmentCard.ROAD_BUILDING)) {
             actionsList.add(new Action(GameUserActionCode.USE_CARD_ROAD_BUILDING));
+        }
+    }
+
+    private void allowUseCardKnight(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
+                && userHasCard(gameUser, DevelopmentCard.KNIGHT)) {
+            actionsList.add(new Action(GameUserActionCode.USE_CARD_KNIGHT));
         }
     }
 
