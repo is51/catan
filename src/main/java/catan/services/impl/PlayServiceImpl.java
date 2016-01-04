@@ -284,6 +284,8 @@ public class PlayServiceImpl implements PlayService {
 
         game.setRobberShouldBeMovedMandatory(true);
         game.setDevelopmentCardUsed(true);
+
+        gameUser.getAchievements().setTotalUsedKnights(gameUser.getAchievements().getTotalUsedKnights() + 1);
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {

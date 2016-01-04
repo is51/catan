@@ -218,7 +218,6 @@ public class MainStageUtil {
     private void allowUseCardKnight(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
-                && game.isDiceThrown()
                 && userHasCard(gameUser, DevelopmentCard.KNIGHT)) {
             actionsList.add(new Action(GameUserActionCode.USE_CARD_KNIGHT));
         }
