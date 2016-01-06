@@ -38,6 +38,11 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     }
 
     @Override
+    public void refreshGameBean(GameBean gameBean){
+        getSession().refresh(gameBean);
+    }
+
+    @Override
     public List<GameBean> getGamesByCreatorId(int creatorId) {
         Query query = getSession().createQuery(
                 "SELECT game " +

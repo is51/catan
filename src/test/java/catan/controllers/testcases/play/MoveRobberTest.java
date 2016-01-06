@@ -363,6 +363,37 @@ public class MoveRobberTest extends PlayTestUtil {
                 .MOVE_ROBBER(1).toCoordinates(0, 0).failsWithError("ERROR");
     }
 
+
+    @Test
+    public void should_not_give_resources_to_players_that_have_buildings_on_robbed_hex() {
+        playPreparationStage()
+                .startTrackResourcesQuantity()
+                .nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(1)
+                .END_TURN(1)
+
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 2, 0, 0, 1)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+
+                .nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(2)
+                .END_TURN(2)
+
+                .nextRandomDiceValues(asList(4, 3))
+                .THROW_DICE(3)
+                .MOVE_ROBBER(3).toCoordinates(0, -2)
+                .END_TURN(3)
+
+                .nextRandomDiceValues(asList(3, 3))
+                .THROW_DICE(1)
+                .END_TURN(1)
+
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
     private Scenario playPreparationStage() {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
