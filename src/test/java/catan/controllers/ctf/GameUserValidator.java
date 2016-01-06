@@ -59,6 +59,9 @@ public class GameUserValidator {
         check("resources.wheat", equalTo(scenario.usersResources.get("user" + moveOrder + "wheat") + wheatDiff));
         check("resources.stone", equalTo(scenario.usersResources.get("user" + moveOrder + "stone") + stoneDiff));
 
+        int sumOfDiff = brickDiff + woodDiff + sheepDiff + wheatDiff + stoneDiff;
+        check("achievements.totalResources", equalTo(scenario.usersResources.get("user" + moveOrder + "totalResources") + sumOfDiff));
+
         return scenario;
     }
 
@@ -73,6 +76,9 @@ public class GameUserValidator {
         check("developmentCards.roadBuilding",  equalTo(scenario.usersCards.get("user" + moveOrder + "roadBuilding") + roadBuildingDiff));
         check("developmentCards.monopoly",      equalTo(scenario.usersCards.get("user" + moveOrder + "monopoly") + monopolyDiff));
         check("developmentCards.yearOfPlenty",  equalTo(scenario.usersCards.get("user" + moveOrder + "yearOfPlenty") + yearOfPlentyDiff));
+
+        int sumOfDiff = knightDiff + victoryPointDiff + roadBuildingDiff + monopolyDiff + yearOfPlentyDiff;
+        check("achievements.totalCards", equalTo(scenario.usersCards.get("user" + moveOrder + "totalCards") + sumOfDiff));
 
         return scenario;
     }

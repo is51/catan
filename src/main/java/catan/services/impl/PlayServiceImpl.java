@@ -63,7 +63,7 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
-        log.debug("{} tries to perform action {} at game with id {} and additional params {}", user, action, gameId, params);
+        log.debug("Action {} going to be performed user {} at game with id {} and additional params {}", action, user, gameId, params);
         Map<String, String> returnedParams = new HashMap<String, String>();
 
         validateUserNotEmpty(user);
@@ -76,13 +76,13 @@ public class PlayServiceImpl implements PlayService {
         
         doAction(action, user, gameUser, game, params, returnedParams);
 
-        playUtil.updateVictoryPoints(gameUser);
+        playUtil.updateAchievements(game);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
         playUtil.updateAvailableActionsForAllUsers(game);
 
         gameDao.updateGame(game);
 
-        log.debug("User {} successfully performed action {}", user.getUsername(), action);
+        log.debug("Action {} was successfully performed by user {}", action, gameUser);
         return returnedParams;
     }
     
@@ -115,6 +115,15 @@ public class PlayServiceImpl implements PlayService {
                 break;
             case USE_CARD_ROAD_BUILDING:
                 useCardRoadBuilding(gameUser, game, returnedParams);
+                break;
+            case MOVE_ROBBER:
+                moveRobber(gameUser, game, usersResources, params.get("hexId"));
+                break;
+            case CHOOSE_PLAYER_TO_ROB:
+                choosePlayerToRob(gameUser, game, usersResources, params.get("gameUserId"));
+                break;
+            case KICK_OFF_RESOURCES:
+                kickOffResources(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
         }
     }
@@ -196,12 +205,13 @@ public class PlayServiceImpl implements PlayService {
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
-        if (!isRobbersActivity(diceFirstValue, diceSecondValue)) {
+        if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
+            log.debug("Current dice value is 7");
+            checkIfPlayersShouldKickOffResources(game);
+        } else {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
-            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue);
+            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue.toString());
             mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
-        } else{
-            log.debug("Robbers activity due to dice value 7");
         }
     }
 
@@ -235,7 +245,7 @@ public class PlayServiceImpl implements PlayService {
         game.setDevelopmentCardUsed(true);
     }
 
-    private void useCardMonopoly(final GameUserBean gameUser, GameBean game, String resourceString, Map<String, String> returnedParams) throws PlayException, GameException {
+    private void useCardMonopoly(GameUserBean gameUser, GameBean game, String resourceString, Map<String, String> returnedParams) throws PlayException, GameException {
         cardUtil.validateUserDidNotUsedCardsInCurrentTurn(game);
         cardUtil.validateUserDidNotBoughtCardInCurrentTurn(gameUser, DevelopmentCard.MONOPOLY);
 
@@ -262,6 +272,196 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
+    }
+
+    private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {
+        HexBean hexToRob = toValidHex(game, hexId);
+        validateHexCouldBeRobbed(hexToRob);
+
+        changeRobbedHex(game, hexToRob);
+        log.info("Hex {} successfully robbed", hexId);
+        game.setRobberShouldBeMovedMandatory(false);
+
+        List<GameUserBean> playersAtHex = new ArrayList<GameUserBean>(hexToRob.fetchGameUsersWithBuildingsAtNodes());
+        playersAtHex.remove(gameUser);
+        int playersToRobQuantity = playersAtHex.size();
+        if (playersToRobQuantity == 1) {
+            GameUserBean playerToRob = playersAtHex.get(0);
+            choosePlayerToRob(gameUser, game, userResources, playerToRob.getGameUserId());
+        }
+        if (playersToRobQuantity > 1) {
+            game.setChoosePlayerToRobMandatory(true);
+        }
+    }
+
+    private void choosePlayerToRob(GameUserBean gameUser, GameBean game, Resources currentUsersResources, String gameUserIdString) throws PlayException, GameException {
+        int gameUserId = toValidGameUserId(gameUserIdString);
+        choosePlayerToRob(gameUser, game, currentUsersResources, gameUserId);
+    }
+
+    private void choosePlayerToRob(GameUserBean gameUser, GameBean game, Resources currentUsersResources, int gameUserId) throws PlayException, GameException {
+        GameUserBean robbedGameUser = gameUtil.getGameUserById(gameUserId, game);
+        log.info("Robbing player: {}", robbedGameUser);
+
+        validateGameUserCouldBeRobbed(gameUser, game, robbedGameUser);
+
+        if (robbedGameUser.getAchievements().getTotalResources() > 0) {
+            Resources robbedUsersResources = robbedGameUser.getResources();
+            HexType stolenResourceType = randomUtil.getRandomUsersResource(robbedUsersResources);
+            log.info("Resource to rob is {}", stolenResourceType);
+
+            int stolenResourceQuantity = robbedUsersResources.quantityOf(stolenResourceType);
+            robbedUsersResources.updateResourceQuantity(stolenResourceType, stolenResourceQuantity - 1);
+            int obtainedResourceQuantity = currentUsersResources.quantityOf(stolenResourceType);
+            currentUsersResources.updateResourceQuantity(stolenResourceType, obtainedResourceQuantity + 1);
+        }
+        game.setChoosePlayerToRobMandatory(false);
+    }
+
+    private void validateGameUserCouldBeRobbed(GameUserBean gameUser, GameBean game, GameUserBean robbedGameUser) throws PlayException {
+        if (gameUser.equals(robbedGameUser)) {
+            log.error("Player couldn't rob himself");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        for (HexBean hex : game.getHexes()) {
+            if (!hex.isRobbed()) {
+                continue;
+            }
+            if (!hex.fetchGameUsersWithBuildingsAtNodes().remove(robbedGameUser)) {
+                log.error("GameUser {} doesn't have any buildings at robbed hex {} and couldn't be robbed", robbedGameUser.getGameUserId(), hex.getId());
+                throw new PlayException(ERROR_CODE_ERROR);
+            }
+            break;
+        }
+    }
+
+    private int toValidGameUserId(String gameUserIdString) throws GameException {
+        int gameUserId;
+        try {
+            gameUserId = Integer.parseInt(gameUserIdString);
+        } catch (Exception e) {
+            log.error("Cannot convert gameId to integer value");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+        return gameUserId;
+    }
+
+    private void kickOffResources(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+
+
+        int usersBrickQuantity = userResources.getBrick();
+        int usersWoodQuantity = userResources.getWood();
+        int usersSheepQuantity = userResources.getSheep();
+        int usersWheatQuantity = userResources.getWheat();
+        int usersStoneQuantity = userResources.getStone();
+
+        int brickQuantityToKickOff = toValidResourceQuantity(brickString, usersBrickQuantity);
+        int woodQuantityToKickOff = toValidResourceQuantity(woodString, usersWoodQuantity);
+        int sheepQuantityToKickOff = toValidResourceQuantity(sheepString, usersSheepQuantity);
+        int wheatQuantityToKickOff = toValidResourceQuantity(wheatString, usersWheatQuantity);
+        int stoneQuantityToKickOff = toValidResourceQuantity(stoneString, usersStoneQuantity);
+
+        int sumOfResourcesKickingOff = brickQuantityToKickOff + woodQuantityToKickOff + sheepQuantityToKickOff + wheatQuantityToKickOff + stoneQuantityToKickOff;
+        int sumOfUsersResources = gameUser.getAchievements().getTotalResources();
+        validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(sumOfUsersResources, sumOfResourcesKickingOff);
+
+        userResources.setBrick(usersBrickQuantity - brickQuantityToKickOff);
+        userResources.setWood(usersWoodQuantity - woodQuantityToKickOff);
+        userResources.setSheep(usersSheepQuantity - sheepQuantityToKickOff);
+        userResources.setWheat(usersWheatQuantity - wheatQuantityToKickOff);
+        userResources.setStone(usersStoneQuantity - stoneQuantityToKickOff);
+
+        gameUser.setKickingOffResourcesMandatory(false);
+        checkRobberShouldBeMovedMandatory(game);
+    }
+
+    private void checkRobberShouldBeMovedMandatory(GameBean game) {
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            if (gameUserIterated.isKickingOffResourcesMandatory()) {
+                return;
+            }
+        }
+        game.setRobberShouldBeMovedMandatory(true);
+    }
+
+    private void validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(int sumOfUsersResources, int sumOfResourcesKickingOff) throws PlayException {
+        if (sumOfResourcesKickingOff != sumOfUsersResources / 2) {
+            log.error("Wrong resources quantity: {}", sumOfResourcesKickingOff);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private int toValidResourceQuantity(String resourceQuantityString, int usersResourceQuantity) throws PlayException {
+        int resourceQuantity;
+        try {
+            resourceQuantity = Integer.parseInt(resourceQuantityString);
+        } catch (Exception e) {
+            log.error("Cannot convert resourceQuantity to integer value: {}", resourceQuantityString);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (resourceQuantity < 0) {
+            log.error("Resource quantity could not be below 0");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (resourceQuantity > usersResourceQuantity) {
+            log.error("User cannot kick of more resources than he has: {} / {}", resourceQuantity, usersResourceQuantity);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+        return resourceQuantity;
+    }
+
+
+    private void checkIfPlayersShouldKickOffResources(GameBean game) {
+        boolean noOneNeedsToKickOfResources = true;
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.getAchievements().getTotalResources() > 7) {
+                gameUser.setKickingOffResourcesMandatory(true);
+                noOneNeedsToKickOfResources = false;
+            }
+        }
+
+        if (noOneNeedsToKickOfResources) {
+            game.setRobberShouldBeMovedMandatory(true);
+        }
+    }
+
+    private void changeRobbedHex(GameBean game, HexBean hexToRob) {
+        for (HexBean hex : game.getHexes()) {
+            if (hex.isRobbed()) {
+                hex.setRobbed(false);
+                break;
+            }
+        }
+        hexToRob.setRobbed(true);
+    }
+
+    private void validateHexCouldBeRobbed(HexBean hexToRob) throws PlayException {
+        if (hexToRob.isRobbed() || hexToRob.getResourceType().equals(HexType.EMPTY)) {
+            log.error("Hex {} cannot be robbed", hexToRob.getId());
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private HexBean toValidHex(GameBean game, String hexIdString) throws PlayException {
+        int hexId;
+        try {
+            hexId = Integer.parseInt(hexIdString);
+        } catch (Exception e) {
+            log.error("Cannot convert hexId to integer value");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        for (HexBean hex : game.getHexes()) {
+            if (hex.getId() == hexId) {
+                return hex;
+            }
+        }
+
+        log.error("Hex {} does not belong to game {}", hexId, game.getGameId());
+        throw new PlayException(ERROR_CODE_ERROR);
     }
 
     private HexType toValidResourceType(String resourceString) throws PlayException {

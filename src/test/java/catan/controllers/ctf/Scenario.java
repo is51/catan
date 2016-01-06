@@ -36,6 +36,7 @@ public class Scenario {
     }
 
     public Scenario(RandomUtilMock randomUtil) {
+        randomUtil.resetMock();
         this.randomUtil = randomUtil;
     }
 
@@ -169,6 +170,25 @@ public class Scenario {
         return this;
     }
 
+    public Scenario KICK_OFF_RESOURCES(int moveOrder, int brick, int wood, int sheep, int wheat, int stone) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.kickOffResources(userToken, gameId, brick, wood, sheep, wheat, stone);
+        return this;
+    }
+
+    public MoveRobberAction MOVE_ROBBER(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new MoveRobberAction(userToken, this);
+    }
+
+    public ChoosePlayerToRobAction CHOOSE_PLAYER_TO_ROB(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new ChoosePlayerToRobAction(userToken, this);
+    }
+
     public Scenario boughtCardIs(DevelopmentCard card) {
         lastApiResponse.then()
                 .statusCode(200)
@@ -192,6 +212,10 @@ public class Scenario {
 
     public MapValidator node(int x, int y, String nodePosition) {
         return new MapValidator(this, x, y, nodePosition, "node");
+    }
+
+    public MapValidator hex(int x, int y) {
+        return new MapValidator(this, x, y, "hex");
     }
 
     public GameUserValidator gameUser(int moveOrder) {
@@ -263,6 +287,13 @@ public class Scenario {
 
         return this;
     }
+    public Scenario nextRandomStolenResources(List<HexType> resources) {
+        for (HexType resource : resources) {
+            randomUtil.setNextStolenResource(resource);
+        }
+
+        return this;
+    }
 
     public HexBuilder setHex(HexType hexType, Integer diceValue) {
         return new HexBuilder(this, hexType, diceValue);
@@ -282,12 +313,14 @@ public class Scenario {
                 int sheep = gameUser(i).getValueOf("resources.sheep");
                 int wheat = gameUser(i).getValueOf("resources.wheat");
                 int stone = gameUser(i).getValueOf("resources.stone");
+                int totalResources = gameUser(i).getValueOf("achievements.totalResources");
 
                 usersResources.put("user" + i + "brick", brick);
                 usersResources.put("user" + i + "wood", wood);
                 usersResources.put("user" + i + "sheep", sheep);
                 usersResources.put("user" + i + "wheat", wheat);
                 usersResources.put("user" + i + "stone", stone);
+                usersResources.put("user" + i + "totalResources", totalResources);
             }
 
             if (trackCards) {
@@ -296,12 +329,14 @@ public class Scenario {
                 int roadBuilding = gameUser(i).getValueOf("developmentCards.roadBuilding");
                 int monopoly = gameUser(i).getValueOf("developmentCards.monopoly");
                 int yearOfPlenty = gameUser(i).getValueOf("developmentCards.yearOfPlenty");
+                int totalCards = gameUser(i).getValueOf("achievements.totalCards");
 
                 usersCards.put("user" + i + "knight", knight);
                 usersCards.put("user" + i + "victoryPoint", victoryPoint);
                 usersCards.put("user" + i + "roadBuilding", roadBuilding);
                 usersCards.put("user" + i + "monopoly", monopoly);
                 usersCards.put("user" + i + "yearOfPlenty", yearOfPlenty);
+                usersCards.put("user" + i + "totalCards", totalCards);
             }
         }
     }

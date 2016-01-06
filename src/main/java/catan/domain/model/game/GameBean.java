@@ -104,6 +104,12 @@ public class GameBean {
     @Column(name = "MANDATORY_ROADS_TO_BUILD", unique = false, nullable = true)
     private Integer roadsToBuildMandatory;
 
+    @Column(name = "MANDATORY_MOVE_ROBBER", unique = false, nullable = true)
+    private Boolean robberShouldBeMovedMandatory;
+
+    @Column(name = "MANDATORY_CHOOSE_PLAYER_TO_ROB", unique = false, nullable = true)
+    private Boolean choosePlayerToRobMandatory;
+
     @Embedded
     private DevelopmentCards availableDevelopmentCards;
 
@@ -307,6 +313,22 @@ public class GameBean {
 
     public void setRoadsToBuildMandatory(Integer roadsToBuildMandatory) {
         this.roadsToBuildMandatory = roadsToBuildMandatory;
+    }
+
+    public Boolean isRobberShouldBeMovedMandatory() {
+        return robberShouldBeMovedMandatory;
+    }
+
+    public void setRobberShouldBeMovedMandatory(Boolean robberShouldBeMovedMandatory) {
+        this.robberShouldBeMovedMandatory = robberShouldBeMovedMandatory;
+    }
+
+    public Boolean isChoosePlayerToRobMandatory() {
+        return choosePlayerToRobMandatory;
+    }
+
+    public void setChoosePlayerToRobMandatory(Boolean choosePlayerToRobMandatory) {
+        this.choosePlayerToRobMandatory = choosePlayerToRobMandatory;
     }
 
     public DevelopmentCards getAvailableDevelopmentCards() {

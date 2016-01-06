@@ -33,13 +33,18 @@ angular.module('catan')
                     });
 
                     element.on('click', DrawMapService.NODE_SELECTOR, function(event) {
-                        var nodeId = angular.element(event.target).closest(DrawMapService.NODE_SELECTOR).attr('node-id');
+                        var nodeId = +angular.element(event.target).closest(DrawMapService.NODE_SELECTOR).attr('node-id');
                         SelectService.select('node', nodeId);
                     });
 
                     element.on('click', DrawMapService.EDGE_SELECTOR, function(event) {
-                        var edgeId = angular.element(event.target).closest(DrawMapService.EDGE_SELECTOR).attr('edge-id');
+                        var edgeId = +angular.element(event.target).closest(DrawMapService.EDGE_SELECTOR).attr('edge-id');
                         SelectService.select('edge', edgeId);
+                    });
+
+                    element.on('click', DrawMapService.HEX_SELECTOR, function(event) {
+                        var hexId = +angular.element(event.target).closest(DrawMapService.HEX_SELECTOR).attr('hex-id');
+                        SelectService.select('hex', hexId);
                     });
 
                 }

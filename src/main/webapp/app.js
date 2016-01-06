@@ -103,7 +103,10 @@ angular.module('catan', [
             .setRequest('play', 'throwDice', { url: '/api/play/throw-dice'})
             .setRequest('play', 'useCardYearOfPlenty', { url: '/api/play/use-card/year-of-plenty'})
             .setRequest('play', 'useCardRoadBuilding', { url: '/api/play/use-card/road-building'})
-            .setRequest('play', 'useCardMonopoly', { url: '/api/play/use-card/monopoly'});
+            .setRequest('play', 'useCardMonopoly', { url: '/api/play/use-card/monopoly'})
+            .setRequest('play', 'moveRobber', { url: '/api/play/robbery/move-robber'})
+            .setRequest('play', 'choosePlayerToRob', { url: '/api/play/robbery/choose-player-to-rob'})
+            .setRequest('play', 'kickOffResources', { url: '/api/play/robbery/kick-off-resources'});
     }])
 
     .run(['$rootScope', 'User', function($rootScope, User) {

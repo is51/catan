@@ -123,8 +123,8 @@ public class PlayController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public MonopolyCardUsageDetails useCardMonopoly(@RequestParam(value = "token", required = false) String token,
-                                    @RequestParam("gameId") String gameId,
-                                    @RequestParam("resource") String resource) throws AuthenticationException, GameException, PlayException {
+                                                    @RequestParam("gameId") String gameId,
+                                                    @RequestParam("resource") String resource) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> params = new HashMap<String, String>();
@@ -147,6 +147,56 @@ public class PlayController {
         Integer roadsCount = Integer.parseInt(returnedParams.get("roadsCount"));
 
         return new RoadBuildingCardUsageDetails(roadsCount);
+    }
+
+    @RequestMapping(value = "robbery/move-robber",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void moveRobber(@RequestParam(value = "token", required = false) String token,
+                           @RequestParam("gameId") String gameId,
+                           @RequestParam("hexId") String hexId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("hexId", hexId);
+
+        playService.processAction(GameUserActionCode.MOVE_ROBBER, user, gameId, params);
+    }
+
+    @RequestMapping(value = "robbery/choose-player-to-rob",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void choosePlayerToRob(@RequestParam(value = "token", required = false) String token,
+                                  @RequestParam("gameId") String gameId,
+                                  @RequestParam("gameUserId") String gameUserId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("gameUserId", gameUserId);
+
+        playService.processAction(GameUserActionCode.CHOOSE_PLAYER_TO_ROB, user, gameId, params);
+    }
+
+    @RequestMapping(value = "robbery/kick-off-resources",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void kickOffResources(@RequestParam(value = "token", required = false) String token,
+                                 @RequestParam("gameId") String gameId,
+                                 @RequestParam("brick") String brick,
+                                 @RequestParam("wood") String wood,
+                                 @RequestParam("sheep") String sheep,
+                                 @RequestParam("wheat") String wheat,
+                                 @RequestParam("stone") String stone) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", brick);
+        params.put("wood", wood);
+        params.put("sheep", sheep);
+        params.put("wheat", wheat);
+        params.put("stone", stone);
+
+        playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, user, gameId, params);
     }
 
     @Autowired

@@ -2,7 +2,7 @@
 <Configuration>
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:,SSS} [%-5p] [%t] %c{1}.%M:%L - %m%n%ex"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:,SSS} [%-5p] %c{1}.:%L - %m%n%ex"/>
         </Console>
     </Appenders>
     <Loggers>
@@ -21,7 +21,7 @@
 
         <logger name="catan.config.RequestResponseLogger" level="DEBUG" />
         <logger name="catan.services.AuthenticationService" level="OFF" />
-        <logger name="catan.services.GameService" level="DEBUG" />
+        <logger name="catan.services.GameService" level="OFF" />
 
         <Root level="DEBUG">
             <AppenderRef ref="STDOUT"/>

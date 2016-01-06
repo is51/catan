@@ -65,5 +65,22 @@ angular.module('catan')
                     return null;
                 };
 
+                this.getMapObjectById = function(type, id) {
+                    var arrayName = type + ((type === 'hex') ? 'es' : 's'),
+                        array = this.map[arrayName],
+                        primaryKey = type + 'Id',
+                        elem,
+                        i,
+                        l;
+
+                    for (i = 0, l = array.length; i < l; i++) {
+                        elem = array[i];
+                        if (elem[primaryKey] === id) {
+                            return elem;
+                        }
+                    }
+                    return null;
+                }
+
             };
         }]);

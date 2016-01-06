@@ -12,7 +12,6 @@ import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.types.DevelopmentCard;
-import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
@@ -51,6 +50,9 @@ public class MainStageUtil {
 
     public void produceResourcesFromActiveDiceHexes(List<HexBean> hexes) {
         for (HexBean hex : hexes) {
+            if (hex.isRobbed()) {
+                continue;
+            }
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
                 Building<NodeBuiltType> building = node.getBuilding();
                 HexType resourceType = hex.getResourceType();
@@ -79,10 +81,13 @@ public class MainStageUtil {
         List<Action> actionsList = new ArrayList<Action>();
         boolean isMandatory = false;
 
+        allowKickingOffResourcesMandatory(gameUser, game, actionsList);
+        allowMoveRobberMandatory(gameUser, game, actionsList);
+        allowChoosePlayerToRob(gameUser, game, actionsList);
         allowBuildRoadMandatory(gameUser, game, actionsList);
         if (actionsList.size() > 0) {
             isMandatory = true;
-        } else {
+        } else if (noOneNeedsToKickOfResources(game)) {
             allowBuildSettlement(gameUser, game, actionsList);
             allowBuildCity(gameUser, game, actionsList);
             allowBuildRoad(gameUser, game, actionsList);
@@ -100,6 +105,29 @@ public class MainStageUtil {
 
         String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
         gameUser.setAvailableActions(availableActionsString);
+    }
+
+    private void allowKickingOffResourcesMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && gameUser.isKickingOffResourcesMandatory()) {
+            actionsList.add(new Action(GameUserActionCode.KICK_OFF_RESOURCES));
+        }
+    }
+
+    private void allowMoveRobberMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isRobberShouldBeMovedMandatory()) {
+            actionsList.add(new Action(GameUserActionCode.MOVE_ROBBER));
+        }
+    }
+
+    private void allowChoosePlayerToRob(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isChoosePlayerToRobMandatory()) {
+            actionsList.add(new Action(GameUserActionCode.CHOOSE_PLAYER_TO_ROB));
+        }
     }
 
     private void allowBuildRoadMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
@@ -222,5 +250,14 @@ public class MainStageUtil {
 
     private boolean gameNotFinished(GameBean game) {
         return !GameStatus.FINISHED.equals(game.getStatus());
+    }
+
+    private boolean noOneNeedsToKickOfResources (GameBean game) {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (gameUser.isKickingOffResourcesMandatory()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

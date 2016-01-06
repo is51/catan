@@ -2,6 +2,7 @@ package catan.services.util.random;
 
 import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.game.Resources;
 import catan.domain.model.game.types.DevelopmentCard;
 
 import java.util.HashMap;
@@ -17,6 +18,17 @@ public class RandomUtilMock extends RandomUtil {
     private Map<Coordinates, HexType> hexTypesToGenerate = new HashMap<Coordinates, HexType>();
     private Map<Coordinates, Integer> hexDiceNumbersToGenerate = new HashMap<Coordinates, Integer>();
     private List<DevelopmentCard> developmentCardsToGenerate = new LinkedList<DevelopmentCard>();
+    private List<HexType> stolenResourcesToGenerate = new LinkedList<HexType>();
+
+    public void resetMock(){
+        privateCodesToGenerate = new LinkedList<String>();
+        moveOrdersToGenerate = new LinkedList<Integer>();
+        diceNumbersToGenerate = new LinkedList<Integer>();
+        hexTypesToGenerate = new HashMap<Coordinates, HexType>();
+        hexDiceNumbersToGenerate = new HashMap<Coordinates, Integer>();
+        developmentCardsToGenerate = new LinkedList<DevelopmentCard>();
+        stolenResourcesToGenerate = new LinkedList<HexType>();
+    }
 
     public void setNextPrivateCode(String privateCode){
         privateCodesToGenerate.add(privateCode);
@@ -40,6 +52,10 @@ public class RandomUtilMock extends RandomUtil {
 
     public void setNextDevelopmentCard(DevelopmentCard devCard) {
         developmentCardsToGenerate.add(devCard);
+    }
+
+    public void setNextStolenResource(HexType resource) {
+        stolenResourcesToGenerate.add(resource);
     }
 
     public String generateRandomPrivateCode(int numberOfDigits) {
@@ -73,4 +89,8 @@ public class RandomUtilMock extends RandomUtil {
 
     }
 
+    @Override
+    public HexType getRandomUsersResource(Resources userResources) {
+        return stolenResourcesToGenerate.size() > 0 ? stolenResourcesToGenerate.remove(0) : super.getRandomUsersResource(userResources);
+    }
 }

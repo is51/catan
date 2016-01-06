@@ -2,6 +2,7 @@ package catan.services.util.random;
 
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.Resources;
 import catan.domain.model.game.types.DevelopmentCard;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +51,44 @@ public class RandomUtil {
     public DevelopmentCard pullRandomDevelopmentCard(List<DevelopmentCard> availableDevCards) {
         int randomAvailableDevCardIndex = (int) (rvg.randomValue() * availableDevCards.size());
         return availableDevCards.remove(randomAvailableDevCardIndex);
+    }
+
+    public HexType getRandomUsersResource(Resources userResources) {
+        int brick = userResources.getBrick();
+        int wood = userResources.getWood();
+        int sheep = userResources.getSheep();
+        int wheat = userResources.getWheat();
+        int stone = userResources.getStone();
+        int totalResourcesInSequence = brick + wood + sheep + wheat + stone;
+
+        //TODO: it should never happen since we check the same condition above
+        if (totalResourcesInSequence == 0) {
+            return null;
+        }
+
+        int randomResourceNumber = (int) (rvg.randomValue() * totalResourcesInSequence);
+
+        int sequenceIndex = brick;
+        if (randomResourceNumber < sequenceIndex) {
+            return HexType.BRICK;
+        }
+
+        sequenceIndex += wood;
+        if (randomResourceNumber < sequenceIndex) {
+            return HexType.WOOD;
+        }
+
+        sequenceIndex += sheep;
+        if (randomResourceNumber < sequenceIndex) {
+            return HexType.SHEEP;
+        }
+
+        sequenceIndex += wheat;
+        if (randomResourceNumber < sequenceIndex) {
+            return HexType.WHEAT;
+        }
+
+        return HexType.STONE;
     }
 
     public void setRvg(RandomValueGenerator rvg) {
