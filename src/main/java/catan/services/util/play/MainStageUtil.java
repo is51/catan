@@ -50,6 +50,9 @@ public class MainStageUtil {
 
     public void produceResourcesFromActiveDiceHexes(List<HexBean> hexes) {
         for (HexBean hex : hexes) {
+            if (hex.isRobbed()) {
+                continue;
+            }
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
                 Building<NodeBuiltType> building = node.getBuilding();
                 HexType resourceType = hex.getResourceType();
