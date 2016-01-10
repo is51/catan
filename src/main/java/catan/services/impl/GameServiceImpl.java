@@ -105,6 +105,8 @@ public class GameServiceImpl implements GameService {
                 : gameUtil.findPublicGame(gameIdentifier);
 
         synchronized (getGameIdSyncObject((long) game.getGameId())) {
+            gameDao.refreshGameBean(game);
+
             validateGameStatusIsNew(game);
             validateMaxPlayersLimitNotReached(game);
 
