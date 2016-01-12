@@ -1,23 +1,18 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctChooseResources', ['SelectService', 'ChooseResourcesWindowService', function(SelectService, ChooseResourcesWindowService) {
+        .directive('ctChooseResourcesEmbed', ['SelectService', function(SelectService) {
 
             return {
                 restrict: 'E',
                 scope: {
-                    game: "="
+                    game: "=",
+                    type: "@"
                 },
-                templateUrl: "/features/screens/game/dashboard/chooseResources/ct-choose-resources.html",
+                templateUrl: "/features/screens/game/dashboard/chooseResourcesEmbed/ct-choose-resources-embed.html",
                 link: function(scope) {
 
-                    scope.$watch(function() {
-                        return ChooseResourcesWindowService.getType();
-                    }, function(type) {
-                        if (type) {
-                            init(scope, type);
-                        }
-                    });
+                    init(scope, scope.type);
 
                 }
             };

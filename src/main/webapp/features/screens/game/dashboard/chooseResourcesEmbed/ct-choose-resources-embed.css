@@ -1,17 +1,8 @@
-ct-choose-resources {
+ct-choose-resources-embed {
 
 }
 
-ct-choose-resources .content {
-    top: 17%;
-    left: 15%;
-    width: 70%;
-    height: 62%;
-    background: #fff;
-    text-align: center;
-}
-
-ct-choose-resources .resource {
+ct-choose-resources-embed .resource {
     display: block;
     float: left;
     background: #f5f5f5;
@@ -25,7 +16,7 @@ ct-choose-resources .resource {
     border-radius: 10px;
 }
 
-ct-choose-resources .resource > button {
+ct-choose-resources-embed .resource > button {
     display: block;
     border-radius: 40px;
     border: 3px solid #f5f5f5;
@@ -37,56 +28,56 @@ ct-choose-resources .resource > button {
     color: #fff;
 }
 
-ct-choose-resources .resource > button.plus {
+ct-choose-resources-embed .resource > button.plus {
     border-radius: 40px 40px 0 0;
     height: 20px;
     border-width: 1px;
     margin-bottom: 0;
 }
 
-ct-choose-resources .resource > button.minus {
+ct-choose-resources-embed .resource > button.minus {
     border-radius: 0 0 40px 40px;
     height: 20px;
     border-width: 1px;
     margin-top: 0;
 }
 
-ct-choose-resources .resource > button:hover {
+ct-choose-resources-embed .resource > button:hover {
     border-color: #ccc;
 }
 
-ct-choose-resources .resource > button[disabled] {
+ct-choose-resources-embed .resource > button[disabled] {
     visibility: hidden;
 }
 
-ct-choose-resources .btn.cancel {
+ct-choose-resources-embed .btn.cancel {
     position: absolute;
     bottom: 15px;
     left: 17px;
 }
 
-ct-choose-resources .btn.ok {
+ct-choose-resources-embed .btn.ok {
     position: absolute;
     bottom: 15px;
     right: 17px;
 }
 
-ct-choose-resources .brick button {
+ct-choose-resources-embed .brick button {
     background-color: #e16a17;
 }
 
-ct-choose-resources .wood button {
+ct-choose-resources-embed .wood button {
     background-color: #40b22f;
 }
 
-ct-choose-resources .sheep button {
+ct-choose-resources-embed .sheep button {
     background-color: #4bec38;
 }
 
-ct-choose-resources .wheat button {
+ct-choose-resources-embed .wheat button {
     background-color: #ecd320;
 }
 
-ct-choose-resources .stone button {
+ct-choose-resources-embed .stone button {
     background-color: #8e6f36;
 }
