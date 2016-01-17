@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .directive('ctChooseResourcesEmbed', ['SelectService', function(SelectService) {
+        .directive('ctChooseResources', ['SelectService', function(SelectService) {
 
             return {
                 restrict: 'E',
@@ -9,7 +9,7 @@ angular.module('catan')
                     game: "=",
                     type: "@"
                 },
-                templateUrl: "/features/screens/game/dashboard/chooseResourcesEmbed/ct-choose-resources-embed.html",
+                templateUrl: "/features/screens/game/dashboard/chooseResources/ct-choose-resources.html",
                 link: function(scope) {
 
                     init(scope, scope.type);
