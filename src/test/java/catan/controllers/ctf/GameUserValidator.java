@@ -3,6 +3,7 @@ package catan.controllers.ctf;
 import org.hamcrest.Matcher;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertTrue;
@@ -42,8 +43,19 @@ public class GameUserValidator {
         return scenario;
     }
 
+    public Scenario hasMandatoryAvailableAction(String action) {
+        check("availableActions.list.find {it.code == '" + action + "'}", notNullValue());
+        check("availableActions.isMandatory", equalTo(true));
+        return scenario;
+    }
+
     public Scenario doesntHaveAvailableAction(String action) {
         check("availableActions.list.find {it.code == '" + action + "'}", nullValue());
+        return scenario;
+    }
+
+    public Scenario hasUsedKnights(int usedKnights) {
+        check("achievements.totalUsedKnights", is(usedKnights));
         return scenario;
     }
 
