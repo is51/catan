@@ -5,18 +5,12 @@ angular.module('catan')
 
             return {
                 restrict: 'E',
-                scope: {
-                    modalWindowId: "@"
-                },
-                link: function(scope, element) {
+                link: function(scope, element, attrs) {
 
-                    // TODO: Provide variable "isVisible" to the scope (just scope.isVisible doesn't work)
-                    // or reset somehow ct-choose-resources every time it's shown
-
-                    ModalWindowService.register(scope.modalWindowId);
+                    ModalWindowService.register(attrs.modalWindowId);
 
                     scope.$watch(function() {
-                        return ModalWindowService.isVisible(scope.modalWindowId)
+                        return ModalWindowService.isVisible(attrs.modalWindowId)
                     }, function(isVisible) {
                         if (isVisible) {
                             element.show();

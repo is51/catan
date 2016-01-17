@@ -1,9 +1,9 @@
-<ct-modal-window modal-window-id="KICK_OFF_RESOURCES">
+<ct-modal-window modal-window-id="{{modalWindowId}}">
 
-    <div class="ct-modal-window-bg" ct-choose-resources-cancel="KICK_OFF_RESOURCES"></div>
+    <div class="ct-modal-window-bg" ct-choose-resources-cancel="{{modalWindowId}}"></div>
     <div class="ct-modal-window-content content">
 
-        <ct-choose-resources game="game" type="KICK_OFF_RESOURCES"></ct-choose-resources>
+        <ct-choose-resources ng-if="isModalWindowVisible" game="game" type="{{modalWindowId}}"></ct-choose-resources>
 
     </div>
 
