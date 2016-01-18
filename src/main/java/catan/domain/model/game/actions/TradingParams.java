@@ -1,16 +1,22 @@
-package catan.domain.transfer.output.game.actions;
+package catan.domain.model.game.actions;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+public class TradingParams extends ActionParams {
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ActionParamsDetails {
     private int brick;
     private int wood;
     private int sheep;
     private int wheat;
     private int stone;
 
-    public ActionParamsDetails() {
+    public TradingParams() {
+    }
+
+    public TradingParams(int brick, int wood, int sheep, int wheat, int stone) {
+        this.brick = brick;
+        this.wood = wood;
+        this.sheep = sheep;
+        this.wheat = wheat;
+        this.stone = stone;
     }
 
     public int getBrick() {
