@@ -273,7 +273,7 @@ public class MainStageUtil {
         return true;
     }
 
-    private TradingParams calculateTradingParams(GameUserBean gameUser, GameBean game) {
+    public TradingParams calculateTradingParams(GameUserBean gameUser, GameBean game) {
         int brick = 4;
         int wood = 4;
         int sheep = 4;
