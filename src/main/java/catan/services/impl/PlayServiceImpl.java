@@ -9,6 +9,7 @@ import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
+import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -285,7 +286,10 @@ public class PlayServiceImpl implements PlayService {
         game.setRobberShouldBeMovedMandatory(true);
         game.setDevelopmentCardUsed(true);
 
-        gameUser.getAchievements().setTotalUsedKnights(gameUser.getAchievements().getTotalUsedKnights() + 1);
+        Achievements achievements = gameUser.getAchievements();
+        int totalUsedKnightsNew = achievements.getTotalUsedKnights() + 1;
+
+        achievements.setTotalUsedKnights(totalUsedKnightsNew);
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {
