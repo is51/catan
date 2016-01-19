@@ -15,6 +15,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
     protected static final String URL_USE_CARD_MONOPOLY= "/api/play/use-card/monopoly";
     protected static final String URL_USE_CARD_YEAR_OF_PLENTY = "/api/play/use-card/year-of-plenty";
     protected static final String URL_USE_CARD_ROAD_BUILDING = "/api/play/use-card/road-building";
+    protected static final String URL_USE_CARD_KNIGHT = "/api/play/use-card/knight";
     protected static final String URL_MOVE_ROBBER = "/api/play/robbery/move-robber";
     protected static final String URL_CHOOSE_PLAYER_TO_ROB = "/api/play/robbery/choose-player-to-rob";
     protected static final String URL_KICK_OFF_RESOURCES = "/api/play/robbery/kick-off-resources";
@@ -98,6 +99,15 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .parameters("token", token, "gameId", gameId)
                 .when()
                 .post(URL_USE_CARD_ROAD_BUILDING);
+    }
+
+    public static Response useCardKnight(String token, int gameId) {
+        return given()
+                .port(SERVER_PORT)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .parameters("token", token, "gameId", gameId)
+                .when()
+                .post(URL_USE_CARD_KNIGHT);
     }
 
     public static Response moveRobber(String token, int gameId, int hexId) {
