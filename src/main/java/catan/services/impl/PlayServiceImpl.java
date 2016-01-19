@@ -399,18 +399,26 @@ public class PlayServiceImpl implements PlayService {
         int wheatQuantityToTrade = toValidResourceQuantityToTrade(wheatString, usersWheatQuantity, wheatSellCoefficient);
         int stoneQuantityToTrade = toValidResourceQuantityToTrade(stoneString, usersStoneQuantity, stoneSellCoefficient);
 
-        int tradingBalance = brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade
-                           + woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade
-                           + sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade
-                           + wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade
-                           + stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade;
+        int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
+                           + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
+                           + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
+                           + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
+                           + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
         validateTradeBalanceIsZero(tradingBalance);
+        validateTradeIsNotEmpty(brickQuantityToTrade, woodQuantityToTrade, sheepQuantityToTrade, wheatQuantityToTrade, stoneQuantityToTrade);
 
         userResources.setBrick(usersBrickQuantity + brickQuantityToTrade);
         userResources.setWood(usersWoodQuantity + woodQuantityToTrade);
         userResources.setSheep(usersSheepQuantity + sheepQuantityToTrade);
         userResources.setWheat(usersWheatQuantity + wheatQuantityToTrade);
         userResources.setStone(usersStoneQuantity + stoneQuantityToTrade);
+    }
+
+    private void validateTradeIsNotEmpty(int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
+        if (brick == 0 && wood == 0 && sheep == 0 && wheat == 0 && stone == 0) {
+            log.error("Trading request is empty. All requested resources has zero quantity");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
     }
 
     private void validateTradeBalanceIsZero(int tradingBalance) throws PlayException {
