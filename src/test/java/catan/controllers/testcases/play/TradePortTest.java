@@ -55,130 +55,170 @@ public class TradePortTest extends PlayTestUtil {
         }
     }
 
-    //@Test
+    @Test
     public void should_successfully_trade_single_resource_without_any_port() {
-        playPreparationStage()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
-                .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
-                .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
-    }
-
-    //@Test
-    public void should_successfully_trade_single_resource_via_ANY_port() {
-        playPreparationStage()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
-                .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
-                .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
-    }
-
-    //@Test
-    public void should_successfully_trade_single_resource_via_specific_resource_port() {
-        playPreparationStage()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
-                .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
-                .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
-    }
-
-    //@Test
-    public void should_successfully_trade_multiple_resources_via_different_ports() {
-        playPreparationStage()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
-                .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
-                .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
-    }
-
-    //@Test
-    public void should_fail_if_player_has_not_thrown_the_dice() {
-        playPreparationStage()
+        playPreparationStageAndGiveResources()
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(1)
                 .END_TURN(1)
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
-                .THROW_DICE(2)
-                .END_TURN(2)
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
-                .THROW_DICE(3)
-                .END_TURN(3)
-                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
 
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").failsWithError("ERROR")
-                .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
-    }
-
-    //@Test
-    public void should_fail_if_it_is_not_players_turn() {
-        playPreparationStage()
-                .END_TURN(1)
                 .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(2)
 
                 .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
-                .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").failsWithError("ERROR")
-                .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
+                .TRADE_PORT(2).withResources(1, 0, 0, 0, -4).successfully()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(1, 0, 0, 0, -4);
     }
 
     @Test
-    public void should_fail_when_resource_quantity_is_incorrect() {
+    public void should_successfully_trade_single_resource_via_ANY_port() {
+        playPreparationStageAndGiveResources()
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(1)
+
+                .startTrackResourcesQuantity()
+                .TRADE_PORT(1).withResources(1, 0, 0, -3, 0).successfully()
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, -3, 0);
+    }
+
+    @Test
+    public void should_successfully_trade_single_resource_via_specific_resource_port() {
+        playPreparationStageAndGiveResources()
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(1)
+
+                .startTrackResourcesQuantity()
+                .TRADE_PORT(1).withResources(1, 0, 0, 0, -2).successfully()
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, -2);
+    }
+
+    @Test
+    public void should_successfully_trade_multiple_resources_via_different_ports() {
+        playPreparationStageAndGiveResources()
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(1)
+
+                .startTrackResourcesQuantity()
+                .TRADE_PORT(1).withResources(1, 1, 0, -3, -2).successfully()
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(1, 1, 0, -3, -2);
+    }
+
+    @Test
+    public void should_fail_if_player_has_not_thrown_the_dice() {
         playPreparationStage()
+                .nextRandomDiceValues(asList(2, 3)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(1)
+                .END_TURN(1)
+
+                .nextRandomDiceValues(asList(2, 3)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(2)
+                .END_TURN(2)
+
+                .nextRandomDiceValues(asList(2, 3)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(3)
+                .END_TURN(3)
+
+                .TRADE_PORT(1).withResources(0, 1, 0, -3, 0).failsWithError("ERROR")
+                .THROW_DICE(1)
+                .TRADE_PORT(1).withResources(0, 1, 0, -3, 0).successfully();
+    }
+
+    @Test
+    public void should_fail_if_it_is_not_players_turn() {
+        playPreparationStageAndGiveResources()
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2")
 
-                .TRADE_PORT(1).withResources(-6, 0, 1, 0, 0).failsWithError("ERROR")    // single source resource correct, single target resource not correct (lower)
-                .TRADE_PORT(1).withResources(-3, 0, 0, 0, 0).failsWithError("ERROR")    // single source resource correct, single target resource not correct (empty)
-                .TRADE_PORT(1).withResources(-3, 0, 2, 0, 0).failsWithError("ERROR")    // single source resource correct, single target resource not correct (grater)
-                .TRADE_PORT(1).withResources(-6, -3, 1, 1, 0).failsWithError("ERROR")    // both source resources correct, first target resource correct, second target resource not correct (lower)
-                .TRADE_PORT(1).withResources(-3, -3, 0, 1, 0).failsWithError("ERROR")    // both source resources correct, first target resource correct, second target resource not correct (empty)
-                .TRADE_PORT(1).withResources(-3, -3, 2, 1, 0).failsWithError("ERROR")    // both source resources correct, first target resource correct, second target resource not correct (grater)
-                .TRADE_PORT(1).withResources(-1, 0, 1, 0, 0).failsWithError("ERROR")    // single source resource not correct (lower), single target resource correct
-                .TRADE_PORT(1).withResources(0, 0, 1, 0, 0).failsWithError("ERROR")     // single source resource not correct (empty), single target resource correct
-                .TRADE_PORT(1).withResources(-4, 0, 1, 0, 0).failsWithError("ERROR")    // single source resource not correct (grater), single target resource correct
-                .TRADE_PORT(1).withResources(-1, -3, 1, 1, 0).failsWithError("ERROR")    // first source resource not correct (lower), second source resource correct, both target resources correct
-                .TRADE_PORT(1).withResources(0, -3, 1, 1, 0).failsWithError("ERROR")     // first source resource not correct (empty), second source resource correct, both target resources correct
-                .TRADE_PORT(1).withResources(-4, -3, 1,1, 0).failsWithError("ERROR")    // first source resource not correct (grater), second source resource correct, both target resources correct
+                .getGameDetails(2)
+                .gameUser(2).doesntHaveAvailableAction("TRADE_PORT")
 
-                .TRADE_PORT(1).withResources(0, 0, 0, 0, 0).failsWithError("ERROR")     // all resources are zero
+                .TRADE_PORT(2).withResources(0, 1, 0, -3, 0).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_fail_when_resource_quantity_is_incorrect() {
+        playPreparationStageAndGiveResources()
+                .nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2")
+
+                .TRADE_PORT(1).withResources(-6, 0, 1, 0, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (lower)
+                .TRADE_PORT(1).withResources(-3, 0, 0, 0, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (empty)
+                .TRADE_PORT(1).withResources(-3, 0, 2, 0, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (grater)
+                .TRADE_PORT(1).withResources(-6, -3, 1, 1, 0).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (lower)
+                .TRADE_PORT(1).withResources(-3, -3, 0, 1, 0).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (empty)
+                .TRADE_PORT(1).withResources(-3, -3, 2, 1, 0).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (grater)
+                .TRADE_PORT(1).withResources(-1, 0, 1, 0, 0).failsWithError("ERROR")        // single source resource not correct (lower), single target resource correct
+                .TRADE_PORT(1).withResources(0, 0, 1, 0, 0).failsWithError("ERROR")         // single source resource not correct (empty), single target resource correct
+                .TRADE_PORT(1).withResources(-4, 0, 1, 0, 0).failsWithError("ERROR")        // single source resource not correct (grater), single target resource correct
+                .TRADE_PORT(1).withResources(-1, -3, 1, 1, 0).failsWithError("ERROR")       // first source resource not correct (lower), second source resource correct, both target resources correct
+                .TRADE_PORT(1).withResources(0, -3, 1, 1, 0).failsWithError("ERROR")        // first source resource not correct (empty), second source resource correct, both target resources correct
+                .TRADE_PORT(1).withResources(-4, -3, 1, 1, 0).failsWithError("ERROR")       // first source resource not correct (grater), second source resource correct, both target resources correct
+                .TRADE_PORT(1).withResources(0, 0, 0, 0, 0).failsWithError("ERROR")         // all resources are zero
         ;
     }
 
-    //@Test
+    @Test
     public void should_fail_when_player_has_not_enough_resources() {
         playPreparationStage()
                 .startTrackResourcesQuantity()
+                .nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
-                .TRADE_PORT(1).withResources(0, 0, 0, 0, 0).failsWithError("ERROR")
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2")
+
+                .TRADE_PORT(1).withResources(-3, 1, 0, 0, 0).failsWithError("ERROR")
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
-                .USE_CARD_YEAR_OF_PLENTY(1, "STONE", "YYY").failsWithError("ERROR")
+                .TRADE_PORT(1).withResources(-6, 2, 0, 0, 0).failsWithError("ERROR")
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
-                .USE_CARD_YEAR_OF_PLENTY(1, "XXX", "YYY").failsWithError("ERROR")
+                .TRADE_PORT(1).withResources(-3, -3, 1, 1, 0).failsWithError("ERROR")
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
-                .USE_CARD_YEAR_OF_PLENTY(1, "", "").failsWithError("ERROR")
+                .TRADE_PORT(1).withResources(0, 1, 0, 0, -2).failsWithError("ERROR")
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    private Scenario playPreparationStageAndGiveResources() {
+        return playPreparationStage()
+                .nextRandomDiceValues(asList(3, 3)) // P1: +1 stone, P2: +1 stone
+                .THROW_DICE(1)
+                .END_TURN(1)
+
+                .nextRandomDiceValues(asList(3, 3)) // P1: +1 stone, P2: +1 stone
+                .THROW_DICE(2)
+                .END_TURN(2)
+
+                .nextRandomDiceValues(asList(3, 2)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(3)
+                .END_TURN(3)
+
+                .nextRandomDiceValues(asList(3, 2)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(1)
+                .END_TURN(1)
+
+                .nextRandomDiceValues(asList(3, 2)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(2)
+                .END_TURN(2)
+
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(3)
+                .END_TURN(3);
     }
 
     private Scenario playPreparationStage() {
@@ -192,17 +232,17 @@ public class TradePortTest extends PlayTestUtil {
                 .setHex(WOOD, 4).atCoordinates(1, 1)
                 .setHex(STONE, 4).atCoordinates(-1, 0)
                 .setHex(WHEAT, 5).atCoordinates(-1, -1)
-                .setHex(WHEAT, 5).atCoordinates(0, 2)
+                .setHex(WHEAT, 8).atCoordinates(0, 2)
                 .setHex(STONE, 6).atCoordinates(0, -2)
                 .setHex(WOOD, 6).atCoordinates(0, -1)
                 .setHex(EMPTY, null).atCoordinates(0, 0)
-                .setHex(BRICK, 8).atCoordinates(1, -2)
+                .setHex(STONE, 5).atCoordinates(1, -2)
                 .setHex(WOOD, 8).atCoordinates(-2, 0)
                 .setHex(SHEEP, 9).atCoordinates(-2, 1)
                 .setHex(BRICK, 9).atCoordinates(-1, 1)
                 .setHex(SHEEP, 10).atCoordinates(1, -1)
                 .setHex(WOOD, 10).atCoordinates(-2, 2)
-                .setHex(STONE, 11).atCoordinates(2, 0)
+                .setHex(BRICK, 11).atCoordinates(2, 0)
                 .setHex(SHEEP, 11).atCoordinates(0, 1)
                 .setHex(WHEAT, 12).atCoordinates(2, -2).
                         loginUser(USER_NAME_1, USER_PASSWORD_1).
@@ -245,8 +285,8 @@ public class TradePortTest extends PlayTestUtil {
 //                    (ANY)          (SHEEP)                                       [Node position at hex]:
 //                    /   \           /  \
 //                   (1)xxx*---(2)---*----*----*----*                                      top
-//                    |    6    X    8    |    12   |                          topLeft *----*----* topRight
-//                    |  STONE  X  BRICK  |  WHEAT  | (ANY)                            |         |
+//                    |    6    X    5    |    12   |                          topLeft *----*----* topRight
+//                    |  STONE  X  STONE  |  WHEAT  | (ANY)                            |         |
 //                    | ( 0,-2) X ( 1,-2) | ( 2,-2) |/   |                  bottomLeft *----*----* bottomRight
 //              (1)xxx*----*----*----*----*----*----*---(3)                               bottom
 //            /  |    5    |    6    |    10   |    3    X
@@ -254,14 +294,14 @@ public class TradePortTest extends PlayTestUtil {
 //            \  | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) X                        [Edge position at hex]:
 //          *----*----*----*----*----*---(2)---*----*----*----*
 //          |    8    |    4    |         X    3    |    11   | \                     topLeft topRight
-//          |   WOOD  |  STONE  |  EMPTY  X  SHEEP  |  STONE  |  (ANY)                  .====.====.
+//          |   WOOD  |  STONE  |  EMPTY  X  SHEEP  |  BRICK  |  (ANY)                  .====.====.
 //          | (-2, 0) | (-1, 0) | ( 0, 0) X ( 1, 0) | ( 2, 0) | /                 left ||         || right
 //          *----*----*----*----*xxx(3)---*----*----*----*----*                         .====.====.
 //             / |    9    |    9    |    11   |    4    |                        bottomLeft bottomRight
 //      (WHEAT)  |  SHEEP  |  BRICK  |  SHEEP  |   WOOD  |
 //             \ | (-2, 1) | (-1, 1) | ( 0, 1) | ( 1, 1) |
 //               *----*----*----*----*----*----*----*----*
-//                    |    10   |    2    |    5    |\   |
+//                    |    10   |    2    |    8    |\   |
 //                    |   WOOD  |  WHEAT  |  WHEAT  | (BRICK)
 //                    | (-2, 2) | (-1, 2) | ( 0, 2) |
 //                    *----*----*----*----*----*----*
