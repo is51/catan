@@ -97,6 +97,7 @@ public class MainStageUtil {
             allowUseCardYearOfPlenty(gameUser, game, actionsList);
             allowUseCardMonopoly(gameUser, game, actionsList);
             allowUseCardRoadBuilding(gameUser, game, actionsList);
+            allowProposeTrade(gameUser, game, actionsList);
         }
 
         AvailableActions availableActions = new AvailableActions();
@@ -214,6 +215,15 @@ public class MainStageUtil {
                 && game.isDiceThrown()
                 && userHasCard(gameUser, DevelopmentCard.ROAD_BUILDING)) {
             actionsList.add(new Action(GameUserActionCode.USE_CARD_ROAD_BUILDING));
+        }
+    }
+
+    private void allowProposeTrade(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()
+                && gameUser.getAchievements().getTotalResources() > 0) {
+            actionsList.add(new Action(GameUserActionCode.TRADE_PROPOSE));
         }
     }
 
