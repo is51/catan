@@ -250,7 +250,7 @@ public class Scenario {
     }
 
     //if custom check is used several times - create a new method for it
-    public Scenario checkCustom(String path, Matcher matcher) {
+    public Scenario customCheck(String path, Matcher matcher) {
         currentGameDetails.body(path, matcher);
         return this;
     }
