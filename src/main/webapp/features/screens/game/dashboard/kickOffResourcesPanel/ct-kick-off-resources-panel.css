@@ -1,0 +1,12 @@
+ct-kick-off-resources-panel {
+
+}
+
+ct-kick-off-resources-panel .content {
+    top: 17%;
+    left: 15%;
+    width: 70%;
+    height: 62%;
+    background: #fff;
+    text-align: center;
+}

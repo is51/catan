@@ -1,0 +1,18 @@
+<ct-modal-window modal-window-id="TRADE_PANEL">
+
+    <div class="ct-modal-window-bg" ct-modal-window-close></div>
+    <div class="ct-modal-window-content content">
+
+        <ul class="nav nav-tabs">
+            <li role="presentation" ng-class="{'active':isVisibleTradePortPanel}"><a href="" ng-click="showTradePort()">Port</a></li>
+            <li role="presentation" ng-class="{'active':isVisibleTradePlayersPanel}"><a href="" ng-click="showTradePlayers()">Players</a></li>
+        </ul>
+
+        <ct-trade-port-panel ng-if="isVisibleTradePortPanel" game="game"></ct-trade-port-panel>
+
+        <ct-trade-players-panel ng-if="isVisibleTradePlayersPanel" game="game"></ct-trade-players-panel>
+
+
+    </div>
+
+</ct-modal-window>

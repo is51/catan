@@ -7,7 +7,8 @@ angular.module('catan')
 
             // TODO: maybe(!) this config should be moved to app.js
             var actionGroups = {
-                "BUILD": ["BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD", "BUY_CARD"]
+                "BUILD": ["BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD", "BUY_CARD"],
+                "TRADE": []
             };
 
             function getRelatedActions(actionGroupCode) {
@@ -34,8 +35,14 @@ angular.module('catan')
             };
 
             GameActionsService.isActionGroupEnableForUser = function(gameUser, actionGroupCode) {
+                var relatedActions = getRelatedActions(actionGroupCode);
+
+                if (relatedActions.length === 0) {
+                    return true;
+                }
+
                 return gameUser.availableActions.list.some(function(item) {
-                    return getRelatedActions(actionGroupCode).indexOf(item.code) !== -1;
+                    return relatedActions.indexOf(item.code) !== -1;
                 });
             };
 

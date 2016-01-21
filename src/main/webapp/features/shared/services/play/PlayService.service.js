@@ -2,8 +2,8 @@
 
 angular.module('catan')
         .factory('PlayService', [
-            'Remote', '$q', 'SelectService', 'ChooseResourcesWindowService',
-        function (Remote, $q, SelectService, ChooseResourcesWindowService) {
+            'Remote', '$q', 'SelectService', 'ModalWindowService',
+        function (Remote, $q, SelectService, ModalWindowService) {
             var PlayService = {};
 
             PlayService.endTurn = function (game) {
@@ -89,7 +89,7 @@ angular.module('catan')
 
                 var windowAndSelectionId = "CARD_YEAR_OF_PLENTY";
 
-                ChooseResourcesWindowService.show(windowAndSelectionId);
+                ModalWindowService.show(windowAndSelectionId);
 
                 SelectService.requestSelection(windowAndSelectionId).then(
                         function(response) {
@@ -103,11 +103,11 @@ angular.module('catan')
                                 deferred.reject(response);
                             });
 
-                            ChooseResourcesWindowService.hide();
+                            ModalWindowService.hide(windowAndSelectionId);
                         },
                         function(response) {
                             deferred.reject(response);
-                            ChooseResourcesWindowService.hide();
+                            ModalWindowService.hide(windowAndSelectionId);
                         });
 
                 return deferred.promise;
@@ -121,7 +121,7 @@ angular.module('catan')
 
                 var windowAndSelectionId = "CARD_MONOPOLY";
 
-                ChooseResourcesWindowService.show(windowAndSelectionId);
+                ModalWindowService.show(windowAndSelectionId);
 
                 SelectService.requestSelection(windowAndSelectionId).then(
                         function(response) {
@@ -134,11 +134,11 @@ angular.module('catan')
                                 deferred.reject(response);
                             });
 
-                            ChooseResourcesWindowService.hide();
+                            ModalWindowService.hide(windowAndSelectionId);
                         },
                         function(response) {
                             deferred.reject(response);
-                            ChooseResourcesWindowService.hide();
+                            ModalWindowService.hide(windowAndSelectionId);
                         });
 
                 return deferred.promise;
@@ -201,7 +201,7 @@ angular.module('catan')
 
                 var windowAndSelectionId = "KICK_OFF_RESOURCES";
 
-                ChooseResourcesWindowService.show(windowAndSelectionId);
+                ModalWindowService.show(windowAndSelectionId);
 
                 SelectService.requestSelection(windowAndSelectionId).then(
                         function(response) {
@@ -218,11 +218,11 @@ angular.module('catan')
                                 deferred.reject(response);
                             });
 
-                            ChooseResourcesWindowService.hide();
+                            ModalWindowService.hide(windowAndSelectionId);
                         },
                         function(response) {
                             deferred.reject(response);
-                            ChooseResourcesWindowService.hide();
+                            ModalWindowService.hide(windowAndSelectionId);
                         });
 
                 return deferred.promise;
