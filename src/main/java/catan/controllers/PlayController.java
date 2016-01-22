@@ -11,6 +11,7 @@ import catan.domain.transfer.output.game.RoadBuildingCardUsageDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -209,8 +210,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "trade/port",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void tradeResourcesInPort(@RequestParam(value = "token", required = false) String token,
                                      @RequestParam("gameId") String gameId,
                                      @RequestParam("brick") String brick,
