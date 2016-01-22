@@ -187,6 +187,13 @@ public class Scenario {
         return this;
     }
 
+    public Scenario USE_CARD_KNIGHT(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        lastApiResponse = PlayTestUtil.useCardKnight(userToken, gameId);
+        return this;
+    }
+
     public Scenario KICK_OFF_RESOURCES(int moveOrder, int brick, int wood, int sheep, int wheat, int stone) {
         saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);

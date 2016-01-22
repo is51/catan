@@ -96,7 +96,7 @@ public class MoveRobberTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_move_robber_to_hex_with_1_building_and_steal_1_resource_from_player_whe_he_has_1_resource() {
+    public void should_successfully_move_robber_to_hex_with_1_building_and_steal_1_resource_from_player_when_he_has_1_resource() {
         playPreparationStage()
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
@@ -124,7 +124,7 @@ public class MoveRobberTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_move_robber_to_hex_with_1_building_and_steal_1_resource_from_player_whe_he_has_2_different_resource() {
+    public void should_successfully_move_robber_to_hex_with_1_building_and_steal_1_resource_from_player_when_he_has_2_different_resource() {
         playPreparationStage()
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)

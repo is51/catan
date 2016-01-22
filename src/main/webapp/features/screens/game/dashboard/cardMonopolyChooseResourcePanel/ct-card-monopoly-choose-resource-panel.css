@@ -1,0 +1,12 @@
+ct-card-monopoly-choose-resource-panel {
+
+}
+
+ct-card-monopoly-choose-resource-panel .content {
+    top: 17%;
+    left: 15%;
+    width: 70%;
+    height: 62%;
+    background: #fff;
+    text-align: center;
+}

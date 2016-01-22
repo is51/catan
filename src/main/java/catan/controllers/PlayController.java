@@ -11,14 +11,15 @@ import catan.domain.transfer.output.game.RoadBuildingCardUsageDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 
 @RestController
@@ -29,8 +30,8 @@ public class PlayController {
     AuthenticationService authenticationService;
 
     @RequestMapping(value = "build/road",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void buildRoad(@RequestParam(value = "token", required = false) String token,
                           @RequestParam("gameId") String gameId,
                           @RequestParam("edgeId") String edgeId) throws AuthenticationException, GameException, PlayException {
@@ -43,8 +44,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "build/settlement",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void buildSettlement(@RequestParam(value = "token", required = false) String token,
                                 @RequestParam("gameId") String gameId,
                                 @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
@@ -57,8 +58,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "build/city",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void buildCity(@RequestParam(value = "token", required = false) String token,
                           @RequestParam("gameId") String gameId,
                           @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
@@ -71,8 +72,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "end-turn",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void endTurn(@RequestParam(value = "token", required = false) String token,
                         @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
@@ -81,8 +82,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "throw-dice",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void throwDice(@RequestParam(value = "token", required = false) String token,
                           @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
@@ -91,8 +92,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "buy/card",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public BoughtCardDetails buyCard(@RequestParam(value = "token", required = false) String token,
                                      @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
@@ -104,8 +105,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "use-card/year-of-plenty",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void useCardYearOfPlenty(@RequestParam(value = "token", required = false) String token,
                                     @RequestParam("gameId") String gameId,
                                     @RequestParam("firstResource") String firstResource,
@@ -120,8 +121,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "use-card/monopoly",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public MonopolyCardUsageDetails useCardMonopoly(@RequestParam(value = "token", required = false) String token,
                                                     @RequestParam("gameId") String gameId,
                                                     @RequestParam("resource") String resource) throws AuthenticationException, GameException, PlayException {
@@ -136,11 +137,10 @@ public class PlayController {
         return new MonopolyCardUsageDetails(resourcesCount);
     }
 
-    @RequestMapping(value = "use-card/road-building",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "use-card/road-building", method = POST, produces = APPLICATION_JSON_VALUE)
     public RoadBuildingCardUsageDetails useCardRoadBuilding(@RequestParam(value = "token", required = false) String token,
-                                                            @RequestParam("gameId") String gameId) throws AuthenticationException, GameException, PlayException {
+                                                            @RequestParam(value = "gameId", required = true) String gameId)
+            throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> returnedParams = playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, user, gameId);
@@ -149,9 +149,18 @@ public class PlayController {
         return new RoadBuildingCardUsageDetails(roadsCount);
     }
 
+    @RequestMapping(value = "use-card/knight", method = POST, produces = APPLICATION_JSON_VALUE)
+    public void useCardKnight(@RequestParam(value = "token", required = false) String token,
+                              @RequestParam(value = "gameId", required = true) String gameId)
+            throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        playService.processAction(GameUserActionCode.USE_CARD_KNIGHT, user, gameId);
+    }
+
     @RequestMapping(value = "robbery/move-robber",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void moveRobber(@RequestParam(value = "token", required = false) String token,
                            @RequestParam("gameId") String gameId,
                            @RequestParam("hexId") String hexId) throws AuthenticationException, GameException, PlayException {
@@ -164,8 +173,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "robbery/choose-player-to-rob",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void choosePlayerToRob(@RequestParam(value = "token", required = false) String token,
                                   @RequestParam("gameId") String gameId,
                                   @RequestParam("gameUserId") String gameUserId) throws AuthenticationException, GameException, PlayException {
@@ -178,8 +187,8 @@ public class PlayController {
     }
 
     @RequestMapping(value = "robbery/kick-off-resources",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
     public void kickOffResources(@RequestParam(value = "token", required = false) String token,
                                  @RequestParam("gameId") String gameId,
                                  @RequestParam("brick") String brick,
