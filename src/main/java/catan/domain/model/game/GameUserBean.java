@@ -30,7 +30,7 @@ public class GameUserBean {
     @Column(name = "MOVE_ORDER", unique = false, nullable = false)
     private int moveOrder;
 
-    @Column(name = "AVAILABLE_ACTIONS", unique = false, nullable = true)
+    @Column(name = "AVAILABLE_ACTIONS", unique = false, nullable = true, length = 1000)
     private String availableActions;
 
     @Column(name = "MANDATORY_KICK_OFF_RESOURCES", unique = false, nullable = true)
