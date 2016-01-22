@@ -3,7 +3,7 @@
     <div class="ct-modal-window-bg" ct-modal-window-close></div>
     <div class="ct-modal-window-content content">
 
-        <button ng-disabled="cards().knight===0">
+        <button ng-click="useCardKnight()" ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_KNIGHT')">
             <span class="glyphicon glyphicon-screenshot"></span><br>
             Knight<br><br>
             <span class="badge">{{cards().knight}}</span>

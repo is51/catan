@@ -1,22 +1,13 @@
-<ct-modal-window modal-window-id="CHOOSE_RESOURCES">
+<div class="resource {{::resourceType|lowercase}}" ng-repeat="(resourceType, count) in resources">
+    <button ng-disabled="count<=0" ng-click="removeResource(resourceType)">{{count}}</button>
 
-    <div class="ct-modal-window-bg" ng-click="cancel()"></div>
-    <div class="ct-modal-window-content content">
+    <button ng-show="balanceType==='POSITIVE'" ng-click="addResource(resourceType)"><span class="glyphicon glyphicon-plus"></span></button>
+    <button ng-show="balanceType==='BOTH'" class="plus" ng-click="addResource(resourceType)"><span class="glyphicon glyphicon-plus"></span></button>
+    <button ng-show="balanceType==='BOTH'" class="minus" ng-click="removeResource(resourceType)"><span class="glyphicon glyphicon-minus"></span></button>
+    <button ng-show="balanceType==='NEGATIVE'" ng-click="removeResource(resourceType)"><span class="glyphicon glyphicon-minus"></span></button>
 
-        <div class="resource {{::resourceType|lowercase}}" ng-repeat="(resourceType, count) in resources">
-            <button ng-disabled="count<=0" ng-click="removeResource(resourceType)">{{count}}</button>
+    <button ng-disabled="count>=0" ng-click="addResource(resourceType)">{{-count}}</button>
+</div>
 
-            <button ng-show="balanceType==='POSITIVE'" ng-click="addResource(resourceType)"><span class="glyphicon glyphicon-plus"></span></button>
-            <button ng-show="balanceType==='BOTH'" class="plus" ng-click="addResource(resourceType)"><span class="glyphicon glyphicon-plus"></span></button>
-            <button ng-show="balanceType==='BOTH'" class="minus" ng-click="removeResource(resourceType)"><span class="glyphicon glyphicon-minus"></span></button>
-            <button ng-show="balanceType==='NEGATIVE'" ng-click="removeResource(resourceType)"><span class="glyphicon glyphicon-minus"></span></button>
-
-            <button ng-disabled="count>=0" ng-click="addResource(resourceType)">{{-count}}</button>
-        </div>
-
-        <button ng-click="cancel()" class="btn btn-default cancel">Cancel</button>
-        <button ng-click="ok()" ng-disabled="okDisabled()" class="btn btn-primary ok">OK</button>
-
-    </div>
-
-</ct-modal-window>
+<button ng-click="cancel()" class="btn btn-default cancel">Cancel</button>
+<button ng-click="ok()" ng-disabled="okDisabled()" class="btn btn-primary ok">OK</button>

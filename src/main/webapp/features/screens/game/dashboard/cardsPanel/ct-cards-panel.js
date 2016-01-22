@@ -54,6 +54,15 @@ angular.module('catan')
                             alert('Error: ' + ((reason.data.errorCode) ? reason.data.errorCode : 'unknown'));
                         });
                     };
+
+                    scope.useCardKnight = function() {
+                        ModalWindowService.hide("CARDS_PANEL");
+                        PlayService.useCardKnight(scope.game).then(function() {
+                            GameService.refresh(scope.game);
+                        }, function(reason) {
+                            alert('Error: ' + ((reason.data.errorCode) ? reason.data.errorCode : 'unknown'));
+                        });
+                    };
                 }
             };
         }]);
