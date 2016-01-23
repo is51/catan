@@ -31,6 +31,23 @@ public class Scenario {
     boolean trackResources = false;
     boolean trackCards = false;
 
+    /*
+        DON'T FORGET TO ADD NEW FIELD TO THIS METHOD
+     */
+    public void cloneFrom(Scenario scenario) {
+        this.randomUtil = scenario.randomUtil;
+        this.gameId = scenario.gameId;
+        this.userTokensByName = scenario.userTokensByName;
+        this.tokensByMoveOrder = scenario.tokensByMoveOrder;
+        this.gameUserIdsByMoveOrder = scenario.gameUserIdsByMoveOrder;
+        this.usersResources = scenario.usersResources;
+        this.usersCards = scenario.usersCards;
+        this.currentGameDetails = scenario.currentGameDetails;
+        this.lastApiResponse = scenario.lastApiResponse;
+        this.trackResources = scenario.trackResources;
+        this.trackCards = scenario.trackCards;
+    }
+
     public Scenario() {
 
     }
@@ -196,6 +213,12 @@ public class Scenario {
         return new ChoosePlayerToRobAction(userToken, this);
     }
 
+    public TradeAction TRADE_PORT(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new TradeAction(userToken, this);
+    }
+
     public Scenario boughtCardIs(DevelopmentCard card) {
         lastApiResponse.then()
                 .statusCode(200)
@@ -234,7 +257,7 @@ public class Scenario {
     }
 
     //if custom check is used several times - create a new method for it
-    public Scenario check(String path, Matcher matcher) {
+    public Scenario customCheck(String path, Matcher matcher) {
         currentGameDetails.body(path, matcher);
         return this;
     }
@@ -286,7 +309,6 @@ public class Scenario {
 
         return this;
     }
-
     public Scenario nextRandomDevelopmentCards(List<DevelopmentCard> nextCards) {
         for (DevelopmentCard nextCard : nextCards) {
             randomUtil.setNextDevelopmentCard(nextCard);
@@ -294,6 +316,7 @@ public class Scenario {
 
         return this;
     }
+
     public Scenario nextRandomStolenResources(List<HexType> resources) {
         for (HexType resource : resources) {
             randomUtil.setNextStolenResource(resource);

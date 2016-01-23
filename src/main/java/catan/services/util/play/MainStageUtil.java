@@ -6,11 +6,13 @@ import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
+import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.TradingParams;
 import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
@@ -98,6 +100,7 @@ public class MainStageUtil {
             allowUseCardMonopoly(gameUser, game, actionsList);
             allowUseCardRoadBuilding(gameUser, game, actionsList);
             allowUseCardKnight(gameUser, game, actionsList);
+            allowPortTrading(gameUser, game, actionsList);
             allowProposeTrade(gameUser, game, actionsList);
         }
 
@@ -236,6 +239,15 @@ public class MainStageUtil {
         }
     }
 
+    private void allowPortTrading(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()) {
+            TradingParams tradingParams = calculateTradingParams(gameUser, game);
+            actionsList.add(new Action(GameUserActionCode.TRADE_PORT, tradingParams));
+        }
+    }
+
     private boolean userHasCard(GameUserBean gameUser, DevelopmentCard developmentCard) {
         return gameUser.getDevelopmentCards().quantityOf(developmentCard) > 0;
     }
@@ -278,5 +290,42 @@ public class MainStageUtil {
             }
         }
         return true;
+    }
+
+    public TradingParams calculateTradingParams(GameUserBean gameUser, GameBean game) {
+        int brick = 4;
+        int wood = 4;
+        int sheep = 4;
+        int wheat = 4;
+        int stone = 4;
+
+        for (NodePortType port : game.fetchPortsAvailableForGameUser(gameUser)) {
+           switch (port) {
+                case BRICK:
+                    brick = 2;
+                    break;
+                case WOOD:
+                    wood = 2;
+                    break;
+                case SHEEP:
+                    sheep = 2;
+                    break;
+                case WHEAT:
+                    wheat = 2;
+                    break;
+                case STONE:
+                    stone = 2;
+                    break;
+                case ANY:
+                    brick = brick == 4 ? 3 : brick;
+                    wood = wood == 4 ? 3 : wood;
+                    sheep = sheep == 4 ? 3 : sheep;
+                    wheat = wheat == 4 ? 3 : wheat;
+                    stone = stone == 4 ? 3 : stone;
+                    break;
+            }
+        }
+
+        return new TradingParams(brick, wood, sheep, wheat, stone);
     }
 }

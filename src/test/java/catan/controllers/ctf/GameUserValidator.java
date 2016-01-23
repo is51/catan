@@ -38,9 +38,9 @@ public class GameUserValidator {
         return scenario;
     }*/
 
-    public Scenario hasAvailableAction(String action) {
+    public ActionParameterValidator hasAvailableAction(String action) {
         check("availableActions.list.find {it.code == '" + action + "'}", notNullValue());
-        return scenario;
+        return new ActionParameterValidator(scenario, action);
     }
 
     public Scenario hasMandatoryAvailableAction(String action) {
@@ -95,4 +95,31 @@ public class GameUserValidator {
         return scenario;
     }
 
+    public class ActionParameterValidator extends Scenario{
+        private String action;
+        public ActionParameterValidator(Scenario scenario, String action) {
+            cloneFrom(scenario);
+            this.action = action;
+        }
+
+        public Scenario withParameters(String... params){
+            check("availableActions.list.find {it.code == '" + action + "'}.params", notNullValue());
+            for(String param : params){
+                String[] keyValue = param.split("=");
+
+                String key = keyValue[0];
+                String strValue = keyValue[1];
+                Integer intValue;
+                try{
+                    intValue = Integer.valueOf(strValue);
+                } catch (Exception e){
+                    intValue = null;
+                }
+
+                check("availableActions.list.find {it.code == '" + action + "'}.params." + key, equalTo(intValue != null ? intValue : strValue));
+            }
+
+            return scenario;
+        }
+    }
 }

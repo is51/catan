@@ -1,16 +1,10 @@
 package catan.domain.transfer.output.game.actions;
 
-import catan.domain.model.game.types.GameUserActionCode;
-
 public class ActionDetails {
     private String code;
     private ActionParamsDetails params;
 
     public ActionDetails() {
-    }
-
-    public ActionDetails(GameUserActionCode code) {
-        this.code = code.name();
     }
 
     public String getCode() {

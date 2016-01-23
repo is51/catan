@@ -11,6 +11,7 @@ import catan.domain.transfer.output.game.RoadBuildingCardUsageDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -206,6 +207,28 @@ public class PlayController {
         params.put("stone", stone);
 
         playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, user, gameId, params);
+    }
+
+    @RequestMapping(value = "trade/port",
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
+    public void tradeResourcesInPort(@RequestParam(value = "token", required = false) String token,
+                                     @RequestParam("gameId") String gameId,
+                                     @RequestParam("brick") String brick,
+                                     @RequestParam("wood") String wood,
+                                     @RequestParam("sheep") String sheep,
+                                     @RequestParam("wheat") String wheat,
+                                     @RequestParam("stone") String stone) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", brick);
+        params.put("wood", wood);
+        params.put("sheep", sheep);
+        params.put("wheat", wheat);
+        params.put("stone", stone);
+
+        playService.processAction(GameUserActionCode.TRADE_PORT, user, gameId, params);
     }
 
     @Autowired

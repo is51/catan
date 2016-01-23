@@ -3,6 +3,7 @@ package catan.domain.model.game;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
@@ -414,6 +415,17 @@ public class GameBean {
         }
 
         return edges;
+    }
+
+    public Set<NodePortType> fetchPortsAvailableForGameUser(GameUserBean gameUser) {
+        Set<NodePortType> portsAvailableForGameUser = new HashSet<NodePortType>();
+        for (NodeBean node : this.nodes) {
+            if (!node.getPort().equals(NodePortType.NONE) && node.getBuilding() != null && gameUser.equals(node.getBuilding().getBuildingOwner())) {
+                portsAvailableForGameUser.add(node.getPort());
+            }
+        }
+
+        return portsAvailableForGameUser;
     }
 
     public Integer calculateDiceSumValue() {

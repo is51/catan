@@ -14,5 +14,6 @@ public enum GameUserActionCode {
     MOVE_ROBBER,
     CHOOSE_PLAYER_TO_ROB,
     KICK_OFF_RESOURCES,
+    TRADE_PORT,
     TRADE_PROPOSE
 }
