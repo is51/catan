@@ -8,7 +8,7 @@ angular.module('catan')
             // TODO: maybe(!) this config should be moved to app.js
             var actionGroups = {
                 "BUILD": ["BUILD_SETTLEMENT", "BUILD_CITY", "BUILD_ROAD", "BUY_CARD"],
-                "TRADE": []
+                "TRADE": ["TRADE_PORT"]
             };
 
             function getRelatedActions(actionGroupCode) {

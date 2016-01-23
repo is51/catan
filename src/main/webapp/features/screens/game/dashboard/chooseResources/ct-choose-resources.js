@@ -120,6 +120,14 @@ angular.module('catan')
                             wheat: -resources.wheat,
                             stone: -resources.stone
                         };
+                    case "TRADE_PORT":
+                        return {
+                            brick: resources.brick,
+                            wood: resources.wood,
+                            sheep: resources.sheep,
+                            wheat: resources.wheat,
+                            stone: resources.stone
+                        };
                 }
             }
 
@@ -131,6 +139,8 @@ angular.module('catan')
                         return 1;
                     case "KICK_OFF_RESOURCES":
                         return 0;
+                    case "TRADE_PORT":
+                        return 999;
                 }
             }
 
@@ -142,6 +152,8 @@ angular.module('catan')
                         return 1;
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
+                    case "TRADE_PORT":
+                        return 999;
                 }
             }
 
@@ -153,6 +165,8 @@ angular.module('catan')
                         return 0;
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
+                    case "TRADE_PORT":
+                        return -calculateResourcesSum(playerResources);
                 }
             }
 
@@ -164,6 +178,8 @@ angular.module('catan')
                         return 1;
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
+                    case "TRADE_PORT":
+                        return -calculateResourcesSum(playerResources);
                 }
             }
 
@@ -174,6 +190,8 @@ angular.module('catan')
                     case "CARD_MONOPOLY":
                         return true;
                     case "KICK_OFF_RESOURCES":
+                        return false;
+                    case "TRADE_PORT":
                         return false;
                 }
             }
@@ -186,15 +204,21 @@ angular.module('catan')
                         return "POSITIVE";
                     case "KICK_OFF_RESOURCES":
                         return "NEGATIVE";
+                    case "TRADE_PORT":
+                        return "BOTH";
                 }
             }
 
-            function calculateCountForKickOff(resources) {
+            function calculateResourcesSum(resources) {
                 var sum = 0;
                 for (var i in resources) {
                     sum += resources[i];
                 }
-                return Math.floor(sum / 2);
+                return sum;
+            }
+
+            function calculateCountForKickOff(resources) {
+                return Math.floor(calculateResourcesSum(resources) / 2);
             }
 
         }]);

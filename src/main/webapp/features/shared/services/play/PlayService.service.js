@@ -233,6 +233,34 @@ angular.module('catan')
                 return deferred.promise;
             };
 
+            PlayService.tradePort = function (game) {
+                var deferred = $q.defer();
+
+                var selectionId = "TRADE_PORT";
+
+                SelectService.requestSelection(selectionId).then(
+                        function(response) {
+                            Remote.play.tradePort({
+                                gameId: game.getId(),
+                                brick: response.brick,
+                                wood: response.wood,
+                                sheep: response.sheep,
+                                wheat: response.wheat,
+                                stone: response.stone
+                            }).then(function(response) {
+                                deferred.resolve(response);
+                            }, function(response) {
+                                deferred.reject(response);
+                            });
+
+                        },
+                        function(response) {
+                            deferred.reject(response);
+                        });
+
+                return deferred.promise;
+            };
+
 
             return PlayService;
         }]);
