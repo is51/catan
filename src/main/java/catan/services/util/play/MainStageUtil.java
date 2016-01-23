@@ -233,8 +233,7 @@ public class MainStageUtil {
     private void allowProposeTrade(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
-                && game.isDiceThrown()
-                && gameUser.getAchievements().getTotalResources() > 0) {
+                && game.isDiceThrown()) {
             actionsList.add(new Action(GameUserActionCode.TRADE_PROPOSE));
         }
     }

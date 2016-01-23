@@ -36,6 +36,9 @@ public class GameUserBean {
     @Column(name = "MANDATORY_KICK_OFF_RESOURCES", unique = false, nullable = true)
     private Boolean kickingOffResourcesMandatory;
 
+    @Column(name = "MANDATORY_TRADE_REPLY", unique = false, nullable = true)
+    private Boolean tradeReplyMandatory;
+
     @Embedded
     private Achievements achievements;
 
@@ -141,6 +144,14 @@ public class GameUserBean {
 
     public void setKickingOffResourcesMandatory(Boolean kickingOffResourcesMandatory) {
         this.kickingOffResourcesMandatory = kickingOffResourcesMandatory;
+    }
+
+    public Boolean isTradeReplyMandatory() {
+        return tradeReplyMandatory;
+    }
+
+    public void setTradeReplyMandatory(Boolean tradeReplyMandatory) {
+        this.tradeReplyMandatory = tradeReplyMandatory;
     }
 
     public Achievements getAchievements() {
