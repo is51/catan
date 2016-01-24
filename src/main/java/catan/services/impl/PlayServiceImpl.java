@@ -484,33 +484,19 @@ public class PlayServiceImpl implements PlayService {
             TradeProposition tradeProposition = game.getTradeProposition();
             validateOfferIsNotAcceptedBefore(tradeProposition);
             tradeProposition.setAcceptedTrade(true);
+            int brick = tradeProposition.getBrick();
+            int wood = tradeProposition.getWood();
+            int sheep = tradeProposition.getSheep();
+            int wheat = tradeProposition.getWheat();
+            int stone = tradeProposition.getStone();
+
             for (GameUserBean currentGameUser : game.getGameUsers()) {
                 currentGameUser.setTradeReplyMandatory(false);
                 if (currentGameUser.getMoveOrder() == game.getCurrentMove()) {
-                    Resources currentUserResources = currentGameUser.getResources();
-                    int brickQuantityToSet = currentUserResources.getBrick() + tradeProposition.getBrick();
-                    currentUserResources.setBrick(brickQuantityToSet);
-                    int woodQuantityToSet = currentUserResources.getWood() + tradeProposition.getWood();
-                    currentUserResources.setWood(woodQuantityToSet);
-                    int sheepQuantityToSet = currentUserResources.getSheep() + tradeProposition.getSheep();
-                    currentUserResources.setSheep(sheepQuantityToSet);
-                    int wheatQuantityToSet = currentUserResources.getWheat() + tradeProposition.getWheat();
-                    currentUserResources.setWheat(wheatQuantityToSet);
-                    int stoneQuantityToSet = currentUserResources.getStone() + tradeProposition.getStone();
-                    currentUserResources.setStone(stoneQuantityToSet);
+                    currentGameUser.getResources().addResources(brick, wood, sheep, wheat, stone);
                 }
             }
-
-            int brickQuantityToSet = userResources.getBrick() - tradeProposition.getBrick();
-            userResources.setBrick(brickQuantityToSet);
-            int woodQuantityToSet = userResources.getWood() - tradeProposition.getWood();
-            userResources.setWood(woodQuantityToSet);
-            int sheepQuantityToSet = userResources.getSheep() - tradeProposition.getSheep();
-            userResources.setSheep(sheepQuantityToSet);
-            int wheatQuantityToSet = userResources.getWheat() - tradeProposition.getWheat();
-            userResources.setWheat(wheatQuantityToSet);
-            int stoneQuantityToSet = userResources.getStone() - tradeProposition.getStone();
-            userResources.setStone(stoneQuantityToSet);
+            userResources.addResources(-brick, -wood, -sheep, -wheat, -stone);
         }
     }
 
