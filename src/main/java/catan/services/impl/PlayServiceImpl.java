@@ -48,6 +48,7 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String OFFER_ALREADY_ACCEPTED_ERROR = "OFFER_ALREADY_ACCEPTED";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -135,6 +136,9 @@ public class PlayServiceImpl implements PlayService {
                 tradeResourcesInPort(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
             case TRADE_PROPOSE:
                 proposeTrade(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                break;
+            case TRADE_REPLY:
+                tradeReply(gameUser, game, usersResources, params.get("tradeReply"));
                 break;
         }
     }
@@ -468,6 +472,52 @@ public class PlayServiceImpl implements PlayService {
 
         if (shouldUpdateTradeProposition) {
             game.setTradeProposition(new TradeProposition(brick, wood, sheep, wheat, stone));
+        }
+    }
+
+    private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
+        if (reply.equals("decline")) {
+            gameUser.setTradeReplyMandatory(false);
+        }
+
+        if (reply.equals("accept")) {
+            TradeProposition tradeProposition = game.getTradeProposition();
+            validateOfferIsNotAcceptedBefore(tradeProposition);
+            tradeProposition.setAcceptedTrade(true);
+            for (GameUserBean currentGameUser : game.getGameUsers()) {
+                currentGameUser.setTradeReplyMandatory(false);
+                if (currentGameUser.getMoveOrder() == game.getCurrentMove()) {
+                    Resources currentUserResources = currentGameUser.getResources();
+                    int brickQuantityToSet = currentUserResources.getBrick() + tradeProposition.getBrick();
+                    currentUserResources.setBrick(brickQuantityToSet);
+                    int woodQuantityToSet = currentUserResources.getWood() + tradeProposition.getWood();
+                    currentUserResources.setWood(woodQuantityToSet);
+                    int sheepQuantityToSet = currentUserResources.getSheep() + tradeProposition.getSheep();
+                    currentUserResources.setSheep(sheepQuantityToSet);
+                    int wheatQuantityToSet = currentUserResources.getWheat() + tradeProposition.getWheat();
+                    currentUserResources.setWheat(wheatQuantityToSet);
+                    int stoneQuantityToSet = currentUserResources.getStone() + tradeProposition.getStone();
+                    currentUserResources.setStone(stoneQuantityToSet);
+                }
+            }
+
+            int brickQuantityToSet = userResources.getBrick() - tradeProposition.getBrick();
+            userResources.setBrick(brickQuantityToSet);
+            int woodQuantityToSet = userResources.getWood() - tradeProposition.getWood();
+            userResources.setWood(woodQuantityToSet);
+            int sheepQuantityToSet = userResources.getSheep() - tradeProposition.getSheep();
+            userResources.setSheep(sheepQuantityToSet);
+            int wheatQuantityToSet = userResources.getWheat() - tradeProposition.getWheat();
+            userResources.setWheat(wheatQuantityToSet);
+            int stoneQuantityToSet = userResources.getStone() - tradeProposition.getStone();
+            userResources.setStone(stoneQuantityToSet);
+        }
+    }
+
+    private void validateOfferIsNotAcceptedBefore(TradeProposition tradeProposition) throws PlayException {
+        if (tradeProposition.isAcceptedTrade()) {
+            log.error("Trade proposition already accepted");
+            throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
         }
     }
 

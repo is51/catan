@@ -21,6 +21,9 @@ public class TradeProposition {
     @Column(name = "TRADE_STONE", nullable = false)
     private int stone;
 
+    @Column(name = "TRADE_ACCEPTED", nullable = true)
+    private Boolean acceptedTrade;
+
     public TradeProposition() {
     }
 
@@ -70,6 +73,14 @@ public class TradeProposition {
 
     public void setStone(int stone) {
         this.stone = stone;
+    }
+
+    public Boolean isAcceptedTrade() {
+        return acceptedTrade;
+    }
+
+    public void setAcceptedTrade(Boolean acceptedTrade) {
+        this.acceptedTrade = acceptedTrade;
     }
 
     @Override

@@ -11,9 +11,7 @@ import catan.domain.transfer.output.game.RoadBuildingCardUsageDetails;
 import catan.services.AuthenticationService;
 import catan.services.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -252,6 +250,32 @@ public class PlayController {
         params.put("stone", stone);
 
         playService.processAction(GameUserActionCode.TRADE_PROPOSE, user, gameId, params);
+    }
+
+    @RequestMapping(value = "trade/reply/accept",
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
+    public void acceptTradeProposition(@RequestParam(value = "token", required = false) String token,
+                                       @RequestParam(value = "gameId", required = true) String gameId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("tradeReply", "accept");
+
+        playService.processAction(GameUserActionCode.TRADE_REPLY, user, gameId, params);
+    }
+
+    @RequestMapping(value = "trade/reply/decline",
+            method = POST,
+            produces = APPLICATION_JSON_VALUE)
+    public void declineTradeProposition(@RequestParam(value = "token", required = false) String token,
+                                        @RequestParam(value = "gameId", required = true) String gameId) throws AuthenticationException, GameException, PlayException {
+        UserBean user = authenticationService.authenticateUserByToken(token);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("tradeReply", "decline");
+
+        playService.processAction(GameUserActionCode.TRADE_REPLY, user, gameId, params);
     }
 
     @Autowired
