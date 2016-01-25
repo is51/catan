@@ -3,6 +3,8 @@
 angular.module('catan')
         .directive('ctChooseResources', ['SelectService', function(SelectService) {
 
+            //TODO: this directive should be refactored
+
             return {
                 restrict: 'E',
                 scope: {
@@ -20,6 +22,9 @@ angular.module('catan')
             function init(scope, type) {
 
                 var playerResources = scope.game.getCurrentUser().resources;
+                var tradePortRatio = (type === "TRADE_PORT") ? scope.game.getCurrentUser().availableActions.list.filter(function(item) {
+                    return item.code === "TRADE_PORT";
+                })[0].params : {};
 
                 var maxResourcesCountLimit = getMaxResourcesCountLimit(type, playerResources);
                 var maxResourcesCountForApply = getMaxResourcesCountForApply(type, playerResources);
@@ -27,6 +32,8 @@ angular.module('catan')
                 var minResourcesCountForApply = getMinResourcesCountForApply(type, playerResources);
 
                 var removeOtherResourceWhenLimit = getRemoveOtherResourceWhenLimit(type);
+
+                var tradeBalance = 0;
 
                 scope.balanceType = getBalanceType(type);
 
@@ -47,18 +54,36 @@ angular.module('catan')
                 };
 
                 scope.addResource = function(resourceType) {
-                    if (scope.getTotalCount() < maxResourcesCountLimit) {
-                        scope.resources[resourceType]++;
-                    } else if (removeOtherResourceWhenLimit) {
+                    var step = 1;
+                    if (type === "TRADE_PORT" && scope.resources[resourceType] < 0) {
+                        step = tradePortRatio[resourceType];
+                    }
+
+                    if (scope.getTotalCount() + step <= maxResourcesCountLimit || maxResourcesCountLimit === null) {
+                        scope.resources[resourceType] += step;
+                    } else if (removeOtherResourceWhenLimit && step === 1) {
                         if (scope.removeOtherResource(resourceType)) {
                             scope.resources[resourceType]++;
                         }
                     }
+
+                    if (type === "TRADE_PORT") {
+                        tradeBalance = recalculateTradeBalance(scope.resources, tradePortRatio);
+                    }
                 };
 
                 scope.removeResource = function(resourceType) {
-                    if (scope.getTotalCount() > minResourcesCountLimit && playerResources[resourceType] + scope.resources[resourceType] > 0) {
-                        scope.resources[resourceType]--;
+                    var step = 1;
+                    if (type === "TRADE_PORT" && scope.resources[resourceType] <= 0) {
+                        step = tradePortRatio[resourceType];
+                    }
+
+                    if (scope.getTotalCount() - step >= minResourcesCountLimit && playerResources[resourceType] - step + scope.resources[resourceType] >= 0) {
+                        scope.resources[resourceType] -= step;
+                    }
+
+                    if (type === "TRADE_PORT") {
+                        tradeBalance = recalculateTradeBalance(scope.resources, tradePortRatio);
                     }
                 };
 
@@ -74,7 +99,7 @@ angular.module('catan')
 
                 scope.okDisabled = function() {
                     var count = scope.getTotalCount();
-                    return  count < minResourcesCountForApply || count > maxResourcesCountForApply;
+                    return count === 0 || count < minResourcesCountForApply || (count > maxResourcesCountForApply && maxResourcesCountForApply !== null) || tradeBalance !== 0;
                 };
 
                 scope.cancel = function() {
@@ -140,7 +165,7 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return 0;
                     case "TRADE_PORT":
-                        return 999;
+                        return null; //unlimited
                 }
             }
 
@@ -153,7 +178,7 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
                     case "TRADE_PORT":
-                        return 999;
+                        return null; //unlimited
                 }
             }
 
@@ -219,6 +244,21 @@ angular.module('catan')
 
             function calculateCountForKickOff(resources) {
                 return Math.floor(calculateResourcesSum(resources) / 2);
+            }
+
+            function recalculateTradeBalance(resources, tradePortRatio) {
+                var tradeBalance = 0;
+                for (var i in resources) {
+                    var count = resources[i];
+                    var ratio = tradePortRatio[i];
+                    if (count > 0) {
+                        tradeBalance += count;
+                    }
+                    if (count < 0) {
+                        tradeBalance += count / ratio;
+                    }
+                }
+                return tradeBalance;
             }
 
         }]);
