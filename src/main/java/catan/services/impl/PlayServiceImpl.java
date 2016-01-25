@@ -520,9 +520,9 @@ public class PlayServiceImpl implements PlayService {
         int sellingResources = 0;
         for (int resourceQuantity : resourcesQuantity) {
             if (resourceQuantity > 0) {
-                buyingResources =+ resourceQuantity;
+                buyingResources += resourceQuantity;
             } else {
-                sellingResources =+ resourceQuantity;
+                sellingResources += resourceQuantity;
             }
         }
 

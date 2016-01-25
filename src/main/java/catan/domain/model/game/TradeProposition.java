@@ -21,7 +21,7 @@ public class TradeProposition {
     @Column(name = "TRADE_STONE", nullable = false)
     private int stone;
 
-    @Column(name = "TRADE_ACCEPTED", nullable = true)
+    @Column(name = "TRADE_ACCEPTED", nullable = false)
     private Boolean acceptedTrade;
 
     public TradeProposition() {
@@ -33,6 +33,7 @@ public class TradeProposition {
         this.sheep = sheep;
         this.wheat = wheat;
         this.stone = stone;
+        this.acceptedTrade = false;
     }
 
     public int getBrick() {

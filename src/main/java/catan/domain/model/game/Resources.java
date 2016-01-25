@@ -118,11 +118,11 @@ public class Resources {
     }
 
     public void addResources(int brickToAdd, int woodToAdd, int sheepToAdd, int wheatToAdd, int stoneToAdd) {
-        this.brick =+ brickToAdd;
-        this.wood =+ woodToAdd;
-        this.sheep =+ sheepToAdd;
-        this.wheat =+ wheatToAdd;
-        this.stone =+ stoneToAdd;
+        this.brick += brickToAdd;
+        this.wood += woodToAdd;
+        this.sheep += sheepToAdd;
+        this.wheat += wheatToAdd;
+        this.stone += stoneToAdd;
     }
 
     @Override
