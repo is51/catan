@@ -106,7 +106,7 @@ public class PreparationStageTest extends PlayTestUtil {
         nextRandomDiceValues(asList(1,1));
         throwDice(userTokens[activeUserNumber], gameId);
 
-        String[] availableActions = {"END_TURN", "TRADE_PORT"};
+        String[] availableActions = {"END_TURN", "TRADE_PORT", "TRADE_PROPOSE"};
 
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActions);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");

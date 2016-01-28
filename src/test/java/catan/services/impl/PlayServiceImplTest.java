@@ -2881,8 +2881,317 @@ public class PlayServiceImplTest {
         }
     }
 
-    private void allowUserToChosePlayerToRob(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.CHOOSE_PLAYER_TO_ROB));
+    @Test
+    public void shouldPassWhenUserMakesTradePropose() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-1");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+        assertNotNull(game);
+        assertTrue(gameUser2.isTradeReplyMandatory());
+        assertNotNull(game.getTradeProposition());
+        assertEquals(-1, game.getTradeProposition().getBrick());
+        assertEquals(1, game.getTradeProposition().getWood());
+        assertEquals(0, game.getTradeProposition().getSheep());
+        assertEquals(0, game.getTradeProposition().getWheat());
+        assertEquals(0, game.getTradeProposition().getStone());
+        assertFalse(game.getTradeProposition().isAcceptedTrade());
+    }
+
+    @Test
+    public void shouldFailWhenUserMakesTradeProposeWithoutSellingAnyResource() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "0");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserMakesTradeProposeWithoutBuyingAnyResource() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-1");
+        params.put("wood", "0");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserMakesTradeProposeButParametersAreNotInteger() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "XXX");
+        params.put("wood", "XXX");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserMakesTradeProposeButQuantityOfResourceToSellIsMoreThenUserHas() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-2");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        }
+    }
+
+    @Test
+    public void shouldPassWhenUserAcceptsTradeProposition() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-1");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+        params.put("tradeReply", "accept");
+
+        playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
+
+        assertNotNull(game);
+        assertFalse(gameUser2.isTradeReplyMandatory());
+        assertNotNull(game.getTradeProposition());
+        assertTrue(game.getTradeProposition().isAcceptedTrade());
+
+        assertEquals(0, gameUser1.getResources().getBrick());
+        assertEquals(1, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getWheat());
+        assertEquals(0, gameUser1.getResources().getStone());
+
+        assertEquals(1, gameUser2.getResources().getBrick());
+        assertEquals(0, gameUser2.getResources().getWood());
+        assertEquals(0, gameUser2.getResources().getSheep());
+        assertEquals(0, gameUser2.getResources().getWheat());
+        assertEquals(0, gameUser2.getResources().getStone());
+    }
+
+    @Test
+    public void shouldPassWhenUserDeclinesTradeProposition() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-1");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+        params.put("tradeReply", "decline");
+
+        playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
+
+        assertNotNull(game);
+        assertFalse(gameUser2.isTradeReplyMandatory());
+        assertNotNull(game.getTradeProposition());
+        assertFalse(game.getTradeProposition().isAcceptedTrade());
+
+        assertEquals(1, gameUser1.getResources().getBrick());
+        assertEquals(0, gameUser1.getResources().getWood());
+        assertEquals(0, gameUser1.getResources().getSheep());
+        assertEquals(0, gameUser1.getResources().getWheat());
+        assertEquals(0, gameUser1.getResources().getStone());
+
+        assertEquals(0, gameUser2.getResources().getBrick());
+        assertEquals(1, gameUser2.getResources().getWood());
+        assertEquals(0, gameUser2.getResources().getSheep());
+        assertEquals(0, gameUser2.getResources().getWheat());
+        assertEquals(0, gameUser2.getResources().getStone());
+    }
+
+    @Test
+    public void shouldFailWhenUserAcceptsAlreadyAcceptedTradeProposition() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        gameUser3.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-1");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+        params.put("tradeReply", "accept");
+
+        playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
+
+        allowUserToReplyTrade(gameUser3);
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser3.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.OFFER_ALREADY_ACCEPTED_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.OFFER_ALREADY_ACCEPTED_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        } finally {
+            assertFalse(gameUser2.isTradeReplyMandatory());
+            assertFalse(gameUser3.isTradeReplyMandatory());
+            assertNotNull(game.getTradeProposition());
+            assertTrue(game.getTradeProposition().isAcceptedTrade());
+
+            assertEquals(0, gameUser1.getResources().getBrick());
+            assertEquals(1, gameUser1.getResources().getWood());
+            assertEquals(0, gameUser1.getResources().getSheep());
+            assertEquals(0, gameUser1.getResources().getWheat());
+            assertEquals(0, gameUser1.getResources().getStone());
+
+            assertEquals(1, gameUser2.getResources().getBrick());
+            assertEquals(0, gameUser2.getResources().getWood());
+            assertEquals(0, gameUser2.getResources().getSheep());
+            assertEquals(0, gameUser2.getResources().getWheat());
+            assertEquals(0, gameUser2.getResources().getStone());
+
+            assertEquals(0, gameUser3.getResources().getBrick());
+            assertEquals(1, gameUser3.getResources().getWood());
+            assertEquals(0, gameUser3.getResources().getSheep());
+            assertEquals(0, gameUser3.getResources().getWheat());
+            assertEquals(0, gameUser3.getResources().getStone());
+        }
+    }
+
+    private void allowUserToReplyTrade(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.TRADE_REPLY));
     }
     
     private void allowUserKickOffResources(GameUserBean user) {
@@ -2990,21 +3299,25 @@ public class PlayServiceImplTest {
         gameUser1.setMoveOrder(1);
         gameUser1.setReady(true);
         gameUser1.setKickingOffResourcesMandatory(false);
+        gameUser1.setTradeReplyMandatory(false);
 
         gameUser2.setGameUserId(2);
         gameUser2.setMoveOrder(2);
         gameUser2.setReady(true);
         gameUser2.setKickingOffResourcesMandatory(false);
+        gameUser2.setTradeReplyMandatory(false);
 
         gameUser3.setGameUserId(3);
         gameUser3.setMoveOrder(3);
         gameUser3.setReady(true);
         gameUser3.setKickingOffResourcesMandatory(false);
+        gameUser3.setTradeReplyMandatory(false);
 
         gameUser4.setGameUserId(4);
         gameUser4.setMoveOrder(4);
         gameUser4.setReady(true);
         gameUser4.setKickingOffResourcesMandatory(false);
+        gameUser4.setTradeReplyMandatory(false);
 
 
         //
