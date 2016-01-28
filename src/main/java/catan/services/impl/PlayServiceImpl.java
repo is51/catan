@@ -513,7 +513,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void validateUserHasAccessForTradeReply(TradeProposition tradeProposition) throws PlayException {
-        if (tradeProposition.isAcceptedTrade() == null) {
+        if (tradeProposition == null || tradeProposition.isAcceptedTrade() == null) {
             log.debug("Required action TRADE_REPLY is not allowed for player");
             throw new PlayException(ERROR_CODE_ERROR);
         }
