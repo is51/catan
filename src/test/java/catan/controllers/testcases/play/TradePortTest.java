@@ -145,24 +145,37 @@ public class TradePortTest extends PlayTestUtil {
     @Test
     public void should_fail_when_resource_quantity_is_incorrect() {
         playPreparationStageAndGiveResources()
+                .nextRandomDiceValues(asList(3, 3)) // P1: +1 stone, P2: +1 stone
+                .THROW_DICE(1).END_TURN(1)
+                .nextRandomDiceValues(asList(3, 3)) // P1: +1 stone, P2: +1 stone
+                .THROW_DICE(2).END_TURN(2)
+                .nextRandomDiceValues(asList(3, 2)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(3).END_TURN(3)
+                .nextRandomDiceValues(asList(3, 2)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(1).END_TURN(1)
+                .nextRandomDiceValues(asList(3, 2)) // P1: +1 wheat, P2: +1 stone
+                .THROW_DICE(2).END_TURN(2)
+                .nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(3).END_TURN(3)
+
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2")
 
-                .TRADE_PORT(1).withResources(-6, 0, 1, 0, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (lower)
-                .TRADE_PORT(1).withResources(-3, 0, 0, 0, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (empty)
-                .TRADE_PORT(1).withResources(-3, 0, 2, 0, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (grater)
-                .TRADE_PORT(1).withResources(-6, -3, 1, 1, 0).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (lower)
-                .TRADE_PORT(1).withResources(-3, -3, 0, 1, 0).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (empty)
-                .TRADE_PORT(1).withResources(-3, -3, 2, 1, 0).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (grater)
-                .TRADE_PORT(1).withResources(-1, 0, 1, 0, 0).failsWithError("ERROR")        // single source resource not correct (lower), single target resource correct
+                .TRADE_PORT(1).withResources(0, 0, 1, -6, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (lower)
+                .TRADE_PORT(1).withResources(0, 0, 0, -3, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (empty)
+                .TRADE_PORT(1).withResources(0, 0, 2, -3, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (grater)
+                .TRADE_PORT(1).withResources(0, 1, 1, -6, -2).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (lower)
+                .TRADE_PORT(1).withResources(0, 0, 1, -3, -2).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (empty)
+                .TRADE_PORT(1).withResources(0, 2, 1, -3, -2).failsWithError("ERROR")       // both source resources correct, first target resource correct, second target resource not correct (grater)
+                .TRADE_PORT(1).withResources(0, 0, 1, -1, 0).failsWithError("ERROR")        // single source resource not correct (lower), single target resource correct
                 .TRADE_PORT(1).withResources(0, 0, 1, 0, 0).failsWithError("ERROR")         // single source resource not correct (empty), single target resource correct
-                .TRADE_PORT(1).withResources(-4, 0, 1, 0, 0).failsWithError("ERROR")        // single source resource not correct (grater), single target resource correct
-                .TRADE_PORT(1).withResources(-1, -3, 1, 1, 0).failsWithError("ERROR")       // first source resource not correct (lower), second source resource correct, both target resources correct
-                .TRADE_PORT(1).withResources(0, -3, 1, 1, 0).failsWithError("ERROR")        // first source resource not correct (empty), second source resource correct, both target resources correct
-                .TRADE_PORT(1).withResources(-4, -3, 1, 1, 0).failsWithError("ERROR")       // first source resource not correct (grater), second source resource correct, both target resources correct
+                .TRADE_PORT(1).withResources(0, 0, 1, -4, 0).failsWithError("ERROR")        // single source resource not correct (grater), single target resource correct
+                .TRADE_PORT(1).withResources(0, 1, 1, -3, -1).failsWithError("ERROR")       // first source resource not correct (lower), second source resource correct, both target resources correct
+                .TRADE_PORT(1).withResources(0, 1, 1, -3, 0).failsWithError("ERROR")        // first source resource not correct (empty), second source resource correct, both target resources correct
+                .TRADE_PORT(1).withResources(0, 1, 1, -3, -3).failsWithError("ERROR")       // first source resource not correct (grater), second source resource correct, both target resources correct
                 .TRADE_PORT(1).withResources(0, 0, 0, 0, 0).failsWithError("ERROR")         // all resources are zero
         ;
     }
