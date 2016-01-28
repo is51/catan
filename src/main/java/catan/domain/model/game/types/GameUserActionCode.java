@@ -13,5 +13,6 @@ public enum GameUserActionCode {
     USE_CARD_KNIGHT,
     MOVE_ROBBER,
     CHOOSE_PLAYER_TO_ROB,
-    KICK_OFF_RESOURCES
+    KICK_OFF_RESOURCES,
+    TRADE_PORT
 }

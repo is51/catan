@@ -9,11 +9,6 @@ public class AvailableActionsDetails {
     public AvailableActionsDetails() {
     }
 
-    public AvailableActionsDetails(List<ActionDetails> list, boolean isMandatory) {
-        this.list = list;
-        this.isMandatory = isMandatory;
-    }
-
     public List<ActionDetails> getList() {
         return list;
     }

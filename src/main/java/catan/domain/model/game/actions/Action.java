@@ -13,6 +13,11 @@ public class Action {
         this.code = code.name();
     }
 
+    public Action(GameUserActionCode code, ActionParams params) {
+        this(code);
+        this.params = params;
+    }
+
     public String getCode() {
         return code;
     }

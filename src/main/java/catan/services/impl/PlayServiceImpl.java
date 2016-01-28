@@ -16,6 +16,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.TradingParams;
 import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
@@ -129,6 +130,8 @@ public class PlayServiceImpl implements PlayService {
             case KICK_OFF_RESOURCES:
                 kickOffResources(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
+            case TRADE_PORT:
+                tradeResourcesInPort(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
         }
     }
 
@@ -367,18 +370,17 @@ public class PlayServiceImpl implements PlayService {
 
     private void kickOffResources(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
 
-
         int usersBrickQuantity = userResources.getBrick();
         int usersWoodQuantity = userResources.getWood();
         int usersSheepQuantity = userResources.getSheep();
         int usersWheatQuantity = userResources.getWheat();
         int usersStoneQuantity = userResources.getStone();
 
-        int brickQuantityToKickOff = toValidResourceQuantity(brickString, usersBrickQuantity);
-        int woodQuantityToKickOff = toValidResourceQuantity(woodString, usersWoodQuantity);
-        int sheepQuantityToKickOff = toValidResourceQuantity(sheepString, usersSheepQuantity);
-        int wheatQuantityToKickOff = toValidResourceQuantity(wheatString, usersWheatQuantity);
-        int stoneQuantityToKickOff = toValidResourceQuantity(stoneString, usersStoneQuantity);
+        int brickQuantityToKickOff = toValidResourceQuantityToKickOff(brickString, usersBrickQuantity);
+        int woodQuantityToKickOff = toValidResourceQuantityToKickOff(woodString, usersWoodQuantity);
+        int sheepQuantityToKickOff = toValidResourceQuantityToKickOff(sheepString, usersSheepQuantity);
+        int wheatQuantityToKickOff = toValidResourceQuantityToKickOff(wheatString, usersWheatQuantity);
+        int stoneQuantityToKickOff = toValidResourceQuantityToKickOff(stoneString, usersStoneQuantity);
 
         int sumOfResourcesKickingOff = brickQuantityToKickOff + woodQuantityToKickOff + sheepQuantityToKickOff + wheatQuantityToKickOff + stoneQuantityToKickOff;
         int sumOfUsersResources = gameUser.getAchievements().getTotalResources();
@@ -392,6 +394,56 @@ public class PlayServiceImpl implements PlayService {
 
         gameUser.setKickingOffResourcesMandatory(false);
         checkRobberShouldBeMovedMandatory(game);
+    }
+
+    private void tradeResourcesInPort(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+
+        int usersBrickQuantity = userResources.getBrick();
+        int usersWoodQuantity = userResources.getWood();
+        int usersSheepQuantity = userResources.getSheep();
+        int usersWheatQuantity = userResources.getWheat();
+        int usersStoneQuantity = userResources.getStone();
+
+        TradingParams tradingParams = mainStageUtil.calculateTradingParams(gameUser, game);
+        int brickSellCoefficient = tradingParams.getBrick();
+        int woodSellCoefficient = tradingParams.getWood();
+        int sheepSellCoefficient = tradingParams.getSheep();
+        int wheatSellCoefficient = tradingParams.getWheat();
+        int stoneSellCoefficient = tradingParams.getStone();
+
+        int brickQuantityToTrade = toValidResourceQuantityToTrade(brickString, usersBrickQuantity, brickSellCoefficient);
+        int woodQuantityToTrade = toValidResourceQuantityToTrade(woodString, usersWoodQuantity, woodSellCoefficient);
+        int sheepQuantityToTrade = toValidResourceQuantityToTrade(sheepString, usersSheepQuantity, sheepSellCoefficient);
+        int wheatQuantityToTrade = toValidResourceQuantityToTrade(wheatString, usersWheatQuantity, wheatSellCoefficient);
+        int stoneQuantityToTrade = toValidResourceQuantityToTrade(stoneString, usersStoneQuantity, stoneSellCoefficient);
+
+        int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
+                           + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
+                           + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
+                           + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
+                           + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
+        validateTradeBalanceIsZero(tradingBalance);
+        validateTradeIsNotEmpty(brickQuantityToTrade, woodQuantityToTrade, sheepQuantityToTrade, wheatQuantityToTrade, stoneQuantityToTrade);
+
+        userResources.setBrick(usersBrickQuantity + brickQuantityToTrade);
+        userResources.setWood(usersWoodQuantity + woodQuantityToTrade);
+        userResources.setSheep(usersSheepQuantity + sheepQuantityToTrade);
+        userResources.setWheat(usersWheatQuantity + wheatQuantityToTrade);
+        userResources.setStone(usersStoneQuantity + stoneQuantityToTrade);
+    }
+
+    private void validateTradeIsNotEmpty(int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
+        if (brick == 0 && wood == 0 && sheep == 0 && wheat == 0 && stone == 0) {
+            log.error("Trading request is empty. All requested resources has zero quantity");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private void validateTradeBalanceIsZero(int tradingBalance) throws PlayException {
+        if (tradingBalance != 0) {
+            log.error("Trade balance is not zero: {}. Wrong resources quantity to trade", tradingBalance);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
     }
 
     private void checkRobberShouldBeMovedMandatory(GameBean game) {
@@ -410,14 +462,17 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private int toValidResourceQuantity(String resourceQuantityString, int usersResourceQuantity) throws PlayException {
-        int resourceQuantity;
+    private int toValidResourceQuantity(String resourceQuantityString) throws PlayException {
         try {
-            resourceQuantity = Integer.parseInt(resourceQuantityString);
+            return Integer.parseInt(resourceQuantityString);
         } catch (Exception e) {
             log.error("Cannot convert resourceQuantity to integer value: {}", resourceQuantityString);
             throw new PlayException(ERROR_CODE_ERROR);
         }
+    }
+
+    private int toValidResourceQuantityToKickOff(String resourceQuantityString, int usersResourceQuantity) throws PlayException {
+        int resourceQuantity = toValidResourceQuantity(resourceQuantityString);
 
         if (resourceQuantity < 0) {
             log.error("Resource quantity could not be below 0");
@@ -428,6 +483,27 @@ public class PlayServiceImpl implements PlayService {
             log.error("User cannot kick of more resources than he has: {} / {}", resourceQuantity, usersResourceQuantity);
             throw new PlayException(ERROR_CODE_ERROR);
         }
+
+        return resourceQuantity;
+    }
+
+    private int toValidResourceQuantityToTrade(String resourceQuantityString, int usersResourceQuantity, int tradeCoefficient) throws PlayException {
+        int resourceQuantity = toValidResourceQuantity(resourceQuantityString);
+
+        if (resourceQuantity >= 0) {
+            return resourceQuantity;
+        }
+
+        if (-resourceQuantity > usersResourceQuantity) {
+            log.error("User cannot sell more resources than he has: {} / {}", -resourceQuantity, usersResourceQuantity);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (resourceQuantity % tradeCoefficient != 0) {
+            log.error("Invalid resource quantity to sell: {} should be divisible by {}", -resourceQuantity, tradeCoefficient);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
         return resourceQuantity;
     }
 
