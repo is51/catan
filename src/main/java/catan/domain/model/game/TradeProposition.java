@@ -21,7 +21,7 @@ public class TradeProposition {
     @Column(name = "TRADE_STONE", nullable = false)
     private int stone;
 
-    @Column(name = "TRADE_ACCEPTED", nullable = false)
+    @Column(name = "TRADE_ACCEPTED")
     private Boolean acceptedTrade;
 
     public TradeProposition() {

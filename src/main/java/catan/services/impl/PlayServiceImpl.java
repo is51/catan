@@ -206,6 +206,9 @@ public class PlayServiceImpl implements PlayService {
                 mainStageUtil.resetDices(game);
                 gameUser.setDevelopmentCardsReadyForUsing(gameUser.getDevelopmentCards());
                 game.setDevelopmentCardUsed(false);
+                if (game.getTradeProposition() != null) {
+                    game.getTradeProposition().setAcceptedTrade(null);
+                }
                 mainStageUtil.updateNextMove(game);
                 break;
         }
@@ -476,12 +479,14 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
+        TradeProposition tradeProposition = game.getTradeProposition();
+        validateUserHasAccessForTradeReply(tradeProposition);
+
         if (reply.equals("decline")) {
             gameUser.setTradeReplyMandatory(false);
         }
 
         if (reply.equals("accept")) {
-            TradeProposition tradeProposition = game.getTradeProposition();
             validateOfferIsNotAcceptedBefore(tradeProposition);
             tradeProposition.setAcceptedTrade(true);
             int brick = tradeProposition.getBrick();
@@ -504,6 +509,13 @@ public class PlayServiceImpl implements PlayService {
         if (tradeProposition.isAcceptedTrade()) {
             log.error("Trade proposition already accepted");
             throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
+        }
+    }
+
+    private void validateUserHasAccessForTradeReply(TradeProposition tradeProposition) throws PlayException {
+        if (tradeProposition.isAcceptedTrade() == null) {
+            log.debug("Required action TRADE_REPLY is not allowed for player");
+            throw new PlayException(ERROR_CODE_ERROR);
         }
     }
 
@@ -687,6 +699,10 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void validateActionIsAllowedForUser(GameUserBean gameUser, GameUserActionCode requiredAction) throws PlayException, GameException {
+        if (requiredAction.equals(GameUserActionCode.TRADE_REPLY)) {
+            return;
+        }
+
         String availableActionsJson = gameUser.getAvailableActions();
         AvailableActions availableActions = playUtil.toAvailableActionsFromJson(availableActionsJson);
 

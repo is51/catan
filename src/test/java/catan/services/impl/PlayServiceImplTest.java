@@ -3153,7 +3153,6 @@ public class PlayServiceImplTest {
 
         playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
-        allowUserToReplyTrade(gameUser3);
         try {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser3.getUser(), "1", params);
