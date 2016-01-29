@@ -112,7 +112,7 @@ public class GameBean {
     private Boolean choosePlayerToRobMandatory;
 
     @Embedded
-    private TradeProposition tradeProposition;
+    private TradeProposal tradeProposal;
 
     @Embedded
     private DevelopmentCards availableDevelopmentCards;
@@ -335,12 +335,12 @@ public class GameBean {
         this.choosePlayerToRobMandatory = choosePlayerToRobMandatory;
     }
 
-    public TradeProposition getTradeProposition() {
-        return tradeProposition;
+    public TradeProposal getTradeProposal() {
+        return tradeProposal;
     }
 
-    public void setTradeProposition(TradeProposition tradeProposition) {
-        this.tradeProposition = tradeProposition;
+    public void setTradeProposal(TradeProposal tradeProposal) {
+        this.tradeProposal = tradeProposal;
     }
 
     public DevelopmentCards getAvailableDevelopmentCards() {

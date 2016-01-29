@@ -14,7 +14,7 @@ import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
-import catan.domain.model.game.TradeProposition;
+import catan.domain.model.game.TradeProposal;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.actions.TradingParams;
@@ -206,8 +206,8 @@ public class PlayServiceImpl implements PlayService {
                 mainStageUtil.resetDices(game);
                 gameUser.setDevelopmentCardsReadyForUsing(gameUser.getDevelopmentCards());
                 game.setDevelopmentCardUsed(false);
-                if (game.getTradeProposition() != null) {
-                    game.getTradeProposition().setAcceptedTrade(null);
+                if (game.getTradeProposal() != null) {
+                    game.getTradeProposal().setFinishedTrade(null);
                 }
                 mainStageUtil.updateNextMove(game);
                 break;
@@ -460,40 +460,40 @@ public class PlayServiceImpl implements PlayService {
 
         validateResourceQuantityToSellAndToBuyInTradePropose(brick, wood, sheep, wheat, stone);
 
-        boolean shouldUpdateTradeProposition = false;
         for (GameUserBean currentGameUser : game.getGameUsers()) {
-            if (currentGameUser.equals(gameUser)) {
-                continue;
-            }
-
-            Resources currentUserResources = currentGameUser.getResources();
-            if (userHasRequestedResources(currentUserResources, brick, wood, sheep, wheat, stone)) {
+            if (!currentGameUser.equals(gameUser)) {
                 currentGameUser.setTradeReplyMandatory(true);
-                shouldUpdateTradeProposition = true;
             }
         }
 
-        if (shouldUpdateTradeProposition) {
-            game.setTradeProposition(new TradeProposition(brick, wood, sheep, wheat, stone));
-        }
+        game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone));
     }
 
     private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
-        TradeProposition tradeProposition = game.getTradeProposition();
-        validateUserHasAccessForTradeReply(tradeProposition);
+        TradeProposal tradeProposal = game.getTradeProposal();
+        validateUserHasAccessForTradeReply(tradeProposal);
+        boolean tradeFinished = true;
 
         if (reply.equals("decline")) {
             gameUser.setTradeReplyMandatory(false);
+            for (GameUserBean currentGameUser : game.getGameUsers()) {
+                if (currentGameUser.isTradeReplyMandatory()) {
+                    tradeFinished = false;
+                    break;
+                }
+            }
         }
 
         if (reply.equals("accept")) {
-            validateOfferIsNotAcceptedBefore(tradeProposition);
-            tradeProposition.setAcceptedTrade(true);
-            int brick = tradeProposition.getBrick();
-            int wood = tradeProposition.getWood();
-            int sheep = tradeProposition.getSheep();
-            int wheat = tradeProposition.getWheat();
-            int stone = tradeProposition.getStone();
+            int brick = tradeProposal.getBrick();
+            int wood = tradeProposal.getWood();
+            int sheep = tradeProposal.getSheep();
+            int wheat = tradeProposal.getWheat();
+            int stone = tradeProposal.getStone();
+
+            validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
+            validateOfferIsNotAcceptedBefore(tradeProposal);
+            tradeProposal.setFinishedTrade(true);
 
             for (GameUserBean currentGameUser : game.getGameUsers()) {
                 currentGameUser.setTradeReplyMandatory(false);
@@ -503,28 +503,36 @@ public class PlayServiceImpl implements PlayService {
             }
             userResources.addResources(-brick, -wood, -sheep, -wheat, -stone);
         }
+
+        if (tradeFinished) {
+            tradeProposal.setFinishedTrade(true);
+        }
     }
 
-    private void validateOfferIsNotAcceptedBefore(TradeProposition tradeProposition) throws PlayException {
-        if (tradeProposition.isAcceptedTrade()) {
-            log.error("Trade proposition already accepted");
+    private void validateOfferIsNotAcceptedBefore(TradeProposal tradeProposal) throws PlayException {
+        if (tradeProposal.isFinishedTrade()) {
+            log.error("Trade proposal already accepted");
             throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
         }
     }
 
-    private void validateUserHasAccessForTradeReply(TradeProposition tradeProposition) throws PlayException {
-        if (tradeProposition == null || tradeProposition.isAcceptedTrade() == null) {
+    private void validateUserHasAccessForTradeReply(TradeProposal tradeProposal) throws PlayException {
+        if (tradeProposal == null || tradeProposal.isFinishedTrade() == null) {
             log.debug("Required action TRADE_REPLY is not allowed for player");
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
 
-    private boolean userHasRequestedResources(Resources currentUserResources, int brick, int wood, int sheep, int wheat, int stone) {
-        return currentUserResources.getBrick() >= brick
-                    && currentUserResources.getWood() >= wood
-                    && currentUserResources.getSheep() >= sheep
-                    && currentUserResources.getWheat() >= wheat
-                    && currentUserResources.getStone() >= stone;
+    private void validateUserHasRequestedResources(GameUserBean gameUser, int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
+        Resources userResources = gameUser.getResources();
+        if (userResources.getBrick() < brick
+                || userResources.getWood() < wood
+                || userResources.getSheep() < sheep
+                || userResources.getWheat() < wheat
+                || userResources.getStone() < stone) {
+            log.debug("User has not enough resources ({}) to accept trade proposal: [{}, {}, {}, {}, {}]", userResources, brick, wood, sheep, wheat, stone);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
     }
 
     private void validateResourceQuantityToSellAndToBuyInTradePropose(int... resourcesQuantity) throws PlayException {

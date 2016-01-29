@@ -56,7 +56,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -2904,13 +2903,13 @@ public class PlayServiceImplTest {
 
         assertNotNull(game);
         assertTrue(gameUser2.isTradeReplyMandatory());
-        assertNotNull(game.getTradeProposition());
-        assertEquals(-1, game.getTradeProposition().getBrick());
-        assertEquals(1, game.getTradeProposition().getWood());
-        assertEquals(0, game.getTradeProposition().getSheep());
-        assertEquals(0, game.getTradeProposition().getWheat());
-        assertEquals(0, game.getTradeProposition().getStone());
-        assertFalse(game.getTradeProposition().isAcceptedTrade());
+        assertNotNull(game.getTradeProposal());
+        assertEquals(-1, game.getTradeProposal().getBrick());
+        assertEquals(1, game.getTradeProposal().getWood());
+        assertEquals(0, game.getTradeProposal().getSheep());
+        assertEquals(0, game.getTradeProposal().getWheat());
+        assertEquals(0, game.getTradeProposal().getStone());
+        assertFalse(game.getTradeProposal().isFinishedTrade());
     }
 
     @Test
@@ -3068,8 +3067,8 @@ public class PlayServiceImplTest {
 
         assertNotNull(game);
         assertFalse(gameUser2.isTradeReplyMandatory());
-        assertNotNull(game.getTradeProposition());
-        assertTrue(game.getTradeProposition().isAcceptedTrade());
+        assertNotNull(game.getTradeProposal());
+        assertTrue(game.getTradeProposal().isFinishedTrade());
 
         assertEquals(0, gameUser1.getResources().getBrick());
         assertEquals(1, gameUser1.getResources().getWood());
@@ -3111,8 +3110,8 @@ public class PlayServiceImplTest {
 
         assertNotNull(game);
         assertFalse(gameUser2.isTradeReplyMandatory());
-        assertNotNull(game.getTradeProposition());
-        assertFalse(game.getTradeProposition().isAcceptedTrade());
+        assertNotNull(game.getTradeProposal());
+        assertFalse(game.getTradeProposal().isFinishedTrade());
 
         assertEquals(1, gameUser1.getResources().getBrick());
         assertEquals(0, gameUser1.getResources().getWood());
@@ -3166,8 +3165,8 @@ public class PlayServiceImplTest {
         } finally {
             assertFalse(gameUser2.isTradeReplyMandatory());
             assertFalse(gameUser3.isTradeReplyMandatory());
-            assertNotNull(game.getTradeProposition());
-            assertTrue(game.getTradeProposition().isAcceptedTrade());
+            assertNotNull(game.getTradeProposal());
+            assertTrue(game.getTradeProposal().isFinishedTrade());
 
             assertEquals(0, gameUser1.getResources().getBrick());
             assertEquals(1, gameUser1.getResources().getWood());

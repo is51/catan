@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class TradeProposition {
+public class TradeProposal {
 
     @Column(name = "TRADE_BRICK", nullable = false)
     private int brick;
@@ -21,19 +21,19 @@ public class TradeProposition {
     @Column(name = "TRADE_STONE", nullable = false)
     private int stone;
 
-    @Column(name = "TRADE_ACCEPTED")
-    private Boolean acceptedTrade;
+    @Column(name = "TRADE_FINISHED")
+    private Boolean finishedTrade;
 
-    public TradeProposition() {
+    public TradeProposal() {
     }
 
-    public TradeProposition(int brick, int wood, int sheep, int wheat, int stone) {
+    public TradeProposal(int brick, int wood, int sheep, int wheat, int stone) {
         this.brick = brick;
         this.wood = wood;
         this.sheep = sheep;
         this.wheat = wheat;
         this.stone = stone;
-        this.acceptedTrade = false;
+        this.finishedTrade = false;
     }
 
     public int getBrick() {
@@ -76,12 +76,12 @@ public class TradeProposition {
         this.stone = stone;
     }
 
-    public Boolean isAcceptedTrade() {
-        return acceptedTrade;
+    public Boolean isFinishedTrade() {
+        return finishedTrade;
     }
 
-    public void setAcceptedTrade(Boolean acceptedTrade) {
-        this.acceptedTrade = acceptedTrade;
+    public void setFinishedTrade(Boolean finishedTrade) {
+        this.finishedTrade = finishedTrade;
     }
 
     @Override

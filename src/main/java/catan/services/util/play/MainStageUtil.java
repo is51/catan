@@ -147,7 +147,7 @@ public class MainStageUtil {
     private void allowTradeReply(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameNotFinished(game)
                 && gameUser.isTradeReplyMandatory()) {
-            TradingParams tradingParams = new TradingParams(game.getTradeProposition());
+            TradingParams tradingParams = new TradingParams(game.getTradeProposal());
             actionsList.add(new Action(GameUserActionCode.TRADE_REPLY, tradingParams));
         }
     }
