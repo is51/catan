@@ -137,7 +137,8 @@ public class PlayServiceImpl implements PlayService {
 
     private void buildRoad(UserBean user, GameBean game, Resources usersResources, String edgeId) throws PlayException, GameException {
         EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeId, new ArrayList<MapElement>(game.getEdges()));
-        buildUtil.validateUserCanBuildRoadOnEdge(user, edgeToBuildOn);
+        GameStage gameStage = game.getStage();
+        buildUtil.validateUserCanBuildRoadOnEdge(user, edgeToBuildOn, gameStage);
         buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
@@ -147,7 +148,7 @@ public class PlayServiceImpl implements PlayService {
             game.setRoadsToBuildMandatory(mandatoryRoads - 1);
         }
 
-        if (GameStage.MAIN.equals(game.getStage()) && mandatoryRoads == 0) {
+        if (GameStage.MAIN.equals(gameStage) && mandatoryRoads == 0) {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
         }
