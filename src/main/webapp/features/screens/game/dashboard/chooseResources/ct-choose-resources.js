@@ -166,6 +166,8 @@ angular.module('catan')
                         return 0;
                     case "TRADE_PORT":
                         return null; //unlimited
+                    case "TRADE_PROPOSE":
+                        return null; //unlimited
                 }
             }
 
@@ -178,6 +180,8 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
                     case "TRADE_PORT":
+                        return null; //unlimited
+                    case "TRADE_PROPOSE":
                         return null; //unlimited
                 }
             }
@@ -192,6 +196,8 @@ angular.module('catan')
                         return -calculateCountForKickOff(playerResources);
                     case "TRADE_PORT":
                         return -calculateResourcesSum(playerResources);
+                    case "TRADE_PROPOSE":
+                        return -calculateResourcesSum(playerResources);
                 }
             }
 
@@ -204,6 +210,8 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
                     case "TRADE_PORT":
+                        return -calculateResourcesSum(playerResources);
+                    case "TRADE_PROPOSE":
                         return -calculateResourcesSum(playerResources);
                 }
             }
@@ -218,6 +226,8 @@ angular.module('catan')
                         return false;
                     case "TRADE_PORT":
                         return false;
+                    case "TRADE_PROPOSE":
+                        return false;
                 }
             }
 
@@ -230,6 +240,8 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return "NEGATIVE";
                     case "TRADE_PORT":
+                        return "BOTH";
+                    case "TRADE_PROPOSE":
                         return "BOTH";
                 }
             }
