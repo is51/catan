@@ -134,6 +134,7 @@ public class PlayServiceImpl implements PlayService {
                 break;
             case TRADE_PORT:
                 tradeResourcesInPort(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                break;
             case TRADE_PROPOSE:
                 proposeTrade(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
