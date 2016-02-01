@@ -51,13 +51,12 @@ public class TradeWithPlayersTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_fail_trade_proposal_when_player_has_not_enough_resources() {
-    }
-
-    @Test
     public void should_fail_trade_proposal_when_resource_quantity_is_incorrect() {
         //(куча разных вариантов)
-
+        //should_fail_trade_proposal_when_player_has_not_enough_resources
+        //resources lower
+        //resources grater
+        //resources zero
     }
 
     @Test
@@ -76,32 +75,16 @@ public class TradeWithPlayersTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_send_trade_proposal_with_1_source_and_1_target_resource() {
+    public void should_successfully_send_trade_proposal() {
 
     }
 
     @Test
-    public void should_successfully_send_trade_proposal_with_2_same_source_and_1_target_resources() {
+    public void should_successfully_send_trade_decline_even_if_trade_proposal_declined_already_by_other_player(){
 
     }
-
     @Test
-    public void should_successfully_send_trade_proposal_with_2_different_source_and_1_target_resources() {
-
-    }
-
-    @Test
-    public void should_successfully_send_trade_proposal_with_2_different_source_and_2_target_resources() {
-
-    }
-
-    @Test
-    public void should_successfully_send_trade_proposal_with_1_source_and_2_same_target_resource() {
-
-    }
-
-    @Test
-    public void should_successfully_send_trade_proposal_with_1_source_and_2_different_target_resource() {
+    public void should_successfully_send_trade_decline_even_if_trade_proposal_accepted_already_by_other_player(){
 
     }
 
@@ -111,12 +94,22 @@ public class TradeWithPlayersTest extends PlayTestUtil {
     }
 
     @Test
+    public void should_fail_trade_decline_if_decline_was_already_sent_from_this_player() {
+
+    }
+
+    @Test
+    public void should_fail_trade_decline_if_accept_was_already_sent_from_this_player() {
+
+    }
+
+    @Test
     public void should_fail_trade_decline_if_same_player_sent_proposal() {
 
     }
 
     @Test
-    public void should_successfully_send_trade_decline_if_player_resources() {
+    public void should_successfully_send_trade_decline_if_player_has_resources() {
 
     }
 
@@ -124,6 +117,8 @@ public class TradeWithPlayersTest extends PlayTestUtil {
     public void should_successfully_send_trade_decline_if_player_has_no_resources() {
 
     }
+
+
 
     @Test
     public void should_fail_trade_accept_if_there_is_no_proposal() {

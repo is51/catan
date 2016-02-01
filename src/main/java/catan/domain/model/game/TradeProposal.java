@@ -6,19 +6,19 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class TradeProposal {
 
-    @Column(name = "TRADE_BRICK", nullable = false)
+    @Column(name = "TRADE_BRICK")
     private int brick;
 
-    @Column(name = "TRADE_WOOD", nullable = false)
+    @Column(name = "TRADE_WOOD")
     private int wood;
 
-    @Column(name = "TRADE_SHEEP", nullable = false)
+    @Column(name = "TRADE_SHEEP")
     private int sheep;
 
-    @Column(name = "TRADE_WHEAT", nullable = false)
+    @Column(name = "TRADE_WHEAT")
     private int wheat;
 
-    @Column(name = "TRADE_STONE", nullable = false)
+    @Column(name = "TRADE_STONE")
     private int stone;
 
     @Column(name = "TRADE_FINISHED")
