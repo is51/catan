@@ -32,6 +32,10 @@ angular.module('catan')
                             GameService.refresh(scope.game);
                         }, function(response) {
                             alert('Trade Propose Accept error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
+                            if (response.data.errorCode === "OFFER_ALREADY_ACCEPTED") {
+                                ModalWindowService.hide(MODAL_WINDOW_ID);
+                                GameService.refresh(scope.game);
+                            }
                         });
                     };
 
@@ -40,7 +44,12 @@ angular.module('catan')
                             ModalWindowService.hide(MODAL_WINDOW_ID);
                             GameService.refresh(scope.game);
                         }, function(response) {
-                            alert('Trade Propose Decline error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
+                            if (response.data.errorCode === "OFFER_ALREADY_ACCEPTED") {
+                                ModalWindowService.hide(MODAL_WINDOW_ID);
+                                GameService.refresh(scope.game);
+                            } else {
+                                alert('Trade Propose Decline error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
+                            }
                         });
                     };
 
