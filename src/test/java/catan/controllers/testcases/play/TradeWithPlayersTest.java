@@ -52,131 +52,319 @@ public class TradeWithPlayersTest extends PlayTestUtil {
 
     @Test
     public void should_fail_trade_proposal_when_resource_quantity_is_incorrect() {
-        //(куча разных вариантов)
-        //should_fail_trade_proposal_when_player_has_not_enough_resources
-        //resources lower
-        //resources grater
-        //resources zero
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters()
+
+                .TRADE_PROPOSE(1).withResources(0, 0, 0, 0, 0).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 0, 0, -2).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 0, -3, 0).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 0, -3, -2).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, -1, 0, -3, -2).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, -1, 1, -3, -2).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, -1, -1, -3, -2).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 0, 0, 1).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 0, 1, 1).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 1, 1, 1).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 1, -15, 0).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 1, -15, -1).failsWithError("ERROR")
+                .TRADE_PROPOSE(1).withResources(0, 0, 1, -15, -15).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_proposal_if_it_is_not_players_turn() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1)) // P1, P2, P3: --
+                .THROW_DICE(1)
 
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
+
+                .getGameDetails(2)
+                .gameUser(2).doesntHaveAvailableAction("TRADE_PROPOSE")
+
+                .TRADE_PROPOSE(2).withResources(0, 1, -1, 0, 0).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_proposal_if_player_has_not_thrown_the_dice() {
+        playPreparationStageAndGiveResources()
 
+                .getGameDetails(1)
+                .gameUser(1).doesntHaveAvailableAction("TRADE_PROPOSE")
+
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_proposal_when_player_already_send_trade_proposal() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
+
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_PROPOSE(1).withResources(0, 0, 1, 0, -1).failsWithError("ERROR");
     }
 
     @Test
     public void should_successfully_send_trade_proposal() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters()
+
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -3, -2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     @Test
     public void should_successfully_send_trade_decline_even_if_trade_proposal_declined_already_by_other_player(){
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_DECLINE(2).successfully()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+
+                .TRADE_DECLINE(3).successfully()
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
+
     @Test
     public void should_successfully_send_trade_decline_even_if_trade_proposal_accepted_already_by_other_player(){
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_ACCEPT(2).successfully()
+                .TRADE_DECLINE(3).successfully();
     }
 
     @Test
     public void should_fail_trade_decline_if_there_is_no_proposal() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_DECLINE(3).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_decline_if_decline_was_already_sent_from_this_player() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_DECLINE(2).successfully()
+                .TRADE_DECLINE(2).failsWithError("ERROR")
+                .TRADE_DECLINE(3).successfully()
+                .TRADE_DECLINE(3).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_decline_if_accept_was_already_sent_from_this_player() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_ACCEPT(2).successfully()
+                .TRADE_DECLINE(2).failsWithError("ERROR");
     }
 
     @Test
-    public void should_fail_trade_decline_if_same_player_sent_proposal() {
+    public void should_fail_trade_decline_before_accept_if_same_player_sent_proposal() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_DECLINE(1).failsWithError("ERROR")
+                .TRADE_ACCEPT(2).successfully();
+    }
+
+    @Test
+    public void should_fail_trade_decline_after_accept_if_same_player_sent_proposal() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_ACCEPT(2).successfully()
+                .TRADE_DECLINE(1).failsWithError("ERROR");
     }
 
     @Test
     public void should_successfully_send_trade_decline_if_player_has_resources() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
+                .TRADE_DECLINE(2).successfully();
     }
 
     @Test
     public void should_successfully_send_trade_decline_if_player_has_no_resources() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(5, 5, 5, -1, 5).successfully()
+                .TRADE_DECLINE(2).successfully();
     }
-
-
 
     @Test
     public void should_fail_trade_accept_if_there_is_no_proposal() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_ACCEPT(3).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_accept_when_player_has_not_enough_resources() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 5, 0, -1, -1).successfully()
+                .TRADE_ACCEPT(2).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_accept_if_same_player_sent_proposal() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
+                .TRADE_ACCEPT(1).failsWithError("ERROR");
     }
 
     @Test
     public void should_fail_trade_accept_if_proposal_was_already_accepted() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
+                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(3).failsWithError("OFFER_ALREADY_ACCEPTED");
     }
 
     @Test
     public void should_successfully_send_trade_accept_with_1_source_and_1_target_resource_and_perform_resource_change() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_ACCEPT(2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -1, 0)
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, -1, 0, 1, 0);
     }
 
     @Test
     public void should_successfully_send_trade_accept_with_2_same_source_and_1_target_resources_and_perform_resource_change() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -2, 0).successfully()
+                .TRADE_ACCEPT(2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -2, 0)
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, -1, 0, 2, 0);
     }
 
     @Test
     public void should_successfully_send_trade_accept_with_2_different_source_and_1_target_resources_and_perform_resource_change() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -2, -1).successfully()
+                .TRADE_ACCEPT(2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -2, -1)
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, -1, 0, 2, 1);
     }
 
     @Test
     public void should_successfully_send_trade_accept_with_2_different_source_and_2_same_target_resources_and_perform_resource_change() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .TRADE_PROPOSE(1).withResources(0, 2, 0, -3, -1).successfully()
+                .TRADE_ACCEPT(2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 2, 0, -3, -1)
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, -2, 0, 3, 1);
     }
 
     @Test
     public void should_successfully_send_trade_accept_with_2_different_source_and_2_different_target_resources_and_perform_resource_change() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .TRADE_PROPOSE(1).withResources(0, 2, 1, -3, -1).successfully()
+                .TRADE_ACCEPT(2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 2, 1, -3, -1)
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, -2, -1, 3, 1);
     }
 
     @Test
     public void should_successfully_send_trade_accept_with_1_source_and_2_same_target_resource_and_perform_resource_change() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
+                .TRADE_PROPOSE(1).withResources(0, 2, 0, 0, -1).successfully()
+                .TRADE_ACCEPT(2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 2, 0, 0, -1)
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, -2, 0, 0, 1);
     }
 
     @Test
     public void should_successfully_send_trade_accept_with_1_source_and_2_different_target_resource_and_perform_resource_change() {
-        //(проверить что можно отсылать еще один пропоузал)
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .startTrackResourcesQuantity()
+
+                .TRADE_PROPOSE(1).withResources(0, 1, 1, 0, -1).successfully()
+                .TRADE_ACCEPT(2).successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 1, 1, 0, -1)
+
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, -1, -1, 0, 1);
     }
-
-
-
 
     private Scenario playPreparationStageAndGiveResources() {
         return playPreparationStage()

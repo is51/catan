@@ -216,7 +216,31 @@ public class Scenario {
     public TradeAction TRADE_PORT(int moveOrder) {
         saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
-        return new TradeAction(userToken, this);
+        return new TradePortAction(userToken, this);
+    }
+
+    public TradeAction TRADE_PROPOSE(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+        return new TradeProposeAction(userToken, this);
+    }
+
+    public Scenario TRADE_ACCEPT(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+
+        lastApiResponse = PlayTestUtil.tradeAccept(userToken, gameId);
+
+        return this;
+    }
+
+    public Scenario TRADE_DECLINE(int moveOrder) {
+        saveUsersResourcesAndCardsValues();
+        String userToken = tokensByMoveOrder.get(moveOrder);
+
+        lastApiResponse = PlayTestUtil.tradeDecline(userToken, gameId);
+
+        return this;
     }
 
     public Scenario boughtCardIs(DevelopmentCard card) {
