@@ -121,5 +121,11 @@ public class GameUserValidator {
 
             return scenario;
         }
+
+        public Scenario withoutParameters(){
+            check("availableActions.list.find {it.code == '" + action + "'}.params", nullValue());
+
+            return scenario;
+        }
     }
 }
