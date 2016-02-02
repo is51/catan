@@ -80,8 +80,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
+                .gameUser(1).doesntHaveAvailableAction("TRADE_REPLY")
 
                 .getGameDetails(2)
+                .gameUser(2).doesntHaveAvailableAction("TRADE_REPLY")
                 .gameUser(2).doesntHaveAvailableAction("TRADE_PROPOSE")
 
                 .TRADE_PROPOSE(2).withResources(0, 1, -1, 0, 0).failsWithError("ERROR");
@@ -131,14 +133,26 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .startTrackResourcesQuantity()
 
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+
+                .getGameDetails(2)
+                .gameUser(2).hasAvailableAction("TRADE_REPLY")
+
                 .TRADE_DECLINE(2).successfully()
+
                 .getGameDetails(2)
                 .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(2).doesntHaveAvailableAction("TRADE_REPLY")
+
+                .getGameDetails(3)
+                .gameUser(3).hasAvailableAction("TRADE_REPLY")
 
                 .TRADE_DECLINE(3).successfully()
+
                 .getGameDetails(3)
-                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(3).doesntHaveAvailableAction("TRADE_REPLY");
     }
+
 
     @Test
     public void should_successfully_send_trade_decline_even_if_trade_proposal_accepted_already_by_other_player(){
@@ -374,6 +388,37 @@ public class TradeWithPlayersTest extends PlayTestUtil {
 
                 .getGameDetails(2)
                 .gameUser(2).resourcesQuantityChangedBy(0, -1, -1, 0, 1);
+    }
+
+    @Test
+    public void should_not_allow_other_actions_until_trade_proposal_not_closed() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
+                .TRADE_PROPOSE(1).withResources(0, 0, 1, -1, 0)
+                .TRADE_ACCEPT(2)
+                .TRADE_DECLINE(3)
+
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
+                .gameUser(1).hasAvailableAction("BUY_CARD")
+                .gameUser(1).hasAvailableAction("END_TURN")
+
+                .TRADE_PROPOSE(1).withResources(0, 0, 1, -1, 0)
+
+                .getGameDetails(1)
+                .gameUser(1).doesntHaveAvailableAction("TRADE_PROPOSE")
+                .gameUser(1).doesntHaveAvailableAction("BUY_CARD")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN")
+
+                .TRADE_ACCEPT(2)
+                .TRADE_DECLINE(3)
+
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
+                .gameUser(1).hasAvailableAction("BUY_CARD")
+                .gameUser(1).hasAvailableAction("END_TURN");
+
     }
 
     private Scenario playPreparationStageAndGiveResources() {
