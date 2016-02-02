@@ -3,6 +3,8 @@
 angular.module('catan')
         .directive('ctTradeReplyPanel', ['ModalWindowService', 'PlayService', 'GameService', function(ModalWindowService, PlayService, GameService) {
 
+            var MODAL_WINDOW_ID = "TRADE_REPLY_PANEL";
+
             return {
                 restrict: 'E',
                 scope: {
@@ -11,13 +13,13 @@ angular.module('catan')
                 templateUrl: "/features/screens/game/dashboard/tradeReplyPanel/ct-trade-reply-panel.html",
                 link: function(scope) {
 
-                    scope.PANEL_ID = "TRADE_REPLY_PANEL";
+                    scope.modalWindowId = MODAL_WINDOW_ID;
 
                     scope.propositionGive = {};
                     scope.propositionGet = {};
 
                     scope.$watch(function() {
-                        return ModalWindowService.isVisible(scope.PANEL_ID);
+                        return ModalWindowService.isVisible(MODAL_WINDOW_ID);
                     }, function(isVisible) {
                         if (isVisible) {
                             init(scope);
@@ -26,7 +28,7 @@ angular.module('catan')
 
                     scope.accept = function() {
                         PlayService.tradeAccept(scope.game).then(function() {
-                            ModalWindowService.hide(scope.PANEL_ID);
+                            ModalWindowService.hide(MODAL_WINDOW_ID);
                             GameService.refresh(scope.game);
                         }, function(response) {
                             alert('Trade Propose Accept error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
@@ -35,7 +37,7 @@ angular.module('catan')
 
                     scope.decline = function() {
                         PlayService.tradeDecline(scope.game).then(function() {
-                            ModalWindowService.hide(scope.PANEL_ID);
+                            ModalWindowService.hide(MODAL_WINDOW_ID);
                             GameService.refresh(scope.game);
                         }, function(response) {
                             alert('Trade Propose Decline error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
