@@ -39,6 +39,9 @@ public class GameUserBean {
     @Column(name = "MANDATORY_TRADE_REPLY", unique = false, nullable = true)
     private Boolean tradeReplyMandatory;
 
+    @Column(name = "AVAILABLE_TRADE_REPLY", unique = false)
+    private Boolean availableTradeReply;
+
     @Embedded
     private Achievements achievements;
 
@@ -152,6 +155,14 @@ public class GameUserBean {
 
     public void setTradeReplyMandatory(Boolean tradeReplyMandatory) {
         this.tradeReplyMandatory = tradeReplyMandatory;
+    }
+
+    public Boolean isAvailableTradeReply() {
+        return availableTradeReply;
+    }
+
+    public void setAvailableTradeReply(Boolean availableTradeReply) {
+        this.availableTradeReply = availableTradeReply;
     }
 
     public Achievements getAchievements() {

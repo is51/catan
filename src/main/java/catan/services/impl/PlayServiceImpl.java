@@ -207,8 +207,8 @@ public class PlayServiceImpl implements PlayService {
                 mainStageUtil.resetDices(game);
                 gameUser.setDevelopmentCardsReadyForUsing(gameUser.getDevelopmentCards());
                 game.setDevelopmentCardUsed(false);
-                if (game.getTradeProposal() != null) {
-                    game.getTradeProposal().setFinishedTrade(null);
+                for (GameUserBean currentGameUser : game.getGameUsers()) {
+                    currentGameUser.setAvailableTradeReply(false);
                 }
                 mainStageUtil.updateNextMove(game);
                 break;
@@ -464,6 +464,7 @@ public class PlayServiceImpl implements PlayService {
         for (GameUserBean currentGameUser : game.getGameUsers()) {
             if (!currentGameUser.equals(gameUser)) {
                 currentGameUser.setTradeReplyMandatory(true);
+                currentGameUser.setAvailableTradeReply(true);
             }
         }
 
@@ -472,55 +473,47 @@ public class PlayServiceImpl implements PlayService {
 
     private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
         TradeProposal tradeProposal = game.getTradeProposal();
-        validateUserHasAccessForTradeReply(tradeProposal);
-        boolean tradeFinished = true;
 
         if (reply.equals("decline")) {
             gameUser.setTradeReplyMandatory(false);
+            gameUser.setAvailableTradeReply(false);
             for (GameUserBean currentGameUser : game.getGameUsers()) {
                 if (currentGameUser.isTradeReplyMandatory()) {
-                    tradeFinished = false;
-                    break;
+                    return;
                 }
             }
         }
 
         if (reply.equals("accept")) {
+            validateOfferIsNotAcceptedBefore(tradeProposal);
+
             int brick = tradeProposal.getBrick();
             int wood = tradeProposal.getWood();
             int sheep = tradeProposal.getSheep();
             int wheat = tradeProposal.getWheat();
             int stone = tradeProposal.getStone();
-
             validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
-            validateOfferIsNotAcceptedBefore(tradeProposal);
-            tradeProposal.setFinishedTrade(true);
 
+            tradeProposal.setFinishedTrade(true);
+            gameUser.setAvailableTradeReply(false);
+
+            Integer currentMove = game.getCurrentMove();
             for (GameUserBean currentGameUser : game.getGameUsers()) {
                 currentGameUser.setTradeReplyMandatory(false);
-                if (currentGameUser.getMoveOrder() == game.getCurrentMove()) {
+                if (currentGameUser.getMoveOrder() == currentMove) {
                     currentGameUser.getResources().addResources(brick, wood, sheep, wheat, stone);
                 }
             }
             userResources.addResources(-brick, -wood, -sheep, -wheat, -stone);
         }
 
-        if (tradeFinished) {
-            tradeProposal.setFinishedTrade(true);
-        }
+        tradeProposal.setFinishedTrade(true);
     }
 
     private void validateOfferIsNotAcceptedBefore(TradeProposal tradeProposal) throws PlayException {
-        if (tradeProposal.isFinishedTrade()) {
+        if (tradeProposal.isFinishedTrade() != null && tradeProposal.isFinishedTrade()) {
             log.error("Trade proposal already accepted");
             throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
-        }
-    }
-
-    private void validateUserHasAccessForTradeReply(TradeProposal tradeProposal) throws PlayException {
-        if (tradeProposal == null || tradeProposal.isFinishedTrade() == null) {
-            log.debug("Required action TRADE_REPLY is not allowed for player");
-            throw new PlayException(ERROR_CODE_ERROR);
         }
     }
 
@@ -708,7 +701,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void validateActionIsAllowedForUser(GameUserBean gameUser, GameUserActionCode requiredAction) throws PlayException, GameException {
-        if (requiredAction.equals(GameUserActionCode.TRADE_REPLY)) {
+        if (requiredAction.equals(GameUserActionCode.TRADE_REPLY) && gameUser.isAvailableTradeReply()) {
             return;
         }
 

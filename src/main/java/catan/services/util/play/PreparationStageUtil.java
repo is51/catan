@@ -79,6 +79,7 @@ public class PreparationStageUtil {
             for (GameUserBean gameUser : game.getGameUsers()) {
                 gameUser.setKickingOffResourcesMandatory(false);
                 gameUser.setTradeReplyMandatory(false);
+                gameUser.setAvailableTradeReply(false);
             }
             log.debug("Game Stage was changed from PREPARATION to {}", game.getStage());
         }

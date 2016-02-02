@@ -3298,24 +3298,28 @@ public class PlayServiceImplTest {
         gameUser1.setReady(true);
         gameUser1.setKickingOffResourcesMandatory(false);
         gameUser1.setTradeReplyMandatory(false);
+        gameUser1.setAvailableTradeReply(false);
 
         gameUser2.setGameUserId(2);
         gameUser2.setMoveOrder(2);
         gameUser2.setReady(true);
         gameUser2.setKickingOffResourcesMandatory(false);
         gameUser2.setTradeReplyMandatory(false);
+        gameUser2.setAvailableTradeReply(false);
 
         gameUser3.setGameUserId(3);
         gameUser3.setMoveOrder(3);
         gameUser3.setReady(true);
         gameUser3.setKickingOffResourcesMandatory(false);
         gameUser3.setTradeReplyMandatory(false);
+        gameUser3.setAvailableTradeReply(false);
 
         gameUser4.setGameUserId(4);
         gameUser4.setMoveOrder(4);
         gameUser4.setReady(true);
         gameUser4.setKickingOffResourcesMandatory(false);
         gameUser4.setTradeReplyMandatory(false);
+        gameUser4.setAvailableTradeReply(false);
 
 
         //
