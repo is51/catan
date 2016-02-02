@@ -146,7 +146,10 @@ public class MainStageUtil {
 
     private void allowTradeReply(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameNotFinished(game)
-                && gameUser.isTradeReplyMandatory()) {
+                && gameUser.isAvailableTradeReply()
+                && game.getTradeProposal() != null
+                && game.getTradeProposal().isFinishedTrade() != null
+                && !game.getTradeProposal().isFinishedTrade()) {
             TradingParams tradingParams = new TradingParams(game.getTradeProposal());
             actionsList.add(new Action(GameUserActionCode.TRADE_REPLY, tradingParams));
         }
@@ -292,8 +295,13 @@ public class MainStageUtil {
     }
 
     private boolean noOneNeedsToKickOfResourcesOrTradeReply (GameBean game) {
+        boolean tradeNotFinished = game.getTradeProposal() != null && game.getTradeProposal().isFinishedTrade() != null && !game.getTradeProposal().isFinishedTrade();
         for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.isKickingOffResourcesMandatory() || gameUser.isTradeReplyMandatory()) {
+            if (gameUser.isKickingOffResourcesMandatory()) {
+                return false;
+            }
+
+            if (tradeNotFinished && gameUser.isAvailableTradeReply()) {
                 return false;
             }
         }

@@ -36,9 +36,6 @@ public class GameUserBean {
     @Column(name = "MANDATORY_KICK_OFF_RESOURCES", unique = false, nullable = true)
     private Boolean kickingOffResourcesMandatory;
 
-    @Column(name = "MANDATORY_TRADE_REPLY", unique = false, nullable = true)
-    private Boolean tradeReplyMandatory;
-
     @Column(name = "AVAILABLE_TRADE_REPLY", unique = false)
     private Boolean availableTradeReply;
 
@@ -147,14 +144,6 @@ public class GameUserBean {
 
     public void setKickingOffResourcesMandatory(Boolean kickingOffResourcesMandatory) {
         this.kickingOffResourcesMandatory = kickingOffResourcesMandatory;
-    }
-
-    public Boolean isTradeReplyMandatory() {
-        return tradeReplyMandatory;
-    }
-
-    public void setTradeReplyMandatory(Boolean tradeReplyMandatory) {
-        this.tradeReplyMandatory = tradeReplyMandatory;
     }
 
     public Boolean isAvailableTradeReply() {

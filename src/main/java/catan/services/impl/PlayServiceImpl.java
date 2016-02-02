@@ -463,7 +463,6 @@ public class PlayServiceImpl implements PlayService {
 
         for (GameUserBean currentGameUser : game.getGameUsers()) {
             if (!currentGameUser.equals(gameUser)) {
-                currentGameUser.setTradeReplyMandatory(true);
                 currentGameUser.setAvailableTradeReply(true);
             }
         }
@@ -473,12 +472,11 @@ public class PlayServiceImpl implements PlayService {
 
     private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
         TradeProposal tradeProposal = game.getTradeProposal();
+        gameUser.setAvailableTradeReply(false);
 
         if (reply.equals("decline")) {
-            gameUser.setTradeReplyMandatory(false);
-            gameUser.setAvailableTradeReply(false);
             for (GameUserBean currentGameUser : game.getGameUsers()) {
-                if (currentGameUser.isTradeReplyMandatory()) {
+                if (currentGameUser.isAvailableTradeReply()) {
                     return;
                 }
             }
@@ -495,13 +493,11 @@ public class PlayServiceImpl implements PlayService {
             validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
 
             tradeProposal.setFinishedTrade(true);
-            gameUser.setAvailableTradeReply(false);
-
             Integer currentMove = game.getCurrentMove();
             for (GameUserBean currentGameUser : game.getGameUsers()) {
-                currentGameUser.setTradeReplyMandatory(false);
                 if (currentGameUser.getMoveOrder() == currentMove) {
                     currentGameUser.getResources().addResources(brick, wood, sheep, wheat, stone);
+                    break;
                 }
             }
             userResources.addResources(-brick, -wood, -sheep, -wheat, -stone);
@@ -511,7 +507,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void validateOfferIsNotAcceptedBefore(TradeProposal tradeProposal) throws PlayException {
-        if (tradeProposal.isFinishedTrade() != null && tradeProposal.isFinishedTrade()) {
+        if (tradeProposal != null && tradeProposal.isFinishedTrade() != null && tradeProposal.isFinishedTrade()) {
             log.error("Trade proposal already accepted");
             throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
         }

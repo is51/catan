@@ -2902,7 +2902,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
         assertNotNull(game);
-        assertTrue(gameUser2.isTradeReplyMandatory());
+        assertTrue(gameUser2.isAvailableTradeReply());
         assertNotNull(game.getTradeProposal());
         assertEquals(-1, game.getTradeProposal().getBrick());
         assertEquals(1, game.getTradeProposal().getWood());
@@ -3066,7 +3066,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
         assertNotNull(game);
-        assertFalse(gameUser2.isTradeReplyMandatory());
+        assertFalse(gameUser2.isAvailableTradeReply());
         assertNotNull(game.getTradeProposal());
         assertTrue(game.getTradeProposal().isFinishedTrade());
 
@@ -3109,7 +3109,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
         assertNotNull(game);
-        assertFalse(gameUser2.isTradeReplyMandatory());
+        assertFalse(gameUser2.isAvailableTradeReply());
         assertNotNull(game.getTradeProposal());
         assertFalse(game.getTradeProposal().isFinishedTrade());
 
@@ -3163,8 +3163,8 @@ public class PlayServiceImplTest {
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
-            assertFalse(gameUser2.isTradeReplyMandatory());
-            assertFalse(gameUser3.isTradeReplyMandatory());
+            assertFalse(gameUser2.isAvailableTradeReply());
+            assertFalse(gameUser3.isAvailableTradeReply());
             assertNotNull(game.getTradeProposal());
             assertTrue(game.getTradeProposal().isFinishedTrade());
 
@@ -3186,10 +3186,6 @@ public class PlayServiceImplTest {
             assertEquals(0, gameUser3.getResources().getWheat());
             assertEquals(0, gameUser3.getResources().getStone());
         }
-    }
-
-    private void allowUserToReplyTrade(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.TRADE_REPLY));
     }
     
     private void allowUserKickOffResources(GameUserBean user) {
@@ -3297,28 +3293,24 @@ public class PlayServiceImplTest {
         gameUser1.setMoveOrder(1);
         gameUser1.setReady(true);
         gameUser1.setKickingOffResourcesMandatory(false);
-        gameUser1.setTradeReplyMandatory(false);
         gameUser1.setAvailableTradeReply(false);
 
         gameUser2.setGameUserId(2);
         gameUser2.setMoveOrder(2);
         gameUser2.setReady(true);
         gameUser2.setKickingOffResourcesMandatory(false);
-        gameUser2.setTradeReplyMandatory(false);
         gameUser2.setAvailableTradeReply(false);
 
         gameUser3.setGameUserId(3);
         gameUser3.setMoveOrder(3);
         gameUser3.setReady(true);
         gameUser3.setKickingOffResourcesMandatory(false);
-        gameUser3.setTradeReplyMandatory(false);
         gameUser3.setAvailableTradeReply(false);
 
         gameUser4.setGameUserId(4);
         gameUser4.setMoveOrder(4);
         gameUser4.setReady(true);
         gameUser4.setKickingOffResourcesMandatory(false);
-        gameUser4.setTradeReplyMandatory(false);
         gameUser4.setAvailableTradeReply(false);
 
 
