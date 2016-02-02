@@ -69,6 +69,10 @@ angular.module('catan')
                     scope.showTradePanel = function() {
                         ModalWindowService.show("TRADE_PANEL");
                     };
+
+                    scope.showTradeReplyPanel = function() {
+                        ModalWindowService.show("TRADE_REPLY_PANEL");
+                    };
                 }
             };
         }]);

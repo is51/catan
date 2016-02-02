@@ -99,7 +99,15 @@ angular.module('catan')
 
                 scope.okDisabled = function() {
                     var count = scope.getTotalCount();
-                    return count === 0 || count < minResourcesCountForApply || (count > maxResourcesCountForApply && maxResourcesCountForApply !== null) || tradeBalance !== 0;
+
+                    if (type === "TRADE_PROPOSE" && noNegativeOrPositiveResources(scope.resources)) {
+                        return true;
+                    }
+
+                    return areAllResourcesZero(scope.resources)
+                            || count < minResourcesCountForApply
+                            || (count > maxResourcesCountForApply && maxResourcesCountForApply !== null)
+                            || tradeBalance !== 0;
                 };
 
                 scope.cancel = function() {
@@ -146,6 +154,7 @@ angular.module('catan')
                             stone: -resources.stone
                         };
                     case "TRADE_PORT":
+                    case "TRADE_PROPOSE":
                         return {
                             brick: resources.brick,
                             wood: resources.wood,
@@ -271,6 +280,31 @@ angular.module('catan')
                     }
                 }
                 return tradeBalance;
+            }
+
+            function areAllResourcesZero(resources) {
+                for (var i in resources) {
+                    if (resources[i] !== 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function noNegativeOrPositiveResources(resources) {
+
+                var isNegative = false;
+                var isPositive = false;
+
+                for (var i in resources) {
+                    if (resources[i] > 0) {
+                        isPositive = true;
+                    }
+                    if (resources[i] < 0) {
+                        isNegative = true;
+                    }
+                }
+                return !isPositive || !isNegative;
             }
 
         }]);

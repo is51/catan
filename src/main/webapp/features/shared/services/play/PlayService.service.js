@@ -261,6 +261,42 @@ angular.module('catan')
                 return deferred.promise;
             };
 
+            PlayService.tradePropose = function (game) {
+                var deferred = $q.defer();
+
+                var selectionId = "TRADE_PROPOSE";
+
+                SelectService.requestSelection(selectionId).then(
+                        function(response) {
+                            Remote.play.tradePropose({
+                                gameId: game.getId(),
+                                brick: response.brick,
+                                wood: response.wood,
+                                sheep: response.sheep,
+                                wheat: response.wheat,
+                                stone: response.stone
+                            }).then(function(response) {
+                                deferred.resolve(response);
+                            }, function(response) {
+                                deferred.reject(response);
+                            });
+
+                        },
+                        function(response) {
+                            deferred.reject(response);
+                        });
+
+                return deferred.promise;
+            };
+
+            PlayService.tradeAccept = function (game) {
+                return Remote.play.tradeAccept({gameId: game.getId()});
+            };
+
+            PlayService.tradeDecline = function (game) {
+                return Remote.play.tradeDecline({gameId: game.getId()});
+            };
+
 
             return PlayService;
         }]);

@@ -8,11 +8,6 @@ angular.module('catan')
                 scope: {
                     game: "="
                 },
-                templateUrl: "/features/screens/game/dashboard/tradePanel/players/ct-trade-players-panel.html",
-                link: function(scope) {
-
-
-
-                }
+                templateUrl: "/features/screens/game/dashboard/tradePanel/players/ct-trade-players-panel.html"
             };
         }]);

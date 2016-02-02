@@ -35,6 +35,10 @@ angular.module('catan')
                     return null;
                 };
 
+                this.getCurrentMoveUser = function () {
+                    return this.getGameUser(this.currentMove);
+                };
+
                 this.isCurrentUserCreator = function () {
                     return this.creatorId === User.get().id;
                 };
