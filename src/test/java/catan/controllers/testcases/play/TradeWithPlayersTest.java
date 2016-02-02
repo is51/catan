@@ -245,7 +245,17 @@ public class TradeWithPlayersTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_fail_trade_accept_if_proposal_was_already_accepted() {
+    public void should_fail_trade_accept_with_common_error_if_proposal_was_already_accepted_by_this_player() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
+                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_fail_trade_accept_with_OFFER_ALREADY_ACCEPTED_error_if_proposal_was_already_accepted_by_another_player() {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
