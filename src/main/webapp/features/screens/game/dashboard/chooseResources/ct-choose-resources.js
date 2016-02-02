@@ -22,9 +22,7 @@ angular.module('catan')
             function init(scope, type) {
 
                 var playerResources = scope.game.getCurrentUser().resources;
-                var tradePortRatio = (type === "TRADE_PORT") ? scope.game.getCurrentUser().availableActions.list.filter(function(item) {
-                    return item.code === "TRADE_PORT";
-                })[0].params : {};
+                var tradePortRatio = (type === "TRADE_PORT") ? scope.game.getCurrentUserAction("TRADE_PORT") : {};
 
                 var maxResourcesCountLimit = getMaxResourcesCountLimit(type, playerResources);
                 var maxResourcesCountForApply = getMaxResourcesCountForApply(type, playerResources);

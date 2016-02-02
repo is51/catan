@@ -56,12 +56,8 @@ angular.module('catan')
             };
 
             function init(scope) {
-                //TODO: create method in GameModel for this
-                var tradeReplyAction = scope.game.getCurrentUser().availableActions.list.filter(function(item) {
-                    return item.code === "TRADE_REPLY";
-                })[0];
+                var proposition = scope.game.getCurrentUserAction("TRADE_REPLY");
 
-                var proposition = tradeReplyAction.params;
                 scope.propositionGive = {};
                 scope.propositionGet = {};
 

@@ -84,6 +84,16 @@ angular.module('catan')
                         }
                     }
                     return null;
+                };
+
+                this.getCurrentUserAction = function(actionCode) {
+                    var actions = this.getCurrentUser().availableActions.list.filter(function(item) {
+                        return item.code === actionCode;
+                    });
+                    if (actions.length === 0) {
+                        return null;
+                    }
+                    return actions[0].params;
                 }
 
             };
