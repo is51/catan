@@ -22,9 +22,7 @@ angular.module('catan')
             function init(scope, type) {
 
                 var playerResources = scope.game.getCurrentUser().resources;
-                var tradePortRatio = (type === "TRADE_PORT") ? scope.game.getCurrentUser().availableActions.list.filter(function(item) {
-                    return item.code === "TRADE_PORT";
-                })[0].params : {};
+                var tradePortRatio = (type === "TRADE_PORT") ? scope.game.getCurrentUserAction("TRADE_PORT") : {};
 
                 var maxResourcesCountLimit = getMaxResourcesCountLimit(type, playerResources);
                 var maxResourcesCountForApply = getMaxResourcesCountForApply(type, playerResources);
@@ -99,7 +97,15 @@ angular.module('catan')
 
                 scope.okDisabled = function() {
                     var count = scope.getTotalCount();
-                    return count === 0 || count < minResourcesCountForApply || (count > maxResourcesCountForApply && maxResourcesCountForApply !== null) || tradeBalance !== 0;
+
+                    if (type === "TRADE_PROPOSE" && noNegativeOrPositiveResources(scope.resources)) {
+                        return true;
+                    }
+
+                    return areAllResourcesZero(scope.resources)
+                            || count < minResourcesCountForApply
+                            || (count > maxResourcesCountForApply && maxResourcesCountForApply !== null)
+                            || tradeBalance !== 0;
                 };
 
                 scope.cancel = function() {
@@ -146,6 +152,7 @@ angular.module('catan')
                             stone: -resources.stone
                         };
                     case "TRADE_PORT":
+                    case "TRADE_PROPOSE":
                         return {
                             brick: resources.brick,
                             wood: resources.wood,
@@ -166,6 +173,8 @@ angular.module('catan')
                         return 0;
                     case "TRADE_PORT":
                         return null; //unlimited
+                    case "TRADE_PROPOSE":
+                        return null; //unlimited
                 }
             }
 
@@ -178,6 +187,8 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
                     case "TRADE_PORT":
+                        return null; //unlimited
+                    case "TRADE_PROPOSE":
                         return null; //unlimited
                 }
             }
@@ -192,6 +203,8 @@ angular.module('catan')
                         return -calculateCountForKickOff(playerResources);
                     case "TRADE_PORT":
                         return -calculateResourcesSum(playerResources);
+                    case "TRADE_PROPOSE":
+                        return -calculateResourcesSum(playerResources);
                 }
             }
 
@@ -204,6 +217,8 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return -calculateCountForKickOff(playerResources);
                     case "TRADE_PORT":
+                        return -calculateResourcesSum(playerResources);
+                    case "TRADE_PROPOSE":
                         return -calculateResourcesSum(playerResources);
                 }
             }
@@ -218,6 +233,8 @@ angular.module('catan')
                         return false;
                     case "TRADE_PORT":
                         return false;
+                    case "TRADE_PROPOSE":
+                        return false;
                 }
             }
 
@@ -230,6 +247,8 @@ angular.module('catan')
                     case "KICK_OFF_RESOURCES":
                         return "NEGATIVE";
                     case "TRADE_PORT":
+                        return "BOTH";
+                    case "TRADE_PROPOSE":
                         return "BOTH";
                 }
             }
@@ -259,6 +278,31 @@ angular.module('catan')
                     }
                 }
                 return tradeBalance;
+            }
+
+            function areAllResourcesZero(resources) {
+                for (var i in resources) {
+                    if (resources[i] !== 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function noNegativeOrPositiveResources(resources) {
+
+                var isNegative = false;
+                var isPositive = false;
+
+                for (var i in resources) {
+                    if (resources[i] > 0) {
+                        isPositive = true;
+                    }
+                    if (resources[i] < 0) {
+                        isNegative = true;
+                    }
+                }
+                return !isPositive || !isNegative;
             }
 
         }]);

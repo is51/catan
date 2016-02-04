@@ -35,6 +35,10 @@ angular.module('catan')
                     return null;
                 };
 
+                this.getCurrentMoveUser = function () {
+                    return this.getGameUser(this.currentMove);
+                };
+
                 this.isCurrentUserCreator = function () {
                     return this.creatorId === User.get().id;
                 };
@@ -80,6 +84,16 @@ angular.module('catan')
                         }
                     }
                     return null;
+                };
+
+                this.getCurrentUserAction = function(actionCode) {
+                    var actions = this.getCurrentUser().availableActions.list.filter(function(item) {
+                        return item.code === actionCode;
+                    });
+                    if (actions.length === 0) {
+                        return null;
+                    }
+                    return actions[0].params;
                 }
 
             };

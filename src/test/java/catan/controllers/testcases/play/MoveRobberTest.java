@@ -66,6 +66,7 @@ public class MoveRobberTest extends PlayTestUtil {
                     .hex(-1, 2).isNotRobbed()
                     .hex(0, 0).isRobbed()
                     .gameUser(1).hasAvailableAction("MOVE_ROBBER")
+                    .gameUser(1).doesntHaveAvailableAction("TRADE_PROPOSE")
 
                 .startTrackResourcesQuantity()
                 .MOVE_ROBBER(1).toCoordinates(-1, 2).successfully()
@@ -75,6 +76,7 @@ public class MoveRobberTest extends PlayTestUtil {
                     .hex(0, 0).isNotRobbed()
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                    .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
                     .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
@@ -92,6 +94,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                 .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
@@ -116,6 +119,7 @@ public class MoveRobberTest extends PlayTestUtil {
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                 .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
                 .gameUser(1).hasAvailableAction("END_TURN")
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
 
@@ -346,6 +350,7 @@ public class MoveRobberTest extends PlayTestUtil {
                     .hex(0, 2).isNotRobbed()
                     .hex(0, 0).isRobbed()
                     .gameUser(1).hasAvailableAction("MOVE_ROBBER")
+                    .gameUser(1).doesntHaveAvailableAction("TRADE_PROPOSE")
 
                 .MOVE_ROBBER(1).toCoordinates(0, 2).failsWithError("ERROR");
     }
