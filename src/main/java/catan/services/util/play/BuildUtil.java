@@ -89,7 +89,7 @@ public class BuildUtil {
         return mapElementToBuildOn;
     }
 
-    public void validateUserCanBuildRoadOnEdge(UserBean user, EdgeBean edgeToBuildOn) throws PlayException {
+    public void validateUserCanBuildRoadOnEdge(UserBean user, EdgeBean edgeToBuildOn, GameStage gameStage) throws PlayException {
         if (edgeToBuildOn.getBuilding() != null) {
             log.debug("Cannot build road on this edge as it already has building on it");
             throw new PlayException(ERROR_CODE_ERROR);
@@ -99,6 +99,20 @@ public class BuildUtil {
         boolean nearNeighbourSettlement = false;
 
         for (NodeBean node : edgeToBuildOn.getNodes().listAllNotNullItems()) {
+            if (GameStage.PREPARATION.equals(gameStage)) {
+                if (node.getBuilding() == null || !node.getBuilding().getBuildingOwner().getUser().equals(user)) {
+                   continue;
+                }
+                nearNeighbourSettlement = true;
+                for (EdgeBean neighbourEdge : node.getEdges().listAllNotNullItems()) {
+                    if (neighbourEdge.getBuilding() != null) {
+                        nearNeighbourSettlement = false;
+                        break;
+                    }
+                }
+                break;
+            }
+
             if (node.getBuilding() == null) {
                 for (EdgeBean neighbourEdge : node.getEdges().listAllNotNullItems()) {
                     if (neighbourEdge.equals(edgeToBuildOn)) {

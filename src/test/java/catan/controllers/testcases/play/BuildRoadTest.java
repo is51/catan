@@ -118,6 +118,48 @@ public class BuildRoadTest extends PlayTestUtil {
                 .BUILD_ROAD(1).atEdge(2, -2, "topLeft").failsWithError("ERROR");
     }
 
+    @Test
+     public void should_fail_when_build_road_near_neighbour_road_but_not_near_just_built_settlement_in_preparation_stage() {
+        startNewGame()
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(2, 0, "topLeft")
+                .BUILD_ROAD(2).atEdge(2, 0, "topLeft")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, 2, "topLeft")
+                .BUILD_ROAD(3).atEdge(0, 2, "topLeft")
+                .END_TURN(3)
+
+                .BUILD_SETTLEMENT(3).atNode(-2, 2, "topLeft")
+                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD")
+
+                .BUILD_ROAD(3).atEdge(0, 2, "topRight").failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_fail_when_build_road_near_neighbour_settlement_but_not_near_just_built_settlement_in_preparation_stage() {
+        startNewGame()
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(2, 0, "topLeft")
+                .BUILD_ROAD(2).atEdge(2, 0, "topLeft")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, 2, "topLeft")
+                .BUILD_ROAD(3).atEdge(0, 2, "topLeft")
+                .END_TURN(3)
+
+                .BUILD_SETTLEMENT(3).atNode(-2, 2, "topLeft")
+                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD")
+
+                .BUILD_ROAD(3).atEdge(0, 2, "left").failsWithError("ERROR");
+    }
+
     @Ignore
     @Test
     public void should_successfully_build_road_on_empty_edge_if_has_neighbour_settlement_that_belongs_to_this_player() {

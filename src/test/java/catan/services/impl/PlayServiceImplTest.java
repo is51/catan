@@ -211,7 +211,10 @@ public class PlayServiceImplTest {
     public void shouldPassWhenBuildingRoadNearOwnNeighbourRoad() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
-        game.setCurrentCycleBuildingNumber(2);
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 1, 0, 0, 0));
         playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -278,7 +281,10 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
-        game.setCurrentCycleBuildingNumber(2);
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 1, 0, 0, 0));
         playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -303,7 +309,10 @@ public class PlayServiceImplTest {
         //GIVEN
         hex_1_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         hex_1_0.getNodes().getTop().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser2));
-        game.setCurrentCycleBuildingNumber(2);
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 1, 0, 0, 0));
         playUtil.updateAvailableActionsForAllUsers(game);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
