@@ -5,16 +5,15 @@ angular.module('catan')
 
             return {
                 restrict: 'A',
+                scope: {
+                    modalWindowId: "@ctModalWindowClose"
+                },
                 link: function(scope, element) {
-
-                    var modalWindowId = element.closest("ct-modal-window").attr("modal-window-id");
-
-                    if (modalWindowId) {
-                        element.on("click", function() {
-                            ModalWindowService.hide(modalWindowId);
-                            scope.$apply();
-                        });
-                    }
+                    element.on("click", function() {
+                        var modalWindowId = (scope.modalWindowId !== "") ? scope.modalWindowId : element.closest("ct-modal-window").attr("modal-window-id");
+                        ModalWindowService.hide(modalWindowId);
+                        scope.$apply();
+                    });
                 }
             };
         }]);

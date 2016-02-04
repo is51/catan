@@ -108,7 +108,10 @@ angular.module('catan', [
             .setRequest('play', 'moveRobber', { url: '/api/play/robbery/move-robber'})
             .setRequest('play', 'choosePlayerToRob', { url: '/api/play/robbery/choose-player-to-rob'})
             .setRequest('play', 'kickOffResources', { url: '/api/play/robbery/kick-off-resources'})
-            .setRequest('play', 'tradePort', { url: '/api/play/trade/port'});
+            .setRequest('play', 'tradePort', { url: '/api/play/trade/port'})
+            .setRequest('play', 'tradePropose', { url: '/api/play/trade/propose'})
+            .setRequest('play', 'tradeAccept', { url: '/api/play/trade/reply/accept'})
+            .setRequest('play', 'tradeDecline', { url: '/api/play/trade/reply/decline'});
     }])
 
     .run(['$rootScope', 'User', function($rootScope, User) {

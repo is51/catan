@@ -87,9 +87,10 @@ public class MainStageUtil {
         allowMoveRobberMandatory(gameUser, game, actionsList);
         allowChoosePlayerToRob(gameUser, game, actionsList);
         allowBuildRoadMandatory(gameUser, game, actionsList);
+        allowTradeReply(gameUser, game, actionsList);
         if (actionsList.size() > 0) {
             isMandatory = true;
-        } else if (noOneNeedsToKickOfResources(game)) {
+        } else if (noOneNeedsToKickOfResourcesOrTradeReply(game)) {
             allowBuildSettlement(gameUser, game, actionsList);
             allowBuildCity(gameUser, game, actionsList);
             allowBuildRoad(gameUser, game, actionsList);
@@ -101,6 +102,7 @@ public class MainStageUtil {
             allowUseCardRoadBuilding(gameUser, game, actionsList);
             allowUseCardKnight(gameUser, game, actionsList);
             allowPortTrading(gameUser, game, actionsList);
+            allowProposeTrade(gameUser, game, actionsList);
         }
 
         AvailableActions availableActions = new AvailableActions();
@@ -139,6 +141,17 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.getRoadsToBuildMandatory() > 0) {
             actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
+        }
+    }
+
+    private void allowTradeReply(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && gameUser.isAvailableTradeReply()
+                && game.getTradeProposal() != null
+                && game.getTradeProposal().isFinishedTrade() != null
+                && !game.getTradeProposal().isFinishedTrade()) {
+            TradingParams tradingParams = new TradingParams(game.getTradeProposal());
+            actionsList.add(new Action(GameUserActionCode.TRADE_REPLY, tradingParams));
         }
     }
 
@@ -229,6 +242,14 @@ public class MainStageUtil {
         }
     }
 
+    private void allowProposeTrade(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
+        if (gameNotFinished(game)
+                && isCurrentUsersMove(gameUser, game)
+                && game.isDiceThrown()) {
+            actionsList.add(new Action(GameUserActionCode.TRADE_PROPOSE));
+        }
+    }
+
     private void allowPortTrading(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
@@ -273,9 +294,14 @@ public class MainStageUtil {
         return !GameStatus.FINISHED.equals(game.getStatus());
     }
 
-    private boolean noOneNeedsToKickOfResources (GameBean game) {
+    private boolean noOneNeedsToKickOfResourcesOrTradeReply (GameBean game) {
+        boolean tradeNotFinished = game.getTradeProposal() != null && game.getTradeProposal().isFinishedTrade() != null && !game.getTradeProposal().isFinishedTrade();
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.isKickingOffResourcesMandatory()) {
+                return false;
+            }
+
+            if (tradeNotFinished && gameUser.isAvailableTradeReply()) {
                 return false;
             }
         }

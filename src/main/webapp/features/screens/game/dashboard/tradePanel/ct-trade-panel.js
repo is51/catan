@@ -36,6 +36,18 @@ angular.module('catan')
                     scope.showTradePlayers = function () {
                         scope.isVisibleTradePortPanel = false;
                         scope.isVisibleTradePlayersPanel = true;
+
+                        PlayService.tradePropose(scope.game).then(function() {
+                            GameService.refresh(scope.game);
+                            ModalWindowService.hide(PANEL_ID);
+                        }, function(response) {
+                            if (response !== "CANCELED") {
+                                alert('Trade Players Propose error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
+                            }
+                            if (!scope.isVisibleTradePortPanel) {
+                                ModalWindowService.hide(PANEL_ID);
+                            }
+                        });
                     };
 
                     scope.$watch(function() {

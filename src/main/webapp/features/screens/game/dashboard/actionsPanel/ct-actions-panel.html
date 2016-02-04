@@ -13,9 +13,14 @@
     Cards
 </button>
 
-<button ng-click="showTradePanel()" ng-disabled="!game.isActionGroupEnabledForCurrentUser('TRADE')">
+<button ng-click="showTradePanel()" ng-disabled="!game.isActionGroupEnabledForCurrentUser('TRADE')" ng-hide="game.isActionEnabledForCurrentUser('TRADE_REPLY')">
     <span class="glyphicon glyphicon-retweet"></span><br>
     Trade
+</button>
+
+<button ng-click="showTradeReplyPanel()" ng-disabled="!game.isActionEnabledForCurrentUser('TRADE_REPLY')" ng-show="game.isActionEnabledForCurrentUser('TRADE_REPLY')">
+    <span class="glyphicon glyphicon-retweet"></span><br>
+    Reply
 </button>
 
 <button ng-click="moveRobber()" ng-disabled="!game.isActionEnabledForCurrentUser('MOVE_ROBBER')" ng-show="game.isActionEnabledForCurrentUser('MOVE_ROBBER')">

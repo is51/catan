@@ -112,6 +112,9 @@ public class GameBean {
     private Boolean choosePlayerToRobMandatory;
 
     @Embedded
+    private TradeProposal tradeProposal;
+
+    @Embedded
     private DevelopmentCards availableDevelopmentCards;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -330,6 +333,14 @@ public class GameBean {
 
     public void setChoosePlayerToRobMandatory(Boolean choosePlayerToRobMandatory) {
         this.choosePlayerToRobMandatory = choosePlayerToRobMandatory;
+    }
+
+    public TradeProposal getTradeProposal() {
+        return tradeProposal;
+    }
+
+    public void setTradeProposal(TradeProposal tradeProposal) {
+        this.tradeProposal = tradeProposal;
     }
 
     public DevelopmentCards getAvailableDevelopmentCards() {

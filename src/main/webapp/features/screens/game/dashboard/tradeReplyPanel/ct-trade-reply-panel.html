@@ -1,0 +1,39 @@
+<ct-modal-window modal-window-id="{{modalWindowId}}">
+
+    <div class="ct-modal-window-bg" ct-modal-window-close="{{modalWindowId}}"></div>
+    <div class="ct-modal-window-content content">
+
+        <div class="title">Trade proposition from <span>{{proposerName}}</span>:</div>
+
+        <div class="proposition">
+            <div>
+                <div>
+                    <span class="give glyphicon glyphicon-arrow-up"></span>
+                    You give:
+                </div>
+                <span class="brick" ng-show="propositionGive.brick">{{propositionGive.brick}}</span>
+                <span class="wood" ng-show="propositionGive.wood">{{propositionGive.wood}}</span>
+                <span class="sheep" ng-show="propositionGive.sheep">{{propositionGive.sheep}}</span>
+                <span class="wheat" ng-show="propositionGive.wheat">{{propositionGive.wheat}}</span>
+                <span class="stone" ng-show="propositionGive.stone">{{propositionGive.stone}}</span>
+            </div>
+
+            <div>
+                <div>
+                    <span class="get glyphicon glyphicon-arrow-down"></span>
+                    You get:
+                </div>
+                <span class="brick" ng-show="propositionGet.brick">{{propositionGet.brick}}</span>
+                <span class="wood" ng-show="propositionGet.wood">{{propositionGet.wood}}</span>
+                <span class="sheep" ng-show="propositionGet.sheep">{{propositionGet.sheep}}</span>
+                <span class="wheat" ng-show="propositionGet.wheat">{{propositionGet.wheat}}</span>
+                <span class="stone" ng-show="propositionGet.stone">{{propositionGet.stone}}</span>
+            </div>
+        </div>
+
+        <button ng-click="decline()" class="btn btn-default decline">Decline</button>
+        <button ng-click="accept()" ng-disabled="acceptDisabled()" class="btn btn-primary accept">Accept</button>
+
+    </div>
+
+</ct-modal-window>

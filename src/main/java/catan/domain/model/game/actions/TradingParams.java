@@ -1,5 +1,7 @@
 package catan.domain.model.game.actions;
 
+import catan.domain.model.game.TradeProposal;
+
 public class TradingParams extends ActionParams {
 
     private int brick;
@@ -17,6 +19,14 @@ public class TradingParams extends ActionParams {
         this.sheep = sheep;
         this.wheat = wheat;
         this.stone = stone;
+    }
+
+    public TradingParams(TradeProposal tradeProposal) {
+        this.brick = tradeProposal.getBrick();
+        this.wood = tradeProposal.getWood();
+        this.sheep = tradeProposal.getSheep();
+        this.wheat = tradeProposal.getWheat();
+        this.stone = tradeProposal.getStone();
     }
 
     public int getBrick() {

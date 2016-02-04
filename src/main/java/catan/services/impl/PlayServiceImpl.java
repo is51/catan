@@ -14,6 +14,7 @@ import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
+import catan.domain.model.game.TradeProposal;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.actions.TradingParams;
@@ -47,6 +48,7 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String OFFER_ALREADY_ACCEPTED_ERROR = "OFFER_ALREADY_ACCEPTED";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -132,6 +134,13 @@ public class PlayServiceImpl implements PlayService {
                 break;
             case TRADE_PORT:
                 tradeResourcesInPort(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                break;
+            case TRADE_PROPOSE:
+                proposeTrade(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                break;
+            case TRADE_REPLY:
+                tradeReply(gameUser, game, usersResources, params.get("tradeReply"));
+                break;
         }
     }
 
@@ -198,6 +207,9 @@ public class PlayServiceImpl implements PlayService {
                 mainStageUtil.resetDices(game);
                 gameUser.setDevelopmentCardsReadyForUsing(gameUser.getDevelopmentCards());
                 game.setDevelopmentCardUsed(false);
+                for (GameUserBean currentGameUser : game.getGameUsers()) {
+                    currentGameUser.setAvailableTradeReply(false);
+                }
                 mainStageUtil.updateNextMove(game);
                 break;
         }
@@ -411,11 +423,11 @@ public class PlayServiceImpl implements PlayService {
         int wheatSellCoefficient = tradingParams.getWheat();
         int stoneSellCoefficient = tradingParams.getStone();
 
-        int brickQuantityToTrade = toValidResourceQuantityToTrade(brickString, usersBrickQuantity, brickSellCoefficient);
-        int woodQuantityToTrade = toValidResourceQuantityToTrade(woodString, usersWoodQuantity, woodSellCoefficient);
-        int sheepQuantityToTrade = toValidResourceQuantityToTrade(sheepString, usersSheepQuantity, sheepSellCoefficient);
-        int wheatQuantityToTrade = toValidResourceQuantityToTrade(wheatString, usersWheatQuantity, wheatSellCoefficient);
-        int stoneQuantityToTrade = toValidResourceQuantityToTrade(stoneString, usersStoneQuantity, stoneSellCoefficient);
+        int brickQuantityToTrade = toValidResourceQuantityToTradeInPort(brickString, usersBrickQuantity, brickSellCoefficient);
+        int woodQuantityToTrade = toValidResourceQuantityToTradeInPort(woodString, usersWoodQuantity, woodSellCoefficient);
+        int sheepQuantityToTrade = toValidResourceQuantityToTradeInPort(sheepString, usersSheepQuantity, sheepSellCoefficient);
+        int wheatQuantityToTrade = toValidResourceQuantityToTradeInPort(wheatString, usersWheatQuantity, wheatSellCoefficient);
+        int stoneQuantityToTrade = toValidResourceQuantityToTradeInPort(stoneString, usersStoneQuantity, stoneSellCoefficient);
 
         int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
                            + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
@@ -435,6 +447,102 @@ public class PlayServiceImpl implements PlayService {
     private void validateTradeIsNotEmpty(int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
         if (brick == 0 && wood == 0 && sheep == 0 && wheat == 0 && stone == 0) {
             log.error("Trading request is empty. All requested resources has zero quantity");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private void proposeTrade(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+
+        int brick = toValidResourceQuantityToTrade(brickString, userResources.getBrick());
+        int wood = toValidResourceQuantityToTrade(woodString, userResources.getWood());
+        int sheep = toValidResourceQuantityToTrade(sheepString, userResources.getSheep());
+        int wheat = toValidResourceQuantityToTrade(wheatString, userResources.getWheat());
+        int stone = toValidResourceQuantityToTrade(stoneString, userResources.getStone());
+
+        validateResourceQuantityToSellAndToBuyInTradePropose(brick, wood, sheep, wheat, stone);
+
+        for (GameUserBean currentGameUser : game.getGameUsers()) {
+            if (!currentGameUser.equals(gameUser)) {
+                currentGameUser.setAvailableTradeReply(true);
+            }
+        }
+
+        game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone));
+    }
+
+    private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
+        TradeProposal tradeProposal = game.getTradeProposal();
+        gameUser.setAvailableTradeReply(false);
+
+        if (reply.equals("decline")) {
+            for (GameUserBean currentGameUser : game.getGameUsers()) {
+                if (currentGameUser.isAvailableTradeReply()) {
+                    return;
+                }
+            }
+        }
+
+        if (reply.equals("accept")) {
+            validateOfferIsNotAcceptedBefore(tradeProposal);
+
+            int brick = tradeProposal.getBrick();
+            int wood = tradeProposal.getWood();
+            int sheep = tradeProposal.getSheep();
+            int wheat = tradeProposal.getWheat();
+            int stone = tradeProposal.getStone();
+            validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
+
+            tradeProposal.setFinishedTrade(true);
+            Integer currentMove = game.getCurrentMove();
+            for (GameUserBean currentGameUser : game.getGameUsers()) {
+                if (currentGameUser.getMoveOrder() == currentMove) {
+                    currentGameUser.getResources().addResources(brick, wood, sheep, wheat, stone);
+                    break;
+                }
+            }
+            userResources.addResources(-brick, -wood, -sheep, -wheat, -stone);
+        }
+
+        tradeProposal.setFinishedTrade(true);
+    }
+
+    private void validateOfferIsNotAcceptedBefore(TradeProposal tradeProposal) throws PlayException {
+        if (tradeProposal != null && tradeProposal.isFinishedTrade() != null && tradeProposal.isFinishedTrade()) {
+            log.error("Trade proposal already accepted");
+            throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
+        }
+    }
+
+    private void validateUserHasRequestedResources(GameUserBean gameUser, int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
+        Resources userResources = gameUser.getResources();
+        if (userResources.getBrick() < brick
+                || userResources.getWood() < wood
+                || userResources.getSheep() < sheep
+                || userResources.getWheat() < wheat
+                || userResources.getStone() < stone) {
+            log.debug("User has not enough resources ({}) to accept trade proposal: [{}, {}, {}, {}, {}]", userResources, brick, wood, sheep, wheat, stone);
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+    }
+
+    private void validateResourceQuantityToSellAndToBuyInTradePropose(int... resourcesQuantity) throws PlayException {
+        int buyingResources = 0;
+        int sellingResources = 0;
+        for (int resourceQuantity : resourcesQuantity) {
+            if (resourceQuantity > 0) {
+                buyingResources += resourceQuantity;
+            } else {
+                sellingResources += resourceQuantity;
+            }
+        }
+
+        if (buyingResources == 0) {
+            log.error("User cannot propose trade without any resources to buy");
+            throw new PlayException(ERROR_CODE_ERROR);
+        }
+
+        if (sellingResources == 0) {
+            log.error("User cannot propose trade without any resources to sell");
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
@@ -487,19 +595,22 @@ public class PlayServiceImpl implements PlayService {
         return resourceQuantity;
     }
 
-    private int toValidResourceQuantityToTrade(String resourceQuantityString, int usersResourceQuantity, int tradeCoefficient) throws PlayException {
+    private int toValidResourceQuantityToTrade(String resourceQuantityString, int usersResourceQuantity) throws PlayException {
         int resourceQuantity = toValidResourceQuantity(resourceQuantityString);
-
-        if (resourceQuantity >= 0) {
-            return resourceQuantity;
-        }
 
         if (-resourceQuantity > usersResourceQuantity) {
             log.error("User cannot sell more resources than he has: {} / {}", -resourceQuantity, usersResourceQuantity);
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        if (resourceQuantity % tradeCoefficient != 0) {
+        return resourceQuantity;
+    }
+
+
+    private int toValidResourceQuantityToTradeInPort(String resourceQuantityString, int usersResourceQuantity, int tradeCoefficient) throws PlayException {
+        int resourceQuantity = toValidResourceQuantityToTrade(resourceQuantityString, usersResourceQuantity);
+
+        if (resourceQuantity < 0 && resourceQuantity % tradeCoefficient != 0) {
             log.error("Invalid resource quantity to sell: {} should be divisible by {}", -resourceQuantity, tradeCoefficient);
             throw new PlayException(ERROR_CODE_ERROR);
         }
@@ -586,6 +697,10 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void validateActionIsAllowedForUser(GameUserBean gameUser, GameUserActionCode requiredAction) throws PlayException, GameException {
+        if (requiredAction.equals(GameUserActionCode.TRADE_REPLY) && gameUser.isAvailableTradeReply()) {
+            return;
+        }
+
         String availableActionsJson = gameUser.getAvailableActions();
         AvailableActions availableActions = playUtil.toAvailableActionsFromJson(availableActionsJson);
 
