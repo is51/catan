@@ -206,6 +206,7 @@ public class PlayServiceImpl implements PlayService {
             maxWayLength = calculateMaxWayLength(gameUser, maxWayLength, new ArrayList<Integer>(), new ArrayList<Integer>(), edge, 0);
         }
         gameUser.getAchievements().setLongestWayLength(maxWayLength);
+        updateLongestWayOwner(game);
     }
 
     private int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeIds, List<Integer> checkedNodeIds, EdgeBean edge, int currMaxWayLength) {
@@ -241,6 +242,38 @@ public class PlayServiceImpl implements PlayService {
 
     private boolean edgeDoesNotContainGameUsersRoad(GameUserBean gameUser, EdgeBean edge) {
         return edge.getBuilding() == null || !edge.getBuilding().getBuildingOwner().equals(gameUser);
+    }
+
+    private void updateLongestWayOwner(GameBean game) {
+        int maxLongestWayLength = 0;
+        GameUserBean gameUserOwnedLongestWay = null;
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            int longestWayLength = gameUser.getAchievements().getLongestWayLength();
+            if (longestWayLength < 5) {
+                continue;
+            }
+
+            if (longestWayLength > maxLongestWayLength) {
+                maxLongestWayLength = longestWayLength;
+                gameUserOwnedLongestWay = gameUser;
+                continue;
+            }
+
+            if (longestWayLength == maxLongestWayLength) {
+                Integer longestWayOwnerId = game.getLongestWayOwner();
+                if (gameUserOwnedLongestWay != null && gameUserOwnedLongestWay.getGameUserId() == longestWayOwnerId) {
+                    continue;
+                }
+                gameUserOwnedLongestWay = gameUser.getGameUserId() != longestWayOwnerId
+                        ? null
+                        : gameUser;
+            }
+        }
+
+        Integer longestWayOwner = gameUserOwnedLongestWay == null
+                ? null
+                : gameUserOwnedLongestWay.getGameUserId();
+        game.setLongestWayOwner(longestWayOwner);
     }
 
     private void buildCity(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
