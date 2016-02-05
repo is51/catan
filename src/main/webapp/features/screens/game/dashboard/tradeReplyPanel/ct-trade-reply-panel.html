@@ -1,6 +1,6 @@
-<ct-modal-window modal-window-id="{{modalWindowId}}">
+<ct-modal-window modal-window-id="{{::modalWindowId}}">
 
-    <div class="ct-modal-window-bg" ct-modal-window-close="{{modalWindowId}}"></div>
+    <div class="ct-modal-window-bg" ct-modal-window-close="{{::modalWindowId}}"></div>
     <div class="ct-modal-window-content content">
 
         <div class="title">Trade proposition from <span>{{proposerName}}</span>:</div>
@@ -31,8 +31,11 @@
             </div>
         </div>
 
-        <button ng-click="decline()" class="btn btn-default decline">Decline</button>
-        <button ng-click="accept()" ng-disabled="acceptDisabled()" class="btn btn-primary accept">Accept</button>
+        <button ng-show="offerIsActive" ng-click="decline()" class="btn btn-default decline">Decline</button>
+        <button ng-show="offerIsActive" ng-click="accept()" ng-disabled="acceptDisabled()" class="btn btn-primary accept">Accept</button>
+
+        <button ng-hide="offerIsActive" ct-modal-window-close="{{::modalWindowId}}" class="btn btn-default decline">Close</button>
+        <div ng-hide="offerIsActive" class="no-longer-active">Offer is no longer active!</div>
 
     </div>
 

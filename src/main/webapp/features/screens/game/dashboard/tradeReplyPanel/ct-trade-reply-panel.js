@@ -26,6 +26,13 @@ angular.module('catan')
                         }
                     });
 
+                    scope.$watch(function() {
+                        var actionParams = scope.game.getCurrentUserAction("TRADE_REPLY");
+                        return (actionParams) ? actionParams.offerId : null;
+                    }, function(offerId) {
+                        scope.offerIsActive = scope.offerId === offerId;
+                    });
+
                     scope.accept = function() {
                         PlayService.tradeAccept(scope.game).then(function() {
                             ModalWindowService.hide(MODAL_WINDOW_ID);
@@ -67,7 +74,12 @@ angular.module('catan')
             };
 
             function init(scope) {
-                var proposition = scope.game.getCurrentUserAction("TRADE_REPLY");
+                var actionParams = scope.game.getCurrentUserAction("TRADE_REPLY");
+
+                var proposition = actionParams.resources;
+
+                scope.offerId = actionParams.offerId;
+                scope.offerIsActive = true;
 
                 scope.propositionGive = {};
                 scope.propositionGet = {};
