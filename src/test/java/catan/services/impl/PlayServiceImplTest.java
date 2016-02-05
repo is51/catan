@@ -107,8 +107,6 @@ public class PlayServiceImplTest {
         RandomUtil randomUtil = new RandomUtil();
         randomUtil.setRvg(rvg);
 
-        buildUtil.setGameUtil(gameUtil);
-
         playService.setRandomUtil(randomUtil);
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);

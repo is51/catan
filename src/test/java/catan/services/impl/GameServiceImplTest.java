@@ -75,8 +75,6 @@ public class GameServiceImplTest {
 
         playUtil.setPreparationStageUtil(preparationStageUtil);
 
-        buildUtil.setGameUtil(gameUtil);
-
         gameService.setRandomUtil(randomUtil);
         gameService.setGameUtil(gameUtil);
     }

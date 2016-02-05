@@ -78,7 +78,7 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
 
-        doAction(action, user, gameUser, game, params, returnedParams);
+        doAction(action, gameUser, game, params, returnedParams);
 
         playUtil.updateAchievements(game);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
@@ -90,17 +90,17 @@ public class PlayServiceImpl implements PlayService {
         return returnedParams;
     }
 
-    private void doAction(GameUserActionCode action, UserBean user, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
+    private void doAction(GameUserActionCode action, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
         Resources usersResources = gameUser.getResources();
         switch (action) {
             case BUILD_ROAD:
-                buildRoad(user, game, usersResources, params.get("edgeId"));
+                buildRoad(gameUser, game, usersResources, params.get("edgeId"));
                 break;
             case BUILD_SETTLEMENT:
-                buildSettlement(user, game, usersResources, params.get("nodeId"));
+                buildSettlement(gameUser, game, usersResources, params.get("nodeId"));
                 break;
             case BUILD_CITY:
-                buildCity(user, game, usersResources, params.get("nodeId"));
+                buildCity(gameUser, game, usersResources, params.get("nodeId"));
                 break;
             case END_TURN:
                 endTurn(gameUser, game);
@@ -144,11 +144,11 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void buildRoad(UserBean user, GameBean game, Resources usersResources, String edgeId) throws PlayException, GameException {
+    private void buildRoad(GameUserBean gameUser, GameBean game, Resources usersResources, String edgeId) throws PlayException, GameException {
         EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeId, new ArrayList<MapElement>(game.getEdges()));
         GameStage gameStage = game.getStage();
-        buildUtil.validateUserCanBuildRoadOnEdge(user, edgeToBuildOn, gameStage);
-        buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
+        buildUtil.validateUserCanBuildRoadOnEdge(gameUser, edgeToBuildOn, gameStage);
+        buildUtil.buildRoadOnEdge(gameUser, edgeToBuildOn);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
@@ -161,12 +161,14 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
         }
+
+        updateLongestWayLength(game, gameUser);
     }
 
-    private void buildSettlement(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
+    private void buildSettlement(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
-        buildUtil.validateUserCanBuildSettlementOnNode(user, game.getStage(), nodeToBuildOn);
-        buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
+        buildUtil.validateUserCanBuildSettlementOnNode(gameUser, game.getStage(), nodeToBuildOn);
+        buildUtil.buildOnNode(gameUser, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
@@ -176,12 +178,75 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
         }
+
+        GameUserBean gameUserToUpdateLongestWayLength = fetchGameUserWhoseWayWasInterrupted(nodeToBuildOn, gameUser);
+        if (gameUserToUpdateLongestWayLength != null) {
+            updateLongestWayLength(game, gameUserToUpdateLongestWayLength);
+        }
     }
 
-    private void buildCity(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
+    private GameUserBean fetchGameUserWhoseWayWasInterrupted(NodeBean node, GameUserBean gameUserWhoBuiltOnNode) {
+        GameUserBean gameUserWhoseWayCouldBeInterrupted = null;
+        for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
+            if (edge.getBuilding() == null || edge.getBuilding().getBuildingOwner().equals(gameUserWhoBuiltOnNode)) {
+                continue;
+            }
+            GameUserBean buildingOwner = edge.getBuilding().getBuildingOwner();
+            if (buildingOwner == gameUserWhoseWayCouldBeInterrupted) {
+                return gameUserWhoseWayCouldBeInterrupted;
+            }
+            gameUserWhoseWayCouldBeInterrupted = buildingOwner;
+        }
+        return null;
+    }
+
+    private void updateLongestWayLength(GameBean game, GameUserBean gameUser) {
+        int maxWayLength = 0;
+        for (EdgeBean edge : game.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
+            maxWayLength = calculateMaxWayLength(gameUser, maxWayLength, new ArrayList<Integer>(), new ArrayList<Integer>(), edge, 0);
+        }
+        gameUser.getAchievements().setLongestWayLength(maxWayLength);
+    }
+
+    private int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeIds, List<Integer> checkedNodeIds, EdgeBean edge, int currMaxWayLength) {
+        int edgeId = edge.getId();
+        if (checkedEdgeIds.contains(edgeId) || edgeDoesNotContainGameUsersRoad(gameUser, edge)) {
+            return lastMaxWayLength;
+        }
+
+        checkedEdgeIds.add(edgeId);
+        currMaxWayLength++;
+        for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
+            int nodeId = node.getId();
+            if (checkedNodeIds.contains(nodeId) || nodeContainsOpponentsBuilding(gameUser, node)) {
+                continue;
+            }
+
+            checkedNodeIds.add(nodeId);
+            for (EdgeBean nextEdge : node.getEdges().listAllNotNullItems()) {
+                lastMaxWayLength = calculateMaxWayLength(gameUser, lastMaxWayLength, checkedEdgeIds, checkedNodeIds, nextEdge, currMaxWayLength);
+            }
+            checkedNodeIds.remove(new Integer(nodeId));
+        }
+        checkedEdgeIds.remove(new Integer(edgeId));
+
+        return currMaxWayLength > lastMaxWayLength
+                ? currMaxWayLength
+                : lastMaxWayLength;
+    }
+
+    private boolean nodeContainsOpponentsBuilding(GameUserBean gameUser, NodeBean node) {
+        return node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser);
+    }
+
+    private boolean edgeDoesNotContainGameUsersRoad(GameUserBean gameUser, EdgeBean edge) {
+        return edge.getBuilding() == null || !edge.getBuilding().getBuildingOwner().equals(gameUser);
+    }
+
+    private void buildCity(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
-        buildUtil.validateUserCanBuildCityOnNode(user, game.getStage(), nodeToBuildOn);
-        buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
+        buildUtil.validateUserCanBuildCityOnNode(gameUser, game.getStage(), nodeToBuildOn);
+        buildUtil.buildOnNode(gameUser, nodeToBuildOn, NodeBuiltType.CITY);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
