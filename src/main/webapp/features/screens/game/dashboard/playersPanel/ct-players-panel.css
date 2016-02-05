@@ -65,6 +65,11 @@ ct-players-panel .player .achievements {
     line-height: 11px;
 }
 
+ct-players-panel .player .achievements .top {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 ct-players-panel .player.active .achievements {
     padding-top: 4px;
 }

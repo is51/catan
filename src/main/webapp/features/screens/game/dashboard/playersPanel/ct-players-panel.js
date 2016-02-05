@@ -25,6 +25,10 @@ angular.module('catan')
                         return User.get().id === gameUser.user.id;
                     };
 
+                    scope.isLongestWay = function(gameUser) {
+                        return scope.game.longestWayOwner === gameUser.id;
+                    };
+
                     function usersSortedByMoveOrderCurrentUserFirst(game) {
                         var currentGameUser = game.getCurrentUser();
                         var gameUsers = game.gameUsers.map(function(user) { return user; });
