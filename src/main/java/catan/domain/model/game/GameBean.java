@@ -90,6 +90,9 @@ public class GameBean {
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
 
+    @Column(name = "OWNER_LONGEST_WAY", unique = false)
+    private Integer longestWayOwner;
+
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
     private Boolean diceThrown;
 
@@ -293,6 +296,14 @@ public class GameBean {
 
     public void setCurrentMove(Integer currentMove) {
         this.currentMove = currentMove;
+    }
+
+    public Integer getLongestWayOwner() {
+        return longestWayOwner;
+    }
+
+    public void setLongestWayOwner(Integer longestWayOwner) {
+        this.longestWayOwner = longestWayOwner;
     }
 
     public Boolean isDiceThrown() {
@@ -526,6 +537,8 @@ public class GameBean {
                 "\t\tinitialBuildingsSet: " + initialBuildingsSet +
                 "\n" +
                 "\t\tcurrentMove: " + currentMove +
+                "\n" +
+                "\t\tlongestWayOwner: " + longestWayOwner +
                 "\n" +
                 "\t\tgameUsers: " + sb.toString() +
                 "\n" +
