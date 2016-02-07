@@ -20,7 +20,7 @@ button:focus {
     outline: 0;
 }
 
-ui-view {
+.out-of-game {
     background: #fff;
 
     display: block;
@@ -28,31 +28,19 @@ ui-view {
 
     padding: 30px;
 
-    margin: -200px auto 0 auto;
-    top: 50%;
+    margin: 10px auto 0 auto;
     width: 600px;
     height: 400px;
     max-width: 100%;
 }
 
 @media (max-height: 410px), (max-width: 610px) {
-    ui-view {
+    .out-of-game {
         margin-top: 0;
         top: 0;
         width: 100%;
         height: 100%;
     }
-}
-
-.logo {
-    text-transform: uppercase;
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-size: 8rem;
-    width: 100%;
-    text-align: center;
-    color: #e6e6e6;
 }
 
 .btn-sq {
