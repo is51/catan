@@ -3,7 +3,7 @@ package catan.domain.model.dashboard;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.Arrays;
+
 import java.util.List;
 
 @Embeddable
@@ -34,10 +34,10 @@ public class HorizontalLinks<T> extends Links<T>{
     }
 
     @Override
-    public List<T> all() {
-        List<T> allElements = super.all();
-        allElements.add(right);
-        allElements.add(left);
+    public List<T> listAllNotNullItems() {
+        List<T> allElements = super.listAllNotNullItems();
+        if(right != null) allElements.add(right);
+        if(left != null) allElements.add(left);
 
         return allElements;
     }
@@ -61,6 +61,7 @@ public class HorizontalLinks<T> extends Links<T>{
         int result = super.hashCode();
         result = 31 * result + (right != null ? right.hashCode() : 0);
         result = 31 * result + (left != null ? left.hashCode() : 0);
+
         return result;
     }
 }

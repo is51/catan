@@ -3,6 +3,7 @@ package catan.domain.model.dashboard;
 import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.EdgeOrientationType;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameUserBean;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
@@ -16,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "EDGE")
@@ -112,6 +115,22 @@ public class EdgeBean implements MapElement {
         this.nodes = nodes;
     }
 
+    public Set<EdgeBean> fetchNeighborEdgesAccessibleForBuildingRoad(GameUserBean gameUser) {
+        Set<EdgeBean> edges = new HashSet<EdgeBean>();
+        for (NodeBean node : getNodes().listAllNotNullItems()) {
+            if (node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser)) {
+                continue;
+            }
+            for (EdgeBean neighborEdge : node.getEdges().listAllNotNullItems()) {
+                if (neighborEdge.getBuilding() == null && !this.equals(neighborEdge)) {
+                    edges.add(neighborEdge);
+                }
+            }
+        }
+
+        return edges;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,9 +138,7 @@ public class EdgeBean implements MapElement {
 
         EdgeBean edgeBean = (EdgeBean) o;
 
-        if (!game.equals(edgeBean.game)) return false;
         if (!hexes.equals(edgeBean.hexes)) return false;
-        if (!nodes.equals(edgeBean.nodes)) return false;
         if (orientation != edgeBean.orientation) return false;
 
         return true;
@@ -129,10 +146,9 @@ public class EdgeBean implements MapElement {
 
     @Override
     public int hashCode() {
-        int result = game.hashCode();
-        result = 31 * result + orientation.hashCode();
+        int result = orientation.hashCode();
         result = 31 * result + hexes.hashCode();
-        result = 31 * result + nodes.hashCode();
+
         return result;
     }
 }

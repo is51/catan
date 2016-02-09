@@ -8,9 +8,6 @@
 
     2
     TODO: Don't forget about "loading..."
-
-    3
-    TODO: Refactor RemoteProvider - add "return this" for not using name of class in every line in config
 -->
 
 <html lang="en" ng-app="catan">
@@ -24,44 +21,91 @@
     <link rel="stylesheet" href="features/shared/styles/common.css"/>
     <link rel="stylesheet" href="features/shared/directives/gamesList/ct-games-list.css"/>
     <link rel="stylesheet" href="features/shared/directives/playersList/ct-players-list.css"/>
-    <link rel="stylesheet" href="features/screens/game/gameMapOverview/ct-game-map-overview.css"/>
+    <link rel="stylesheet" href="features/shared/modalWindow/ct-modal-window.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/playersPanel/ct-players-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/room/gameMapOverview/ct-game-map-overview.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/actionsPanel/ct-actions-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/resourcesPanel/ct-resources-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/gameMap/ct-game-map.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/buyPanel/ct-buy-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/results/ct-game-results.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/cardsPanel/ct-cards-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/dice/ct-dice.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/tradePanel/ct-trade-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/tradePanel/port/ct-trade-port-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/tradePanel/players/ct-trade-players-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/chooseResources/ct-choose-resources.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/kickOffResourcesPanel/ct-kick-off-resources-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/cardMonopolyChooseResourcePanel/ct-card-monopoly-choose-resource-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/cardYearOfPlentyChooseResourcesPanel/ct-card-year-of-plenty-choose-resources-panel.css"/>
+    <link rel="stylesheet" href="features/screens/game/dashboard/tradeReplyPanel/ct-trade-reply-panel.css"/>
 
     <link rel="shortcut icon" href="/favicon.ico">
 
 </head>
 <body>
 
-    <div class="logo">Itinizators</div>
+<div class="logo">Itinizators</div>
 
-    <ui-view></ui-view>
+<ui-view></ui-view>
 
-    <script src="vendor/jquery/jquery-2.1.0.min.js"></script>
-    <script src="vendor/angular/angular.min.js"></script>
-    <script src="vendor/angular/angular-ui-router.min.js"></script>
+<script src="vendor/jquery/jquery-2.1.0.min.js"></script>
+<script src="vendor/angular/angular.min.js"></script>
+<script src="vendor/angular/angular-ui-router.min.js"></script>
 
-    <script src="app.js"></script>
+<script src="app.js"></script>
 
-    <script src="features/shared/services/auth/Auth.service.js"></script>
-    <script src="features/shared/services/auth/AuthInterceptor.service.js"></script>
-    <script src="features/shared/services/auth/AuthToken.service.js"></script>
-    <script src="features/shared/services/User.service.js"></script>
-    <script src="features/shared/services/Remote.service.js"></script>
-    <script src="features/shared/directives/playersList/ct-players-list.js"></script>
-    <script src="features/shared/directives/gamesList/ct-games-list.js"></script>
-    <script src="features/shared/directives/buttons/ct-join-public-game-button.js"></script>
-    <script src="features/shared/directives/buttons/ct-back-button.js"></script>
-    <script src="features/screens/login/loginForm/ct-login-form.js"></script>
-    <script src="features/screens/register/registerForm/ct-register-form.js"></script>
-    <script src="features/screens/registerGuest/RegisterGuest.controller.js"></script>
-    <script src="features/screens/registerGuest/registerGuestForm/ct-register-guest-form.js"></script>
-    <script src="features/screens/start/ct-logout-button.js"></script>
-    <script src="features/screens/createGame/createGameForm/ct-create-game-form.js"></script>
-    <script src="features/screens/joinPrivateGame/joinPrivateGameForm/ct-join-private-game-form.js"></script>
-    <script src="features/screens/game/Game.controller.js"></script>
-    <script src="features/screens/game/ct-leave-game-button.js"></script>
-    <script src="features/screens/game/ct-cancel-game-button.js"></script>
-    <script src="features/screens/game/ct-ready-button.js"></script>
-    <script src="features/screens/game/gameMapOverview/ct-game-map-overview.js"></script>
+<script src="features/shared/services/auth/Auth.service.js"></script>
+<script src="features/shared/services/auth/AuthInterceptor.service.js"></script>
+<script src="features/shared/services/auth/AuthToken.service.js"></script>
+<script src="features/shared/services/User.service.js"></script>
+<script src="features/shared/services/Remote.service.js"></script>
+<script src="features/shared/services/game/GameService.service.js"></script>
+<script src="features/shared/services/game/GameModel.service.js"></script>
+<script src="features/shared/services/game/GameActionsService.service.js"></script>
+<script src="features/shared/services/game/LinkMapEntitiesHelper.service.js"></script>
+<script src="features/shared/services/play/PlayService.service.js"></script>
+<script src="features/shared/modalWindow/ModalWindowService.service.js"></script>
+<script src="features/shared/modalWindow/ct-modal-window.js"></script>
+<script src="features/shared/modalWindow/ct-modal-window-close.js"></script>
+<script src="features/shared/services/map/DrawMapService.service.js"></script>
+<script src="features/shared/services/map/DrawMapHelper.service.js"></script>
+<script src="features/shared/services/SelectService.service.js"></script>
+<script src="features/shared/directives/playersList/ct-players-list.js"></script>
+<script src="features/shared/directives/gamesList/ct-games-list.js"></script>
+<script src="features/shared/directives/ct-join-public-game-button.js"></script>
+<script src="features/shared/directives/ct-back-button.js"></script>
+<script src="features/screens/login/loginForm/ct-login-form.js"></script>
+<script src="features/screens/register/registerForm/ct-register-form.js"></script>
+<script src="features/screens/registerGuest/RegisterGuest.controller.js"></script>
+<script src="features/screens/registerGuest/registerGuestForm/ct-register-guest-form.js"></script>
+<script src="features/screens/start/ct-logout-button.js"></script>
+<script src="features/screens/createGame/createGameForm/ct-create-game-form.js"></script>
+<script src="features/screens/joinPrivateGame/joinPrivateGameForm/ct-join-private-game-form.js"></script>
+<script src="features/screens/game/Game.controller.js"></script>
+<script src="features/screens/game/room/ct-leave-game-button.js"></script>
+<script src="features/screens/game/room/ct-cancel-game-button.js"></script>
+<script src="features/screens/game/room/ct-game-room.js"></script>
+<script src="features/screens/game/dashboard/ct-game-dashboard.js"></script>
+<script src="features/screens/game/dashboard/actionsPanel/ct-actions-panel.js"></script>
+<script src="features/screens/game/dashboard/resourcesPanel/ct-resources-panel.js"></script>
+<script src="features/screens/game/dashboard/playersPanel/ct-players-panel.js"></script>
+<script src="features/screens/game/dashboard/buyPanel/ct-buy-panel.js"></script>
+<script src="features/screens/game/room/ct-ready-button.js"></script>
+<script src="features/screens/game/room/gameMapOverview/ct-game-map-overview.js"></script>
+<script src="features/screens/game/dashboard/gameMap/ct-game-map.js"></script>
+<script src="features/screens/game/results/ct-game-results.js"></script>
+<script src="features/screens/game/dashboard/cardsPanel/ct-cards-panel.js"></script>
+<script src="features/screens/game/dashboard/dice/ct-dice.js"></script>
+<script src="features/screens/game/dashboard/tradePanel/ct-trade-panel.js"></script>
+<script src="features/screens/game/dashboard/tradePanel/port/ct-trade-port-panel.js"></script>
+<script src="features/screens/game/dashboard/tradePanel/players/ct-trade-players-panel.js"></script>
+<script src="features/screens/game/dashboard/chooseResources/ct-choose-resources.js"></script>
+<script src="features/screens/game/dashboard/chooseResources/ct-choose-resources-cancel.js"></script>
+<script src="features/screens/game/dashboard/kickOffResourcesPanel/ct-kick-off-resources-panel.js"></script>
+<script src="features/screens/game/dashboard/cardMonopolyChooseResourcePanel/ct-card-monopoly-choose-resource-panel.js"></script>
+<script src="features/screens/game/dashboard/cardYearOfPlentyChooseResourcesPanel/ct-card-year-of-plenty-choose-resources-panel.js"></script>
+<script src="features/screens/game/dashboard/tradeReplyPanel/ct-trade-reply-panel.js"></script>
 
 </body>
 </html>

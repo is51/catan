@@ -1,48 +1,9 @@
-<div class="row">
+<div ng-id="game">
 
-    <div ng-if="gameDetails">
+    <ct-game-room ng-if="game.isNew()" game="game"></ct-game-room>
 
-        <div class="col-xs-6">
-            <h1>Game #{{gameDetails.gameId}}</h1>
-            <div style="font-size: 2rem;">Created by User #{{gameDetails.creatorId}}</div>
-            <div style="font-size: 1.2rem; line-height: 2.4rem;">
-                <span ng-show="gameDetails.privateGame"><span class="glyphicon glyphicon-eye-open"></span> Code: {{gameDetails.privateCode}}</span>
-                <span ng-hide="gameDetails.privateGame"><span class="glyphicon glyphicon-globe"></span> Public</span>
-            </div>
-            <div style="font-size: 1.2rem; line-height: 2.4rem;">{{gameDetails.dateCreated | date : 'short'}}</div>
-            <div><span class="label label-warning">{{gameDetails.status}}</span></div>
-            <div>&nbsp;</div>
-            <div>Target Victory Points: {{gameDetails.targetVictoryPoints}}</div>
+    <ct-game-dashboard ng-if="game.isPlaying()" game="game"></ct-game-dashboard>
 
-        </div>
-
-        <div class="col-xs-6">
-            <div>
-                <h1>Players:</h1>
-                <ct-players-list game="gameDetails"></ct-players-list>
-            </div>
-
-            <div><br><br><br></div>
-
-            <div>
-
-                <a ng-if="gameDetails.creatorId!==User.get().id" href="" ct-leave-game-button game="gameDetails" class="btn btn-danger">Leave Game</a>
-                <a ng-if="gameDetails.creatorId===User.get().id" href="" ct-cancel-game-button game="gameDetails" class="btn btn-danger">Cancel Game</a>
-            </div>
-
-            <div>
-                <br>
-                <a href="" ct-ready-button game="gameDetails" after-set="updateGameDetails" class="btn btn-default">I'm Ready</a>
-            </div>
-
-
-            <ct-game-map-overview game="gameDetails"></ct-game-map-overview>
-        </div>
-
-
-    </div>
+    <ct-game-results ng-if="game.isFinished()" game="game"></ct-game-results>
 
 </div>
-
-
-<a ui-sref="continueGame" class="btn btn-default btn-back">Back to my games</a>

@@ -3,10 +3,14 @@ package catan.services.impl;
 import catan.dao.GameDao;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.BuildUtil;
+import catan.services.util.play.PlayUtil;
 import catan.services.util.map.MapUtil;
+import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.random.RandomUtil;
 import catan.domain.exception.GameException;
 import catan.services.util.random.RandomValueGeneratorMock;
@@ -42,6 +46,7 @@ public class GameServiceImplTest {
     public static final String PASSWORD2 = "67890";
 
     public static final int DEFAULT_TARGET_VICTORY_POINTS = 12;
+    public static final int DEFAULT_INITIAL_BUILDINGS_SET_ID = 1;
 
     @Mock
     private GameDao gameDao;
@@ -51,6 +56,12 @@ public class GameServiceImplTest {
     private GameServiceImpl gameService;
     @InjectMocks
     private GameUtil gameUtil;
+    @InjectMocks
+    private PlayUtil playUtil;
+    @InjectMocks
+    private BuildUtil buildUtil;
+    @InjectMocks
+    private PreparationStageUtil preparationStageUtil;
 
     private RandomValueGeneratorMock rvg = new RandomValueGeneratorMock();
 
@@ -60,6 +71,11 @@ public class GameServiceImplTest {
         randomUtil.setRvg(rvg);
 
         gameUtil.setRandomUtil(randomUtil);
+        gameUtil.setPlayUtil(playUtil);
+
+        playUtil.setPreparationStageUtil(preparationStageUtil);
+
+        buildUtil.setGameUtil(gameUtil);
 
         gameService.setRandomUtil(randomUtil);
         gameService.setGameUtil(gameUtil);
@@ -111,7 +127,7 @@ public class GameServiceImplTest {
         when(gameDao.getUsedActiveGamePrivateCodes()).thenReturn(usedPrivateCodes);
 
         // WHEN
-        GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS));
+        GameBean game = gameService.createNewGame(user, true, Integer.toString(DEFAULT_TARGET_VICTORY_POINTS), Integer.toString(DEFAULT_INITIAL_BUILDINGS_SET_ID));
 
         // THEN
         verify(gameDao, times(1)).addNewGame(gameBeanArgumentCaptor.capture());
@@ -144,7 +160,7 @@ public class GameServiceImplTest {
             UserBean user = new UserBean(USER_NAME1, PASSWORD1, true);
 
             // WHEN
-            GameBean game = gameService.createNewGame(user, false, "12");
+            GameBean game = gameService.createNewGame(user, false, "12", Integer.toString(DEFAULT_INITIAL_BUILDINGS_SET_ID));
 
             fail("GameException with error code '" + GameServiceImpl.GUEST_NOT_PERMITTED_ERROR + "' should be thrown, but returned game " + game);
         } catch (GameException e) {
@@ -161,10 +177,12 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
         user.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game1 = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game2 = new GameBean(user, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user, 1, game1);
@@ -232,10 +250,12 @@ public class GameServiceImplTest {
         UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false);
         user2.setId((int) System.currentTimeMillis());
 
-        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game1 = new GameBean(user1, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game1.setGameId(1);
 
-        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game2 = new GameBean(user2, new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game2.setGameId(2);
 
         GameUserBean gameUser1 = new GameUserBean(user1, 1, game1);
@@ -298,7 +318,8 @@ public class GameServiceImplTest {
     public void testSetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setGameId(1);
         game.getGameUsers().add(new GameUserBean(user, 1, game));
 
@@ -321,7 +342,8 @@ public class GameServiceImplTest {
     public void testUnsetReadyStatusSuccess() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setGameId(1);
 
         GameUserBean gameUserBean = new GameUserBean(user, 1, game);
@@ -345,7 +367,8 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_UserHaventJoinedGame() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, DEFAULT_TARGET_VICTORY_POINTS,
+                "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setGameId(1);
 
         when(gameDao.getGameByGameId(1)).thenReturn(game);
@@ -357,7 +380,8 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_GameAlreadyStarted() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, DEFAULT_TARGET_VICTORY_POINTS);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.PLAYING, 3, 4, DEFAULT_TARGET_VICTORY_POINTS,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setGameId(1);
         game.getGameUsers().add(new GameUserBean(user, 1, game));
 
@@ -371,7 +395,8 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setGameId(1);
         GameUserBean gameUserBean = new GameUserBean(user, 1, game);
         game.getGameUsers().add(gameUserBean);
@@ -391,7 +416,8 @@ public class GameServiceImplTest {
     public void testSetReadyStatus_AllPlayersAreReady_GameShouldBeStarted() throws Exception {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 2, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 2, 4, 12,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setGameId(1);
 
         GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2, game);
@@ -409,8 +435,16 @@ public class GameServiceImplTest {
         verify(gameDao, times(1)).updateGameUser(any(GameUserBean.class));
         verify(gameDao, times(1)).updateGame(gameBeanCaptor.capture());
 
-        assertEquals(gameBeanCaptor.getValue().getStatus(), GameStatus.PLAYING);
-        assertNotNull(gameBeanCaptor.getValue().getDateStarted());
+        GameBean expectedGame = gameBeanCaptor.getValue();
+
+        assertEquals(expectedGame.getCurrentMove(), new Integer(1));
+        assertEquals(expectedGame.getStatus(), GameStatus.PLAYING);
+        assertEquals(expectedGame.getStage(), GameStage.PREPARATION);
+        assertEquals(expectedGame.getPreparationCycle(), new Integer(1));
+        assertNotNull(expectedGame.getDateStarted());
+        for(GameUserBean gameUser : expectedGame.getGameUsers()){
+            assertTrue(gameUser.getMoveOrder() > 0);
+        }
     }
 
     @Test
@@ -418,7 +452,8 @@ public class GameServiceImplTest {
         UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
 
 
-        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12);
+        GameBean game = new GameBean(user, "TF3423", new Date(), GameStatus.NEW, 3, 4, 12,
+                    "[[BUILD_SETTLEMENT, BUILD_ROAD], [BUILD_CITY, BUILD_ROAD], [BUILD_SETTLEMENT, BUILD_ROAD]]");
         game.setGameId(1);
 
         GameUserBean gameUserBean1 = new GameUserBean(new UserBean("user1", "pwd", false), 2, game);

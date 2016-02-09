@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-    .directive('ctRegisterForm', ['Auth', '$state', '$stateParams', function(Auth, $state, $stateParams) {
+    .directive('ctRegisterForm', ['Auth', 'Remote', '$state', '$stateParams', function(Auth, Remote, $state, $stateParams) {
         return {
             restrict: 'E',
             scope: {},
@@ -11,7 +11,10 @@ angular.module('catan')
                 scope.data = {};
 
                 scope.submit = function() {
-                    Auth.register(scope.data.username, scope.data.password)
+                    Remote.auth.register({
+                        username: scope.data.username,
+                        password: scope.data.password
+                    })
                         .then(function() {
 
                             Auth.login(scope.data.username, scope.data.password)

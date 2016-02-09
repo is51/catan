@@ -1,18 +1,21 @@
 package catan.domain.transfer.output.game;
 
-import catan.domain.model.game.AchievementsBean;
+import catan.domain.model.game.Achievements;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AchievementsDetails {
-    private int displayVictoryPoints;
-    private int totalResources;
-    private int totalCards;
-    private int totalUsedKnights;
-    private int longestWayLength;
+    private Integer displayVictoryPoints;
+    private Integer realVictoryPoints;
+    private Integer totalResources;
+    private Integer totalCards;
+    private Integer totalUsedKnights;
+    private Integer longestWayLength;
 
     public AchievementsDetails() {
     }
 
-    public AchievementsDetails(AchievementsBean achievements) {
+    public AchievementsDetails(Achievements achievements) {
         this.displayVictoryPoints = achievements.getDisplayVictoryPoints();
         this.totalResources = achievements.getTotalResources();
         this.totalCards = achievements.getTotalCards();
@@ -20,43 +23,56 @@ public class AchievementsDetails {
         this.longestWayLength = achievements.getLongestWayLength();
     }
 
-    public int getDisplayVictoryPoints() {
+    public AchievementsDetails(Achievements achievements, int extraVictoryPoints) {
+        this(achievements);
+        this.realVictoryPoints = achievements.getDisplayVictoryPoints() + extraVictoryPoints;
+    }
+
+    public Integer getRealVictoryPoints() {
+        return realVictoryPoints;
+    }
+
+    public void setRealVictoryPoints(Integer realVictoryPoints) {
+        this.realVictoryPoints = realVictoryPoints;
+    }
+
+    public Integer getDisplayVictoryPoints() {
         return displayVictoryPoints;
     }
 
-    public void setDisplayVictoryPoints(int displayVictoryPoints) {
+    public void setDisplayVictoryPoints(Integer displayVictoryPoints) {
         this.displayVictoryPoints = displayVictoryPoints;
     }
 
-    public int getTotalResources() {
+    public Integer getTotalResources() {
         return totalResources;
     }
 
-    public void setTotalResources(int totalResources) {
+    public void setTotalResources(Integer totalResources) {
         this.totalResources = totalResources;
     }
 
-    public int getTotalCards() {
+    public Integer getTotalCards() {
         return totalCards;
     }
 
-    public void setTotalCards(int totalCards) {
+    public void setTotalCards(Integer totalCards) {
         this.totalCards = totalCards;
     }
 
-    public int getTotalUsedKnights() {
+    public Integer getTotalUsedKnights() {
         return totalUsedKnights;
     }
 
-    public void setTotalUsedKnights(int totalUsedKnights) {
+    public void setTotalUsedKnights(Integer totalUsedKnights) {
         this.totalUsedKnights = totalUsedKnights;
     }
 
-    public int getLongestWayLength() {
+    public Integer getLongestWayLength() {
         return longestWayLength;
     }
 
-    public void setLongestWayLength(int longestWayLength) {
+    public void setLongestWayLength(Integer longestWayLength) {
         this.longestWayLength = longestWayLength;
     }
 }

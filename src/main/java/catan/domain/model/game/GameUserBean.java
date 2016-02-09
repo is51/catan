@@ -1,20 +1,8 @@
 package catan.domain.model.game;
 
 import catan.domain.model.user.UserBean;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "GAME_USER")
@@ -42,14 +30,43 @@ public class GameUserBean {
     @Column(name = "MOVE_ORDER", unique = false, nullable = false)
     private int moveOrder;
 
-    @Embedded
-    private AchievementsBean achievements;
+    @Column(name = "AVAILABLE_ACTIONS", unique = false, nullable = true, length = 1000)
+    private String availableActions;
+
+    @Column(name = "MANDATORY_KICK_OFF_RESOURCES", unique = false, nullable = true)
+    private Boolean kickingOffResourcesMandatory;
+
+    @Column(name = "AVAILABLE_TRADE_REPLY", unique = false)
+    private Boolean availableTradeReply;
 
     @Embedded
-    private ResourcesBean resources;
+    private Achievements achievements;
 
     @Embedded
-    private DevelopmentCardsBean developmentCards;
+    private BuildingsCount buildingsCount;
+
+    @Embedded
+    private Resources resources;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "knight", column = @Column(name = "DEV_CARD_ALL_KNIGHT")),
+            @AttributeOverride(name = "victoryPoint", column = @Column(name = "DEV_CARD_ALL_VICTORY_POINT")),
+            @AttributeOverride(name = "roadBuilding", column = @Column(name = "DEV_CARD_ALL_ROAD_BUILDING")),
+            @AttributeOverride(name = "monopoly", column = @Column(name = "DEV_CARD_ALL_MONOPOLY")),
+            @AttributeOverride(name = "yearOfPlenty", column = @Column(name = "DEV_CARD_ALL_YEAR_OF_PLENTY"))
+    })
+    private DevelopmentCards developmentCards;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "knight", column = @Column(name = "DEV_CARD_READY_KNIGHT")),
+            @AttributeOverride(name = "victoryPoint", column = @Column(name = "DEV_CARD_READY_VICTORY_POINT")),
+            @AttributeOverride(name = "roadBuilding", column = @Column(name = "DEV_CARD_READY_ROAD_BUILDING")),
+            @AttributeOverride(name = "monopoly", column = @Column(name = "DEV_CARD_READY_MONOPOLY")),
+            @AttributeOverride(name = "yearOfPlenty", column = @Column(name = "DEV_CARD_READY_YEAR_OF_PLENTY"))
+    })
+    private DevelopmentCards developmentCardsReadyForUsing;
 
     public GameUserBean() {
     }
@@ -58,9 +75,11 @@ public class GameUserBean {
         this.user = user;
         this.colorId = colorId;
         this.game = game;
-        this.achievements = new AchievementsBean(0, 0, 0, 0, 0);
-        this.resources = new ResourcesBean(0, 0, 0, 0, 0);
-        this.developmentCards = new DevelopmentCardsBean(0, 0, 0, 0, 0);
+        this.buildingsCount = new BuildingsCount(0, 0);
+        this.achievements = new Achievements(0, 0, 0, 0, 0);
+        this.resources = new Resources(0, 0, 0, 0, 0);
+        this.developmentCards = new DevelopmentCards(0, 0, 0, 0, 0);
+        this.developmentCardsReadyForUsing = new DevelopmentCards(0, 0, 0, 0, 0);
     }
 
     public int getGameUserId() {
@@ -111,28 +130,68 @@ public class GameUserBean {
         this.moveOrder = moveOrder;
     }
 
-    public AchievementsBean getAchievements() {
+    public String getAvailableActions() {
+        return availableActions;
+    }
+
+    public void setAvailableActions(String availableActions) {
+        this.availableActions = availableActions;
+    }
+
+    public Boolean isKickingOffResourcesMandatory() {
+        return kickingOffResourcesMandatory;
+    }
+
+    public void setKickingOffResourcesMandatory(Boolean kickingOffResourcesMandatory) {
+        this.kickingOffResourcesMandatory = kickingOffResourcesMandatory;
+    }
+
+    public Boolean isAvailableTradeReply() {
+        return availableTradeReply;
+    }
+
+    public void setAvailableTradeReply(Boolean availableTradeReply) {
+        this.availableTradeReply = availableTradeReply;
+    }
+
+    public Achievements getAchievements() {
         return achievements;
     }
 
-    public void setAchievements(AchievementsBean achievements) {
+    public void setAchievements(Achievements achievements) {
         this.achievements = achievements;
     }
 
-    public ResourcesBean getResources() {
+    public BuildingsCount getBuildingsCount() {
+        return buildingsCount;
+    }
+
+    public void setBuildingsCount(BuildingsCount buildingsCount) {
+        this.buildingsCount = buildingsCount;
+    }
+
+    public Resources getResources() {
         return resources;
     }
 
-    public void setResources(ResourcesBean resources) {
+    public void setResources(Resources resources) {
         this.resources = resources;
     }
 
-    public DevelopmentCardsBean getDevelopmentCards() {
+    public DevelopmentCards getDevelopmentCards() {
         return developmentCards;
     }
 
-    public void setDevelopmentCards(DevelopmentCardsBean developmentCards) {
+    public void setDevelopmentCards(DevelopmentCards developmentCards) {
         this.developmentCards = developmentCards;
+    }
+
+    public DevelopmentCards getDevelopmentCardsReadyForUsing() {
+        return developmentCardsReadyForUsing;
+    }
+
+    public void setDevelopmentCardsReadyForUsing(DevelopmentCards developmentCardsReadyForUsing) {
+        this.developmentCardsReadyForUsing = developmentCardsReadyForUsing;
     }
 
     @Override
@@ -160,11 +219,14 @@ public class GameUserBean {
     public String toString() {
         return "GameUser [" +
                 "gameUserId:" + gameUserId +
-                ", user:" + user.getUsername() +
+                ", userId:" + user.getId() +
+                ", userName:" + user.getUsername() +
                 ", colorId: " + colorId +
                 ", gameId: " + game.getGameId() +
                 ", ready: " + ready +
                 ", moveOrder: " + moveOrder +
+                ", availableActions: " + availableActions +
+                ", resources: " + resources +
                "]";
     }
 }

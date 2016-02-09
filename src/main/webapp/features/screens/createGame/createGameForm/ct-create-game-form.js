@@ -8,9 +8,15 @@ angular.module('catan')
             templateUrl: "/features/screens/createGame/createGameForm/ct-create-game-form.html",
             link: function(scope) {
 
+                scope.initialBuildingsSetIdValues = [
+                    {value: 1, name: "2 settlements + 2 roads"},
+                    {value: 2, name: "1 city + 2 settlements + 3 roads"}
+                ];
+
                 scope.data = $stateParams.data || {
                     privateGame: true,
-                    targetVictoryPoints: 12
+                    targetVictoryPoints: 12,
+                    initialBuildingsSetId: 1
                 };
 
                 scope.submit = function() {
@@ -56,7 +62,8 @@ angular.module('catan')
                 function createGame() {
                     Remote.game.create({
                         privateGame: scope.data.privateGame,
-                        targetVictoryPoints: scope.data.targetVictoryPoints
+                        targetVictoryPoints: scope.data.targetVictoryPoints,
+                        initialBuildingsSetId: scope.data.initialBuildingsSetId
                     })
                         .then(function(response) {
                             $state.go('game', {gameId: response.data.gameId});

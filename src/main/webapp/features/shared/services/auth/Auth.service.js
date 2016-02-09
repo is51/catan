@@ -62,14 +62,6 @@ angular.module('catan')
                 });
 
                 return deferred.promise;
-            },
-
-            // TODO: remove this method and replace everywhere with Remote
-            register: function (username, password) {
-                return Remote.auth.register({
-                    username: username,
-                    password: password
-                });
             }
         };
 

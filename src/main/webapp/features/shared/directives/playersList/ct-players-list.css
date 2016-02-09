@@ -15,6 +15,15 @@ ct-players-list .user-icon > *:nth-child(2) {
     overflow: hidden;
 }
 
+ct-players-list .user-icon > *:nth-child(3) {
+    font-size: 1rem;
+}
+
+ct-players-list .user-icon > *:nth-child(3) > span {
+    border-radius: 3px;
+    padding-top: 2px;
+}
+
 ct-players-list .user-icon > .color-1 {
     background: #f50;
 }

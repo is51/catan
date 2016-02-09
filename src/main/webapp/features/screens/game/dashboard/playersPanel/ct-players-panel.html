@@ -1,0 +1,20 @@
+<div ng-repeat="gameUser in gameUsers" class="player color-{{::gameUser.colorId}}" ng-class="{'active': isActive(gameUser)}">
+
+    <div class="achievements">
+        <span class="glyphicon glyphicon-inbox"></span> {{gameUser.achievements.totalResources}}<br>
+        <span class="glyphicon glyphicon-credit-card"></span> {{gameUser.achievements.totalCards}}<br>
+        <span class="glyphicon glyphicon-flag"></span> {{gameUser.achievements.totalUsedKnights}}<br>
+        <span class="glyphicon glyphicon-road"></span> {{gameUser.achievements.longestWayLength}}
+    </div>
+
+    <div class="name">{{::gameUser.user.username}}</div>
+
+    <div class="avatar"><span class="glyphicon glyphicon-user"></span></div>
+
+    <div class="victory-points">
+        <span class="glyphicon glyphicon-star"></span>
+        <span ng-if="::isCurrentUser(gameUser)">{{gameUser.achievements.realVictoryPoints}}</span>
+        <span ng-if="::!isCurrentUser(gameUser)">{{gameUser.achievements.displayVictoryPoints}}</span>
+    </div>
+
+</div>

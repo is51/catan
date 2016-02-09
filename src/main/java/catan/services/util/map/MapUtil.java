@@ -91,12 +91,12 @@ public class MapUtil {
                 }
 
                 boolean robbed = (x == 0 && y == 0);
-                int diceNumber = (x == 0 && y == 0)
-                        ? 7
-                        : randomUtil.pullRandomDiceNumber(possibleDiceNumbers);
+                Integer diceNumber = (x == 0 && y == 0)
+                        ? null
+                        : randomUtil.pullRandomHexDiceNumber(x, y, possibleDiceNumbers);
                 HexType hexType = (x == 0 && y == 0)
                         ? HexType.EMPTY
-                        : randomUtil.pullRandomHexType(possibleHexTypes);
+                        : randomUtil.pullRandomHexType(x, y, possibleHexTypes);
 
                 createHex(tempCoordinatesToHexMap, game, x, y, hexPort, portLocation, hexType, diceNumber, robbed);
             }
@@ -110,7 +110,7 @@ public class MapUtil {
                            NodePortType hexPort,
                            EdgePosition portLocation,
                            HexType hexType,
-                           int diceNumber,
+                           Integer diceNumber,
                            boolean robbed) {
         Coordinates coordinates = new Coordinates(x, y);
         HexBean hex = new HexBean(game, coordinates, hexType, diceNumber, robbed);

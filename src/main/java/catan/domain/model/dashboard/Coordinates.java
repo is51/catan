@@ -2,9 +2,6 @@ package catan.domain.model.dashboard;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 @Embeddable
 public class Coordinates {
@@ -57,5 +54,13 @@ public class Coordinates {
         int result = xCoordinate;
         result = 31 * result + yCoordinate;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Coordinates{" +
+                "xCoordinate=" + xCoordinate +
+                ", yCoordinate=" + yCoordinate +
+                '}';
     }
 }

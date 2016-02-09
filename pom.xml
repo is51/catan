@@ -42,34 +42,19 @@
 
         <finalName>IT-nizator server</finalName>
         <plugins>
-            <!-- The following block can potentially be used instead of maven war plugin and tomcat7 plugin-->
-            <!-- <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>${start-class}</mainClass>
-                </configuration>
-            </plugin>  -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <warName>ROOT</warName>
                     <archive>
                         <manifest>
                             <mainClass>${start-class}</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
 
@@ -81,6 +66,19 @@
                 <configuration>
                     <port>8091</port>
                     <path>/</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <debug>true</debug>
+                    <optimize>true</optimize>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
                 </configuration>
             </plugin>
         </plugins>
@@ -139,6 +137,11 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>1.7.1</version>
         </dependency>
 
         <!-- __________________ -->

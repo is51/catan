@@ -1,6 +1,6 @@
 package catan.domain.transfer.output.game;
 
-import catan.domain.model.game.ResourcesBean;
+import catan.domain.model.game.Resources;
 
 public class ResourcesDetails {
     private int brick;
@@ -12,7 +12,7 @@ public class ResourcesDetails {
     public ResourcesDetails() {
     }
 
-    public ResourcesDetails(ResourcesBean resources) {
+    public ResourcesDetails(Resources resources) {
         this.brick = resources.getBrick();
         this.wood = resources.getWood();
         this.sheep = resources.getSheep();

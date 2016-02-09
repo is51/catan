@@ -77,21 +77,13 @@ public class UserBean {
 
         UserBean userBean = (UserBean) o;
 
-        if (guest != userBean.guest) return false;
-        if (id != userBean.id) return false;
-        if (password != null ? !password.equals(userBean.password) : userBean.password != null) return false;
-        if (username != null ? !username.equals(userBean.username) : userBean.username != null) return false;
+        return !(username != null ? !username.equals(userBean.username) : userBean.username != null);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (guest ? 1 : 0);
-        return result;
+        return username != null ? username.hashCode() : 0;
     }
 
     @Override

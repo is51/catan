@@ -7,13 +7,9 @@ import catan.domain.model.game.GameBean;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -137,7 +133,6 @@ public class NodeBean implements MapElement{
 
         NodeBean nodeBean = (NodeBean) o;
 
-        if (!game.equals(nodeBean.game)) return false;
         if (!hexes.equals(nodeBean.hexes)) return false;
         if (orientation != nodeBean.orientation) return false;
         if (port != nodeBean.port) return false;
@@ -147,10 +142,10 @@ public class NodeBean implements MapElement{
 
     @Override
     public int hashCode() {
-        int result = game.hashCode();
-        result = 31 * result + port.hashCode();
+        int result = port.hashCode();
         result = 31 * result + orientation.hashCode();
         result = 31 * result + hexes.hashCode();
+
         return result;
     }
 }
