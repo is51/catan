@@ -53,24 +53,27 @@ public class MainStageUtil {
     public void produceResourcesFromActiveDiceHexes(List<HexBean> hexes) {
         for (HexBean hex : hexes) {
             if (hex.isRobbed()) {
+                log.debug("Ignoring for produce resources from robbed " + hex);
                 continue;
             }
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
-                Building<NodeBuiltType> building = node.getBuilding();
-                HexType resourceType = hex.getResourceType();
-                GameUserBean buildingOwner = building.getBuildingOwner();
-                Resources userResources = buildingOwner.getResources();
-
-                int currentResourceQuantity = userResources.quantityOf(resourceType);
-                int resourceQuantityToAdd = building.getBuilt().getResourceQuantityToAdd();
-
-                userResources.updateResourceQuantity(resourceType, currentResourceQuantity + resourceQuantityToAdd);
-
-                log.debug("GameUser " + buildingOwner.getUser().getUsername() + " with colorId: " + buildingOwner.getColorId() +
-                        " got " + resourceType + " of quantity " + resourceQuantityToAdd + " for " + building.getBuilt() +
-                        " at hex with coordinates " + hex.getCoordinates() + " and dice value " + hex.getDice());
+                produceResources(hex, node.getBuilding());
             }
         }
+    }
+
+    private void produceResources(HexBean sourceHex, Building<NodeBuiltType> consumingBuilding) {
+        HexType resourceType =  sourceHex.getResourceType();
+        GameUserBean buildingOwner = consumingBuilding.getBuildingOwner();
+        Resources userResources = buildingOwner.getResources();
+
+        int currentResourceQuantity = userResources.quantityOf(resourceType);
+        int resourceQuantityToAdd = consumingBuilding.getBuilt().getResourceQuantityToAdd();
+
+        userResources.updateResourceQuantity(resourceType, currentResourceQuantity + resourceQuantityToAdd);
+
+        log.debug("GameUser (name: " + buildingOwner.getUser().getUsername() + ", colorId: " + buildingOwner.getColorId() + ", id: " +buildingOwner.getGameUserId() + ")" +
+                " got " + resourceQuantityToAdd + " " +  resourceType + " for " + consumingBuilding.getBuilt() + " at " + sourceHex);
     }
 
     public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {

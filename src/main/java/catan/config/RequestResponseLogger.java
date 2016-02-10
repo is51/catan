@@ -3,6 +3,7 @@ package catan.config;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,6 +40,9 @@ public class RequestResponseLogger implements Filter {
 
     @Override
     public void doFilter(ServletRequest plainRequest, ServletResponse plainResponse, FilterChain chain) throws ServletException, IOException {
+        long threadId = Thread.currentThread().getId();
+        MDC.put("thread", "Thread-" + String.valueOf(threadId));
+
         HttpServletRequest request = (HttpServletRequest) plainRequest;
         if (logger.isDebugEnabled()) {
             StringBuilder sbAppender = new StringBuilder();

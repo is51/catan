@@ -14,15 +14,11 @@ public class StartAndPreparation extends PlayTestUtil {
     public static final String USER_PASSWORD_3 = "3";
 
     public static void main(String[] args) {
-        StartAndPreparation instance = new StartAndPreparation();
+        registerUser(USER_NAME_1, USER_PASSWORD_1);
+        registerUser(USER_NAME_2, USER_PASSWORD_2);
+        registerUser(USER_NAME_3, USER_PASSWORD_3);
 
-        instance.registerUser(USER_NAME_1, USER_PASSWORD_1);
-        instance.registerUser(USER_NAME_2, USER_PASSWORD_2);
-        instance.registerUser(USER_NAME_3, USER_PASSWORD_3);
-
-        Scenario scenario = new Scenario();
-
-        scenario
+        new Scenario()
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)

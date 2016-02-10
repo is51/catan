@@ -217,16 +217,16 @@ public class GameUserBean {
 
     @Override
     public String toString() {
-        return "GameUser [" +
-                "gameUserId:" + gameUserId +
+        return "GameUser: \n\t\t" +
+                "[gameUserId:" + gameUserId +
                 ", userId:" + user.getId() +
                 ", userName:" + user.getUsername() +
                 ", colorId: " + colorId +
                 ", gameId: " + game.getGameId() +
                 ", ready: " + ready +
                 ", moveOrder: " + moveOrder +
-                ", availableActions: " + availableActions +
-                ", resources: " + resources +
+                ",\n\t\tresources: " + resources +
+                ",\n\t\tavailableActions: " + availableActions +
                "]";
     }
 }
