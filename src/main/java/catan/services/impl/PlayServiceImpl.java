@@ -17,6 +17,7 @@ import catan.domain.model.game.Resources;
 import catan.domain.model.game.TradeProposal;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.ResourcesParams;
 import catan.domain.model.game.actions.TradingParams;
 import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStage;
@@ -417,12 +418,12 @@ public class PlayServiceImpl implements PlayService {
         int usersWheatQuantity = userResources.getWheat();
         int usersStoneQuantity = userResources.getStone();
 
-        TradingParams tradingParams = mainStageUtil.calculateTradingParams(gameUser, game);
-        int brickSellCoefficient = tradingParams.getBrick();
-        int woodSellCoefficient = tradingParams.getWood();
-        int sheepSellCoefficient = tradingParams.getSheep();
-        int wheatSellCoefficient = tradingParams.getWheat();
-        int stoneSellCoefficient = tradingParams.getStone();
+        ResourcesParams resourcesParams = mainStageUtil.calculateResourcesParams(gameUser, game);
+        int brickSellCoefficient = resourcesParams.getBrick();
+        int woodSellCoefficient = resourcesParams.getWood();
+        int sheepSellCoefficient = resourcesParams.getSheep();
+        int wheatSellCoefficient = resourcesParams.getWheat();
+        int stoneSellCoefficient = resourcesParams.getStone();
 
         int brickQuantityToTrade = toValidResourceQuantityToTradeInPort(brickString, usersBrickQuantity, brickSellCoefficient);
         int woodQuantityToTrade = toValidResourceQuantityToTradeInPort(woodString, usersWoodQuantity, woodSellCoefficient);

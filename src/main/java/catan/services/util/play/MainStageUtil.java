@@ -12,6 +12,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.ResourcesParams;
 import catan.domain.model.game.actions.TradingParams;
 import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStatus;
@@ -253,8 +254,8 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()) {
-            TradingParams tradingParams = calculateTradingParams(gameUser, game);
-            actionsList.add(new Action(GameUserActionCode.TRADE_PORT, tradingParams));
+            ResourcesParams resourcesParams = calculateResourcesParams(gameUser, game);
+            actionsList.add(new Action(GameUserActionCode.TRADE_PORT, resourcesParams));
         }
     }
 
@@ -303,7 +304,7 @@ public class MainStageUtil {
         return game.getTradeProposal() == null || game.getTradeProposal().getOfferId() == null;
     }
 
-    public TradingParams calculateTradingParams(GameUserBean gameUser, GameBean game) {
+    public ResourcesParams calculateResourcesParams(GameUserBean gameUser, GameBean game) {
         int brick = 4;
         int wood = 4;
         int sheep = 4;
@@ -337,6 +338,6 @@ public class MainStageUtil {
             }
         }
 
-        return new TradingParams(brick, wood, sheep, wheat, stone);
+        return new ResourcesParams(brick, wood, sheep, wheat, stone);
     }
 }
