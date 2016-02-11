@@ -2918,7 +2918,7 @@ public class PlayServiceImplTest {
         assertEquals(0, game.getTradeProposal().getSheep());
         assertEquals(0, game.getTradeProposal().getWheat());
         assertEquals(0, game.getTradeProposal().getStone());
-        assertFalse(game.getTradeProposal().isFinishedTrade());
+        assertNotNull(game.getTradeProposal().getOfferId());
     }
 
     @Test
@@ -3077,7 +3077,7 @@ public class PlayServiceImplTest {
         assertNotNull(game);
         assertFalse(gameUser2.isAvailableTradeReply());
         assertNotNull(game.getTradeProposal());
-        assertTrue(game.getTradeProposal().isFinishedTrade());
+        assertNull(game.getTradeProposal().getOfferId());
 
         assertEquals(0, gameUser1.getResources().getBrick());
         assertEquals(1, gameUser1.getResources().getWood());
@@ -3120,7 +3120,7 @@ public class PlayServiceImplTest {
         assertNotNull(game);
         assertFalse(gameUser2.isAvailableTradeReply());
         assertNotNull(game.getTradeProposal());
-        assertFalse(game.getTradeProposal().isFinishedTrade());
+        assertNotNull(game.getTradeProposal().getOfferId());
 
         assertEquals(1, gameUser1.getResources().getBrick());
         assertEquals(0, gameUser1.getResources().getWood());
@@ -3175,7 +3175,7 @@ public class PlayServiceImplTest {
             assertFalse(gameUser2.isAvailableTradeReply());
             assertFalse(gameUser3.isAvailableTradeReply());
             assertNotNull(game.getTradeProposal());
-            assertTrue(game.getTradeProposal().isFinishedTrade());
+            assertNull(game.getTradeProposal().getOfferId());
 
             assertEquals(0, gameUser1.getResources().getBrick());
             assertEquals(1, gameUser1.getResources().getWood());

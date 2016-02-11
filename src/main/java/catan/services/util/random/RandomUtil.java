@@ -22,7 +22,6 @@ public class RandomUtil {
         char secondTwoDigits = (char) (65 + rvg.randomValue() * 26);
         int remainingDigits = (int) (digits + rvg.randomValue() * digits * 9);
 
-
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
     }
 
@@ -46,6 +45,10 @@ public class RandomUtil {
 
     public Integer getRandomDiceNumber() {
         return (int) (rvg.randomValue() * 6) + 1;
+    }
+
+    public Integer generateRandomId(int limit) {
+        return (int) (rvg.randomValue() * limit) + 1;
     }
 
     public DevelopmentCard pullRandomDevelopmentCard(List<DevelopmentCard> availableDevCards) {

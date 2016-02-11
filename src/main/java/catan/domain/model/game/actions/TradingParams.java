@@ -9,6 +9,7 @@ public class TradingParams extends ActionParams {
     private int sheep;
     private int wheat;
     private int stone;
+    private Integer offerId;
 
     public TradingParams() {
     }
@@ -27,6 +28,7 @@ public class TradingParams extends ActionParams {
         this.sheep = tradeProposal.getSheep();
         this.wheat = tradeProposal.getWheat();
         this.stone = tradeProposal.getStone();
+        this.offerId = tradeProposal.getOfferId();
     }
 
     public int getBrick() {
@@ -67,5 +69,13 @@ public class TradingParams extends ActionParams {
 
     public void setStone(int stone) {
         this.stone = stone;
+    }
+
+    public Integer getOfferId() {
+        return offerId;
+    }
+
+    public void setOfferId(Integer offerId) {
+        this.offerId = offerId;
     }
 }

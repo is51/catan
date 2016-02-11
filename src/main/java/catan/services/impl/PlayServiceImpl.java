@@ -468,7 +468,8 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone));
+        Integer newOfferId = randomUtil.generateRandomId(10000);
+        game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone, newOfferId));
     }
 
     private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
@@ -493,7 +494,7 @@ public class PlayServiceImpl implements PlayService {
             int stone = tradeProposal.getStone();
             validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
 
-            tradeProposal.setFinishedTrade(true);
+            tradeProposal.setOfferId(null);
             Integer currentMove = game.getCurrentMove();
             for (GameUserBean currentGameUser : game.getGameUsers()) {
                 if (currentGameUser.getMoveOrder() == currentMove) {
@@ -504,11 +505,11 @@ public class PlayServiceImpl implements PlayService {
             userResources.addResources(-brick, -wood, -sheep, -wheat, -stone);
         }
 
-        tradeProposal.setFinishedTrade(true);
+        tradeProposal.setOfferId(null);
     }
 
     private void validateOfferIsNotAcceptedBefore(TradeProposal tradeProposal) throws PlayException {
-        if (tradeProposal != null && tradeProposal.isFinishedTrade() != null && tradeProposal.isFinishedTrade()) {
+        if (tradeProposal != null && tradeProposal.getOfferId() == null) {
             log.error("Trade proposal already accepted");
             throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
         }
