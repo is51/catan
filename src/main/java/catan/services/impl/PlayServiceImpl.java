@@ -68,7 +68,7 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
-        log.debug("Action {} going to be performed user {} at game with id {} and additional params {}", action, user, gameId, params);
+        log.debug("Start process action {} " + (params != null && !params.isEmpty() ? "with params " + params : "without params") + " by {} for game with id: {}", action, user, gameId);
         Map<String, String> returnedParams = new HashMap<String, String>();
 
         validateUserNotEmpty(user);
@@ -87,7 +87,7 @@ public class PlayServiceImpl implements PlayService {
 
         gameDao.updateGame(game);
 
-        log.debug("Action {} was successfully performed by user {}", action, gameUser);
+        log.debug("Finish process action {} by {}", action, gameUser);
         return returnedParams;
     }
 
@@ -220,18 +220,17 @@ public class PlayServiceImpl implements PlayService {
     private void throwDice(GameBean game) {
         Integer diceFirstValue = randomUtil.getRandomDiceNumber();
         Integer diceSecondValue = randomUtil.getRandomDiceNumber();
-        log.info("First dice: " + diceFirstValue);
-        log.info("Second dice: " + diceSecondValue);
+        log.info("Current dice value is " + (diceFirstValue + diceSecondValue) + " (First dice: " + diceFirstValue + ", Second dice: " + diceSecondValue + ")");
 
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
-            log.debug("Current dice value is 7");
+            log.debug("Robber activity is started, checking if players should kick-off resources");
             checkIfPlayersShouldKickOffResources(game);
         } else {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
-            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue.toString());
+            log.debug("Producing resources form hexes with current dice value:" + (hexesWithCurrentDiceValue.isEmpty() ? "" : "\n\t\t") + hexesWithCurrentDiceValue.toString());
             mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
         }
     }
@@ -336,7 +335,7 @@ public class PlayServiceImpl implements PlayService {
 
     private void choosePlayerToRob(GameUserBean gameUser, GameBean game, Resources currentUsersResources, int gameUserId) throws PlayException, GameException {
         GameUserBean robbedGameUser = gameUtil.getGameUserById(gameUserId, game);
-        log.info("Robbing player: {}", robbedGameUser);
+        log.info("Robbing {}", robbedGameUser);
 
         validateGameUserCouldBeRobbed(gameUser, game, robbedGameUser);
 
