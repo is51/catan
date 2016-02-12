@@ -3071,6 +3071,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
         params.put("tradeReply", "accept");
+        params.put("offerId", game.getTradeProposal().getOfferId().toString());
 
         playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
@@ -3114,6 +3115,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
         params.put("tradeReply", "decline");
+        params.put("offerId", game.getTradeProposal().getOfferId().toString());
 
         playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
@@ -3158,6 +3160,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
         params.put("tradeReply", "accept");
+        params.put("offerId", game.getTradeProposal().getOfferId().toString());
 
         playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
@@ -3194,6 +3197,88 @@ public class PlayServiceImplTest {
             assertEquals(0, gameUser3.getResources().getSheep());
             assertEquals(0, gameUser3.getResources().getWheat());
             assertEquals(0, gameUser3.getResources().getStone());
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserAcceptsTradeProposalWithWrongId() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-1");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+        params.put("tradeReply", "accept");
+        params.put("offerId", "-1");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        } finally {
+            assertTrue(gameUser2.isAvailableTradeReply());
+            assertNotNull(game.getTradeProposal());
+            assertNotNull(game.getTradeProposal().getOfferId());
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUserDeclinesTradeProposalWithWrongId() throws GameException, PlayException {
+        //GIVEN
+        game.setCurrentMove(gameUser1.getMoveOrder());
+        game.setCurrentCycleBuildingNumber(null);
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 0, 0, 0, 0));
+        gameUser2.setResources(new Resources(0, 1, 0, 0, 0));
+        playUtil.updateAvailableActionsForAllUsers(game);
+        when(gameDao.getGameByGameId(1)).thenReturn(game);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("brick", "-1");
+        params.put("wood", "1");
+        params.put("sheep", "0");
+        params.put("wheat", "0");
+        params.put("stone", "0");
+
+        playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
+
+        params.put("tradeReply", "decline");
+        params.put("offerId", "-1");
+
+        try {
+            // WHEN
+            playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
+
+            fail("PlayException with error code '" + PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
+            // THEN
+            assertEquals(PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
+        } catch (Exception e) {
+            fail("No other exceptions should be thrown");
+        } finally {
+            assertTrue(gameUser2.isAvailableTradeReply());
+            assertNotNull(game.getTradeProposal());
+            assertNotNull(game.getTradeProposal().getOfferId());
         }
     }
     
