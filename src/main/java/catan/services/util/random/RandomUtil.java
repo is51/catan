@@ -1,10 +1,8 @@
 package catan.services.util.random;
 
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.types.DevelopmentCard;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -47,7 +45,7 @@ public class RandomUtil {
         return (int) (rvg.randomValue() * 6) + 1;
     }
 
-    public Integer generateRandomId(int limit) {
+    public Integer generateRandomOfferId(int limit) {
         return (int) (rvg.randomValue() * limit) + 1;
     }
 

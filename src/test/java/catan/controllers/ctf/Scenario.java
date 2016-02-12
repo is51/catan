@@ -225,22 +225,16 @@ public class Scenario {
         return new TradeProposeAction(userToken, this);
     }
 
-    public Scenario TRADE_ACCEPT(int moveOrder) {
+    public TradeReplyAction TRADE_ACCEPT(int moveOrder) {
         saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
-
-        lastApiResponse = PlayTestUtil.tradeAccept(userToken, gameId);
-
-        return this;
+        return new TradeReplyAction(userToken, this, TradeReplyAction.ReplyType.ACCEPT);
     }
 
-    public Scenario TRADE_DECLINE(int moveOrder) {
+    public TradeReplyAction TRADE_DECLINE(int moveOrder) {
         saveUsersResourcesAndCardsValues();
         String userToken = tokensByMoveOrder.get(moveOrder);
-
-        lastApiResponse = PlayTestUtil.tradeDecline(userToken, gameId);
-
-        return this;
+        return new TradeReplyAction(userToken, this, TradeReplyAction.ReplyType.DECLINE);
     }
 
     public Scenario boughtCardIs(DevelopmentCard card) {
@@ -344,6 +338,14 @@ public class Scenario {
     public Scenario nextRandomStolenResources(List<HexType> resources) {
         for (HexType resource : resources) {
             randomUtil.setNextStolenResource(resource);
+        }
+
+        return this;
+    }
+
+    public Scenario nextOfferIds(List<Integer> offerIds) {
+        for (Integer offerId : offerIds) {
+            randomUtil.setNextOfferId(offerId);
         }
 
         return this;

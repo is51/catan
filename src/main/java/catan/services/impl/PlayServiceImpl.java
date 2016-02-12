@@ -468,7 +468,7 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        Integer newOfferId = randomUtil.generateRandomId(10000);
+        Integer newOfferId = randomUtil.generateRandomOfferId(10000);
         game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone, newOfferId));
     }
 
