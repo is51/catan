@@ -20,6 +20,7 @@ public class GameDetails {
     private int maxPlayers;
     private int targetVictoryPoints;
     private Integer currentMove;
+    private Integer biggestArmyOwner;
     private DiceDetails dice;
     private MapDetails map;
 
@@ -39,6 +40,7 @@ public class GameDetails {
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.currentMove = game.getCurrentMove();
+        this.biggestArmyOwner = game.getBiggestArmyOwner();
         this.dice = game.isDiceThrown() == null
                 ? null
                 : new DiceDetails(game.isDiceThrown(), game.calculateDiceSumValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
@@ -139,6 +141,14 @@ public class GameDetails {
 
     public void setCurrentMove(Integer currentMove) {
         this.currentMove = currentMove;
+    }
+
+    public Integer getBiggestArmyOwner() {
+        return biggestArmyOwner;
+    }
+
+    public void setBiggestArmyOwner(Integer biggestArmyOwner) {
+        this.biggestArmyOwner = biggestArmyOwner;
     }
 
     public DiceDetails getDice() {

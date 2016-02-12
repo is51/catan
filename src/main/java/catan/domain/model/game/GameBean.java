@@ -90,6 +90,9 @@ public class GameBean {
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
 
+    @Column(name = "OWNER_BIGGEST_ARMY", unique = false)
+    private Integer biggestArmyOwner;
+
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
     private Boolean diceThrown;
 
@@ -293,6 +296,14 @@ public class GameBean {
 
     public void setCurrentMove(Integer currentMove) {
         this.currentMove = currentMove;
+    }
+
+    public Integer getBiggestArmyOwner() {
+        return biggestArmyOwner;
+    }
+
+    public void setBiggestArmyOwner(Integer biggestArmyOwner) {
+        this.biggestArmyOwner = biggestArmyOwner;
     }
 
     public Boolean isDiceThrown() {
@@ -526,6 +537,8 @@ public class GameBean {
                 "\t\tinitialBuildingsSet: " + initialBuildingsSet +
                 "\n" +
                 "\t\tcurrentMove: " + currentMove +
+                "\n" +
+                "\t\tbiggestArmyOwner: " + biggestArmyOwner +
                 "\n" +
                 "\t\tgameUsers: " + sb.toString() +
                 "\n" +

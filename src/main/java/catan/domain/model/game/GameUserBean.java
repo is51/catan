@@ -11,7 +11,7 @@ public class GameUserBean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "GAME_USER_ID", unique = true, nullable = false)
-    private int gameUserId;
+    private Integer gameUserId;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false, updatable = false)
@@ -82,11 +82,11 @@ public class GameUserBean {
         this.developmentCardsReadyForUsing = new DevelopmentCards(0, 0, 0, 0, 0);
     }
 
-    public int getGameUserId() {
+    public Integer getGameUserId() {
         return gameUserId;
     }
 
-    public void setGameUserId(int gameUserId) {
+    public void setGameUserId(Integer gameUserId) {
         this.gameUserId = gameUserId;
     }
 
