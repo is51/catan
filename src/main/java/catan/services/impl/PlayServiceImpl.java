@@ -67,7 +67,7 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
-        log.debug("Start process action {} " + (params != null && !params.isEmpty() ? "with params " + params : "without params ") + "by {} for game with id: {}", action, user, gameId);
+        log.debug("Start process action {} " + (params != null && !params.isEmpty() ? "with params " + params : "without params") + " by {} for game with id: {}", action, user, gameId);
         Map<String, String> returnedParams = new HashMap<String, String>();
 
         validateUserNotEmpty(user);
