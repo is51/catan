@@ -34,7 +34,7 @@ angular.module('catan')
                     });
 
                     scope.accept = function() {
-                        PlayService.tradeAccept(scope.game).then(function() {
+                        PlayService.tradeAccept(scope.game, scope.offerId).then(function() {
                             ModalWindowService.hide(MODAL_WINDOW_ID);
                             GameService.refresh(scope.game);
                         }, function(response) {
@@ -47,7 +47,7 @@ angular.module('catan')
                     };
 
                     scope.decline = function() {
-                        PlayService.tradeDecline(scope.game).then(function() {
+                        PlayService.tradeDecline(scope.game, scope.offerId).then(function() {
                             ModalWindowService.hide(MODAL_WINDOW_ID);
                             GameService.refresh(scope.game);
                         }, function(response) {
