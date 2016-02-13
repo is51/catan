@@ -276,6 +276,10 @@ public class Scenario {
         return new GameUserValidator(this, moveOrder);
     }
 
+    public GameDetailsValidator game() {
+        return new GameDetailsValidator(this);
+    }
+
     public DiceValidator dice() {
         return new DiceValidator(this);
     }
