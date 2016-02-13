@@ -19,6 +19,7 @@ public class RandomUtilMock extends RandomUtil {
     private Map<Coordinates, Integer> hexDiceNumbersToGenerate = new HashMap<Coordinates, Integer>();
     private List<DevelopmentCard> developmentCardsToGenerate = new LinkedList<DevelopmentCard>();
     private List<HexType> stolenResourcesToGenerate = new LinkedList<HexType>();
+    private List<Integer> offerIdsToGenerate = new LinkedList<Integer>();
 
     public void resetMock(){
         privateCodesToGenerate = new LinkedList<String>();
@@ -58,14 +59,21 @@ public class RandomUtilMock extends RandomUtil {
         stolenResourcesToGenerate.add(resource);
     }
 
+    public void setNextOfferId(int offerId) {
+        offerIdsToGenerate.add(offerId);
+    }
+
+    @Override
     public String generateRandomPrivateCode(int numberOfDigits) {
         return privateCodesToGenerate.size() > 0 ? privateCodesToGenerate.remove(0) : super.generateRandomPrivateCode(numberOfDigits);
     }
 
+    @Override
     public Integer pullRandomMoveOrder(List<Integer> moveOrderSequence) {
         return moveOrdersToGenerate.size() > 0 ? moveOrdersToGenerate.remove(0) : super.pullRandomMoveOrder(moveOrderSequence);
     }
 
+    @Override
     public HexType pullRandomHexType(int x, int y, List<HexType> possibleHexTypes) {
         Coordinates coordinatesKey = new Coordinates(x, y);
         return hexTypesToGenerate.get(coordinatesKey) != null
@@ -73,6 +81,7 @@ public class RandomUtilMock extends RandomUtil {
                 : super.pullRandomHexType(x, y, possibleHexTypes);
     }
 
+    @Override
     public Integer pullRandomHexDiceNumber(int x, int y, List<Integer> possibleDiceNumbers) {
         Coordinates coordinatesKey = new Coordinates(x, y);
         return hexDiceNumbersToGenerate.get(coordinatesKey) != null
@@ -80,10 +89,12 @@ public class RandomUtilMock extends RandomUtil {
                 : super.pullRandomHexDiceNumber(x, y, possibleDiceNumbers);
     }
 
+    @Override
     public Integer getRandomDiceNumber() {
         return diceNumbersToGenerate.size() > 0 ? diceNumbersToGenerate.remove(0) : super.getRandomDiceNumber();
     }
 
+    @Override
     public DevelopmentCard pullRandomDevelopmentCard(List<DevelopmentCard> availableDevCards) {
         return developmentCardsToGenerate.size() > 0 ? developmentCardsToGenerate.remove(0) : super.pullRandomDevelopmentCard(availableDevCards);
 
@@ -92,5 +103,10 @@ public class RandomUtilMock extends RandomUtil {
     @Override
     public HexType getRandomUsersResource(Resources userResources) {
         return stolenResourcesToGenerate.size() > 0 ? stolenResourcesToGenerate.remove(0) : super.getRandomUsersResource(userResources);
+    }
+
+    @Override
+    public Integer generateRandomOfferId(int limit) {
+        return offerIdsToGenerate.size() > 0 ? offerIdsToGenerate.remove(0) : super.generateRandomOfferId(limit);
     }
 }

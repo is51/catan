@@ -159,20 +159,20 @@ public abstract class PlayTestUtil extends GameTestUtil {
                 .post(TRADE_PROPOSE);
     }
 
-    public static Response tradeAccept(String token, int gameId) {
+    public static Response tradeAccept(String token, int gameId, int offerId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "gameId", gameId)
+                .parameters("token", token, "gameId", gameId, "offerId", offerId)
                 .when()
                 .post(TRADE_ACCEPT);
     }
 
-    public static Response tradeDecline(String token, int gameId) {
+    public static Response tradeDecline(String token, int gameId, int offerId) {
         return given()
                 .port(SERVER_PORT)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("token", token, "gameId", gameId)
+                .parameters("token", token, "gameId", gameId, "offerId", offerId)
                 .when()
                 .post(TRADE_DECLINE);
     }

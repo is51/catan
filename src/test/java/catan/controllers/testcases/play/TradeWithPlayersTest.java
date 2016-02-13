@@ -13,8 +13,14 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static catan.domain.model.dashboard.types.HexType.*;
+import static catan.domain.model.dashboard.types.HexType.BRICK;
+import static catan.domain.model.dashboard.types.HexType.EMPTY;
+import static catan.domain.model.dashboard.types.HexType.SHEEP;
+import static catan.domain.model.dashboard.types.HexType.STONE;
+import static catan.domain.model.dashboard.types.HexType.WHEAT;
+import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
@@ -36,6 +42,8 @@ public class TradeWithPlayersTest extends PlayTestUtil {
     private RandomUtil randomUtil;
 
     private Scenario scenario;
+    public static final int OFFER_ID = 555;
+    public static final int INVALID_OFFER_ID = 21;
 
     @Before
     public void setup() {
@@ -132,21 +140,22 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
 
                 .getGameDetails(2)
-                .gameUser(2).hasAvailableAction("TRADE_REPLY")
+                .gameUser(2).hasAvailableAction("TRADE_REPLY").withParameters("offerId=" + OFFER_ID)
 
-                .TRADE_DECLINE(2).successfully()
+                .TRADE_DECLINE(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(2)
                 .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(2).doesntHaveAvailableAction("TRADE_REPLY")
 
                 .getGameDetails(3)
-                .gameUser(3).hasAvailableAction("TRADE_REPLY")
+                .gameUser(3).hasAvailableAction("TRADE_REPLY").withParameters("offerId=" + OFFER_ID)
 
-                .TRADE_DECLINE(3).successfully()
+                .TRADE_DECLINE(3).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(3)
                 .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
@@ -159,9 +168,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
-                .TRADE_ACCEPT(2).successfully()
-                .TRADE_DECLINE(3).successfully();
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
+                .TRADE_DECLINE(3).withOfferId(OFFER_ID).successfully();
     }
 
     @Test
@@ -169,7 +179,7 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
-                .TRADE_DECLINE(3).failsWithError("ERROR");
+                .TRADE_DECLINE(3).withOfferId(OFFER_ID).failsWithError("ERROR");
     }
 
     @Test
@@ -177,11 +187,12 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
-                .TRADE_DECLINE(2).successfully()
-                .TRADE_DECLINE(2).failsWithError("ERROR")
-                .TRADE_DECLINE(3).successfully()
-                .TRADE_DECLINE(3).failsWithError("ERROR");
+                .TRADE_DECLINE(2).withOfferId(OFFER_ID).successfully()
+                .TRADE_DECLINE(2).withOfferId(OFFER_ID).failsWithError("ERROR")
+                .TRADE_DECLINE(3).withOfferId(OFFER_ID).successfully()
+                .TRADE_DECLINE(3).withOfferId(OFFER_ID).failsWithError("ERROR");
     }
 
     @Test
@@ -189,9 +200,20 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
-                .TRADE_ACCEPT(2).successfully()
-                .TRADE_DECLINE(2).failsWithError("ERROR");
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
+                .TRADE_DECLINE(2).withOfferId(OFFER_ID).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_fail_trade_decline_if_invalid_offer_id_sent() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
+                .nextOfferIds(singletonList(OFFER_ID))
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_DECLINE(2).withOfferId(INVALID_OFFER_ID).failsWithError("OFFER_IS_NOT_ACTIVE");
     }
 
     @Test
@@ -199,9 +221,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
-                .TRADE_DECLINE(1).failsWithError("ERROR")
-                .TRADE_ACCEPT(2).successfully();
+                .TRADE_DECLINE(1).withOfferId(OFFER_ID).failsWithError("ERROR")
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully();
     }
 
     @Test
@@ -209,9 +232,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
-                .TRADE_ACCEPT(2).successfully()
-                .TRADE_DECLINE(1).failsWithError("ERROR");
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
+                .TRADE_DECLINE(1).withOfferId(OFFER_ID).failsWithError("ERROR");
     }
 
     @Test
@@ -219,8 +243,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
-                .TRADE_DECLINE(2).successfully();
+                .TRADE_DECLINE(2).withOfferId(OFFER_ID).successfully();
     }
 
     @Test
@@ -228,8 +253,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(5, 5, 5, -1, 5).successfully()
-                .TRADE_DECLINE(2).successfully();
+                .TRADE_DECLINE(2).withOfferId(OFFER_ID).successfully();
     }
 
     @Test
@@ -237,7 +263,17 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
-                .TRADE_ACCEPT(3).failsWithError("ERROR");
+                .TRADE_ACCEPT(3).withOfferId(OFFER_ID).failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_fail_trade_accept_if_invalid_offer_id_sent() {
+        playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+
+                .nextOfferIds(singletonList(OFFER_ID))
+                .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
+                .TRADE_ACCEPT(2).withOfferId(INVALID_OFFER_ID).failsWithError("OFFER_IS_NOT_ACTIVE");
     }
 
     @Test
@@ -245,8 +281,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 5, 0, -1, -1).successfully()
-                .TRADE_ACCEPT(2).failsWithError("ERROR");
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).failsWithError("ERROR");
     }
 
     @Test
@@ -254,8 +291,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
-                .TRADE_ACCEPT(1).failsWithError("ERROR");
+                .TRADE_ACCEPT(1).withOfferId(OFFER_ID).failsWithError("ERROR");
     }
 
     @Test
@@ -263,9 +301,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
-                .TRADE_ACCEPT(2).successfully()
-                .TRADE_ACCEPT(2).failsWithError("ERROR");
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).failsWithError("ERROR");
     }
 
     @Test
@@ -273,9 +312,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, -1).successfully()
-                .TRADE_ACCEPT(2).successfully()
-                .TRADE_ACCEPT(3).failsWithError("OFFER_ALREADY_ACCEPTED");
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
+                .TRADE_ACCEPT(3).withOfferId(OFFER_ID).failsWithError("OFFER_ALREADY_ACCEPTED");
     }
 
     @Test
@@ -284,8 +324,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
-                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -1, 0)
@@ -300,8 +341,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -2, 0).successfully()
-                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -2, 0)
@@ -316,8 +358,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -2, -1).successfully()
-                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -2, -1)
@@ -332,8 +375,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 2, 0, -3, -1).successfully()
-                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 2, 0, -3, -1)
@@ -348,8 +392,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 2, 1, -3, -1).successfully()
-                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 2, 1, -3, -1)
@@ -364,8 +409,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 2, 0, 0, -1).successfully()
-                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 2, 0, 0, -1)
@@ -380,8 +426,9 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .startTrackResourcesQuantity()
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 1, 0, -1).successfully()
-                .TRADE_ACCEPT(2).successfully()
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 1, 1, 0, -1)
@@ -395,15 +442,17 @@ public class TradeWithPlayersTest extends PlayTestUtil {
         playPreparationStageAndGiveResources().nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
 
+                .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 0, 1, -1, 0)
-                .TRADE_ACCEPT(2)
-                .TRADE_DECLINE(3)
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID)
+                .TRADE_DECLINE(3).withOfferId(OFFER_ID)
 
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
                 .gameUser(1).hasAvailableAction("BUY_CARD")
                 .gameUser(1).hasAvailableAction("END_TURN")
 
+                .nextOfferIds(singletonList(OFFER_ID + 1))
                 .TRADE_PROPOSE(1).withResources(0, 0, 1, -1, 0)
 
                 .getGameDetails(1)
@@ -411,8 +460,8 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .gameUser(1).doesntHaveAvailableAction("BUY_CARD")
                 .gameUser(1).doesntHaveAvailableAction("END_TURN")
 
-                .TRADE_ACCEPT(2)
-                .TRADE_DECLINE(3)
+                .TRADE_ACCEPT(2).withOfferId(OFFER_ID + 1)
+                .TRADE_DECLINE(3).withOfferId(OFFER_ID + 1)
 
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")

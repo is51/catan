@@ -17,10 +17,16 @@ ct-trade-reply-panel .btn.decline {
     left: 17px;
 }
 
-ct-trade-reply-panel .btn.accept {
+ct-trade-reply-panel .btn.accept,
+ct-trade-reply-panel .no-longer-active {
     position: absolute;
     bottom: 15px;
     right: 17px;
+}
+
+ct-trade-reply-panel .no-longer-active {
+    padding: 7px;
+    color: #d55;
 }
 
 ct-trade-reply-panel .title {
