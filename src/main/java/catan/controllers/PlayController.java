@@ -256,11 +256,13 @@ public class PlayController {
             method = POST,
             produces = APPLICATION_JSON_VALUE)
     public void acceptTradeProposition(@RequestParam(value = "token", required = false) String token,
-                                       @RequestParam(value = "gameId", required = true) String gameId) throws AuthenticationException, GameException, PlayException {
+                                       @RequestParam("gameId") String gameId,
+                                       @RequestParam("offerId") String offerId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("tradeReply", "accept");
+        params.put("offerId", offerId);
 
         playService.processAction(GameUserActionCode.TRADE_REPLY, user, gameId, params);
     }
@@ -269,11 +271,13 @@ public class PlayController {
             method = POST,
             produces = APPLICATION_JSON_VALUE)
     public void declineTradeProposition(@RequestParam(value = "token", required = false) String token,
-                                        @RequestParam(value = "gameId", required = true) String gameId) throws AuthenticationException, GameException, PlayException {
+                                        @RequestParam("gameId") String gameId,
+                                        @RequestParam("offerId") String offerId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("tradeReply", "decline");
+        params.put("offerId", offerId);
 
         playService.processAction(GameUserActionCode.TRADE_REPLY, user, gameId, params);
     }

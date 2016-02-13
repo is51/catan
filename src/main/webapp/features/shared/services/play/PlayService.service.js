@@ -289,12 +289,12 @@ angular.module('catan')
                 return deferred.promise;
             };
 
-            PlayService.tradeAccept = function (game) {
-                return Remote.play.tradeAccept({gameId: game.getId()});
+            PlayService.tradeAccept = function (game, offerId) {
+                return Remote.play.tradeAccept({gameId: game.getId(), offerId: offerId});
             };
 
-            PlayService.tradeDecline = function (game) {
-                return Remote.play.tradeDecline({gameId: game.getId()});
+            PlayService.tradeDecline = function (game, offerId) {
+                return Remote.play.tradeDecline({gameId: game.getId(), offerId: offerId});
             };
 
 
