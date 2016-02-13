@@ -191,15 +191,11 @@ public class HexBean implements MapElement{
 
     @Override
     public String toString() {
-        return "HexBean{" +
+        return "Hex{" +
                 "id=" + id +
-                ", gameId=" + game.getGameId() +
-                ", coordinates=" + coordinates +
-                ", resourceType=" + resourceType +
+                ", " + (robbed ? "robbed" : "not robbed") +
                 ", dice=" + dice +
-                ", robbed=" + robbed +
-                ", nodes=" + nodes +
-                ", edges=" + edges +
-                '}';
+                ", type=" + resourceType +
+                ", x:y=(" + coordinates.getxCoordinate() + ":" + coordinates.getyCoordinate() + ")}";
     }
 }
