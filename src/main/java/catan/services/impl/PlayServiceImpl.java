@@ -17,7 +17,7 @@ import catan.domain.model.game.Resources;
 import catan.domain.model.game.TradeProposal;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
-import catan.domain.model.game.actions.TradingParams;
+import catan.domain.model.game.actions.ResourcesParams;
 import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
@@ -49,6 +49,7 @@ public class PlayServiceImpl implements PlayService {
 
     public static final String ERROR_CODE_ERROR = "ERROR";
     public static final String OFFER_ALREADY_ACCEPTED_ERROR = "OFFER_ALREADY_ACCEPTED";
+    public static final String OFFER_IS_NOT_ACTIVE_ERROR = "OFFER_IS_NOT_ACTIVE";
 
     //TODO: since we inject preparationStageUtil, mainStageUtil and playUtil to playService and also preparationStageUtil and mainStageUtil to playUtil , I think we have wrong architecture, we should think how to refactor it
     private GameDao gameDao;
@@ -67,7 +68,7 @@ public class PlayServiceImpl implements PlayService {
 
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId, Map<String, String> params) throws PlayException, GameException {
-        log.debug("Action {} going to be performed user {} at game with id {} and additional params {}", action, user, gameId, params);
+        log.debug("Start process action {} " + (params != null && !params.isEmpty() ? "with params " + params : "without params") + " by {} for game with id: {}", action, user, gameId);
         Map<String, String> returnedParams = new HashMap<String, String>();
 
         validateUserNotEmpty(user);
@@ -86,7 +87,7 @@ public class PlayServiceImpl implements PlayService {
 
         gameDao.updateGame(game);
 
-        log.debug("Action {} was successfully performed by user {}", action, gameUser);
+        log.debug("Finish process action {} by {}", action, gameUser);
         return returnedParams;
     }
 
@@ -139,7 +140,7 @@ public class PlayServiceImpl implements PlayService {
                 proposeTrade(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
             case TRADE_REPLY:
-                tradeReply(gameUser, game, usersResources, params.get("tradeReply"));
+                tradeReply(gameUser, game, usersResources, params.get("tradeReply"), params.get("offerId"));
                 break;
         }
     }
@@ -317,18 +318,17 @@ public class PlayServiceImpl implements PlayService {
     private void throwDice(GameBean game) {
         Integer diceFirstValue = randomUtil.getRandomDiceNumber();
         Integer diceSecondValue = randomUtil.getRandomDiceNumber();
-        log.info("First dice: " + diceFirstValue);
-        log.info("Second dice: " + diceSecondValue);
+        log.info("Current dice value is " + (diceFirstValue + diceSecondValue) + " (First dice: " + diceFirstValue + ", Second dice: " + diceSecondValue + ")");
 
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
-            log.debug("Current dice value is 7");
+            log.debug("Robber activity is started, checking if players should kick-off resources");
             checkIfPlayersShouldKickOffResources(game);
         } else {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
-            log.debug("Hexes with current dice value:" + hexesWithCurrentDiceValue.toString());
+            log.debug("Producing resources form hexes with current dice value:" + (hexesWithCurrentDiceValue.isEmpty() ? "" : "\n\t\t") + hexesWithCurrentDiceValue.toString());
             mainStageUtil.produceResourcesFromActiveDiceHexes(hexesWithCurrentDiceValue);
         }
     }
@@ -433,7 +433,7 @@ public class PlayServiceImpl implements PlayService {
 
     private void choosePlayerToRob(GameUserBean gameUser, GameBean game, Resources currentUsersResources, int gameUserId) throws PlayException, GameException {
         GameUserBean robbedGameUser = gameUtil.getGameUserById(gameUserId, game);
-        log.info("Robbing player: {}", robbedGameUser);
+        log.info("Robbing {}", robbedGameUser);
 
         validateGameUserCouldBeRobbed(gameUser, game, robbedGameUser);
 
@@ -515,12 +515,12 @@ public class PlayServiceImpl implements PlayService {
         int usersWheatQuantity = userResources.getWheat();
         int usersStoneQuantity = userResources.getStone();
 
-        TradingParams tradingParams = mainStageUtil.calculateTradingParams(gameUser, game);
-        int brickSellCoefficient = tradingParams.getBrick();
-        int woodSellCoefficient = tradingParams.getWood();
-        int sheepSellCoefficient = tradingParams.getSheep();
-        int wheatSellCoefficient = tradingParams.getWheat();
-        int stoneSellCoefficient = tradingParams.getStone();
+        ResourcesParams resourcesParams = mainStageUtil.calculateResourcesParams(gameUser, game);
+        int brickSellCoefficient = resourcesParams.getBrick();
+        int woodSellCoefficient = resourcesParams.getWood();
+        int sheepSellCoefficient = resourcesParams.getSheep();
+        int wheatSellCoefficient = resourcesParams.getWheat();
+        int stoneSellCoefficient = resourcesParams.getStone();
 
         int brickQuantityToTrade = toValidResourceQuantityToTradeInPort(brickString, usersBrickQuantity, brickSellCoefficient);
         int woodQuantityToTrade = toValidResourceQuantityToTradeInPort(woodString, usersWoodQuantity, woodSellCoefficient);
@@ -566,11 +566,14 @@ public class PlayServiceImpl implements PlayService {
             }
         }
 
-        game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone));
+        Integer newOfferId = randomUtil.generateRandomOfferId(10000);
+        game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone, newOfferId));
     }
 
-    private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply) throws PlayException, GameException {
+    private void tradeReply(GameUserBean gameUser, GameBean game, Resources userResources, String reply, String offerIdString) throws PlayException, GameException {
+        Integer offerId = toValidNumber(offerIdString);
         TradeProposal tradeProposal = game.getTradeProposal();
+        validateThereIsNoNewOffers(offerId, tradeProposal);
         gameUser.setAvailableTradeReply(false);
 
         if (reply.equals("decline")) {
@@ -591,7 +594,6 @@ public class PlayServiceImpl implements PlayService {
             int stone = tradeProposal.getStone();
             validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
 
-            tradeProposal.setFinishedTrade(true);
             Integer currentMove = game.getCurrentMove();
             for (GameUserBean currentGameUser : game.getGameUsers()) {
                 if (currentGameUser.getMoveOrder() == currentMove) {
@@ -602,11 +604,18 @@ public class PlayServiceImpl implements PlayService {
             userResources.addResources(-brick, -wood, -sheep, -wheat, -stone);
         }
 
-        tradeProposal.setFinishedTrade(true);
+        tradeProposal.setOfferId(null);
+    }
+
+    private void validateThereIsNoNewOffers(Integer offerId, TradeProposal tradeProposal) throws PlayException {
+        if (tradeProposal != null && tradeProposal.getOfferId() != null && !offerId.equals(tradeProposal.getOfferId())) {
+            log.error("Trade proposal is not active already.");
+            throw new PlayException(OFFER_IS_NOT_ACTIVE_ERROR);
+        }
     }
 
     private void validateOfferIsNotAcceptedBefore(TradeProposal tradeProposal) throws PlayException {
-        if (tradeProposal != null && tradeProposal.isFinishedTrade() != null && tradeProposal.isFinishedTrade()) {
+        if (tradeProposal != null && tradeProposal.getOfferId() == null) {
             log.error("Trade proposal already accepted");
             throw new PlayException(OFFER_ALREADY_ACCEPTED_ERROR);
         }
@@ -669,17 +678,17 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private int toValidResourceQuantity(String resourceQuantityString) throws PlayException {
+    private int toValidNumber(String numberString) throws PlayException {
         try {
-            return Integer.parseInt(resourceQuantityString);
+            return Integer.parseInt(numberString);
         } catch (Exception e) {
-            log.error("Cannot convert resourceQuantity to integer value: {}", resourceQuantityString);
+            log.error("Cannot convert number to integer value: {}", numberString);
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
 
     private int toValidResourceQuantityToKickOff(String resourceQuantityString, int usersResourceQuantity) throws PlayException {
-        int resourceQuantity = toValidResourceQuantity(resourceQuantityString);
+        int resourceQuantity = toValidNumber(resourceQuantityString);
 
         if (resourceQuantity < 0) {
             log.error("Resource quantity could not be below 0");
@@ -695,7 +704,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private int toValidResourceQuantityToTrade(String resourceQuantityString, int usersResourceQuantity) throws PlayException {
-        int resourceQuantity = toValidResourceQuantity(resourceQuantityString);
+        int resourceQuantity = toValidNumber(resourceQuantityString);
 
         if (-resourceQuantity > usersResourceQuantity) {
             log.error("User cannot sell more resources than he has: {} / {}", -resourceQuantity, usersResourceQuantity);

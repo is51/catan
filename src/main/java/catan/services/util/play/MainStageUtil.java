@@ -12,6 +12,7 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.ResourcesParams;
 import catan.domain.model.game.actions.TradingParams;
 import catan.domain.model.game.types.DevelopmentCard;
 import catan.domain.model.game.types.GameStatus;
@@ -53,24 +54,27 @@ public class MainStageUtil {
     public void produceResourcesFromActiveDiceHexes(List<HexBean> hexes) {
         for (HexBean hex : hexes) {
             if (hex.isRobbed()) {
+                log.debug("Ignoring for produce resources from robbed " + hex);
                 continue;
             }
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
-                Building<NodeBuiltType> building = node.getBuilding();
-                HexType resourceType = hex.getResourceType();
-                GameUserBean buildingOwner = building.getBuildingOwner();
-                Resources userResources = buildingOwner.getResources();
-
-                int currentResourceQuantity = userResources.quantityOf(resourceType);
-                int resourceQuantityToAdd = building.getBuilt().getResourceQuantityToAdd();
-
-                userResources.updateResourceQuantity(resourceType, currentResourceQuantity + resourceQuantityToAdd);
-
-                log.debug("GameUser " + buildingOwner.getUser().getUsername() + " with colorId: " + buildingOwner.getColorId() +
-                        " got " + resourceType + " of quantity " + resourceQuantityToAdd + " for " + building.getBuilt() +
-                        " at hex with coordinates " + hex.getCoordinates() + " and dice value " + hex.getDice());
+                produceResources(hex, node.getBuilding());
             }
         }
+    }
+
+    private void produceResources(HexBean sourceHex, Building<NodeBuiltType> consumingBuilding) {
+        HexType resourceType =  sourceHex.getResourceType();
+        GameUserBean buildingOwner = consumingBuilding.getBuildingOwner();
+        Resources userResources = buildingOwner.getResources();
+
+        int currentResourceQuantity = userResources.quantityOf(resourceType);
+        int resourceQuantityToAdd = consumingBuilding.getBuilt().getResourceQuantityToAdd();
+
+        userResources.updateResourceQuantity(resourceType, currentResourceQuantity + resourceQuantityToAdd);
+
+        log.debug("GameUser (name: " + buildingOwner.getUser().getUsername() + ", colorId: " + buildingOwner.getColorId() + ", id: " +buildingOwner.getGameUserId() + ")" +
+                " got " + resourceQuantityToAdd + " " +  resourceType + " for " + consumingBuilding.getBuilt() + " at " + sourceHex);
     }
 
     public void updateAvailableActionsForAllUsers(GameBean game) throws GameException {
@@ -148,8 +152,7 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && gameUser.isAvailableTradeReply()
                 && game.getTradeProposal() != null
-                && game.getTradeProposal().isFinishedTrade() != null
-                && !game.getTradeProposal().isFinishedTrade()) {
+                && game.getTradeProposal().getOfferId() != null) {
             TradingParams tradingParams = new TradingParams(game.getTradeProposal());
             actionsList.add(new Action(GameUserActionCode.TRADE_REPLY, tradingParams));
         }
@@ -254,8 +257,8 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()) {
-            TradingParams tradingParams = calculateTradingParams(gameUser, game);
-            actionsList.add(new Action(GameUserActionCode.TRADE_PORT, tradingParams));
+            ResourcesParams resourcesParams = calculateResourcesParams(gameUser, game);
+            actionsList.add(new Action(GameUserActionCode.TRADE_PORT, resourcesParams));
         }
     }
 
@@ -295,20 +298,16 @@ public class MainStageUtil {
     }
 
     private boolean noOneNeedsToKickOfResourcesOrTradeReply (GameBean game) {
-        boolean tradeNotFinished = game.getTradeProposal() != null && game.getTradeProposal().isFinishedTrade() != null && !game.getTradeProposal().isFinishedTrade();
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (gameUser.isKickingOffResourcesMandatory()) {
                 return false;
             }
-
-            if (tradeNotFinished && gameUser.isAvailableTradeReply()) {
-                return false;
-            }
         }
-        return true;
+
+        return game.getTradeProposal() == null || game.getTradeProposal().getOfferId() == null;
     }
 
-    public TradingParams calculateTradingParams(GameUserBean gameUser, GameBean game) {
+    public ResourcesParams calculateResourcesParams(GameUserBean gameUser, GameBean game) {
         int brick = 4;
         int wood = 4;
         int sheep = 4;
@@ -342,6 +341,6 @@ public class MainStageUtil {
             }
         }
 
-        return new TradingParams(brick, wood, sheep, wheat, stone);
+        return new ResourcesParams(brick, wood, sheep, wheat, stone);
     }
 }

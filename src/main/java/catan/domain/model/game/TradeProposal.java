@@ -21,19 +21,19 @@ public class TradeProposal {
     @Column(name = "TRADE_STONE")
     private int stone;
 
-    @Column(name = "TRADE_FINISHED")
-    private Boolean finishedTrade;
+    @Column(name = "TRADE_ID")
+    private Integer offerId;
 
     public TradeProposal() {
     }
 
-    public TradeProposal(int brick, int wood, int sheep, int wheat, int stone) {
+    public TradeProposal(int brick, int wood, int sheep, int wheat, int stone, Integer offerId) {
         this.brick = brick;
         this.wood = wood;
         this.sheep = sheep;
         this.wheat = wheat;
         this.stone = stone;
-        this.finishedTrade = false;
+        this.offerId = offerId;
     }
 
     public int getBrick() {
@@ -76,12 +76,12 @@ public class TradeProposal {
         this.stone = stone;
     }
 
-    public Boolean isFinishedTrade() {
-        return finishedTrade;
+    public Integer getOfferId() {
+        return offerId;
     }
 
-    public void setFinishedTrade(Boolean finishedTrade) {
-        this.finishedTrade = finishedTrade;
+    public void setOfferId(Integer offerId) {
+        this.offerId = offerId;
     }
 
     @Override

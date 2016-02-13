@@ -1,10 +1,8 @@
 package catan.services.util.random;
 
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.types.DevelopmentCard;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -21,7 +19,6 @@ public class RandomUtil {
         char firstTwoDigits = (char) (65 + rvg.randomValue() * 26);
         char secondTwoDigits = (char) (65 + rvg.randomValue() * 26);
         int remainingDigits = (int) (digits + rvg.randomValue() * digits * 9);
-
 
         return "" + firstTwoDigits + secondTwoDigits + remainingDigits;
     }
@@ -46,6 +43,10 @@ public class RandomUtil {
 
     public Integer getRandomDiceNumber() {
         return (int) (rvg.randomValue() * 6) + 1;
+    }
+
+    public Integer generateRandomOfferId(int limit) {
+        return (int) (rvg.randomValue() * limit) + 1;
     }
 
     public DevelopmentCard pullRandomDevelopmentCard(List<DevelopmentCard> availableDevCards) {
