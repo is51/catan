@@ -1,10 +1,12 @@
 'use strict';
 
 angular.module('catan')
-        .factory('DrawMapService', ['DrawMapHelper', function (DrawMapHelper) {
+        .factory('DrawMapService', ['DrawMapHelper', '$document', function (DrawMapHelper, $document) {
 
             var HEX_WIDTH = 78;
             var HEX_HEIGHT = 40;
+
+            var EDGE_WIDTH = 3;
 
             var DrawMapService = {};
 
@@ -14,13 +16,21 @@ angular.module('catan')
 
             DrawMapService.drawMap = function(canvas, game, map) {
 
-                canvas.empty();
-
                 var that = this;
+
+                canvas.clear();
+
                 var coords;
+                var actualSize = { //TODO: try to calculate actual image (map) size somehow more pretty
+                    xMin: null,
+                    xMax: null,
+                    yMin: null,
+                    yMax: null
+                };
 
                 map.hexes.forEach(function(hex) {
                     coords = DrawMapHelper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
+                    actualSize = updateActualSize(actualSize, coords.x, coords.y, HEX_HEIGHT, HEX_HEIGHT);
                     that.drawHex(canvas, coords, hex);
                 });
 
@@ -35,156 +45,170 @@ angular.module('catan')
                     that.drawNode(canvas, game, coords, node
                     );
                 });
+
+                setViewBox(canvas, actualSize);
             };
 
             DrawMapService.drawHex = function(canvas, coords, hex) {
-                var ROBBED_TEXT = angular.element('<span/>', {'class':'glyphicon glyphicon-fire'});
+                var group = canvas.g()
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr("class", "hex")
+                        .attr('hex-id', hex.hexId);
 
-                var elem = angular.element('<div/>')
-                        .attr('hex-id', hex.hexId)
-                        .addClass('hex')
-                        .css('left', coords.x + 'px')
-                        .css('top', coords.y + 'px')
-                        .appendTo(canvas);
+                // Background rectangle
+                group.rect(-HEX_WIDTH/2, -HEX_HEIGHT/2, HEX_WIDTH, HEX_HEIGHT, 4, 4)
+                        .attr("class", "hex-background")
+                        .attr('resource-type', hex.type.toLowerCase())
+                        .attr("transform", "scale(0.95, 0.9)");
 
-                var elemInner = angular.element('<div/>')
-                        .addClass('inner')
-                        .addClass(hex.type.toLowerCase())
-                        .css('width', HEX_WIDTH + 'px')
-                        .css('height', HEX_HEIGHT + 'px')
-                        .css('left', (0 - Math.round(HEX_WIDTH/2)) + 'px')
-                        .css('top', (0 - Math.round(HEX_HEIGHT/2)) + 'px')
-                        .appendTo(elem);
-
-                var elemInnerDice =  angular.element('<div/>')
-                        .addClass('dice')
-                        .css('width', HEX_WIDTH + 'px')
-                        .css('height', HEX_HEIGHT + 'px')
-                        .html(hex.dice)
-                        .appendTo(elemInner);
-
-                if (hex.robbed) {
-                    elemInnerDice.append(ROBBED_TEXT);
-                }
+                // Dice number + robber
+                var hexDiceText = ((hex.robbed) ? '(R)' : '') + ((hex.dice) ? hex.dice : '');
+                group.text(1, 5, hexDiceText)
+                        .attr("class", "dice")
+                        .attr("text-anchor", "middle");
             };
 
             DrawMapService.drawNode = function(canvas, game, coords, node) {
-                var elem = angular.element('<div/>')
-                        .attr('node-id', node.nodeId)
-                        .addClass('node')
-                        .css('left', coords.x)
-                        .css('top', coords.y)
-                        .appendTo(canvas);
+                var group = canvas.g()
+                        .attr("class", "node")
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr('node-id', node.nodeId);
 
                 if (node.port !== "NONE") {
-                    this.drawPort(elem, DrawMapHelper.getPortOffset(node), node.port);
+                    this.drawPort(group, DrawMapHelper.getPortOffset(node), node.port);
                 }
 
                 if (node.building) {
-
                     var colorId = game.getGameUser(node.building.ownerGameUserId).colorId;
 
                     if (node.building.built === "SETTLEMENT") {
-                        this.drawSettlement(elem, {x: 0, y: 0}, colorId);
+                        this.drawSettlement(group, {x: 0, y: 0}, colorId);
                     }
                     if (node.building.built === "CITY") {
-                        this.drawCity(elem, {x: 0, y: 0}, colorId);
+                        this.drawCity(group, {x: 0, y: 0}, colorId);
                     }
                 } else {
-                    this.drawEmptyNode(elem, {x: 0, y: 0});
+                    this.drawEmptyNode(group, {x: 0, y: 0});
                 }
             };
 
             DrawMapService.drawEmptyNode = function(canvas, coords) {
-                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
-                elem.root.addClass('none-node');
+                var group = canvas.g()
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr("class", "blank-node");
+
+                var NODE_BACKGROUND_RADIUS = 7;
+                group.circle(0, 0, NODE_BACKGROUND_RADIUS);
             };
 
             DrawMapService.drawSettlement = function(canvas, coords, colorId) {
-                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
-                elem.root.addClass('settlement');
-                elem.inner
-                        .addClass('color-' + colorId)
-                        .html("S");
+                var group = canvas.g()
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr("class", "settlement");
+
+                var SETTLEMENT_RADIUS = 9;
+                group.circle(0, 0, SETTLEMENT_RADIUS)
+                        .attr("player-color", colorId);
+
+                group.text(0, 4, "s")
+                        .attr("text-anchor", "middle");
             };
 
             DrawMapService.drawCity = function(canvas, coords, colorId) {
-                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
-                elem.root.addClass('city');
-                elem.inner
-                        .addClass('color-' + colorId)
-                        .html("C");
+                var group = canvas.g()
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr("class", "city");
+
+                var CITY_RADIUS = 11;
+                group.circle(0, 0, CITY_RADIUS)
+                        .attr("player-color", colorId);
+
+                group.text(0, 5, "C")
+                        .attr("text-anchor", "middle");
             };
 
             DrawMapService.drawPort = function(canvas, offset, type) {
-                var PORT_TEXT = angular.element('<span/>', {'class':'glyphicon glyphicon-plane'});
+                var PORT_DISTANCE = 12;
+                var group = canvas.g()
+                        .attr("transform", "translate(" + offset.x * PORT_DISTANCE + "," + offset.y * PORT_DISTANCE + ")")
+                        .attr("class", "port");
 
-                var root = angular.element('<div/>')
-                        .addClass('port')
-                        .appendTo(canvas);
-
-                if (offset.x !== 0) {
-                    root.addClass( (offset.x === 1) ? 'offset-right' : 'offset-left' );
-                }
-
-                if (offset.y !== 0) {
-                    root.addClass( (offset.y === 1) ? 'offset-bottom' : 'offset-top' );
-                }
-
-                var inner = angular.element('<div/>')
-                        .addClass('inner')
-                        .addClass(type.toLowerCase() + '-color')
-                        .html(PORT_TEXT)
-                        .appendTo(root);
+                group.path("M0 -6 L-5 3 L5 3 Z")
+                        .attr("resource-type", type.toLowerCase());
             };
 
             DrawMapService.drawEdge = function(canvas, game, coords, edge) {
-                var elem = angular.element('<div/>')
-                        .attr('edge-id', edge.edgeId)
-                        .addClass('edge')
-                        .css('left', coords.x)
-                        .css('top', coords.y)
-                        .appendTo(canvas);
-
-                var orientation = (edge.orientation === "VERTICAL") ? 'vertical' : 'horizontal';
+                var group = canvas.g()
+                        .attr("class", "edge")
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr('edge-id', edge.edgeId);
 
                 if (edge.building) {
                     var colorId = game.getGameUser(edge.building.ownerGameUserId).colorId;
-                    this.drawRoad(elem, {x: 0, y: 0}, orientation, colorId);
+                    this.drawRoad(group, {x: 0, y: 0}, edge.orientation, colorId);
                 } else {
-                    this.drawEmptyEdge(elem, {x: 0, y: 0}, orientation);
+                    this.drawEmptyEdge(group, {x: 0, y: 0}, edge.orientation);
                 }
             };
 
             DrawMapService.drawEmptyEdge = function (canvas, coords, orientation) {
-                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
-                elem.root
-                        .addClass('none-edge')
-                        .addClass(orientation);
+                var group = canvas.g()
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr("class", "blank-edge");
+
+                if (orientation === "VERTICAL") {
+                    group.rect(-EDGE_WIDTH, -HEX_HEIGHT/2, 2*EDGE_WIDTH, HEX_HEIGHT);
+                } else {
+                    group.rect(-HEX_WIDTH/4, -EDGE_WIDTH, HEX_WIDTH/2, 2*EDGE_WIDTH);
+                }
             };
 
             DrawMapService.drawRoad = function (canvas, coords, orientation, colorId) {
-                var elem = this.createBlankTemplateOfBuilding(canvas, coords);
-                elem.root
-                        .addClass('road')
-                        .addClass(orientation);
-                elem.inner
-                        .addClass('color-' + colorId);
-            };
+                var group = canvas.g()
+                        .attr("transform", "translate(" + coords.x + "," + coords.y + ")")
+                        .attr("class", "road");
 
-            DrawMapService.createBlankTemplateOfBuilding = function(canvas, coords) {
-                var root = angular.element('<div/>')
-                        .addClass('building')
-                        .css('left', coords.x)
-                        .css('top', coords.y)
-                        .appendTo(canvas);
-
-                var inner = angular.element('<div/>')
-                        .addClass('inner')
-                        .appendTo(root);
-
-                return {root: root, inner: inner};
+                if (orientation === "VERTICAL") {
+                    group.rect(-EDGE_WIDTH, -HEX_HEIGHT/2, 2*EDGE_WIDTH, HEX_HEIGHT)
+                            .attr("player-color", colorId);
+                } else {
+                    group.rect(-HEX_WIDTH/4, -EDGE_WIDTH, HEX_WIDTH/2, 2*EDGE_WIDTH)
+                            .attr("player-color", colorId);
+                }
             };
 
             return DrawMapService;
+
+            function setViewBox(canvas, actualSize) {
+                var additionalWidth = 2 * HEX_WIDTH;
+                var additionalHeight = 2.5 * HEX_HEIGHT;
+                var width = actualSize.xMax - actualSize.xMin + additionalWidth;
+                var height = actualSize.yMax - actualSize.yMin + additionalHeight;
+                var offsetX = actualSize.xMin - HEX_WIDTH;
+                var offsetY = actualSize.yMin - HEX_HEIGHT;
+                canvas.attr('viewBox', offsetX + ' ' + offsetY + ' ' + width + ' ' + height);
+            }
+
+            function updateActualSize(oldActualSize, x, y, w, h) {
+                var newActualSize = angular.copy(oldActualSize);
+                var xLeft = x - w / 2,
+                    xRight = x + w / 2,
+                    yTop = y - h / 2,
+                    yBottom = y + h / 2;
+
+                if (oldActualSize.xMin === null || xLeft < oldActualSize.xMin) {
+                    newActualSize.xMin = xLeft;
+                }
+                if (oldActualSize.xMax === null || xRight > oldActualSize.xMax) {
+                    newActualSize.xMax = xRight;
+                }
+                if (oldActualSize.yMin === null || yTop < oldActualSize.yMin) {
+                    newActualSize.yMin = yTop;
+                }
+                if (oldActualSize.yMax === null || yBottom > oldActualSize.yMax) {
+                    newActualSize.yMax = yBottom;
+                }
+
+                return newActualSize;
+            }
         }]);
