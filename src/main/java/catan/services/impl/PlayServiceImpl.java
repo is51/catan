@@ -311,23 +311,15 @@ public class PlayServiceImpl implements PlayService {
 
     private void updateBiggestArmyOwner(GameUserBean gameUser, GameBean game) {
         int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
-        if (totalUsedKnights < 3) {
-            return;
+        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, game)) {
+            game.setBiggestArmyOwner(gameUser.getGameUserId());
         }
+    }
 
+    private boolean gameUsersUsedKnightsIsTheBiggestArmy(int totalUsedKnights, GameBean game) {
         Integer biggestArmyOwnerId = game.getBiggestArmyOwner();
-        if (biggestArmyOwnerId != null) {
-            for (GameUserBean currentGameUser : game.getGameUsers()) {
-                if (!currentGameUser.getGameUserId().equals(biggestArmyOwnerId)) {
-                    continue;
-                }
-                if (currentGameUser.getAchievements().getTotalUsedKnights() >= totalUsedKnights) {
-                    return;
-                }
-                break;
-            }
-        }
-        game.setBiggestArmyOwner(gameUser.getGameUserId());
+        GameUserBean currentBiggestArmyOwner = game.takeGameUserById(biggestArmyOwnerId);
+        return currentBiggestArmyOwner == null || currentBiggestArmyOwner.getAchievements().getTotalUsedKnights() < totalUsedKnights;
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {

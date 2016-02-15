@@ -90,7 +90,7 @@ public class GameBean {
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
 
-    @Column(name = "OWNER_BIGGEST_ARMY", unique = false)
+    @Column(name = "OWNER_BIGGEST_ARMY_GAME_USER_ID", unique = false)
     private Integer biggestArmyOwner;
 
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
@@ -455,6 +455,15 @@ public class GameBean {
             return null;
         }
         return this.diceFirstValue + this.diceSecondValue;
+    }
+
+    public GameUserBean takeGameUserById(Integer gameUserId) {
+        for (GameUserBean gameUser : gameUsers) {
+            if (gameUser.getGameUserId().equals(gameUserId)) {
+                return gameUser;
+            }
+        }
+        return null;
     }
 
     public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
