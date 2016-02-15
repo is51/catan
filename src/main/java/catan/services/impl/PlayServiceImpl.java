@@ -306,6 +306,19 @@ public class PlayServiceImpl implements PlayService {
         int totalUsedKnightsNew = achievements.getTotalUsedKnights() + 1;
 
         achievements.setTotalUsedKnights(totalUsedKnightsNew);
+        updateBiggestArmyOwner(gameUser, game);
+    }
+
+    private void updateBiggestArmyOwner(GameUserBean gameUser, GameBean game) {
+        int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
+        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, game)) {
+            game.setBiggestArmyOwner(gameUser);
+        }
+    }
+
+    private boolean gameUsersUsedKnightsIsTheBiggestArmy(int totalUsedKnights, GameBean game) {
+        GameUserBean currentBiggestArmyOwner = game.getBiggestArmyOwner();
+        return currentBiggestArmyOwner == null || currentBiggestArmyOwner.getAchievements().getTotalUsedKnights() < totalUsedKnights;
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {

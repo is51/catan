@@ -52,9 +52,9 @@ public class PlayUtil {
     public void updateAchievements(GameBean game) throws GameException {
         for (GameUserBean gameUser : game.getGameUsers()) {
             if (game.getCurrentMove().equals(gameUser.getMoveOrder())) {
-                updateVictoryPoints(gameUser);
                 updateTotalDevCards(gameUser);
             }
+            updateVictoryPoints(gameUser, game);
             updateTotalResources(gameUser);
         }
     }
@@ -69,12 +69,13 @@ public class PlayUtil {
         gameUser.getAchievements().setTotalResources(totalResources);
     }
 
-    private void updateVictoryPoints(GameUserBean gameUser) throws GameException {
+    private void updateVictoryPoints(GameUserBean gameUser, GameBean game) throws GameException {
 
         int settlementsCount = gameUser.getBuildingsCount().getSettlements();
         int citiesCount = gameUser.getBuildingsCount().getCities();
+        int biggestArmyOwnerBonus = gameUser.equals(game.getBiggestArmyOwner()) ? 2 : 0;
 
-        gameUser.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2);
+        gameUser.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2 + biggestArmyOwnerBonus);
         //points =  settlementsCount + cityCount * 2 + ((isOwnerWay) ? 2 : 0 ) +  ((isOwnerArmy) ? 2 : 0 );
     }
 
