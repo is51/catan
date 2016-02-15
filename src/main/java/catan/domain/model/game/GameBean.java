@@ -90,8 +90,9 @@ public class GameBean {
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
 
-    @Column(name = "OWNER_BIGGEST_ARMY_GAME_USER_ID", unique = false)
-    private Integer biggestArmyOwner;
+    @ManyToOne
+    @JoinColumn(name = "OWNER_BIGGEST_ARMY_GAME_USER_ID")
+    private GameUserBean biggestArmyOwner;
 
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
     private Boolean diceThrown;
@@ -298,11 +299,11 @@ public class GameBean {
         this.currentMove = currentMove;
     }
 
-    public Integer getBiggestArmyOwner() {
+    public GameUserBean getBiggestArmyOwner() {
         return biggestArmyOwner;
     }
 
-    public void setBiggestArmyOwner(Integer biggestArmyOwner) {
+    public void setBiggestArmyOwner(GameUserBean biggestArmyOwner) {
         this.biggestArmyOwner = biggestArmyOwner;
     }
 

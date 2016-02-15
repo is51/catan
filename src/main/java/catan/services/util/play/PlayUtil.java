@@ -73,7 +73,7 @@ public class PlayUtil {
 
         int settlementsCount = gameUser.getBuildingsCount().getSettlements();
         int citiesCount = gameUser.getBuildingsCount().getCities();
-        int biggestArmyOwnerBonus = gameUser.getGameUserId().equals(game.getBiggestArmyOwner()) ? 2 : 0;
+        int biggestArmyOwnerBonus = gameUser.equals(game.getBiggestArmyOwner()) ? 2 : 0;
 
         gameUser.getAchievements().setDisplayVictoryPoints(settlementsCount + citiesCount * 2 + biggestArmyOwnerBonus);
         //points =  settlementsCount + cityCount * 2 + ((isOwnerWay) ? 2 : 0 ) +  ((isOwnerArmy) ? 2 : 0 );

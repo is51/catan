@@ -312,13 +312,12 @@ public class PlayServiceImpl implements PlayService {
     private void updateBiggestArmyOwner(GameUserBean gameUser, GameBean game) {
         int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
         if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, game)) {
-            game.setBiggestArmyOwner(gameUser.getGameUserId());
+            game.setBiggestArmyOwner(gameUser);
         }
     }
 
     private boolean gameUsersUsedKnightsIsTheBiggestArmy(int totalUsedKnights, GameBean game) {
-        Integer biggestArmyOwnerId = game.getBiggestArmyOwner();
-        GameUserBean currentBiggestArmyOwner = game.takeGameUserById(biggestArmyOwnerId);
+        GameUserBean currentBiggestArmyOwner = game.getBiggestArmyOwner();
         return currentBiggestArmyOwner == null || currentBiggestArmyOwner.getAchievements().getTotalUsedKnights() < totalUsedKnights;
     }
 

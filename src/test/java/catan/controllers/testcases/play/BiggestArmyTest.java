@@ -111,7 +111,7 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .getGameDetails(1)
                     .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
                     .gameUser(1).hasVictoryPoints(4)        //user GOT 2 VP for biggest army
-                    .game().hasBiggestArmyOwner(1);         //there is no biggest army owner in game
+                    .game().hasBiggestArmyOwner(1);         //user 1 is the biggest army owner
     }
 
     @Test

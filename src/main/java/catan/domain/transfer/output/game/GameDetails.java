@@ -40,7 +40,9 @@ public class GameDetails {
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.currentMove = game.getCurrentMove();
-        this.biggestArmyOwner = game.getBiggestArmyOwner();
+        this.biggestArmyOwner = game.getBiggestArmyOwner() == null
+                ? null
+                : game.getBiggestArmyOwner().getGameUserId();
         this.dice = game.isDiceThrown() == null
                 ? null
                 : new DiceDetails(game.isDiceThrown(), game.calculateDiceSumValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
