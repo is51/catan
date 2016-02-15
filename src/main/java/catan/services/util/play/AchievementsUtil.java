@@ -25,7 +25,7 @@ public class AchievementsUtil {
         updateLongestWayOwner(game);
     }
 
-    public void updateLongestWayLengthInCaseWayWasInterrupted(GameBean game, GameUserBean gameUser, NodeBean nodeToBuildOn) {
+    public void updateLongestWayLengthIfInterrupted(GameBean game, GameUserBean gameUser, NodeBean nodeToBuildOn) {
         GameUserBean gameUserToUpdateLongestWayLength = fetchGameUserWhoseWayWasInterrupted(nodeToBuildOn, gameUser);
         if (gameUserToUpdateLongestWayLength != null) {
             updateLongestWayLength(game, gameUserToUpdateLongestWayLength);

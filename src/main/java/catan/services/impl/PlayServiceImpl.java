@@ -9,7 +9,6 @@ import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
-import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -182,7 +181,7 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
         }
 
-        achievementsUtil.updateLongestWayLengthInCaseWayWasInterrupted(game, gameUser, nodeToBuildOn);
+        achievementsUtil.updateLongestWayLengthIfInterrupted(game, gameUser, nodeToBuildOn);
     }
 
     private void buildCity(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
