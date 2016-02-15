@@ -247,7 +247,8 @@ public class PlayServiceImpl implements PlayService {
 
     private void updateLongestWayOwner(GameBean game) {
         int maxLongestWayLength = 0;
-        GameUserBean gameUserOwnedLongestWay = null;
+        GameUserBean newLongestWayOwner = null;
+        GameUserBean currentLongestWayOwner = game.getLongestWayOwner();
         for (GameUserBean gameUser : game.getGameUsers()) {
             int longestWayLength = gameUser.getAchievements().getLongestWayLength();
             if (longestWayLength < 5) {
@@ -256,25 +257,18 @@ public class PlayServiceImpl implements PlayService {
 
             if (longestWayLength > maxLongestWayLength) {
                 maxLongestWayLength = longestWayLength;
-                gameUserOwnedLongestWay = gameUser;
+                newLongestWayOwner = gameUser;
                 continue;
             }
 
-            if (longestWayLength == maxLongestWayLength) {
-                Integer longestWayOwnerId = game.getLongestWayOwner();
-                if (gameUserOwnedLongestWay != null && gameUserOwnedLongestWay.getGameUserId() == longestWayOwnerId) {
-                    continue;
-                }
-                gameUserOwnedLongestWay = gameUser.getGameUserId() != longestWayOwnerId
+            if (longestWayLength == maxLongestWayLength && (newLongestWayOwner == null || !newLongestWayOwner.equals(currentLongestWayOwner))) {
+                newLongestWayOwner = !gameUser.equals(currentLongestWayOwner)
                         ? null
                         : gameUser;
             }
         }
 
-        Integer longestWayOwner = gameUserOwnedLongestWay == null
-                ? null
-                : gameUserOwnedLongestWay.getGameUserId();
-        game.setLongestWayOwner(longestWayOwner);
+        game.setLongestWayOwner(newLongestWayOwner);
     }
 
     private void buildCity(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {

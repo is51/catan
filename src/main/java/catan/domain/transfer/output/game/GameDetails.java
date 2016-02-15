@@ -20,8 +20,8 @@ public class GameDetails {
     private int maxPlayers;
     private int targetVictoryPoints;
     private Integer currentMove;
-    private Integer biggestArmyOwner;
-    private Integer longestWayOwner;
+    private Integer biggestArmyOwnerId;
+    private Integer longestWayOwnerId;
     private DiceDetails dice;
     private MapDetails map;
 
@@ -41,10 +41,12 @@ public class GameDetails {
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.currentMove = game.getCurrentMove();
-        this.biggestArmyOwner = game.getBiggestArmyOwner() == null
+        this.biggestArmyOwnerId = game.getBiggestArmyOwner() == null
                 ? null
                 : game.getBiggestArmyOwner().getGameUserId();
-        this.longestWayOwner = game.getLongestWayOwner();
+        this.longestWayOwnerId = game.getLongestWayOwner() == null
+                ? null
+                : game.getLongestWayOwner().getGameUserId();
         this.dice = game.isDiceThrown() == null
                 ? null
                 : new DiceDetails(game.isDiceThrown(), game.calculateDiceSumValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
@@ -147,20 +149,20 @@ public class GameDetails {
         this.currentMove = currentMove;
     }
 
-    public Integer getBiggestArmyOwner() {
-        return biggestArmyOwner;
+    public Integer getBiggestArmyOwnerId() {
+        return biggestArmyOwnerId;
     }
 
-    public void setBiggestArmyOwner(Integer biggestArmyOwner) {
-        this.biggestArmyOwner = biggestArmyOwner;
+    public void setBiggestArmyOwnerId(Integer biggestArmyOwnerId) {
+        this.biggestArmyOwnerId = biggestArmyOwnerId;
     }
 
-    public Integer getLongestWayOwner() {
-        return longestWayOwner;
+    public Integer getLongestWayOwnerId() {
+        return longestWayOwnerId;
     }
 
-    public void setLongestWayOwner(Integer longestWayOwner) {
-        this.longestWayOwner = longestWayOwner;
+    public void setLongestWayOwnerId(Integer longestWayOwnerId) {
+        this.longestWayOwnerId = longestWayOwnerId;
     }
 
     public DiceDetails getDice() {

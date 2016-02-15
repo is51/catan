@@ -94,8 +94,9 @@ public class GameBean {
     @JoinColumn(name = "OWNER_BIGGEST_ARMY_GAME_USER_ID")
     private GameUserBean biggestArmyOwner;
 
-    @Column(name = "OWNER_LONGEST_WAY", unique = false)
-    private Integer longestWayOwner;
+    @ManyToOne
+    @JoinColumn(name = "OWNER_LONGEST_WAY_GAME_USER_ID")
+    private GameUserBean longestWayOwner;
 
     @Column(name = "DICE_THROWN", unique = false, nullable = true)
     private Boolean diceThrown;
@@ -310,11 +311,11 @@ public class GameBean {
         this.biggestArmyOwner = biggestArmyOwner;
     }
 
-    public Integer getLongestWayOwner() {
+    public GameUserBean getLongestWayOwner() {
         return longestWayOwner;
     }
 
-    public void setLongestWayOwner(Integer longestWayOwner) {
+    public void setLongestWayOwner(GameUserBean longestWayOwner) {
         this.longestWayOwner = longestWayOwner;
     }
 

@@ -26,11 +26,11 @@ angular.module('catan')
                     };
 
                     scope.isBiggestArmy = function(gameUser) {
-                        return scope.game.biggestArmyOwner === gameUser.id;
+                        return scope.game.biggestArmyOwnerId === gameUser.id;
                     };
 
                     scope.isLongestWay = function(gameUser) {
-                        return scope.game.longestWayOwner === gameUser.id;
+                        return scope.game.longestWayOwnerId === gameUser.id;
                     };
 
                     function usersSortedByMoveOrderCurrentUserFirst(game) {
