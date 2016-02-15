@@ -90,6 +90,10 @@ public class GameBean {
     @Column(name = "CURRENT_MOVE", unique = false, nullable = true)
     private Integer currentMove;
 
+    @ManyToOne
+    @JoinColumn(name = "OWNER_BIGGEST_ARMY_GAME_USER_ID")
+    private GameUserBean biggestArmyOwner;
+
     @Column(name = "OWNER_LONGEST_WAY", unique = false)
     private Integer longestWayOwner;
 
@@ -298,6 +302,14 @@ public class GameBean {
         this.currentMove = currentMove;
     }
 
+    public GameUserBean getBiggestArmyOwner() {
+        return biggestArmyOwner;
+    }
+
+    public void setBiggestArmyOwner(GameUserBean biggestArmyOwner) {
+        this.biggestArmyOwner = biggestArmyOwner;
+    }
+
     public Integer getLongestWayOwner() {
         return longestWayOwner;
     }
@@ -457,6 +469,15 @@ public class GameBean {
         return this.diceFirstValue + this.diceSecondValue;
     }
 
+    public GameUserBean takeGameUserById(Integer gameUserId) {
+        for (GameUserBean gameUser : gameUsers) {
+            if (gameUser.getGameUserId().equals(gameUserId)) {
+                return gameUser;
+            }
+        }
+        return null;
+    }
+
     public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 
@@ -537,6 +558,8 @@ public class GameBean {
                 "\t\tinitialBuildingsSet: " + initialBuildingsSet +
                 "\n" +
                 "\t\tcurrentMove: " + currentMove +
+                "\n" +
+                "\t\tbiggestArmyOwner: " + biggestArmyOwner +
                 "\n" +
                 "\t\tlongestWayOwner: " + longestWayOwner +
                 "\n" +

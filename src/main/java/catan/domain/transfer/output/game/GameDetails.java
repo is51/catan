@@ -20,6 +20,7 @@ public class GameDetails {
     private int maxPlayers;
     private int targetVictoryPoints;
     private Integer currentMove;
+    private Integer biggestArmyOwner;
     private Integer longestWayOwner;
     private DiceDetails dice;
     private MapDetails map;
@@ -40,6 +41,9 @@ public class GameDetails {
         this.maxPlayers = game.getMaxPlayers();
         this.targetVictoryPoints = game.getTargetVictoryPoints();
         this.currentMove = game.getCurrentMove();
+        this.biggestArmyOwner = game.getBiggestArmyOwner() == null
+                ? null
+                : game.getBiggestArmyOwner().getGameUserId();
         this.longestWayOwner = game.getLongestWayOwner();
         this.dice = game.isDiceThrown() == null
                 ? null
@@ -141,6 +145,14 @@ public class GameDetails {
 
     public void setCurrentMove(Integer currentMove) {
         this.currentMove = currentMove;
+    }
+
+    public Integer getBiggestArmyOwner() {
+        return biggestArmyOwner;
+    }
+
+    public void setBiggestArmyOwner(Integer biggestArmyOwner) {
+        this.biggestArmyOwner = biggestArmyOwner;
     }
 
     public Integer getLongestWayOwner() {
