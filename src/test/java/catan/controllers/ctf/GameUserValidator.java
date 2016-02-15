@@ -59,6 +59,11 @@ public class GameUserValidator {
         return scenario;
     }
 
+    public Scenario hasVictoryPoints(int victoryPoints) {
+        check("achievements.displayVictoryPoints", is(victoryPoints));
+        return scenario;
+    }
+
     public Scenario resourcesQuantityChangedBy(int brickDiff, int woodDiff, int sheepDiff, int wheatDiff, int stoneDiff) {
         assertTrue("To check that resources quantity was changed, you should call 'startTrackResourcesQuantity()' method " +
                 "when you want to start tracking of resource quantity and  call 'stopTrackResourcesQuantity()' method" +
