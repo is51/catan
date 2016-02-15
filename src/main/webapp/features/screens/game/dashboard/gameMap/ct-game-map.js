@@ -7,6 +7,8 @@ angular.module('catan')
             var HEXES_HIGHLIGHT_DELAY = 3000;
             var HEXES_HIGHLIGHT_CLASS = "highlighted";
 
+            var CANVAS_PRESERVE_ASPECT_RATIO = "xMidYMid meet";
+
             return {
                 restrict: 'E',
                 scope: {
@@ -14,9 +16,10 @@ angular.module('catan')
                 },
                 link: function(scope, element) {
 
-                    var canvas = angular.element('<div/>')
-                            .addClass('canvas')
-                            .appendTo(element);
+                    var svg = Snap._.make("svg", element[0]);
+                    var canvas = Snap(svg)
+                            .attr('preserveAspectRatio', CANVAS_PRESERVE_ASPECT_RATIO);
+
 
                     // TODO: $watchCollection is slowly. Probably some updateDate should be created and watched
 
@@ -28,7 +31,7 @@ angular.module('catan')
 
                     scope.$watch("game.dice", function(newDice, oldDice) {
                         if (oldDice !== undefined && oldDice.thrown === false && newDice.thrown === true) {
-                            highlightHexes(canvas, scope.game.map, newDice.value);
+                            highlightHexes(element, scope.game.map, newDice.value);
                         }
                     });
 
@@ -61,10 +64,10 @@ angular.module('catan')
                     elementsToHighlight = elementsToHighlight.add(DrawMapService.HEX_SELECTOR + "[hex-id="+hex.hexId+"]", canvas);
                 });
 
-                elementsToHighlight.addClass(HEXES_HIGHLIGHT_CLASS);
+                elementsToHighlight.attr("class", "hex " + HEXES_HIGHLIGHT_CLASS);
 
                 $timeout(function() {
-                    elementsToHighlight.removeClass(HEXES_HIGHLIGHT_CLASS);
+                    elementsToHighlight.attr("class", "hex");
                 }, HEXES_HIGHLIGHT_DELAY);
             }
 

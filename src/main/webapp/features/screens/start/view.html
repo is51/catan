@@ -1,8 +1,8 @@
+<div class="out-of-game">
 
+    <div ng-if="User.isPending()" style="font-size: 2rem; color: lightgrey;" class="row">loading...</div>
 
-<div ng-if="User.isPending()" style="font-size: 2rem; color: lightgrey;" class="row">loading...</div>
-
-<div ng-if="User.isAuthorized()" style="font-size: 2rem;" class="row">
+    <div ng-if="User.isAuthorized()" style="font-size: 2rem;" class="row">
 
     <span class="col-xs-12">
 
@@ -21,10 +21,10 @@
 
     </span>
 
-</div>
+    </div>
 
 
-<div ng-if="User.isNotAuthorized()" class="row">
+    <div ng-if="User.isNotAuthorized()" class="row">
     <span class="col-xs-5">
         <a ui-sref="login" class="btn btn-default btn-block btn-lg">Log In</a>
     </span>
@@ -34,10 +34,10 @@
     <span class="col-xs-3">
         <a ui-sref="register" class="btn btn-default btn-block btn-lg">Sign Up</a>
     </span>
-</div>
+    </div>
 
 
-<div style="padding-top: 100px;" class="row">
+    <div style="padding-top: 100px;" class="row">
     <span class="col-xs-4" ng-class="{'col-xs-offset-2': !User.isAuthorized()}">
         <a ui-sref="createGame" class="btn btn-default btn-lg btn-block btn-sq">New Game</a>
     </span>
@@ -47,5 +47,6 @@
     <span class="col-xs-4">
         <a ui-sref="joinGame" class="btn btn-default btn-lg btn-block btn-sq">Join Game</a>
     </span>
-</div>
+    </div>
 
+</div>
