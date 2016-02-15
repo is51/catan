@@ -67,7 +67,7 @@ angular.module('catan')
                 elementsToHighlight.attr("class", "hex " + HEXES_HIGHLIGHT_CLASS);
 
                 $timeout(function() {
-                    elementsToHighlight.attr("hex");
+                    elementsToHighlight.attr("class", "hex");
                 }, HEXES_HIGHLIGHT_DELAY);
             }
 
