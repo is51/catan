@@ -60,17 +60,17 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(0)
-                    .gameUser(1).hasVictoryPoints(2)
-                    .game().doesNotHaveBiggestArmyOwner()
+                    .gameUser(1).hasUsedKnights(0)          //user 1 has no used knights
+                    .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
+                    .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
 
                 .USE_CARD_KNIGHT(1)                         //got first used knight
                 .MOVE_ROBBER(1).toCoordinates(1, 1)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(1)
-                    .gameUser(1).hasVictoryPoints(2)
-                    .game().doesNotHaveBiggestArmyOwner()
+                    .gameUser(1).hasUsedKnights(1)          //user 1 has 1 used knight
+                    .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
+                    .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
 
                 .END_TURN(1)
 
@@ -89,9 +89,9 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .MOVE_ROBBER(1).toCoordinates(2, 0)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(2)
-                    .gameUser(1).hasVictoryPoints(2)
-                    .game().doesNotHaveBiggestArmyOwner()
+                    .gameUser(1).hasUsedKnights(2)          //user 1 has 2 used knights
+                    .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
+                    .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
 
                 .END_TURN(1)
 
@@ -109,9 +109,9 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .USE_CARD_KNIGHT(1)                         //got third used knight
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(3)
-                    .gameUser(1).hasVictoryPoints(4)
-                    .game().hasBiggestArmyOwner(1);
+                    .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
+                    .gameUser(1).hasVictoryPoints(4)        //user GOT 2 VP for biggest army
+                    .game().hasBiggestArmyOwner(1);         //there is no biggest army owner in game
     }
 
     @Test
@@ -158,9 +158,9 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .MOVE_ROBBER(1).toCoordinates(1, 1)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(3)
-                    .gameUser(1).hasVictoryPoints(4)
-                    .game().hasBiggestArmyOwner(1)
+                    .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
+                    .gameUser(1).hasVictoryPoints(4)        //user 1 GOT 2 VP for biggest army
+                    .game().hasBiggestArmyOwner(1)          //user 1 is the biggest army owner
 
                 .END_TURN(1)
 
@@ -171,9 +171,9 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .MOVE_ROBBER(2).toCoordinates(2, 0)
 
                 .getGameDetails(2)
-                    .gameUser(2).hasUsedKnights(3)
-                    .gameUser(2).hasVictoryPoints(2)
-                    .game().hasBiggestArmyOwner(1)
+                    .gameUser(2).hasUsedKnights(3)          //user 2 has 3 used knights
+                    .gameUser(2).hasVictoryPoints(2)        //user 2 did not get 2 VP for biggest army
+                    .game().hasBiggestArmyOwner(1)          //user 1 is the biggest army owner
 
                 .END_TURN(2)
 
@@ -191,18 +191,20 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .USE_CARD_KNIGHT(2)                         //got forth used knight by user 2
 
                 .getGameDetails(2)
-                    .gameUser(2).hasUsedKnights(4)
-                    .gameUser(2).hasVictoryPoints(4)
-                    .gameUser(1).hasUsedKnights(3)
-                    .gameUser(1).hasVictoryPoints(2)
-                    .game().hasBiggestArmyOwner(2);
+                    .gameUser(2).hasUsedKnights(4)          //user 2 has 4 used knights
+                    .gameUser(2).hasVictoryPoints(4)        //user 2 GOT 2 VP for biggest army
+                    .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
+                    .gameUser(1).hasVictoryPoints(2)        //user 1 LOST 2 VP for biggest army
+                    .game().hasBiggestArmyOwner(2);         //user 2 is the biggest army owner
     }
 
-    private Scenario giveResourcesToPlayerForDevCardBuying(int moveOrder, int quantity) {
+    private Scenario giveResourcesAndBuyKnightsAndPassCycle(int moveOrder, int quantity) {
         for (int i = 0; i < quantity; i++) {
             scenario
                     .nextRandomDiceValues(asList(moveOrder, moveOrder))
                     .THROW_DICE(moveOrder)
+                    .nextRandomDevelopmentCards(asList(KNIGHT))
+                    .BUY_CARD(moveOrder)
                     .END_TURN(moveOrder)
 
                     .nextRandomDiceValues(asList(6, 6))
@@ -217,40 +219,7 @@ public class BiggestArmyTest extends PlayTestUtil {
     }
 
     private Scenario startNewGameAndPlayPreparationStage() {
-        startNewGame(12, 1);
-        return playPreparationStage();
-    }
-
-    private Scenario giveResourcesAndBuyKnightsAndPassCycle(int moveOrder, int quantity) {
-        giveResourcesToPlayerForDevCardBuying(moveOrder, quantity)
-                .nextRandomDiceValues(asList(6, 6))
-                .THROW_DICE(moveOrder);
-        for (int i = 0; i < quantity; i++) {
-            scenario
-                    .nextRandomDevelopmentCards(asList(KNIGHT))
-                    .BUY_CARD(moveOrder);
-        }
         return scenario
-                .END_TURN(moveOrder)
-                .nextRandomDiceValues(asList(6, 6))
-                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-
-                .nextRandomDiceValues(asList(6, 6))
-                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
-    }
-
-    private Scenario startNewGame() {
-        return startNewGame(12, 1);
-    }
-
-    private Scenario startNewGame(int targetVictoryPoints, int initialBuildingSet) {
-        return scenario
-                .loginUser(USER_NAME_1, USER_PASSWORD_1)
-                .loginUser(USER_NAME_2, USER_PASSWORD_2)
-                .loginUser(USER_NAME_3, USER_PASSWORD_3)
-
                 .setHex(HexType.STONE, 2).atCoordinates(0, -2)
                 .setHex(HexType.WHEAT, 2).atCoordinates(1, -2)
                 .setHex(HexType.WHEAT, 4).atCoordinates(2, -2)
@@ -275,20 +244,16 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .setHex(HexType.WHEAT, 3).atCoordinates(-1, 2)
                 .setHex(HexType.BRICK, 5).atCoordinates(0, 2)
 
-                .createNewPublicGameByUser(USER_NAME_1, targetVictoryPoints, initialBuildingSet)
+                .loginUser(USER_NAME_1, USER_PASSWORD_1)
+                .loginUser(USER_NAME_2, USER_PASSWORD_2)
+                .loginUser(USER_NAME_3, USER_PASSWORD_3)
+                .createNewPublicGameByUser(USER_NAME_1, 12, 1)
                 .joinPublicGame(USER_NAME_2)
                 .joinPublicGame(USER_NAME_3)
-
-                        // take last player from the list each time, when pulling move order from the list to have order: 3, 2, 1
-                .nextRandomMoveOrderValues(asList(3, 2, 1))
-
                 .setUserReady(USER_NAME_1)
                 .setUserReady(USER_NAME_2)
-                .setUserReady(USER_NAME_3);
-    }
+                .setUserReady(USER_NAME_3)
 
-    private Scenario playPreparationStage() {
-        return scenario
                 .BUILD_SETTLEMENT(1).atNode(0, -1, "top")
                 .BUILD_ROAD(1).atEdge(0, -1, "topRight")
                 .END_TURN(1)
