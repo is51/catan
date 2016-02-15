@@ -12,12 +12,12 @@ public class GameDetailsValidator {
     }
 
     public Scenario hasBiggestArmyOwner(int moveOrder) {
-        scenario.currentGameDetails.body("biggestArmyOwner", is(scenario.gameUserIdsByMoveOrder.get(moveOrder)));
+        scenario.currentGameDetails.body("biggestArmyOwnerId", is(scenario.gameUserIdsByMoveOrder.get(moveOrder)));
         return scenario;
     }
 
     public Scenario doesNotHaveBiggestArmyOwner() {
-        scenario.currentGameDetails.body("biggestArmyOwner", nullValue());
+        scenario.currentGameDetails.body("biggestArmyOwnerId", nullValue());
         return scenario;
     }
 }

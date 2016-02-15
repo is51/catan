@@ -470,15 +470,6 @@ public class GameBean {
         return this.diceFirstValue + this.diceSecondValue;
     }
 
-    public GameUserBean takeGameUserById(Integer gameUserId) {
-        for (GameUserBean gameUser : gameUsers) {
-            if (gameUser.getGameUserId().equals(gameUserId)) {
-                return gameUser;
-            }
-        }
-        return null;
-    }
-
     public List<GameUserDetails> getGameUserDetails(int detailsRequesterId) {
         List<GameUserDetails> gameUsers = new ArrayList<GameUserDetails>();
 

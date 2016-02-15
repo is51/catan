@@ -25,6 +25,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.AchievementsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
@@ -58,6 +59,7 @@ public class PlayServiceImpl implements PlayService {
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
     private CardUtil cardUtil;
+    private AchievementsUtil achievementsUtil;
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
 
@@ -163,7 +165,7 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
         }
 
-        updateLongestWayLength(game, gameUser);
+        achievementsUtil.updateLongestWayLength(game, gameUser);
     }
 
     private void buildSettlement(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
@@ -180,95 +182,7 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
         }
 
-        GameUserBean gameUserToUpdateLongestWayLength = fetchGameUserWhoseWayWasInterrupted(nodeToBuildOn, gameUser);
-        if (gameUserToUpdateLongestWayLength != null) {
-            updateLongestWayLength(game, gameUserToUpdateLongestWayLength);
-        }
-    }
-
-    private GameUserBean fetchGameUserWhoseWayWasInterrupted(NodeBean node, GameUserBean gameUserWhoBuiltOnNode) {
-        GameUserBean gameUserWhoseWayCouldBeInterrupted = null;
-        for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
-            if (edge.getBuilding() == null || edge.getBuilding().getBuildingOwner().equals(gameUserWhoBuiltOnNode)) {
-                continue;
-            }
-            GameUserBean buildingOwner = edge.getBuilding().getBuildingOwner();
-            if (buildingOwner == gameUserWhoseWayCouldBeInterrupted) {
-                return gameUserWhoseWayCouldBeInterrupted;
-            }
-            gameUserWhoseWayCouldBeInterrupted = buildingOwner;
-        }
-        return null;
-    }
-
-    private void updateLongestWayLength(GameBean game, GameUserBean gameUser) {
-        int maxWayLength = 0;
-        for (EdgeBean edge : game.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
-            maxWayLength = calculateMaxWayLength(gameUser, maxWayLength, new ArrayList<Integer>(), new ArrayList<Integer>(), edge, 0);
-        }
-        gameUser.getAchievements().setLongestWayLength(maxWayLength);
-        updateLongestWayOwner(game);
-    }
-
-    private int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeIds, List<Integer> checkedNodeIds, EdgeBean edge, int currMaxWayLength) {
-        int edgeId = edge.getId();
-        if (checkedEdgeIds.contains(edgeId) || edgeDoesNotContainGameUsersRoad(gameUser, edge)) {
-            return lastMaxWayLength;
-        }
-
-        checkedEdgeIds.add(edgeId);
-        currMaxWayLength++;
-        for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
-            int nodeId = node.getId();
-            if (checkedNodeIds.contains(nodeId) || nodeContainsOpponentsBuilding(gameUser, node)) {
-                continue;
-            }
-
-            checkedNodeIds.add(nodeId);
-            for (EdgeBean nextEdge : node.getEdges().listAllNotNullItems()) {
-                lastMaxWayLength = calculateMaxWayLength(gameUser, lastMaxWayLength, checkedEdgeIds, checkedNodeIds, nextEdge, currMaxWayLength);
-            }
-            checkedNodeIds.remove(new Integer(nodeId));
-        }
-        checkedEdgeIds.remove(new Integer(edgeId));
-
-        return currMaxWayLength > lastMaxWayLength
-                ? currMaxWayLength
-                : lastMaxWayLength;
-    }
-
-    private boolean nodeContainsOpponentsBuilding(GameUserBean gameUser, NodeBean node) {
-        return node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser);
-    }
-
-    private boolean edgeDoesNotContainGameUsersRoad(GameUserBean gameUser, EdgeBean edge) {
-        return edge.getBuilding() == null || !edge.getBuilding().getBuildingOwner().equals(gameUser);
-    }
-
-    private void updateLongestWayOwner(GameBean game) {
-        int maxLongestWayLength = 0;
-        GameUserBean newLongestWayOwner = null;
-        GameUserBean currentLongestWayOwner = game.getLongestWayOwner();
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            int longestWayLength = gameUser.getAchievements().getLongestWayLength();
-            if (longestWayLength < 5) {
-                continue;
-            }
-
-            if (longestWayLength > maxLongestWayLength) {
-                maxLongestWayLength = longestWayLength;
-                newLongestWayOwner = gameUser;
-                continue;
-            }
-
-            if (longestWayLength == maxLongestWayLength && (newLongestWayOwner == null || !newLongestWayOwner.equals(currentLongestWayOwner))) {
-                newLongestWayOwner = !gameUser.equals(currentLongestWayOwner)
-                        ? null
-                        : gameUser;
-            }
-        }
-
-        game.setLongestWayOwner(newLongestWayOwner);
+        achievementsUtil.updateLongestWayLengthInCaseWayWasInterrupted(game, gameUser, nodeToBuildOn);
     }
 
     private void buildCity(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
@@ -394,23 +308,8 @@ public class PlayServiceImpl implements PlayService {
         game.setRobberShouldBeMovedMandatory(true);
         game.setDevelopmentCardUsed(true);
 
-        Achievements achievements = gameUser.getAchievements();
-        int totalUsedKnightsNew = achievements.getTotalUsedKnights() + 1;
-
-        achievements.setTotalUsedKnights(totalUsedKnightsNew);
-        updateBiggestArmyOwner(gameUser, game);
-    }
-
-    private void updateBiggestArmyOwner(GameUserBean gameUser, GameBean game) {
-        int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
-        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, game)) {
-            game.setBiggestArmyOwner(gameUser);
-        }
-    }
-
-    private boolean gameUsersUsedKnightsIsTheBiggestArmy(int totalUsedKnights, GameBean game) {
-        GameUserBean currentBiggestArmyOwner = game.getBiggestArmyOwner();
-        return currentBiggestArmyOwner == null || currentBiggestArmyOwner.getAchievements().getTotalUsedKnights() < totalUsedKnights;
+        achievementsUtil.increaseTotalUsedKnightsByOne(gameUser);
+        achievementsUtil.updateBiggestArmyOwner(gameUser, game);
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {
@@ -860,6 +759,11 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setCardUtil(CardUtil cardUtil) {
         this.cardUtil = cardUtil;
+    }
+
+    @Autowired
+    public void setAchievementsUtil(AchievementsUtil achievementsUtil) {
+        this.achievementsUtil = achievementsUtil;
     }
 
     @Autowired
