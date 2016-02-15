@@ -1,9 +1,9 @@
 ct-actions-panel {
     position: absolute;
     bottom: 0;
-    left: 9%;
+    left: 0;
     height: 45px;
-    width: 91%;
+    width: 100%;
     text-align: center;
 }
 

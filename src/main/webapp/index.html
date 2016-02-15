@@ -13,7 +13,7 @@
 <html lang="en" ng-app="catan">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=640">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
 
     <title>IT Catan</title>
     <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css"/>
@@ -45,13 +45,12 @@
 </head>
 <body>
 
-<div class="logo">Itinizators</div>
-
 <ui-view></ui-view>
 
 <script src="vendor/jquery/jquery-2.1.0.min.js"></script>
 <script src="vendor/angular/angular.min.js"></script>
 <script src="vendor/angular/angular-ui-router.min.js"></script>
+<script src="vendor/snap/snap.svg-min.js"></script>
 
 <script src="app.js"></script>
 
@@ -68,8 +67,8 @@
 <script src="features/shared/modalWindow/ModalWindowService.service.js"></script>
 <script src="features/shared/modalWindow/ct-modal-window.js"></script>
 <script src="features/shared/modalWindow/ct-modal-window-close.js"></script>
-<script src="features/shared/services/map/DrawMapService.service.js"></script>
-<script src="features/shared/services/map/DrawMapHelper.service.js"></script>
+<script src="features/screens/game/dashboard/gameMap/DrawMapService.service.js"></script>
+<script src="features/screens/game/dashboard/gameMap/DrawMapHelper.service.js"></script>
 <script src="features/shared/services/SelectService.service.js"></script>
 <script src="features/shared/directives/playersList/ct-players-list.js"></script>
 <script src="features/shared/directives/gamesList/ct-games-list.js"></script>
@@ -106,6 +105,7 @@
 <script src="features/screens/game/dashboard/cardMonopolyChooseResourcePanel/ct-card-monopoly-choose-resource-panel.js"></script>
 <script src="features/screens/game/dashboard/cardYearOfPlentyChooseResourcesPanel/ct-card-year-of-plenty-choose-resources-panel.js"></script>
 <script src="features/screens/game/dashboard/tradeReplyPanel/ct-trade-reply-panel.js"></script>
+
 
 </body>
 </html>
