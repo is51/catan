@@ -20,4 +20,14 @@ public class GameDetailsValidator {
         scenario.currentGameDetails.body("biggestArmyOwnerId", nullValue());
         return scenario;
     }
+
+    public Scenario hasLongestWayOwner(int moveOrder) {
+        scenario.currentGameDetails.body("longestWayOwnerId", is(scenario.gameUserIdsByMoveOrder.get(moveOrder)));
+        return scenario;
+    }
+
+    public Scenario doesNotHaveLongestWayOwner() {
+        scenario.currentGameDetails.body("longestWayOwnerId", nullValue());
+        return scenario;
+    }
 }
