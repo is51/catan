@@ -38,6 +38,11 @@ public class GameUserValidator {
         return scenario;
     }*/
 
+    public Scenario hasLongestWayLength(int length) {
+        check("achievements.longestWayLength", is(length));
+        return scenario;
+    }
+
     public ActionParameterValidator hasAvailableAction(String action) {
         check("availableActions.list.find {it.code == '" + action + "'}", notNullValue());
         return new ActionParameterValidator(scenario, action);
