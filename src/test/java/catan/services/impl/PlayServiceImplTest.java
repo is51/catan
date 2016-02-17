@@ -130,6 +130,8 @@ public class PlayServiceImplTest {
 
         mainStageUtil.setActionParamsUtil(actionParamsUtil);
 
+        preparationStageUtil.setActionParamsUtil(actionParamsUtil);
+
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
 

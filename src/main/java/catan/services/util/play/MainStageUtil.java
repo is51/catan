@@ -12,6 +12,8 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.BuildOnEdgeParams;
+import catan.domain.model.game.actions.BuildOnNodeParams;
 import catan.domain.model.game.actions.ResourcesParams;
 import catan.domain.model.game.actions.TradingParams;
 import catan.domain.model.game.types.DevelopmentCard;
@@ -182,7 +184,8 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesToBuildCity(gameUser)) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
+            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildCityParams(game, gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_CITY, buildOnNodeParams));
         }
     }
 
@@ -191,7 +194,8 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesForSettlement(gameUser)) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
+            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(game, gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT, buildOnNodeParams));
         }
     }
 
@@ -200,7 +204,8 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesToBuildRoad(gameUser)) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
+            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(game, gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD, buildOnEdgeParams));
         }
     }
 

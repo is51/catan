@@ -1,6 +1,5 @@
 package catan.services.util.play;
 
-import catan.domain.exception.GameException;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodePortType;
@@ -21,7 +20,7 @@ import static catan.domain.model.dashboard.types.NodeBuiltType.SETTLEMENT;
 public class ActionParamsUtil {
     private Logger log = LoggerFactory.getLogger(ActionParamsUtil.class);
 
-    public List<Integer> calculateBuildSettlementParams(GameBean game, GameUserBean gameUser) throws GameException {
+    public List<Integer> calculateBuildSettlementParams(GameBean game, GameUserBean gameUser) {
 
         if (game.getStage().equals(PREPARATION)) {
             return fetchNodeIdsToBuildOnInPreparationStage(game);
@@ -38,7 +37,7 @@ public class ActionParamsUtil {
         return nodeIdsToBuildOn;
     }
 
-    public List<Integer> calculateBuildCityParams(GameBean game, GameUserBean gameUser) throws GameException {
+    public List<Integer> calculateBuildCityParams(GameBean game, GameUserBean gameUser) {
 
         if (game.getStage().equals(PREPARATION)) {
             return fetchNodeIdsToBuildOnInPreparationStage(game);
@@ -55,7 +54,7 @@ public class ActionParamsUtil {
         return nodeIdsToBuildOn;
     }
 
-    public List<Integer> calculateBuildRoadParams(GameBean game, GameUserBean gameUser) throws GameException {
+    public List<Integer> calculateBuildRoadParams(GameBean game, GameUserBean gameUser) {
         List<Integer> edgeIdsToBuildOn = new ArrayList<Integer>();
         if (game.getStage().equals(PREPARATION)) {
             for (NodeBean node : game.getNodes()) {

@@ -77,7 +77,7 @@ public class GameUserBean {
         this.game = game;
         this.buildingsCount = new BuildingsCount(0, 0);
         this.achievements = new Achievements(0, 0, 0, 0, 0);
-        this.resources = new Resources(0, 0, 0, 0, 0);
+        this.resources = new Resources(5, 5, 5, 5, 6);
         this.developmentCards = new DevelopmentCards(0, 0, 0, 0, 0);
         this.developmentCardsReadyForUsing = new DevelopmentCards(0, 0, 0, 0, 0);
     }
