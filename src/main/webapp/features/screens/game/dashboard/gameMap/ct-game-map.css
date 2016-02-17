@@ -11,28 +11,28 @@ ct-game-map .hex.highlighted .hex-background {
 
 
 ct-game-map [resource-type="brick"] {
-    fill: #e16a17;
+    fill: #43a8d9;
 }
 
 ct-game-map [resource-type="wood"] {
-    fill: #40b22f;
+    fill: #d5c867;
 }
 
 ct-game-map [resource-type="sheep"] {
-    fill: #4bec38;
+    fill: #48da83;
 }
 
 ct-game-map [resource-type="wheat"] {
-    fill: #ecd320;
+    fill: #a187aa;
 }
 
 ct-game-map [resource-type="stone"] {
-    fill: #8e6f36;
+    fill: #f69f7e;
 }
 
 ct-game-map [resource-type="empty"],
 ct-game-map [resource-type="any"] {
-    fill: #cbd771;
+    fill: #ccc;
 }
 
 ct-game-map [player-color="1"] {

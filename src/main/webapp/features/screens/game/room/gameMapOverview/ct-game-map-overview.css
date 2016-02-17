@@ -33,29 +33,29 @@ ct-game-map-overview .canvas .node span {
 }
 
 ct-game-map-overview .canvas .brick {
-    background-color: #e16a17;
+    background-color: #43a8d9;
 }
 
 ct-game-map-overview .canvas .wood {
-    background-color: #40b22f;
+    background-color: #d5c867;
 }
 
 ct-game-map-overview .canvas .sheep {
-    background-color: #4bec38;
+    background-color: #48da83;
 }
 
 ct-game-map-overview .canvas .wheat {
-    background-color: #ecd320;
+    background-color: #a187aa;
 }
 
 ct-game-map-overview .canvas .stone {
-    background-color: #8e6f36;
+    background-color: #f69f7e;
 }
 
 ct-game-map-overview .canvas .empty {
-    background-color: #cbd771;
+    background-color: #ccc;
 }
 
 ct-game-map-overview .canvas .any {
-    background-color: #cbd771;
+    background-color: #ccc;
 }
