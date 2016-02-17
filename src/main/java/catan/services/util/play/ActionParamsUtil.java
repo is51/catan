@@ -3,8 +3,10 @@ package catan.services.util.play;
 import catan.domain.exception.GameException;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.actions.ResourcesParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -83,5 +85,42 @@ public class ActionParamsUtil {
             }
         }
         return nodeIdsToBuildOn;
+    }
+
+    public ResourcesParams calculateResourcesParams(GameUserBean gameUser, GameBean game) {
+        int brick = 4;
+        int wood = 4;
+        int sheep = 4;
+        int wheat = 4;
+        int stone = 4;
+
+        for (NodePortType port : game.fetchPortsAvailableForGameUser(gameUser)) {
+            switch (port) {
+                case BRICK:
+                    brick = 2;
+                    break;
+                case WOOD:
+                    wood = 2;
+                    break;
+                case SHEEP:
+                    sheep = 2;
+                    break;
+                case WHEAT:
+                    wheat = 2;
+                    break;
+                case STONE:
+                    stone = 2;
+                    break;
+                case ANY:
+                    brick = brick == 4 ? 3 : brick;
+                    wood = wood == 4 ? 3 : wood;
+                    sheep = sheep == 4 ? 3 : sheep;
+                    wheat = wheat == 4 ? 3 : wheat;
+                    stone = stone == 4 ? 3 : stone;
+                    break;
+            }
+        }
+
+        return new ResourcesParams(brick, wood, sheep, wheat, stone);
     }
 }

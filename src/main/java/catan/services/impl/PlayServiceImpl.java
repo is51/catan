@@ -25,6 +25,7 @@ import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.AchievementsUtil;
+import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
@@ -59,6 +60,7 @@ public class PlayServiceImpl implements PlayService {
     private BuildUtil buildUtil;
     private CardUtil cardUtil;
     private AchievementsUtil achievementsUtil;
+    private ActionParamsUtil actionParamsUtil;
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
 
@@ -420,7 +422,7 @@ public class PlayServiceImpl implements PlayService {
         int usersWheatQuantity = userResources.getWheat();
         int usersStoneQuantity = userResources.getStone();
 
-        ResourcesParams resourcesParams = mainStageUtil.calculateResourcesParams(gameUser, game);
+        ResourcesParams resourcesParams = actionParamsUtil.calculateResourcesParams(gameUser, game);
         int brickSellCoefficient = resourcesParams.getBrick();
         int woodSellCoefficient = resourcesParams.getWood();
         int sheepSellCoefficient = resourcesParams.getSheep();
@@ -763,6 +765,11 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setAchievementsUtil(AchievementsUtil achievementsUtil) {
         this.achievementsUtil = achievementsUtil;
+    }
+
+    @Autowired
+    public void setActionParamsUtil(ActionParamsUtil actionParamsUtil) {
+        this.actionParamsUtil = actionParamsUtil;
     }
 
     @Autowired
