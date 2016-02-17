@@ -1,37 +1,23 @@
-ct-resources-panel {
+ct-resources-panel > svg {
+    z-index: 100;
     position: absolute;
-    top: 40px;
-    right: 0;
+    top: 0;
+    left: 0;
+    pointer-events: none;
 }
 
-ct-resources-panel .resource {
-    width: 52px;
-    height: 54px;
-    padding: 3px 5px;
-    margin-bottom: 2px;
+ct-resources-panel > svg > g {
+    pointer-events: all;
 }
 
-ct-resources-panel .resource.brick {
-    background-color: #e16a17;
+ct-resources-panel > svg .shadow {
+    pointer-events: none;
 }
 
-ct-resources-panel .resource.wood {
-    background-color: #40b22f;
+ct-resources-panel > svg .zero .background {
+    fill-opacity: 0.3;
 }
 
-ct-resources-panel .resource.sheep {
-    background-color: #4bec38;
-}
-
-ct-resources-panel .resource.wheat {
-    background-color: #ecd320;
-}
-
-ct-resources-panel .resource.stone {
-    background-color: #8e6f36;
-}
-
-ct-resources-panel .resource span {
-    font-size: 22px;
-    color: #fff;
+ct-resources-panel > svg .zero .count {
+    fill-opacity: 0.2;
 }
