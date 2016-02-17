@@ -86,38 +86,29 @@ public class BuildUtil {
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
-        boolean nearNeighbourRoad = false;
-        boolean nearNeighbourSettlement = false;
-
         for (NodeBean node : edgeToBuildOn.getNodes().listAllNotNullItems()) {
             if (GameStage.PREPARATION.equals(gameStage)) {
-                if (node.getBuilding() == null || !node.getBuilding().getBuildingOwner().equals(gameUser)) {
-                   continue;
+                if (node.getBuilding() != null
+                        && node.getBuilding().getBuildingOwner().equals(gameUser)
+                        && !node.nearGameUsersNeighbourRoad(gameUser)) {
+                    return;
                 }
-                nearNeighbourSettlement = true;
-                for (EdgeBean neighbourEdge : node.getEdges().listAllNotNullItems()) {
-                    if (neighbourEdge.getBuilding() != null) {
-                        nearNeighbourSettlement = false;
-                        break;
-                    }
-                }
-                break;
+                continue;
             }
 
             if (node.getBuilding() == null) {
-                nearNeighbourRoad = nearNeighbourRoad || node.nearGameUsersNeighbourRoad(gameUser);
+                if (node.nearGameUsersNeighbourRoad(gameUser)) {
+                    return;
+                }
             } else {
                 if (node.getBuilding().getBuildingOwner().equals(gameUser)) {
-                    nearNeighbourSettlement = true;
-                    break;
+                    return;
                 }
             }
         }
 
-        if (!nearNeighbourRoad && !nearNeighbourSettlement) {
-            log.debug("Cannot build road that doesn't have neighbour road or settlement that belongs to this player ");
-            throw new PlayException(ERROR_CODE_ERROR);
-        }
+        log.debug("Cannot build road that doesn't have neighbour road or settlement that belongs to this player ");
+        throw new PlayException(ERROR_CODE_ERROR);
     }
 
     public void validateUserCanBuildSettlementOnNode(GameUserBean gameUser, GameStage gameStage, NodeBean nodeToBuildOn) throws PlayException {
