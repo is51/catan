@@ -443,7 +443,7 @@ public class GameBean {
         return edgesWithBuildingsBelongsToGameUser;
     }
 
-    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoad(GameUserBean gameUser) {
+    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoadInMainStage(GameUserBean gameUser) {
         Set<EdgeBean> edges = new HashSet<EdgeBean>();
         for (EdgeBean edge : this.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
             edges.addAll(edge.fetchNeighborEdgesAccessibleForBuildingRoad(gameUser));
