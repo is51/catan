@@ -4,7 +4,7 @@
         <span class="glyphicon glyphicon-inbox"></span> {{gameUser.achievements.totalResources}}<br>
         <span class="glyphicon glyphicon-credit-card"></span> {{gameUser.achievements.totalCards}}<br>
         <span class="glyphicon glyphicon-flag"></span> <span ng-class="{'top':isBiggestArmy(gameUser)}">{{gameUser.achievements.totalUsedKnights}}</span><br>
-        <span class="glyphicon glyphicon-road"></span> {{gameUser.achievements.longestWayLength}}
+        <span class="glyphicon glyphicon-road"></span> <span ng-class="{'top':isLongestWay(gameUser)}">{{gameUser.achievements.longestWayLength}}</span>
     </div>
 
     <div class="name">{{::gameUser.user.username}}</div>

@@ -26,6 +26,7 @@ import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.AchievementsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
@@ -84,6 +85,8 @@ public class PlayServiceImplTest {
     @InjectMocks
     private CardUtil cardUtil;
     @InjectMocks
+    private AchievementsUtil achievementsUtil;
+    @InjectMocks
     private PreparationStageUtil preparationStageUtil;
     @InjectMocks
     private MainStageUtil mainStageUtil;
@@ -107,13 +110,12 @@ public class PlayServiceImplTest {
         RandomUtil randomUtil = new RandomUtil();
         randomUtil.setRvg(rvg);
 
-        buildUtil.setGameUtil(gameUtil);
-
         playService.setRandomUtil(randomUtil);
         playService.setGameUtil(gameUtil);
         playService.setPlayUtil(playUtil);
         playService.setBuildUtil(buildUtil);
         playService.setCardUtil(cardUtil);
+        playService.setAchievementsUtil(achievementsUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
         playService.setMainStageUtil(mainStageUtil);
 

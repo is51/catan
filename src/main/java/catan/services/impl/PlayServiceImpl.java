@@ -9,7 +9,6 @@ import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
-import catan.domain.model.game.Achievements;
 import catan.domain.model.game.DevelopmentCards;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -25,6 +24,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
+import catan.services.util.play.AchievementsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
@@ -58,6 +58,7 @@ public class PlayServiceImpl implements PlayService {
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
     private CardUtil cardUtil;
+    private AchievementsUtil achievementsUtil;
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
 
@@ -79,7 +80,7 @@ public class PlayServiceImpl implements PlayService {
         validateGameStatusIsPlaying(game);
         validateActionIsAllowedForUser(gameUser, action);
 
-        doAction(action, user, gameUser, game, params, returnedParams);
+        doAction(action, gameUser, game, params, returnedParams);
 
         playUtil.updateAchievements(game);
         playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
@@ -91,17 +92,17 @@ public class PlayServiceImpl implements PlayService {
         return returnedParams;
     }
 
-    private void doAction(GameUserActionCode action, UserBean user, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
+    private void doAction(GameUserActionCode action, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
         Resources usersResources = gameUser.getResources();
         switch (action) {
             case BUILD_ROAD:
-                buildRoad(user, game, usersResources, params.get("edgeId"));
+                buildRoad(gameUser, game, usersResources, params.get("edgeId"));
                 break;
             case BUILD_SETTLEMENT:
-                buildSettlement(user, game, usersResources, params.get("nodeId"));
+                buildSettlement(gameUser, game, usersResources, params.get("nodeId"));
                 break;
             case BUILD_CITY:
-                buildCity(user, game, usersResources, params.get("nodeId"));
+                buildCity(gameUser, game, usersResources, params.get("nodeId"));
                 break;
             case END_TURN:
                 endTurn(gameUser, game);
@@ -145,11 +146,11 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void buildRoad(UserBean user, GameBean game, Resources usersResources, String edgeId) throws PlayException, GameException {
+    private void buildRoad(GameUserBean gameUser, GameBean game, Resources usersResources, String edgeId) throws PlayException, GameException {
         EdgeBean edgeToBuildOn = (EdgeBean) buildUtil.getValidMapElementByIdToBuildOn(edgeId, new ArrayList<MapElement>(game.getEdges()));
         GameStage gameStage = game.getStage();
-        buildUtil.validateUserCanBuildRoadOnEdge(user, edgeToBuildOn, gameStage);
-        buildUtil.buildRoadOnEdge(user, edgeToBuildOn);
+        buildUtil.validateUserCanBuildRoadOnEdge(gameUser, edgeToBuildOn, gameStage);
+        buildUtil.buildRoadOnEdge(gameUser, edgeToBuildOn);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
@@ -162,12 +163,14 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
         }
+
+        achievementsUtil.updateLongestWayLength(game, gameUser);
     }
 
-    private void buildSettlement(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
+    private void buildSettlement(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
-        buildUtil.validateUserCanBuildSettlementOnNode(user, game.getStage(), nodeToBuildOn);
-        buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
+        buildUtil.validateUserCanBuildSettlementOnNode(gameUser, game.getStage(), nodeToBuildOn);
+        buildUtil.buildOnNode(gameUser, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
@@ -177,12 +180,14 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
         }
+
+        achievementsUtil.updateLongestWayLengthIfInterrupted(game, gameUser, nodeToBuildOn);
     }
 
-    private void buildCity(UserBean user, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
+    private void buildCity(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
-        buildUtil.validateUserCanBuildCityOnNode(user, game.getStage(), nodeToBuildOn);
-        buildUtil.buildOnNode(user, nodeToBuildOn, NodeBuiltType.CITY);
+        buildUtil.validateUserCanBuildCityOnNode(gameUser, game.getStage(), nodeToBuildOn);
+        buildUtil.buildOnNode(gameUser, nodeToBuildOn, NodeBuiltType.CITY);
 
         preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
 
@@ -302,23 +307,8 @@ public class PlayServiceImpl implements PlayService {
         game.setRobberShouldBeMovedMandatory(true);
         game.setDevelopmentCardUsed(true);
 
-        Achievements achievements = gameUser.getAchievements();
-        int totalUsedKnightsNew = achievements.getTotalUsedKnights() + 1;
-
-        achievements.setTotalUsedKnights(totalUsedKnightsNew);
-        updateBiggestArmyOwner(gameUser, game);
-    }
-
-    private void updateBiggestArmyOwner(GameUserBean gameUser, GameBean game) {
-        int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
-        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, game)) {
-            game.setBiggestArmyOwner(gameUser);
-        }
-    }
-
-    private boolean gameUsersUsedKnightsIsTheBiggestArmy(int totalUsedKnights, GameBean game) {
-        GameUserBean currentBiggestArmyOwner = game.getBiggestArmyOwner();
-        return currentBiggestArmyOwner == null || currentBiggestArmyOwner.getAchievements().getTotalUsedKnights() < totalUsedKnights;
+        achievementsUtil.increaseTotalUsedKnightsByOne(gameUser);
+        achievementsUtil.updateBiggestArmyOwner(gameUser, game);
     }
 
     private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {
@@ -768,6 +758,11 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setCardUtil(CardUtil cardUtil) {
         this.cardUtil = cardUtil;
+    }
+
+    @Autowired
+    public void setAchievementsUtil(AchievementsUtil achievementsUtil) {
+        this.achievementsUtil = achievementsUtil;
     }
 
     @Autowired
