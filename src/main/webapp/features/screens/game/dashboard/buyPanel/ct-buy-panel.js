@@ -16,7 +16,9 @@ angular.module('catan')
                         PlayService.buildSettlement(scope.game).then(function() {
                             GameService.refresh(scope.game);
                         }, function(reason) {
-                            if (reason !== "CANCELED") {
+                            if (reason === "NO_AVAILABLE_PLACES") {
+                                alert("NO_AVAILABLE_PLACES");
+                            } else if (reason !== "CANCELED") {
                                 alert("Build settlement error!");
                             }
                         });
@@ -27,7 +29,9 @@ angular.module('catan')
                         PlayService.buildCity(scope.game).then(function() {
                             GameService.refresh(scope.game);
                         }, function(reason) {
-                            if (reason !== "CANCELED") {
+                            if (reason === "NO_AVAILABLE_PLACES") {
+                                alert("NO_AVAILABLE_PLACES");
+                            } else if (reason !== "CANCELED") {
                                 alert("Build city error!");
                             }
                         });
@@ -38,7 +42,9 @@ angular.module('catan')
                         PlayService.buildRoad(scope.game).then(function() {
                             GameService.refresh(scope.game);
                         }, function(reason) {
-                            if (reason !== "CANCELED") {
+                            if (reason === "NO_AVAILABLE_PLACES") {
+                                alert("NO_AVAILABLE_PLACES");
+                            } else if (reason !== "CANCELED") {
                                 alert("Build road error!");
                             }
                         });

@@ -2,7 +2,7 @@
 
 angular.module('catan')
 
-        .directive('ctGameMap', ['DrawMapService', 'SelectService', '$timeout', function(DrawMapService, SelectService, $timeout) {
+        .directive('ctGameMap', ['DrawMapService', 'SelectService', '$timeout', 'MapMarkingService', function(DrawMapService, SelectService, $timeout, MapMarkingService) {
 
             var HEXES_HIGHLIGHT_DELAY = 3000;
             var HEXES_HIGHLIGHT_CLASS = "highlighted";
@@ -27,6 +27,14 @@ angular.module('catan')
 
                     scope.$watchCollection("game", function(game) {
                         DrawMapService.drawMap(canvas, game, game.map);
+                        updateMapMarking(element);
+                    });
+
+                    //TODO: $watchCollection is slowly. Potentially there is a low performance place
+                    scope.$watchCollection(function() {
+                        return MapMarkingService.marked;
+                    }, function() {
+                        updateMapMarking(element);
                     });
 
                     scope.$watch("game.dice", function(newDice, oldDice) {
@@ -54,14 +62,14 @@ angular.module('catan')
             };
 
             //TODO: move that code to some helper?
-            function highlightHexes(canvas, map, dice) {
+            function highlightHexes(parentElement, map, dice) {
                 var hexesToHighlight = map.hexes.filter(function(hex) {
                     return (dice === 7) ? hex.robbed : !hex.robbed && hex.dice === dice;
                 });
 
                 var elementsToHighlight = angular.element([]);
                 hexesToHighlight.forEach(function(hex) {
-                    elementsToHighlight = elementsToHighlight.add(DrawMapService.HEX_SELECTOR + "[hex-id="+hex.hexId+"]", canvas);
+                    elementsToHighlight = elementsToHighlight.add(DrawMapService.HEX_SELECTOR + "[hex-id="+hex.hexId+"]", parentElement);
                 });
 
                 elementsToHighlight.attr("class", "hex " + HEXES_HIGHLIGHT_CLASS);
@@ -69,6 +77,35 @@ angular.module('catan')
                 $timeout(function() {
                     elementsToHighlight.attr("class", "hex");
                 }, HEXES_HIGHLIGHT_DELAY);
+            }
+
+            //TODO: move that code to some helper?
+            function updateMapMarking(parentElement) {
+                var i, l;
+                var markedElements = MapMarkingService.marked;
+
+                // Edges
+                parentElement.find(".edge[marked]")
+                        .removeAttr("marked")
+                        .removeAttr("player-color");
+                for (i = 0, l = markedElements.edgeIds.length; i < l; i++) {
+                    parentElement.find('.edge[edge-id="' + markedElements.edgeIds[i] + '"]')
+                            .attr("marked", true)
+                            .attr("player-color", markedElements.playerColor);
+                }
+
+                // Nodes
+                parentElement.find(".node[marked]")
+                        .removeAttr("marked")
+                        .removeAttr("player-color");
+                for (i = 0, l = markedElements.nodeIds.length; i < l; i++) {
+                    parentElement.find('.node[node-id="' + markedElements.nodeIds[i] + '"]')
+                            .attr("marked", true)
+                            .attr("player-color", markedElements.playerColor);
+                }
+
+                // Hexes
+                //TODO: write code here for hex choosing (following user story)
             }
 
         }]);
