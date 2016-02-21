@@ -1,6 +1,7 @@
 package catan.services.util.play;
 
 import catan.domain.model.dashboard.Building;
+import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.VerticalLinks;
@@ -58,14 +59,17 @@ public class MainStageUtilTest {
         HexBean hexBean1 = new HexBean();
         hexBean1.setNodes(nodes);
         hexBean1.setResourceType(HexType.BRICK);
+        hexBean1.setCoordinates(new Coordinates(1, 0));
 
         HexBean hexBean2 = new HexBean();
         hexBean2.setNodes(nodes);
         hexBean2.setResourceType(HexType.SHEEP);
         hexBean2.setRobbed(true);
+        hexBean2.setCoordinates(new Coordinates(0, 1));
 
         HexBean hexBean3 = new HexBean();
         hexBean3.setResourceType(HexType.STONE);
+        hexBean3.setCoordinates(new Coordinates(1, 1));
 
         ArrayList<HexBean> hexes = new ArrayList<HexBean>();
         hexes.add(hexBean1);

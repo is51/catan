@@ -20,6 +20,7 @@ import static catan.domain.model.dashboard.types.HexType.STONE;
 import static catan.domain.model.dashboard.types.HexType.WHEAT;
 import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
@@ -284,7 +285,80 @@ public class LongestWayLengthTest extends PlayTestUtil {
 
     @Test
     public void should_successfully_DISCARD_longest_way_owner_if_it_interrupted_and_two_players_now_has_SAME_more_longer_roads_more_than_4() {
+        playPreparationStageAndGiveResourcesToFirstAndSecondPlayersForBuildingSixRoads().
+                nextRandomDiceValues(asList(3, 3)) // P1: +1 wood, P2: +2 wood
+                .THROW_DICE(1)
+                .END_TURN(1)
 
+                .nextRandomDiceValues(asList(1, 2)) // P1: +2 brick, P2: +1 brick
+                .THROW_DICE(2)
+                .END_TURN(2)
+
+                .nextRandomDiceValues(asList(1, 2)) // P1: +2 brick, P2: +1 brick
+                .THROW_DICE(3)
+                .END_TURN(3).
+
+                nextRandomDiceValues(asList(1, 4)) // P3: +1 wheat
+                .THROW_DICE(1)
+                .END_TURN(1)
+
+                .nextRandomDiceValues(asList(3, 3)) // P1: +1 wood, P2: +2 wood
+                .THROW_DICE(2)
+                .END_TURN(2).
+
+                nextRandomDiceValues(asList(1, 1)).
+                THROW_DICE(3).
+                END_TURN(3).
+
+                nextRandomDiceValues(asList(1, 1)).
+                THROW_DICE(1).
+                BUILD_ROAD(1).atEdge(2, -1, "bottomRight").successfully().
+                BUILD_ROAD(1).atEdge(1, 0, "right").successfully().
+                BUILD_ROAD(1).atEdge(1, 0, "bottomRight").successfully().
+                END_TURN(1).
+                nextRandomDiceValues(asList(1, 1)).
+                THROW_DICE(2).
+
+                BUILD_ROAD(2).atEdge(1, -2, "bottomLeft").successfully().
+                BUILD_ROAD(2).atEdge(1, -1, "bottomLeft").successfully().
+                BUILD_ROAD(2).atEdge(1, 0, "topLeft").successfully().
+                BUILD_ROAD(2).atEdge(1, 0, "topRight").successfully().
+                TRADE_PORT(2).withResources(0, -8, 1, 1, 0).successfully().
+                END_TURN(2).
+
+                nextRandomDiceValues(asList(1, 1)).
+                THROW_DICE(3).
+                nextOfferIds(singletonList(1111)).
+                TRADE_PROPOSE(3).withResources(5, 5, 0, -1, 0).successfully().
+                TRADE_ACCEPT(1).withOfferId(1111).successfully().
+                BUILD_ROAD(3).atEdge(0, -2, "left").successfully().
+                BUILD_ROAD(3).atEdge(-1, -1, "left").successfully().
+                BUILD_ROAD(3).atEdge(-2, 0, "topLeft").successfully().
+                END_TURN(3).
+
+                nextRandomDiceValues(asList(1, 1)).
+                THROW_DICE(1).
+                END_TURN(1).
+
+                nextRandomDiceValues(asList(1, 1)).
+                THROW_DICE(2).
+
+                getGameDetails(2).
+                game().hasLongestWayOwner(1).
+                gameUser(1).hasVictoryPoints(4).
+                gameUser(2).hasVictoryPoints(2).
+                gameUser(3).hasVictoryPoints(2).
+
+                BUILD_SETTLEMENT(2).atNode(1, 0, "topRight").successfully().
+
+                getGameDetails(2).
+                game().doesNotHaveLongestWayOwner().
+                gameUser(1).hasVictoryPoints(2).
+                gameUser(1).hasLongestWayLength(3).
+                gameUser(2).hasVictoryPoints(3).
+                gameUser(2).hasLongestWayLength(5).
+                gameUser(3).hasVictoryPoints(2).
+                gameUser(3).hasLongestWayLength(5);
     }
 
     @Test
