@@ -149,7 +149,8 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.getRoadsToBuildMandatory() > 0) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
+            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(game, gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD, buildOnEdgeParams));
         }
     }
 
