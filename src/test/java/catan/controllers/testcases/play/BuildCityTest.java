@@ -138,6 +138,13 @@ public class BuildCityTest extends PlayTestUtil {
                 .BUILD_CITY(1).atNode(1, -1, "top").failsWithError("ERROR");
     }
 
+    /*
+    @Test
+    public void should_successfully_give_resources_to_player_when_build_last_initial_city_in_preparation_stage() {
+    // TODO: implement this test case when new initial set would appear where CITY/ROAD should be the last initial building
+    }
+    */
+
     private Scenario giveResourcesToFirstPlayerForCityBuilding() {
         return scenario
                 .nextRandomDiceValues(asList(5, 6))
