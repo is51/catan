@@ -2,8 +2,8 @@
 
 angular.module('catan')
         .factory('PlayService', [
-            'Remote', '$q', 'SelectService', 'ModalWindowService', 'MapMarkingService', '$timeout',
-        function (Remote, $q, SelectService, ModalWindowService, MapMarkingService, $timeout) {
+            'Remote', '$q', 'SelectService', 'ModalWindowService', 'MapMarkingService',
+        function (Remote, $q, SelectService, ModalWindowService, MapMarkingService) {
             var PlayService = {};
 
             PlayService.endTurn = function (game) {
@@ -33,9 +33,7 @@ angular.module('catan')
                     return deferred.promise;
                 }
 
-                $timeout(function() {
-                    MapMarkingService.markNodes(availableNodes, game.getCurrentUser());
-                });
+                MapMarkingService.markNodes(availableNodes, game.getCurrentUser());
 
                 SelectService.requestSelection('node').then(
                         function(nodeId) {
@@ -71,9 +69,7 @@ angular.module('catan')
                     return deferred.promise;
                 }
 
-                $timeout(function() {
-                    MapMarkingService.markNodes(availableNodes, game.getCurrentUser());
-                });
+                MapMarkingService.markNodes(availableNodes, game.getCurrentUser());
 
                 SelectService.requestSelection('node').then(
                         function(nodeId) {
@@ -109,9 +105,7 @@ angular.module('catan')
                     return deferred.promise;
                 }
 
-                $timeout(function() {
-                    MapMarkingService.markEdges(availableEdges, game.getCurrentUser());
-                });
+                MapMarkingService.markEdges(availableEdges, game.getCurrentUser());
 
                 SelectService.requestSelection('edge').then(
                         function(edgeId) {

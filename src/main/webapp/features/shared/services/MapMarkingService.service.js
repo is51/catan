@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .factory('MapMarkingService', [function () {
+        .factory('MapMarkingService', ['$timeout', function ($timeout) {
 
             var MapMarkingService = {};
 
@@ -21,8 +21,11 @@ angular.module('catan')
             };
 
             MapMarkingService.markNodes = function(nodeIds, gameUser) {
-                this.marked.nodeIds = nodeIds;
-                this.marked.playerColor = gameUser.colorId;
+                var service = this;
+                $timeout(function() {
+                    service.marked.nodeIds = nodeIds;
+                    service.marked.playerColor = gameUser.colorId;
+                });
             };
 
             MapMarkingService.clearMarkingNodes = function() {
@@ -31,8 +34,11 @@ angular.module('catan')
             };
 
             MapMarkingService.markEdges = function(edgeIds, gameUser) {
-                this.marked.edgeIds = edgeIds;
-                this.marked.playerColor = gameUser.colorId;
+                var service = this;
+                $timeout(function() {
+                    service.marked.edgeIds = edgeIds;
+                    service.marked.playerColor = gameUser.colorId;
+                });
             };
 
             MapMarkingService.clearMarkingEdges = function() {
