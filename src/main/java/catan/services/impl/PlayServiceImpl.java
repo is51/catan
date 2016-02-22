@@ -179,6 +179,8 @@ public class PlayServiceImpl implements PlayService {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
+        } else if (GameStage.PREPARATION.equals(game.getStage())) {
+            preparationStageUtil.distributeResourcesForLastBuilding(nodeToBuildOn);
         }
 
         achievementsUtil.updateLongestWayLengthIfInterrupted(game, gameUser, nodeToBuildOn);
@@ -194,6 +196,8 @@ public class PlayServiceImpl implements PlayService {
         if (GameStage.MAIN.equals(game.getStage())) {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 2);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.STONE, 3);
+        } else if (GameStage.PREPARATION.equals(game.getStage())) {
+            preparationStageUtil.distributeResourcesForLastBuilding(nodeToBuildOn);
         }
     }
 
@@ -434,10 +438,10 @@ public class PlayServiceImpl implements PlayService {
         int stoneQuantityToTrade = toValidResourceQuantityToTradeInPort(stoneString, usersStoneQuantity, stoneSellCoefficient);
 
         int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
-                           + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
-                           + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
-                           + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
-                           + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
+                + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
+                + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
+                + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
+                + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
         validateTradeBalanceIsZero(tradingBalance);
         validateTradeIsNotEmpty(brickQuantityToTrade, woodQuantityToTrade, sheepQuantityToTrade, wheatQuantityToTrade, stoneQuantityToTrade);
 

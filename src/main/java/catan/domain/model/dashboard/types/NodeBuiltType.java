@@ -1,5 +1,7 @@
 package catan.domain.model.dashboard.types;
 
+import catan.domain.model.game.types.GameStage;
+
 public enum NodeBuiltType{
     SETTLEMENT(1),
     CITY(2);
@@ -10,7 +12,9 @@ public enum NodeBuiltType{
         this.resourceQuantityToAdd = resourceQuantityToAdd;
     }
 
-    public int getResourceQuantityToAdd() {
-        return this.resourceQuantityToAdd;
+    public int getResourceQuantityToAdd(GameStage stage) {
+        return GameStage.MAIN.equals(stage)
+                ? this.resourceQuantityToAdd
+                : 1;
     }
 }

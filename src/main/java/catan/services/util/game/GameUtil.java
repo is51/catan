@@ -49,6 +49,9 @@ public class GameUtil {
                 Arrays.asList(GameUserActionCode.BUILD_SETTLEMENT, GameUserActionCode.BUILD_ROAD),
                 Arrays.asList(GameUserActionCode.BUILD_CITY, GameUserActionCode.BUILD_ROAD),
                 Arrays.asList(GameUserActionCode.BUILD_SETTLEMENT, GameUserActionCode.BUILD_ROAD)));
+        initialBuildingsSetsMap.put(3, Arrays.asList(
+                Arrays.asList(GameUserActionCode.BUILD_CITY, GameUserActionCode.BUILD_ROAD),
+                Arrays.asList(GameUserActionCode.BUILD_CITY, GameUserActionCode.BUILD_ROAD)));
     }
 
     public int toValidVictoryPoints(String inputTargetVictoryPoints) throws GameException {
