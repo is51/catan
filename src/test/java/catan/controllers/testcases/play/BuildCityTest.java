@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThan;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -125,14 +126,14 @@ public class BuildCityTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_fail_when_build_settlement_if_user_does_not_have_resources_in_main_stage() {
+    public void should_fail_when_build_settlement_if_user_does_not_have_enough_resources_in_main_stage() {
         startNewGame(12, 1);
         playPreparationStage()
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.stone", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", lessThan(2))
+                .getGameDetails(1).gameUser(1).check("resources.stone", lessThan(3))
                 .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUILD_CITY")
 
                 .BUILD_CITY(1).atNode(1, -1, "top").failsWithError("ERROR");

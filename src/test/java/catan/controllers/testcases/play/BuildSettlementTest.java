@@ -112,7 +112,7 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_fail_when_build_settlement_if_user_does_not_have_resources_in_main_stage() {
+    public void should_fail_when_build_settlement_if_user_does_not_have_enough_resources_in_main_stage() {
         startNewGame();
         playPreparationStage();
         giveResourcesToPlayerForRoadBuilding(1)
@@ -122,8 +122,8 @@ public class BuildSettlementTest extends PlayTestUtil {
 
                 .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
                 .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", is(1))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", is(1))
                 .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUILD_SETTLEMENT")
 
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").failsWithError("ERROR");

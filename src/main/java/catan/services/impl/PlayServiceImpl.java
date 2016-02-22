@@ -172,18 +172,16 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildSettlementOnNode(gameUser, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(gameUser, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
-        preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
-
         if (GameStage.MAIN.equals(game.getStage())) {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.BRICK, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WOOD, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 1);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.SHEEP, 1);
+            achievementsUtil.updateLongestWayLengthIfInterrupted(game, gameUser, nodeToBuildOn);
         } else if (GameStage.PREPARATION.equals(game.getStage())) {
             preparationStageUtil.distributeResourcesForLastBuilding(nodeToBuildOn);
+            preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
         }
-
-        achievementsUtil.updateLongestWayLengthIfInterrupted(game, gameUser, nodeToBuildOn);
     }
 
     private void buildCity(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
@@ -191,13 +189,12 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildCityOnNode(gameUser, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(gameUser, nodeToBuildOn, NodeBuiltType.CITY);
 
-        preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
-
         if (GameStage.MAIN.equals(game.getStage())) {
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.WHEAT, 2);
             mainStageUtil.takeResourceFromPlayer(usersResources, HexType.STONE, 3);
         } else if (GameStage.PREPARATION.equals(game.getStage())) {
             preparationStageUtil.distributeResourcesForLastBuilding(nodeToBuildOn);
+            preparationStageUtil.updateCurrentCycleInitialBuildingNumber(game);
         }
     }
 

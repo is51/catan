@@ -29,6 +29,7 @@ import static catan.services.impl.GameServiceImpl.ALREADY_JOINED_ERROR;
 import static catan.services.impl.GameServiceImpl.ERROR_CODE_ERROR;
 import static catan.services.impl.GameServiceImpl.INVALID_CODE_ERROR;
 import static catan.services.impl.GameServiceImpl.MIN_TARGET_VICTORY_POINTS;
+import static java.util.Collections.singletonList;
 
 @Component
 public class GameUtil {
@@ -52,6 +53,8 @@ public class GameUtil {
         initialBuildingsSetsMap.put(3, Arrays.asList(
                 Arrays.asList(GameUserActionCode.BUILD_CITY, GameUserActionCode.BUILD_ROAD),
                 Arrays.asList(GameUserActionCode.BUILD_CITY, GameUserActionCode.BUILD_ROAD)));
+        initialBuildingsSetsMap.put(4, singletonList(
+                singletonList(GameUserActionCode.BUILD_SETTLEMENT)));
     }
 
     public int toValidVictoryPoints(String inputTargetVictoryPoints) throws GameException {

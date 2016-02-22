@@ -170,7 +170,7 @@ public class PreparationStageUtil {
             numberOfLastDistributableBuildingInLastCycle--;
         }
 
-        if(game.getCurrentCycleBuildingNumber().equals(numberOfLastDistributableBuildingInLastCycle)){
+        if(!game.getCurrentCycleBuildingNumber().equals(numberOfLastDistributableBuildingInLastCycle)){
            // User builds not last Settlement or City in last cycle, should not distribute resources from hexes
            return;
         }
