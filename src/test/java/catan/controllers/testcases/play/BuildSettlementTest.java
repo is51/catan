@@ -232,6 +232,29 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
+    @Test
+    public void should_successfully_give_resources_to_player_when_build_last_initial_settlement_in_preparation_stage_2() {
+        startNewGame(12, 4)
+                .startTrackResourcesQuantity()
+
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "bottomLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, -1, "top")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(1, 0, 0, 1, 1);
+    }
+
     private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
         return scenario
                 .nextRandomDiceValues(asList(moveOrder, moveOrder))
@@ -263,6 +286,10 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     private Scenario startNewGame() {
+        return startNewGame(12, 1);
+    }
+
+    private Scenario startNewGame(int targetVictoryPoints, int initialBuildingSet) {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
@@ -292,7 +319,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .setHex(HexType.WHEAT, 2).atCoordinates(-1, 2)
                 .setHex(HexType.BRICK, 6).atCoordinates(0, 2)
 
-                .createNewPublicGameByUser(USER_NAME_1)
+                .createNewPublicGameByUser(USER_NAME_1, targetVictoryPoints, initialBuildingSet)
                 .joinPublicGame(USER_NAME_2)
                 .joinPublicGame(USER_NAME_3)
 
