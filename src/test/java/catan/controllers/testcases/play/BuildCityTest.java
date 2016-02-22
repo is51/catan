@@ -138,12 +138,38 @@ public class BuildCityTest extends PlayTestUtil {
                 .BUILD_CITY(1).atNode(1, -1, "top").failsWithError("ERROR");
     }
 
-    /*
     @Test
     public void should_successfully_give_resources_to_player_when_build_last_initial_city_in_preparation_stage() {
-    // TODO: implement this test case when new initial set would appear where CITY/ROAD should be the last initial building
+        startNewGame(12, 3)
+                .startTrackResourcesQuantity()
+                .BUILD_CITY(1).atNode(2, -2, "topLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_CITY(2).atNode(2, -1, "bottomRight")
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
+                .END_TURN(2)
+
+                .BUILD_CITY(3).atNode(0, 2, "topRight")
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
+                .END_TURN(3)
+
+                .BUILD_CITY(3).atNode(0, 0, "bottomRight")
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .BUILD_ROAD(3).atEdge(0, 0, "bottomRight")
+                .END_TURN(3)
+
+                .BUILD_CITY(2).atNode(0, 0, "bottomLeft")
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .BUILD_ROAD(2).atEdge(0, 0, "bottomLeft")
+                .END_TURN(2)
+
+                .BUILD_CITY(1).atNode(0, -1, "top")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 1, 2);
     }
-    */
 
     private Scenario giveResourcesToFirstPlayerForCityBuilding() {
         return scenario
