@@ -144,31 +144,43 @@ public class BuildCityTest extends PlayTestUtil {
                 .startTrackResourcesQuantity()
                 .BUILD_CITY(1).atNode(2, -2, "topLeft")
                 .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
                 .END_TURN(1)
 
                 .BUILD_CITY(2).atNode(2, -1, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
                 .END_TURN(2)
 
                 .BUILD_CITY(3).atNode(0, 2, "topRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .BUILD_ROAD(3).atEdge(0, 2, "topRight")
                 .END_TURN(3)
 
                 .BUILD_CITY(3).atNode(0, 0, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
                 .BUILD_ROAD(3).atEdge(0, 0, "bottomRight")
                 .END_TURN(3)
 
                 .BUILD_CITY(2).atNode(0, 0, "bottomLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .BUILD_ROAD(2).atEdge(0, 0, "bottomLeft")
                 .END_TURN(2)
 
                 .BUILD_CITY(1).atNode(0, -1, "top")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 1, 2);
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 1, 2)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     private Scenario giveResourcesToFirstPlayerForCityBuilding() {
