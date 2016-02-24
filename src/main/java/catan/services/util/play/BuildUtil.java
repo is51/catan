@@ -88,14 +88,14 @@ public class BuildUtil {
 
         for (NodeBean node : edgeToBuildOn.getNodes().listAllNotNullItems()) {
             if (GameStage.PREPARATION.equals(gameStage)) {
-                if (node.hasBuildingBelongsToUser(gameUser) && !node.hasGameUsersNeighbourRoad(gameUser)) {
+                if (node.hasBuildingBelongsToUser(gameUser) && !node.hasNeighbourRoadBelongsToGameUser(gameUser)) {
                     return;
                 }
                 continue;
             }
 
             if (node.getBuilding() == null) {
-                if (node.hasGameUsersNeighbourRoad(gameUser)) {
+                if (node.hasNeighbourRoadBelongsToGameUser(gameUser)) {
                     return;
                 }
             } else {
@@ -162,7 +162,7 @@ public class BuildUtil {
     }
 
     private void validateNoBuildingsCloseToNode(NodeBean nodeToBuildOn) throws PlayException {
-        if (!nodeToBuildOn.hasNoBuildingsOnNeighbourNodes()) {
+        if (!nodeToBuildOn.hasAllNeighbourNodesEmpty()) {
             log.debug("Cannot build building close to other settlements");
             throw new PlayException(ERROR_CODE_ERROR);
         }

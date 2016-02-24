@@ -104,7 +104,7 @@ public class ActionParamsUtil {
     private List<Integer> fetchNodeIdsToBuildOnInPreparationStage(GameBean game) {
         List<Integer> nodeIdsToBuildOn = new ArrayList<Integer>();
         for (NodeBean node : game.getNodes()) {
-            if (node.getBuilding() == null && node.hasNoBuildingsOnNeighbourNodes()) {
+            if (node.getBuilding() == null && node.hasAllNeighbourNodesEmpty()) {
                 nodeIdsToBuildOn.add(node.getId());
             }
         }
@@ -116,7 +116,7 @@ public class ActionParamsUtil {
         List<Integer> edgeIdsToBuildOn = new ArrayList<Integer>();
         for (NodeBean node : gameUser.getGame().getNodes()) {
             if (node.hasBuildingBelongsToUser(gameUser)
-                    && !node.hasGameUsersNeighbourRoad(gameUser)) {
+                    && !node.hasNeighbourRoadBelongsToGameUser(gameUser)) {
                 for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
                     edgeIdsToBuildOn.add(edge.getId());
                 }

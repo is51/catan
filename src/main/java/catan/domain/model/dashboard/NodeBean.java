@@ -136,11 +136,10 @@ public class NodeBean implements MapElement{
         return this.getBuilding() != null && this.getBuilding().getBuildingOwner().equals(gameUser);
     }
 
-    public boolean hasNoBuildingsOnNeighbourNodes() {
+    public boolean hasAllNeighbourNodesEmpty() {
         for (EdgeBean edge : getEdges().listAllNotNullItems()) {
             for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
                 if (!node.equals(this) && node.getBuilding() != null) {
-
                     return false;
                 }
             }
@@ -149,10 +148,9 @@ public class NodeBean implements MapElement{
         return true;
     }
 
-    public boolean hasGameUsersNeighbourRoad(GameUserBean gameUser) {
+    public boolean hasNeighbourRoadBelongsToGameUser(GameUserBean gameUser) {
         for (EdgeBean edge : getEdges().listAllNotNullItems()) {
             if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
-
                 return true;
             }
         }
@@ -173,7 +171,6 @@ public class NodeBean implements MapElement{
 
             for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
                 if (!node.equals(this) && node.getBuilding() != null) {
-
                     return false;
                 }
             }
