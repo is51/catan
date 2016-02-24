@@ -137,7 +137,7 @@ public class PlayServiceImpl implements PlayService {
                 kickOffResources(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
             case TRADE_PORT:
-                tradeResourcesInPort(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                tradeResourcesInPort(gameUser, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
             case TRADE_PROPOSE:
                 proposeTrade(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
@@ -414,7 +414,7 @@ public class PlayServiceImpl implements PlayService {
         checkRobberShouldBeMovedMandatory(game);
     }
 
-    private void tradeResourcesInPort(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+    private void tradeResourcesInPort(GameUserBean gameUser, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
 
         int usersBrickQuantity = userResources.getBrick();
         int usersWoodQuantity = userResources.getWood();
@@ -422,7 +422,7 @@ public class PlayServiceImpl implements PlayService {
         int usersWheatQuantity = userResources.getWheat();
         int usersStoneQuantity = userResources.getStone();
 
-        ResourcesParams resourcesParams = actionParamsUtil.calculateResourcesParams(gameUser, game);
+        ResourcesParams resourcesParams = actionParamsUtil.calculateTradePortParams(gameUser);
         int brickSellCoefficient = resourcesParams.getBrick();
         int woodSellCoefficient = resourcesParams.getWood();
         int sheepSellCoefficient = resourcesParams.getSheep();

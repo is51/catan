@@ -452,17 +452,6 @@ public class GameBean {
         return edges;
     }
 
-    public Set<NodePortType> fetchPortsAvailableForGameUser(GameUserBean gameUser) {
-        Set<NodePortType> portsAvailableForGameUser = new HashSet<NodePortType>();
-        for (NodeBean node : this.nodes) {
-            if (!node.getPort().equals(NodePortType.NONE) && node.getBuilding() != null && gameUser.equals(node.getBuilding().getBuildingOwner())) {
-                portsAvailableForGameUser.add(node.getPort());
-            }
-        }
-
-        return portsAvailableForGameUser;
-    }
-
     public Integer calculateDiceSumValue() {
         if (this.diceFirstValue == null || this.diceSecondValue == null) {
             return null;

@@ -1,8 +1,12 @@
 package catan.domain.model.game;
 
+import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.user.UserBean;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "GAME_USER")
@@ -192,6 +196,17 @@ public class GameUserBean {
 
     public void setDevelopmentCardsReadyForUsing(DevelopmentCards developmentCardsReadyForUsing) {
         this.developmentCardsReadyForUsing = developmentCardsReadyForUsing;
+    }
+
+    public Set<NodePortType> fetchAvailablePorts() {
+        Set<NodePortType> portsAvailableForGameUser = new HashSet<NodePortType>();
+        for (NodeBean node : this.getGame().getNodes()) {
+            if (!node.getPort().equals(NodePortType.NONE) && node.getBuilding() != null && this.equals(node.getBuilding().getBuildingOwner())) {
+                portsAvailableForGameUser.add(node.getPort());
+            }
+        }
+
+        return portsAvailableForGameUser;
     }
 
     @Override

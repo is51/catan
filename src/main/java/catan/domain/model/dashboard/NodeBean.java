@@ -132,24 +132,54 @@ public class NodeBean implements MapElement{
         this.edges = edges;
     }
 
-    public boolean noBuildingsOnNeighbourNodes() {
+    public boolean hasBuildingBelongsToUser(GameUserBean gameUser) {
+        return this.getBuilding() != null && this.getBuilding().getBuildingOwner().equals(gameUser);
+    }
+
+    public boolean hasNoBuildingsOnNeighbourNodes() {
         for (EdgeBean edge : getEdges().listAllNotNullItems()) {
             for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
                 if (!node.equals(this) && node.getBuilding() != null) {
+
                     return false;
                 }
             }
         }
+
         return true;
     }
 
-    public boolean nearGameUsersNeighbourRoad(GameUserBean gameUser) {
+    public boolean hasGameUsersNeighbourRoad(GameUserBean gameUser) {
         for (EdgeBean edge : getEdges().listAllNotNullItems()) {
             if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
+
                 return true;
             }
         }
+
         return false;
+    }
+
+    public boolean couldBeUsedForBuildingSettlementByGameUserInMainStage(GameUserBean gameUser) {
+        if (this.getBuilding() != null) {
+            return false;
+        }
+
+        boolean nodeHasGameUsersNeighbourRoad = false;
+        for (EdgeBean edge : getEdges().listAllNotNullItems()) {
+            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
+                nodeHasGameUsersNeighbourRoad = true;
+            }
+
+            for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
+                if (!node.equals(this) && node.getBuilding() != null) {
+
+                    return false;
+                }
+            }
+        }
+
+        return nodeHasGameUsersNeighbourRoad;
     }
 
     @Override

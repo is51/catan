@@ -6,7 +6,6 @@ import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
-import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
@@ -149,7 +148,7 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.getRoadsToBuildMandatory() > 0) {
-            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(game, gameUser));
+            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
             actionsList.add(new Action(GameUserActionCode.BUILD_ROAD, buildOnEdgeParams));
         }
     }
@@ -185,7 +184,7 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesToBuildCity(gameUser)) {
-            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildCityParams(game, gameUser));
+            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
             actionsList.add(new Action(GameUserActionCode.BUILD_CITY, buildOnNodeParams));
         }
     }
@@ -195,7 +194,7 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesForSettlement(gameUser)) {
-            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(game, gameUser));
+            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
             actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT, buildOnNodeParams));
         }
     }
@@ -205,7 +204,7 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesToBuildRoad(gameUser)) {
-            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(game, gameUser));
+            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
             actionsList.add(new Action(GameUserActionCode.BUILD_ROAD, buildOnEdgeParams));
         }
     }
@@ -266,7 +265,7 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()) {
-            ResourcesParams resourcesParams = actionParamsUtil.calculateResourcesParams(gameUser, game);
+            ResourcesParams resourcesParams = actionParamsUtil.calculateTradePortParams(gameUser);
             actionsList.add(new Action(GameUserActionCode.TRADE_PORT, resourcesParams));
         }
     }

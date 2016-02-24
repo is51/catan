@@ -88,16 +88,14 @@ public class BuildUtil {
 
         for (NodeBean node : edgeToBuildOn.getNodes().listAllNotNullItems()) {
             if (GameStage.PREPARATION.equals(gameStage)) {
-                if (node.getBuilding() != null
-                        && node.getBuilding().getBuildingOwner().equals(gameUser)
-                        && !node.nearGameUsersNeighbourRoad(gameUser)) {
+                if (node.hasBuildingBelongsToUser(gameUser) && !node.hasGameUsersNeighbourRoad(gameUser)) {
                     return;
                 }
                 continue;
             }
 
             if (node.getBuilding() == null) {
-                if (node.nearGameUsersNeighbourRoad(gameUser)) {
+                if (node.hasGameUsersNeighbourRoad(gameUser)) {
                     return;
                 }
             } else {
@@ -112,13 +110,12 @@ public class BuildUtil {
     }
 
     public void validateUserCanBuildSettlementOnNode(GameUserBean gameUser, GameStage gameStage, NodeBean nodeToBuildOn) throws PlayException {
-
-        validateNodeIsEmpty(nodeToBuildOn);
-        validateNoBuildingsCloseToNode(nodeToBuildOn);
-
-        if (gameStage.equals(GameStage.MAIN)) {
-            validateNearGameUsersNeighbourRoad(gameUser, nodeToBuildOn);
+        if (gameStage.equals(GameStage.PREPARATION)) {
+            validateNodeIsEmpty(nodeToBuildOn);
+            validateNoBuildingsCloseToNode(nodeToBuildOn);
+            return;
         }
+        validateNodeCouldBeUsedForBuildingSettlementByGameUserInMainStage(gameUser, nodeToBuildOn);
     }
 
     public void validateUserCanBuildCityOnNode(GameUserBean gameUser, GameStage gameStage, NodeBean nodeToBuildOn) throws GameException, PlayException {
@@ -157,15 +154,15 @@ public class BuildUtil {
         }
     }
 
-    private void validateNearGameUsersNeighbourRoad(GameUserBean gameUser, NodeBean nodeToBuildOn) throws PlayException {
-        if (!nodeToBuildOn.nearGameUsersNeighbourRoad(gameUser)) {
-            log.debug("Cannot build settlement without any connections with player's roads");
+    private void validateNodeCouldBeUsedForBuildingSettlementByGameUserInMainStage(GameUserBean gameUser, NodeBean nodeToBuildOn) throws PlayException {
+        if (!nodeToBuildOn.couldBeUsedForBuildingSettlementByGameUserInMainStage(gameUser)) {
+            log.debug("Cannot build settlement on node");
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
 
     private void validateNoBuildingsCloseToNode(NodeBean nodeToBuildOn) throws PlayException {
-        if (!nodeToBuildOn.noBuildingsOnNeighbourNodes()) {
+        if (!nodeToBuildOn.hasNoBuildingsOnNeighbourNodes()) {
             log.debug("Cannot build building close to other settlements");
             throw new PlayException(ERROR_CODE_ERROR);
         }

@@ -115,15 +115,15 @@ public class PreparationStageUtil {
                 Action actionToAdd;
                 switch (actionCode) {
                     case BUILD_SETTLEMENT:
-                        BuildOnNodeParams buildSettlementParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(game, gameUser));
+                        BuildOnNodeParams buildSettlementParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
                         actionToAdd = new Action(actionCode, buildSettlementParams);
                         break;
                     case BUILD_CITY:
-                        BuildOnNodeParams buildCityParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildCityParams(game, gameUser));
+                        BuildOnNodeParams buildCityParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
                         actionToAdd = new Action(actionCode, buildCityParams);
                         break;
                     case BUILD_ROAD:
-                        BuildOnEdgeParams buildRoadParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(game, gameUser));
+                        BuildOnEdgeParams buildRoadParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
                         actionToAdd = new Action(actionCode, buildRoadParams);
                         break;
                     default:

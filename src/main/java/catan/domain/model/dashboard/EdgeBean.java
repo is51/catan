@@ -118,7 +118,7 @@ public class EdgeBean implements MapElement {
     public Set<EdgeBean> fetchNeighborEdgesAccessibleForBuildingRoad(GameUserBean gameUser) {
         Set<EdgeBean> edges = new HashSet<EdgeBean>();
         for (NodeBean node : getNodes().listAllNotNullItems()) {
-            if (node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser)) {
+            if (node.hasBuildingBelongsToUser(gameUser)) {
                 continue;
             }
             for (EdgeBean neighborEdge : node.getEdges().listAllNotNullItems()) {
