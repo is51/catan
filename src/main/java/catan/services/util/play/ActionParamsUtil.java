@@ -76,6 +76,7 @@ public class ActionParamsUtil {
                     nodeIdsToBuildOn.add(node.getId());
                 }
             }
+            break;
         }
 
         return nodeIdsToBuildOn;
