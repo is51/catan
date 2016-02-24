@@ -2,14 +2,14 @@ package catan.domain.model.game.actions;
 
 import java.util.List;
 
-public class BuildOnNodeParams extends ActionParams {
+public class ActionOnNodeParams extends ActionParams {
 
     private List<Integer> nodeIds;
 
-    public BuildOnNodeParams() {
+    public ActionOnNodeParams() {
     }
 
-    public BuildOnNodeParams(List<Integer> nodeIds) {
+    public ActionOnNodeParams(List<Integer> nodeIds) {
         this.nodeIds = nodeIds;
     }
 

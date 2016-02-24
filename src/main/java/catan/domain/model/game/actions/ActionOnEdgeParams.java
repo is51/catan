@@ -2,14 +2,14 @@ package catan.domain.model.game.actions;
 
 import java.util.List;
 
-public class BuildOnEdgeParams extends ActionParams {
+public class ActionOnEdgeParams extends ActionParams {
 
     private List<Integer> edgeIds;
 
-    public BuildOnEdgeParams() {
+    public ActionOnEdgeParams() {
     }
 
-    public BuildOnEdgeParams(List<Integer> edgeIds) {
+    public ActionOnEdgeParams(List<Integer> edgeIds) {
         this.edgeIds = edgeIds;
     }
 

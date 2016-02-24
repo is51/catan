@@ -1,6 +1,7 @@
 package catan.services.util.play;
 
 import catan.domain.model.dashboard.EdgeBean;
+import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
@@ -62,6 +63,22 @@ public class ActionParamsUtil {
         }
 
         return edgeIdsToBuildOn;
+    }
+
+    public List<Integer> calculateChoosePlayerToRobParams(GameUserBean gameUser) {
+        List<Integer> nodeIdsToBuildOn = new ArrayList<Integer>();
+        for (HexBean hex : gameUser.getGame().getHexes()) {
+            if (!hex.isRobbed()) {
+                continue;
+            }
+            for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
+                if (node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser)) {
+                    nodeIdsToBuildOn.add(node.getId());
+                }
+            }
+        }
+
+        return nodeIdsToBuildOn;
     }
 
     public ResourcesParams calculateTradePortParams(GameUserBean gameUser) {

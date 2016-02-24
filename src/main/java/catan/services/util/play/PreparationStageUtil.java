@@ -5,8 +5,8 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
-import catan.domain.model.game.actions.BuildOnEdgeParams;
-import catan.domain.model.game.actions.BuildOnNodeParams;
+import catan.domain.model.game.actions.ActionOnEdgeParams;
+import catan.domain.model.game.actions.ActionOnNodeParams;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
@@ -115,15 +115,15 @@ public class PreparationStageUtil {
                 Action actionToAdd;
                 switch (actionCode) {
                     case BUILD_SETTLEMENT:
-                        BuildOnNodeParams buildSettlementParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
+                        ActionOnNodeParams buildSettlementParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
                         actionToAdd = new Action(actionCode, buildSettlementParams);
                         break;
                     case BUILD_CITY:
-                        BuildOnNodeParams buildCityParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
+                        ActionOnNodeParams buildCityParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
                         actionToAdd = new Action(actionCode, buildCityParams);
                         break;
                     case BUILD_ROAD:
-                        BuildOnEdgeParams buildRoadParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
+                        ActionOnEdgeParams buildRoadParams = new ActionOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
                         actionToAdd = new Action(actionCode, buildRoadParams);
                         break;
                     default:
