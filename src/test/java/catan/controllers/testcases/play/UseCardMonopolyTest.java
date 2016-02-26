@@ -65,13 +65,13 @@ public class UseCardMonopolyTest extends PlayTestUtil {
                 .USE_CARD_MONOPOLY(1, "STONE").successfully()
 
                 .getGameDetails(1)
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 4)
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 6)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, -1, 0)
                 .getGameDetails(2)
-                    .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, -2)
+                    .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, -3)
                     .gameUser(2).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
                 .getGameDetails(3)
-                    .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -2)
+                    .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -3)
                     .gameUser(3).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
@@ -82,7 +82,7 @@ public class UseCardMonopolyTest extends PlayTestUtil {
 
                 .USE_CARD_MONOPOLY(1, "STONE").successfully()
 
-                .takenResourcesQuantityIs(4);
+                .takenResourcesQuantityIs(6);
     }
 
     @Test

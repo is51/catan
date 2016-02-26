@@ -91,12 +91,12 @@ public class KickOffResourcesTest extends PlayTestUtil {
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
 
                 .startTrackResourcesQuantity()
-                .KICK_OFF_RESOURCES(1, 2, 3, 0, 0, 1).successfully()
+                .KICK_OFF_RESOURCES(1, 2, 3, 0, 0, 2).successfully()
 
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
-                    .gameUser(1).resourcesQuantityChangedBy(-2, -3, 0, 0, -1)
+                    .gameUser(1).resourcesQuantityChangedBy(-2, -3, 0, 0, -2)
 
                 .getGameDetails(2)
                     .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
@@ -106,7 +106,7 @@ public class KickOffResourcesTest extends PlayTestUtil {
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
                     .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
-                .KICK_OFF_RESOURCES(2, 4, 0, 0, 0, 0).successfully()
+                .KICK_OFF_RESOURCES(2, 5, 0, 0, 0, 0).successfully()
 
                 .getGameDetails(1)
                     .gameUser(1).hasAvailableAction("MOVE_ROBBER")
@@ -115,7 +115,7 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(2)
                     .gameUser(2).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
-                    .gameUser(2).resourcesQuantityChangedBy(-4, 0, 0, 0, 0)
+                    .gameUser(2).resourcesQuantityChangedBy(-5, 0, 0, 0, 0)
 
                 .getGameDetails(3)
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")

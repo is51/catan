@@ -20,6 +20,7 @@ import static catan.domain.model.dashboard.types.HexType.STONE;
 import static catan.domain.model.dashboard.types.HexType.WHEAT;
 import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
@@ -83,6 +84,19 @@ public class MoveRobberTest extends PlayTestUtil {
     @Test
     public void should_successfully_move_robber_hex_with_1_building_and_dont_steal_resource_from_player_when_he_has_no_resources() {
         playPreparationStage()
+                .nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(1)
+                .END_TURN(1)
+                .nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(2)
+                .nextOfferIds(singletonList(8888))
+                .TRADE_PROPOSE(2).withResources(0, 1, 0, 0, -1).successfully()
+                .TRADE_ACCEPT(1).withOfferId(8888)
+                .BUILD_ROAD(2).atEdge(1, -2, "topLeft")
+                .END_TURN(2)
+                .nextRandomDiceValues(asList(1, 1))
+                .THROW_DICE(3)
+                .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3))
                 .THROW_DICE(1)
 
@@ -101,15 +115,6 @@ public class MoveRobberTest extends PlayTestUtil {
     @Test
     public void should_successfully_move_robber_to_hex_with_1_building_and_steal_1_resource_from_player_when_he_has_1_resource() {
         playPreparationStage()
-                .nextRandomDiceValues(asList(1, 1))
-                .THROW_DICE(1)
-                .END_TURN(1)
-                .nextRandomDiceValues(asList(1, 1))
-                .THROW_DICE(2)
-                .END_TURN(2)
-                .nextRandomDiceValues(asList(1, 2)) //Give 1 sheep to second player
-                .THROW_DICE(3)
-                .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
                 .THROW_DICE(1)
 
@@ -121,10 +126,10 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
                 .gameUser(1).hasAvailableAction("END_TURN")
-                .gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
 
                 .getGameDetails(2)
-                .gameUser(2).resourcesQuantityChangedBy(0, 0, -1, 0, 0);
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, -1);
     }
 
     @Test
@@ -217,22 +222,19 @@ public class MoveRobberTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
                 .END_TURN(1)
-                .startTrackResourcesQuantity()
-
-                .nextRandomDiceValues(asList(4, 4))//Give 1 brick to second player
+                .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(2)
-                .getGameDetails(2)
-                .gameUser(2).resourcesQuantityChangedBy(1, 0, 0, 0, 0)
-
+                .nextOfferIds(singletonList(8888))
+                .TRADE_PROPOSE(2).withResources(0, 1, 0, 0, -1).successfully()
+                .TRADE_ACCEPT(1).withOfferId(8888)
+                .BUILD_ROAD(2).atEdge(1, -2, "topLeft") // Player 2 has no resources
                 .END_TURN(2)
-                .nextRandomDiceValues(asList(1, 2)) //Give 1 sheep to second player
+                .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(3)
-                .getGameDetails(2)
-                .gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
-
                 .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
                 .THROW_DICE(1)
+                .startTrackResourcesQuantity()
 
                 .MOVE_ROBBER(1).toCoordinates(0, -2).successfully()
 
@@ -242,7 +244,7 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).doesntHaveAvailableAction("END_TURN")
                 .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
 
-                .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(3).successfully()
+                .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(2).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)

@@ -1,6 +1,9 @@
 package catan.services.util.play;
 
 import catan.domain.exception.GameException;
+import catan.domain.model.dashboard.HexBean;
+import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -55,21 +58,23 @@ public class PreparationStageUtil {
     }
 
     public void updateCurrentCycleInitialBuildingNumber(GameBean game) {
-        if (game.getStage().equals(GameStage.PREPARATION)) {
-            List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
-            Integer numberOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
-            Integer currentCycleBuildingNumber = game.getCurrentCycleBuildingNumber();
-
-            if (numberOfBuildingsInCycle.equals(currentCycleBuildingNumber)) {
-                game.setCurrentCycleBuildingNumber(null);
-            } else if (currentCycleBuildingNumber == null) {
-                game.setCurrentCycleBuildingNumber(1);
-            } else {
-                game.setCurrentCycleBuildingNumber(currentCycleBuildingNumber + 1);
-            }
-
-            log.debug("Current Cycle Building Number changed from {} to {}", currentCycleBuildingNumber, game.getCurrentCycleBuildingNumber());
+        if (!game.getStage().equals(GameStage.PREPARATION)) {
+            return;
         }
+
+        List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+        Integer quantityOfBuildingsInCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1).size();
+        Integer currentCycleBuildingNumber = game.getCurrentCycleBuildingNumber();
+
+        if (quantityOfBuildingsInCycle.equals(currentCycleBuildingNumber)) {
+            game.setCurrentCycleBuildingNumber(null);
+        } else if (currentCycleBuildingNumber == null) {
+            game.setCurrentCycleBuildingNumber(1);
+        } else {
+            game.setCurrentCycleBuildingNumber(currentCycleBuildingNumber + 1);
+        }
+
+        log.debug("Current Cycle Building Number changed from {} to {}", currentCycleBuildingNumber, game.getCurrentCycleBuildingNumber());
     }
 
     public void updateGameStageToMain(GameBean game) {
@@ -170,6 +175,39 @@ public class PreparationStageUtil {
         int indexOfCurrentBuildingNumberInCycle = game.getCurrentCycleBuildingNumber() - 1;
 
         return initialBuildingsSet.get(indexOfCurrentCycle).get(indexOfCurrentBuildingNumberInCycle);
+    }
+
+    public void distributeResourcesForLastBuilding(NodeBean nodeToBuildOn) {
+        GameBean game = nodeToBuildOn.getGame();
+        List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+
+        if (game.getPreparationCycle() < initialBuildingsSet.size()) {
+            // Currently it is not last preparation cycle
+            return;
+        }
+
+        List<GameUserActionCode> buildingsInLastPreparationCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1);
+
+        //find last distributable building in last cycle
+        Integer numberOfLastDistributableBuildingInLastCycle = buildingsInLastPreparationCycle.size();
+        while(buildingsInLastPreparationCycle.get(numberOfLastDistributableBuildingInLastCycle - 1).equals(GameUserActionCode.BUILD_ROAD)){
+            numberOfLastDistributableBuildingInLastCycle--;
+        }
+
+        if(!game.getCurrentCycleBuildingNumber().equals(numberOfLastDistributableBuildingInLastCycle)){
+           // User builds not last Settlement or City in last cycle, should not distribute resources from hexes
+           return;
+        }
+
+        log.debug("User builds last distributable building {} and will get resources from neighbour hexes", nodeToBuildOn.getBuilding().getBuilt());
+
+        for(HexBean sourceHex : nodeToBuildOn.getHexes().listAllNotNullItems()){
+            if(sourceHex.getResourceType().equals(HexType.EMPTY)){
+                continue;
+            }
+
+            ResourceUtil.produceResources(sourceHex, nodeToBuildOn.getBuilding(), log);
+        }
     }
 
     @Autowired
