@@ -1,12 +1,9 @@
 package catan.services.util.play;
 
 import catan.domain.exception.GameException;
-import catan.domain.model.dashboard.Building;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.dashboard.types.NodeBuiltType;
-import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
