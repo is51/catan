@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThan;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -125,17 +126,62 @@ public class BuildCityTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_fail_when_build_settlement_if_user_does_not_have_resources_in_main_stage() {
+    public void should_fail_when_build_settlement_if_user_does_not_have_enough_resources_in_main_stage() {
         startNewGame(12, 1);
         playPreparationStage()
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.stone", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", lessThan(2))
+                .getGameDetails(1).gameUser(1).check("resources.stone", lessThan(3))
                 .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUILD_CITY")
 
                 .BUILD_CITY(1).atNode(1, -1, "top").failsWithError("ERROR");
+    }
+
+    @Test
+    public void should_successfully_give_resources_to_player_when_build_last_initial_city_in_preparation_stage() {
+        startNewGame(12, 3)
+                .startTrackResourcesQuantity()
+                .BUILD_CITY(1).atNode(2, -2, "topLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_CITY(2).atNode(2, -1, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
+                .END_TURN(2)
+
+                .BUILD_CITY(3).atNode(0, 2, "topRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
+                .END_TURN(3)
+
+                .BUILD_CITY(3).atNode(0, 0, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .BUILD_ROAD(3).atEdge(0, 0, "bottomRight")
+                .END_TURN(3)
+
+                .BUILD_CITY(2).atNode(0, 0, "bottomLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(2).atEdge(0, 0, "bottomLeft")
+                .END_TURN(2)
+
+                .BUILD_CITY(1).atNode(0, -1, "top")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 1, 2)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
     }
 
     private Scenario giveResourcesToFirstPlayerForCityBuilding() {
