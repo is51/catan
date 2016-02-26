@@ -44,18 +44,28 @@ angular.module('catan')
                     });
 
                     element.on('click', DrawMapService.NODE_SELECTOR, function(event) {
-                        var nodeId = +angular.element(event.target).closest(DrawMapService.NODE_SELECTOR).attr('node-id');
-                        SelectService.select('node', nodeId);
+                        var nodeElement = angular.element(event.target).closest(DrawMapService.NODE_SELECTOR);
+                        if (nodeElement.attr('marked')) {
+                            var nodeId = +nodeElement.attr('node-id');
+                            SelectService.select('node', nodeId);
+                        }
                     });
 
                     element.on('click', DrawMapService.EDGE_SELECTOR, function(event) {
-                        var edgeId = +angular.element(event.target).closest(DrawMapService.EDGE_SELECTOR).attr('edge-id');
-                        SelectService.select('edge', edgeId);
+                        var edgeElement = angular.element(event.target).closest(DrawMapService.EDGE_SELECTOR);
+                        if (edgeElement.attr('marked')) {
+                            var edgeId = +edgeElement.attr('edge-id');
+                            SelectService.select('edge', edgeId);
+                        }
                     });
 
                     element.on('click', DrawMapService.HEX_SELECTOR, function(event) {
-                        var hexId = +angular.element(event.target).closest(DrawMapService.HEX_SELECTOR).attr('hex-id');
-                        SelectService.select('hex', hexId);
+                        var hexElement = angular.element(event.target).closest(DrawMapService.HEX_SELECTOR);
+                        //TODO: uncomment once US93 is finished
+                        //if (hexElement.attr('marked')) {
+                            var hexId = +hexElement.attr('hex-id');
+                            SelectService.select('hex', hexId);
+                        //}
                     });
 
                 }
