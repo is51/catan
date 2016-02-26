@@ -112,7 +112,7 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_fail_when_build_settlement_if_user_does_not_have_resources_in_main_stage() {
+    public void should_fail_when_build_settlement_if_user_does_not_have_enough_resources_in_main_stage() {
         startNewGame();
         playPreparationStage();
         giveResourcesToPlayerForRoadBuilding(1)
@@ -122,8 +122,8 @@ public class BuildSettlementTest extends PlayTestUtil {
 
                 .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
                 .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", is(1))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", is(1))
                 .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUILD_SETTLEMENT")
 
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").failsWithError("ERROR");
@@ -176,57 +176,84 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(2).node(0, 0, "topRight").buildingBelongsToPlayer(2);
     }
 
-    public void OLD_should_fail_if_try_to_build_settlement_close_to_another_settlement_less_than_2_roads_in_preparation_stage() {
-        String userToken1 = loginUser(USER_NAME_1, USER_PASSWORD_1);
-        String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
-        String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
-
-        int gameId = createNewGame(userToken1, false).path("gameId");
-        int nodeIdToBuildFirst = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topLeftId");
-        int nodeIdToBuildSecond = viewGame(userToken1, gameId).path("map.hexes[0].nodesIds.topId");
-        int gameUserId1 = viewGame(userToken1, gameId).path("gameUsers[0].id");
-
-        joinPublicGame(userToken2, gameId);
-        joinPublicGame(userToken3, gameId);
-
-        setUserReady(userToken1, gameId);
-        setUserReady(userToken2, gameId);
-        setUserReady(userToken3, gameId);
-
-        viewGame(userToken1, gameId)
-                .then()
-                .statusCode(200)
-                .body("map.hexes[0].nodesIds.topLeftId", is(nodeIdToBuildFirst))
-                .body("map.nodes.find {it.nodeId == " + nodeIdToBuildFirst + "}.building", nullValue())
-                .body("status", equalTo("PLAYING"));
-
-        buildSettlement(userToken1, gameId, nodeIdToBuildFirst)
-                .then()
-                .statusCode(200);
-
-        viewGame(userToken1, gameId)
-                .then()
-                .statusCode(200)
-                .body("status", equalTo("PLAYING"))
-                .body("map.hexes[0].nodesIds.topLeftId", is(nodeIdToBuildFirst))
-                .rootPath("map.nodes.find {it.nodeId == " + nodeIdToBuildFirst + "}")
-                .body("building", notNullValue())
-                .body("building.ownerGameUserId", is(gameUserId1))
-                .body("building.built", equalTo("SETTLEMENT"));
-
-
-        buildSettlement(userToken2, gameId, nodeIdToBuildSecond)
-                .then()
-                .statusCode(400)
-                .body("errorCode", equalTo("ERROR"));
-    }
-
-    /*
     @Test
-    public void should_fail_if_try_to_build_settlement_and_there_are_no_neighbour_roads_that_belongs_to_this_player_when_game_status_is_not_preparation() {
-        //TODO: IMPLEMENT WHEN PREPARATION STATUS IS IMPLEMENTED
+    public void should_fail_if_try_to_build_settlement_and_there_are_no_neighbour_roads_that_belongs_to_this_player_in_main_stage() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForSettlementBuilding(1)
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+
+                .BUILD_SETTLEMENT(1).atNode(-2, 2, "bottomLeft").failsWithError("ERROR");
     }
-    */
+
+    @Test
+    public void should_successfully_give_resources_to_player_when_build_last_initial_settlement_in_preparation_stage() {
+        startNewGame()
+                .startTrackResourcesQuantity()
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(2, -1, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, 2, "topRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
+                .END_TURN(3)
+
+                .BUILD_SETTLEMENT(3).atNode(0, 0, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .BUILD_ROAD(3).atEdge(0, 0, "bottomRight")
+                .END_TURN(3)
+
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "bottomLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .BUILD_ROAD(2).atEdge(0, 0, "bottomLeft")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(1).atNode(0, -1, "top")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 1, 1)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_successfully_give_resources_to_player_when_build_last_initial_settlement_in_preparation_stage_2() {
+        startNewGame(12, 4)
+                .startTrackResourcesQuantity()
+
+                .BUILD_SETTLEMENT(1).atNode(0, 0, "bottomRight")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(0, 0, "bottomLeft")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, -1, "top")
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(1, 0, 0, 1, 1);
+    }
 
     private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
         return scenario
@@ -259,6 +286,10 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     private Scenario startNewGame() {
+        return startNewGame(12, 1);
+    }
+
+    private Scenario startNewGame(int targetVictoryPoints, int initialBuildingSet) {
         return scenario
                 .loginUser(USER_NAME_1, USER_PASSWORD_1)
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
@@ -288,7 +319,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .setHex(HexType.WHEAT, 2).atCoordinates(-1, 2)
                 .setHex(HexType.BRICK, 6).atCoordinates(0, 2)
 
-                .createNewPublicGameByUser(USER_NAME_1)
+                .createNewPublicGameByUser(USER_NAME_1, targetVictoryPoints, initialBuildingSet)
                 .joinPublicGame(USER_NAME_2)
                 .joinPublicGame(USER_NAME_3)
 

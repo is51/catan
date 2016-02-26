@@ -14,12 +14,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static catan.domain.model.dashboard.types.HexType.BRICK;
-import static catan.domain.model.dashboard.types.HexType.EMPTY;
-import static catan.domain.model.dashboard.types.HexType.SHEEP;
-import static catan.domain.model.dashboard.types.HexType.STONE;
-import static catan.domain.model.dashboard.types.HexType.WHEAT;
-import static catan.domain.model.dashboard.types.HexType.WOOD;
 import static catan.domain.model.game.types.DevelopmentCard.KNIGHT;
 import static catan.domain.model.game.types.DevelopmentCard.MONOPOLY;
 import static catan.domain.model.game.types.DevelopmentCard.ROAD_BUILDING;
@@ -84,8 +78,8 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
-                .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
+                .getGameDetails(1).gameUser(1).check("resources.wheat", is(1))
+                .getGameDetails(1).gameUser(1).check("resources.sheep", is(1))
                 .getGameDetails(1).gameUser(1).check("resources.stone", is(0))
                 .getGameDetails(1).gameUser(1).doesntHaveAvailableAction("BUY_CARD")
 

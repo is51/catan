@@ -68,6 +68,9 @@ public class GameBean {
     @Column(name = "GAME_STAGE", unique = false)
     private GameStage stage;
 
+    /**
+     * Number of current preparation cycle, starting from 1. Can be NULL if it not PREPARATION mode
+     */
     @Column(name = "PREPARATION_CYCLE", unique = false, nullable = true)
     private Integer preparationCycle;
 
@@ -83,6 +86,9 @@ public class GameBean {
     @Column(name = "INITIAL_BUILDINGS_SET", unique = false, nullable = false)
     private String initialBuildingsSet;
 
+    /**
+     * Number of current building in current preparation cycle, starting from 1. Can be null if it not PREPARATION mode or last building in a cycle was built
+     */
     //TODO: think about renaming of this field as it will be used only in preparation stage
     @Column(name = "CURRENT_CYCLE_BUILDING_NUMBER", unique = false, nullable = true)
     private Integer currentCycleBuildingNumber;
