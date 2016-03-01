@@ -24,7 +24,9 @@ angular.module('catan')
                 var service = this;
                 $timeout(function() {
                     service.marked.nodeIds = nodeIds;
-                    service.marked.playerColor = gameUser.colorId;
+                    if (gameUser) {
+                        service.marked.playerColor = gameUser.colorId;
+                    }
                 });
             };
 
@@ -37,7 +39,9 @@ angular.module('catan')
                 var service = this;
                 $timeout(function() {
                     service.marked.edgeIds = edgeIds;
-                    service.marked.playerColor = gameUser.colorId;
+                    if (gameUser) {
+                        service.marked.playerColor = gameUser.colorId;
+                    }
                 });
             };
 
