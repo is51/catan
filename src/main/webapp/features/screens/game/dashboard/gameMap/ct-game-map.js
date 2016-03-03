@@ -119,7 +119,12 @@ angular.module('catan')
                 }
 
                 // Hexes
-                //TODO: write code here for hex choosing (following user story)
+                parentElement.find(".hex[marked]")
+                        .removeAttr("marked");
+                for (i = 0, l = markedElements.hexIds.length; i < l; i++) {
+                    el = parentElement.find('.hex[hex-id="' + markedElements.hexIds[i] + '"]');
+                    el.attr("marked", true);
+                }
             }
 
         }]);

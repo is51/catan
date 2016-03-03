@@ -52,7 +52,18 @@ ct-game-map [player-color="4"] {
 }
 
 ct-game-map .hex {
+
+}
+
+ct-game-map .hex[marked] {
     cursor: pointer;
+    fill-opacity: 0.6;
+}
+
+ct-game-map .hex[marked]:hover {
+    stroke: #000;
+    stroke-width: 1;
+    fill-opacity: 1;
 }
 
 ct-game-map .node {
