@@ -75,7 +75,7 @@ public class MapValidator {
                         ".building" + (buildingAttribute != null ? buildingAttribute : ""), matcher);
     }
 
-    private int getMapElementId() {
+    public int getMapElementId() {
         return scenario.currentGameDetails.extract().path(
                 "map.hexes" +
                         ".findAll { it.x == " + x + " }" +

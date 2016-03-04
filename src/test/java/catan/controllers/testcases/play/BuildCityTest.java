@@ -14,9 +14,12 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
 
@@ -56,63 +59,7 @@ public class BuildCityTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_not_take_resources_from_player_when_build_city_in_preparation_stage() {
-        startNewGame(12, 2)
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
-                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
-                .END_TURN(1)
-
-                .BUILD_SETTLEMENT(2).atNode(2, -1, "bottomRight")
-                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
-                .END_TURN(2)
-
-                .BUILD_SETTLEMENT(3).atNode(0, 2, "topRight")
-                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
-                .END_TURN(3)
-
-                .startTrackResourcesQuantity()
-
-                .BUILD_CITY(3).atNode(0, 0, "bottomRight")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
-    }
-
-    @Test
-    public void should_successfully_take_resources_from_player_when_build_city_in_main_stage() {
-        startNewGame(12, 1);
-        playPreparationStage();
-        giveResourcesToFirstPlayerForCityBuilding()
-                .nextRandomDiceValues(asList(6, 6))
-                .THROW_DICE(1)
-
-                .startTrackResourcesQuantity()
-
-                .BUILD_CITY(1).atNode(1, -1, "top")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, -2, -3);
-    }
-
-    @Test
-     public void should_successfully_build_city_even_if_user_does_not_have_resources_in_preparation_stage() {
-        startNewGame(12, 2)
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
-                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
-                .END_TURN(1)
-
-                .BUILD_SETTLEMENT(2).atNode(2, -1, "bottomRight")
-                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
-                .END_TURN(2)
-
-                .BUILD_SETTLEMENT(3).atNode(0, 2, "topRight")
-                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
-                .END_TURN(3)
-
-                .getGameDetails(3).gameUser(3).check("resources.wheat", is(0))
-                .getGameDetails(3).gameUser(3).check("resources.stone", is(0))
-
-                .BUILD_CITY(3).atNode(0, 0, "bottomRight").successfully();
-    }
-
-    @Test
-    public void should_successfully_build_city_if_user_has_enough_resources_in_main_stage() {
+    public void should_successfully_build_city_and_take_resources_if_user_has_enough_resources_in_main_stage() {
         startNewGame(12, 1);
         playPreparationStage();
         giveResourcesToFirstPlayerForCityBuilding()
@@ -120,9 +67,17 @@ public class BuildCityTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1).gameUser(1).check("resources.wheat", greaterThanOrEqualTo(2))
-                .getGameDetails(1).gameUser(1).check("resources.stone", greaterThanOrEqualTo(3))
+                .getGameDetails(1).gameUser(1).check("resources.stone", greaterThanOrEqualTo(3));
 
-                .BUILD_CITY(1).atNode(1, -1, "top").successfully();
+        Set<Integer> allNodeIds = new HashSet<Integer>();
+        allNodeIds.add(scenario.node(1, -1, "top").getMapElementId());       // settlement of 1st user
+
+        scenario
+                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds)
+                .startTrackResourcesQuantity()
+
+                .BUILD_CITY(1).atNode(1, -1, "top").successfully()
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, -2, -3);
     }
 
     @Test
@@ -138,6 +93,76 @@ public class BuildCityTest extends PlayTestUtil {
 
                 .BUILD_CITY(1).atNode(1, -1, "top").failsWithError("ERROR");
     }
+
+    @Test
+    public void should_successfully_build_city_even_if_user_does_not_have_resources_in_preparation_stage() {
+        startNewGame(12, 2)
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+                .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
+                .END_TURN(1)
+
+                .BUILD_SETTLEMENT(2).atNode(2, -1, "bottomRight")
+                .BUILD_ROAD(2).atEdge(2, -1, "bottomRight")
+                .END_TURN(2)
+
+                .BUILD_SETTLEMENT(3).atNode(0, 2, "topRight")
+                .BUILD_ROAD(3).atEdge(0, 2, "topRight")
+                .END_TURN(3);
+
+        Set<Integer> allNodeIds = scenario.getAllNodeIds();
+        allNodeIds.remove(scenario.node(2, -2, "topLeft").getMapElementId());       // settlement of 1st user
+        allNodeIds.remove(scenario.node(2, -2, "bottomLeft").getMapElementId());    // bottom node to settlement of 1st user
+        allNodeIds.remove(scenario.node(2, -2, "top").getMapElementId());           // left node to settlement of 1st user
+        allNodeIds.remove(scenario.node(1, -2, "top").getMapElementId());           // right node to settlement of 1st user
+
+        allNodeIds.remove(scenario.node(2, -1, "bottomRight").getMapElementId());   // settlement of 2nd user
+        allNodeIds.remove(scenario.node(2, -1, "topRight").getMapElementId());      // top node to settlement of 2nd user
+        allNodeIds.remove(scenario.node(2, -1, "bottom").getMapElementId());        // left node to settlement of 2nd user
+        allNodeIds.remove(scenario.node(2, 0, "topRight").getMapElementId());       // right node to settlement of 2nd user
+
+        allNodeIds.remove(scenario.node(0, 2, "topRight").getMapElementId());       // settlement of 3rd user
+        allNodeIds.remove(scenario.node(0, 2, "bottomRight").getMapElementId());    // bottom node to settlement of 3rd user
+        allNodeIds.remove(scenario.node(0, 2, "top").getMapElementId());            // left node to settlement of 3rd user
+        allNodeIds.remove(scenario.node(1, 1, "bottomRight").getMapElementId());    // right node to settlement of 3rd user
+
+        scenario
+                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds)
+                .getGameDetails(3).gameUser(3).check("resources.wheat", is(0))
+                .getGameDetails(3).gameUser(3).check("resources.stone", is(0))
+                .startTrackResourcesQuantity()
+
+                .BUILD_CITY(3).atNode(0, 0, "bottomRight").successfully()
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void should_fail_if_try_to_build_city_on_existing_city_in_preparation_stage() {
+        startNewGame(12, 3);
+        Set<Integer> allNodeIds = scenario.getAllNodeIds();
+        Set<Integer> allNodeIdsExcludeUnavailable = new HashSet<Integer>(allNodeIds);
+
+        scenario
+                .gameUser(1).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds)
+                .BUILD_CITY(1).atNode(0, 0, "topLeft").successfully()
+                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
+                .END_TURN(1);
+
+        allNodeIdsExcludeUnavailable.remove(scenario.node(0, 0, "topLeft").getMapElementId());      // has building
+        allNodeIdsExcludeUnavailable.remove(scenario.node(0, 0, "bottomLeft").getMapElementId());   // bottom neighbour
+        allNodeIdsExcludeUnavailable.remove(scenario.node(0, 0, "top").getMapElementId());          // right neighbour
+        allNodeIdsExcludeUnavailable.remove(scenario.node(-1, 0, "top").getMapElementId());         // left neighbour
+
+        scenario
+                .getGameDetails(2).gameUser(2).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIdsExcludeUnavailable)
+
+                //When                              //Then
+                .BUILD_CITY(2).atNode(0, 0, "topLeft").failsWithError("ERROR")
+
+                //Check that this player still can build city on empty node
+                .getGameDetails(2).node(0, 0, "topRight").buildingIsEmpty()
+                .BUILD_CITY(2).atNode(0, 0, "topRight").successfully();
+    }
+
 
     @Test
     public void should_successfully_give_resources_to_player_when_build_last_initial_city_in_preparation_stage() {

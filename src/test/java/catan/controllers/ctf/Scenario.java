@@ -9,9 +9,12 @@ import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Matcher;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -55,6 +58,32 @@ public class Scenario {
     public Scenario(RandomUtilMock randomUtil) {
         randomUtil.resetMock();
         this.randomUtil = randomUtil;
+    }
+
+
+    public Set<Integer> getAllNodeIds() {
+        getGameDetails(1).gameUser(1);
+
+        Set<Integer> allNodeIds = new HashSet<Integer>();
+        List<String> nodeNames = Arrays.asList("topLeft", "top", "topRight", "bottomRight", "bottom", "bottomLeft");
+        List<int[]> possibleCoordinates = Arrays.asList(
+                new int[]{0, -2}, new int[]{1, -2}, new int[]{2, -2},
+                new int[]{-1, -1}, new int[]{0, -1}, new int[]{1, -1}, new int[]{2, -1},
+                new int[]{-2, 0}, new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0},
+                new int[]{-2, 1}, new int[]{-1, 1}, new int[]{0, 1}, new int[]{1, 1},
+                new int[]{-2, 2}, new int[]{-1, 2}, new int[]{0, 2});
+
+        for (int[] coordinates : possibleCoordinates) {
+            for (String nodeName : nodeNames) {
+                int x = coordinates[0];
+                int y = coordinates[1];
+                Integer nodeId = node(x, y, nodeName).getMapElementId();
+
+                allNodeIds.add(nodeId);
+            }
+        }
+
+        return allNodeIds;
     }
 
     public Scenario registerUser(String username, String password) {

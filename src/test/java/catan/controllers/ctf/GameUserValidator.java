@@ -2,7 +2,11 @@ package catan.controllers.ctf;
 
 import org.hamcrest.Matcher;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -116,20 +120,42 @@ public class GameUserValidator {
             check("availableActions.list.find {it.code == '" + action + "'}.params", notNullValue());
             for(String param : params){
                 String[] keyValue = param.split("=");
+                String parameterName = keyValue[0];
+                String strParamValue = keyValue[1];
 
-                String key = keyValue[0];
-                String strValue = keyValue[1];
-                Integer intValue;
-                try{
-                    intValue = Integer.valueOf(strValue);
-                } catch (Exception e){
-                    intValue = null;
+                if(strParamValue.contains("[") && strParamValue.contains("]")){
+                    compareArrayParameter(parameterName, strParamValue);
+                } else {
+                    compareSingleParameter(parameterName, strParamValue);
                 }
-
-                check("availableActions.list.find {it.code == '" + action + "'}.params." + key, equalTo(intValue != null ? intValue : strValue));
             }
 
             return scenario;
+        }
+
+        private void compareArrayParameter(String parameterName, String strArrayParamValue) {
+            String[] strItems = strArrayParamValue.replaceAll("\\[", "").replaceAll("\\]", "").split(", ");
+            List<Integer> intItems = new ArrayList<Integer>();
+            for(String strItem : strItems){
+                try {
+                    intItems.add(Integer.parseInt(strItem));
+                } catch (NumberFormatException ignored) {};
+            }
+
+            check("availableActions.list.find {it.code == '" + action + "'}.params." + parameterName,
+                    intItems.size() > 0 ? hasItems(intItems.toArray()) : hasItems(strItems));
+        }
+
+        private void compareSingleParameter(String parameterName, String strParamValue) {
+            Integer intParamValue;
+            try{
+                intParamValue = Integer.valueOf(strParamValue);
+            } catch (Exception e){
+                intParamValue = null;
+            }
+
+            check("availableActions.list.find {it.code == '" + action + "'}.params." + parameterName,
+                    equalTo(intParamValue != null ? intParamValue : strParamValue));
         }
 
         public Scenario withoutParameters(){
