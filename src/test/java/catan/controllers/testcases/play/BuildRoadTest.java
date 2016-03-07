@@ -15,6 +15,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -73,8 +76,19 @@ public class BuildRoadTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
-                .startTrackResourcesQuantity()
+                .startTrackResourcesQuantity();
 
+        Set<Integer> allEdgeIds = new HashSet<Integer>();
+        allEdgeIds.add(scenario.edge(2, -2, "topRight").getMapElementId());     // right edge of road of 1st user
+        allEdgeIds.add(scenario.edge(2, -2, "left").getMapElementId());         // bottom edge of settlement of 1st user
+        allEdgeIds.add(scenario.edge(1, -2, "topRight").getMapElementId());     // left edge of settlement of 1st user
+
+        allEdgeIds.add(scenario.edge(-1, -1, "left").getMapElementId());        // bottom edge of settlement of 1st user
+        allEdgeIds.add(scenario.edge(-2, 0, "topRight").getMapElementId());     // right edge of road of 1st user
+        allEdgeIds.add(scenario.edge(-2, 0, "left").getMapElementId());         // top edge of road of 1st user
+
+        scenario
+                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds)
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight").successfully()
                 .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(-1, -1, 0, 0, 0);
     }
@@ -82,8 +96,15 @@ public class BuildRoadTest extends PlayTestUtil {
     @Test
     public void should_successfully_build_road_even_if_user_does_not_have_resources_in_preparation_stage() {
         startNewGame()
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft");
 
+        Set<Integer> allEdgeIds = new HashSet<Integer>();
+        allEdgeIds.add(scenario.edge(2, -2, "topLeft").getMapElementId());      // right edge of settlement of 1st user
+        allEdgeIds.add(scenario.edge(2, -2, "left").getMapElementId());         // bottom edge of settlement of 1st user
+        allEdgeIds.add(scenario.edge(1, -2, "topRight").getMapElementId());     // left edge of settlement of 1st user
+
+        scenario
+                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds)
                 .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
                 .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
 
@@ -133,8 +154,15 @@ public class BuildRoadTest extends PlayTestUtil {
                 .BUILD_ROAD(3).atEdge(0, 2, "topLeft")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(3).atNode(-2, 2, "topLeft")
-                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD")
+                .BUILD_SETTLEMENT(3).atNode(-2, 2, "topLeft");
+
+        Set<Integer> allEdgeIds = new HashSet<Integer>();
+        allEdgeIds.add(scenario.edge(-2, 2, "topLeft").getMapElementId());      // right edge of settlement of 1st user
+        allEdgeIds.add(scenario.edge(-2, 2, "left").getMapElementId());         // bottom edge of settlement of 1st user
+        allEdgeIds.add(scenario.edge(-2, 1, "bottomLeft").getMapElementId());   // left edge of settlement of 1st user
+
+        scenario
+                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds)
 
                 .BUILD_ROAD(3).atEdge(0, 2, "topRight").failsWithError("ERROR");
     }
@@ -571,7 +599,7 @@ public class BuildRoadTest extends PlayTestUtil {
     /*
     *          (X, Y) coordinates of generated map:                          Node position at hex:
     *
-    *           *----*----*----*----*----*----*                                      top
+    *           *----*----*----*---(1)===*----*                                      top
     *           |   11    |    2    |     2   |                          topLeft *----*----* topRight
     *           |  STONE  |  BRICK  |   WOOD  |                                  |         |
     *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                       bottomLeft *----*----* bottomRight
@@ -579,7 +607,7 @@ public class BuildRoadTest extends PlayTestUtil {
     *      |    11   |    3    |    10   |    4    |
     *      |  STONE  |   WOOD  |  SHEEP  |  BRICK  |
     *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                        Edge position at hex:
-    * *----*----*----*----*----*----*----*----*----*----*
+    *(1)===*----*----*----*----*----*----*----*----*----*
     * |   11    |    4    |         |    3    |    4    |                      topLeft topRight
     * |  STONE  |  STONE  |  EMPTY  |  SHEEP  |   WOOD  |                        .====.====.
     * | (-2, 0) | (-1, 0) | ( 0, 0) | ( 1, 0) | ( 2, 0) |                  left ||         || right

@@ -71,6 +71,7 @@ public class BuildCityTest extends PlayTestUtil {
 
         Set<Integer> allNodeIds = new HashSet<Integer>();
         allNodeIds.add(scenario.node(1, -1, "top").getMapElementId());       // settlement of 1st user
+        allNodeIds.add(scenario.node(0, -1, "topLeft").getMapElementId());       // settlement of 1st user
 
         scenario
                 .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds)

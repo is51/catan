@@ -7,6 +7,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -141,7 +142,8 @@ public class GameUserValidator {
                     intItems.add(Integer.parseInt(strItem));
                 } catch (NumberFormatException ignored) {};
             }
-
+            check("availableActions.list.find {it.code == '" + action + "'}.params." + parameterName,
+                    intItems.size() > 0 ? hasSize(intItems.size()) : hasItems(strItems.length));
             check("availableActions.list.find {it.code == '" + action + "'}.params." + parameterName,
                     intItems.size() > 0 ? hasItems(intItems.toArray()) : hasItems(strItems));
         }

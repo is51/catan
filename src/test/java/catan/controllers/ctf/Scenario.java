@@ -78,8 +78,11 @@ public class Scenario {
                 int x = coordinates[0];
                 int y = coordinates[1];
                 Integer nodeId = node(x, y, nodeName).getMapElementId();
+                //Integer edgeId = edge(x, y, nodeName.equals("top") ? "left" : (nodeName.equals("bottom") ? "right" : nodeName)).getMapElementId();
 
                 allNodeIds.add(nodeId);
+                //System.out.println("Node - (" + x + "," + y + ") " + nodeName + ": " + nodeId);
+                //System.out.println("Edge - (" + x + "," + y + ") " + (nodeName.equals("top") ? "left" : (nodeName.equals("bottom") ? "right" : nodeName)) + ": " + edgeId);
             }
         }
 
@@ -289,6 +292,10 @@ public class Scenario {
 
     public MapValidator node(int x, int y, String nodePosition) {
         return new MapValidator(this, x, y, nodePosition, "node");
+    }
+
+    public MapValidator edge(int x, int y, String nodePosition) {
+        return new MapValidator(this, x, y, nodePosition, "edge");
     }
 
     public MapValidator hex(int x, int y) {
