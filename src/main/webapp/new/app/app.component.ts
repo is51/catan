@@ -1,47 +1,62 @@
 import { Component } from 'angular2/core';
-import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from 'angular2/router';
-import { HeroService } from './hero.service';
-import { HeroesComponent } from './heroes.component';
-import { DashboardComponent } from './dashboard.component';
-import { HeroDetailComponent } from './hero-detail.component';
+import { RouteConfig, RouterOutlet, ROUTER_PROVIDERS } from 'angular2/router';
+import { HTTP_PROVIDERS } from 'angular2/http';
+
+import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
+import { AuthService } from 'app/shared/services/auth/auth.service';
+import { AuthTokenService } from 'app/shared/services/auth/auth-token.service';
+import { RemoteService } from 'app/shared/services/remote/remote.service';
+import { GameService } from 'app/shared/services/game/game.service';
+import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
+
+import { StartPageComponent } from 'app/menu/start-page/start-page.component';
+import { LoginPageComponent } from 'app/menu/login-page/login-page.component';
+import { ContinueGamePageComponent } from 'app/menu/continue-game-page/continue-game-page.component';
+import { GamePageComponent } from 'app/menu/game-page/game-page.component';
 
 @Component({
-    selector: 'my-app',
-    template: `
-        <h1>{{title}}</h1>
-        <nav>
-            <a [routerLink]="['Dashboard']">Dashboard</a>
-            <a [routerLink]="['Heroes']">Heroes</a>
-        </nav>
-        <router-outlet></router-outlet>
-        `,
-    styleUrls: ['app/app.component.css'],
-    directives: [ROUTER_DIRECTIVES],
+    selector: 'ct-app',
+    template: '<router-outlet></router-outlet>',
+    directives: [RouterOutlet],
     providers: [
         ROUTER_PROVIDERS,
-        HeroService
+        HTTP_PROVIDERS,
+
+        AuthUserService,
+        AuthService,
+        AuthTokenService,
+        RemoteService,
+        GameService,
+        ModalWindowService
     ]
 })
 
 @RouteConfig([
     {
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: DashboardComponent,
+        path: '/',
+        name: 'StartPage',
+        component: StartPageComponent,
         useAsDefault: true
     },
     {
-        path: '/heroes',
-        name: 'Heroes',
-        component: HeroesComponent
+        path: '/login',
+        name: 'LoginPage',
+        component: LoginPageComponent
     },
     {
-        path: '/detail/:id',
-        name: 'HeroDetail',
-        component: HeroDetailComponent
+        path: '/continue',
+        name: 'ContinueGamePage',
+        component: ContinueGamePageComponent
+    },
+    {
+        path: '/game/:gameId',
+        name: 'GamePage',
+        component: GamePageComponent
     }
 ])
 
 export class AppComponent {
-    title = 'Tour of Heroes';
+    constructor(private _authUser: AuthUserService) {
+        this._authUser.load();
+    }
 }

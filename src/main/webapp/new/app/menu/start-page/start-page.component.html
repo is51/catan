@@ -1,0 +1,52 @@
+<div class="out-of-game">
+
+    <div *ngIf="authUser.isPending()" style="font-size: 2rem; color: lightgrey;" class="row">loading...</div>
+
+    <div *ngIf="authUser.isAuthorized()" style="font-size: 2rem;" class="row">
+
+    <span class="col-xs-12">
+
+        <div class="pull-right">
+            <a href="" class="btn btn-lg btn-default disabled">Settings / Profile</a>
+            &nbsp;
+            <a href="" ct-logout-button class="btn btn-lg btn-default">Log Out</a>
+        </div>
+
+        <div style="padding-top: 10px;">
+            &nbsp;
+            <i class="glyphicon glyphicon-user"></i>
+            &nbsp;
+            {{authUser.get().username}}
+        </div>
+
+    </span>
+
+    </div>
+
+
+    <div *ngIf="authUser.isNotAuthorized()" class="row">
+        <span class="col-xs-5">
+            <a [routerLink]="['LoginPage']" class="btn btn-default btn-block btn-lg">Log In</a>
+        </span>
+        <span class="col-xs-4">
+            <a href="" class="btn btn-default btn-block btn-lg disabled">Login using FB</a>
+        </span>
+        <span class="col-xs-3">
+            <a ui-sref="register" class="btn btn-default btn-block btn-lg">Sign Up</a>
+        </span>
+    </div>
+
+
+    <div style="padding-top: 100px;" class="row">
+        <span class="col-xs-4" [class.col-xs-offset-2]="!authUser.isAuthorized()">
+            <a ui-sref="createGame" class="btn btn-default btn-lg btn-block btn-sq">New Game</a>
+        </span>
+        <span class="col-xs-4" *ngIf="authUser.isAuthorized()" >
+            <a [routerLink]="['ContinueGamePage']" class="btn btn-default btn-lg btn-block btn-sq">Continue</a>
+        </span>
+        <span class="col-xs-4">
+            <a ui-sref="joinGame" class="btn btn-default btn-lg btn-block btn-sq">Join Game</a>
+        </span>
+    </div>
+
+</div>

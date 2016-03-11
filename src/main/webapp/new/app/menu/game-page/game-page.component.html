@@ -1,0 +1,11 @@
+<div *ngIf="!game">Loading...</div>
+
+<div *ngIf="game">
+
+    <ct-game-room *ngIf="game.isNew()" [game]="game"></ct-game-room>
+
+    <ct-play *ngIf="game.isPlaying()" [game]="game"></ct-play>
+
+    <ct-game-results *ngIf="game.isFinished()" [game]="game"></ct-game-results>
+
+</div>

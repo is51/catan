@@ -1,0 +1,20 @@
+<div *ngFor="#player of players" class="player color-{{player.colorId}}" [class.active]="isActive(player)">
+
+    <div class="achievements">
+        <span class="glyphicon glyphicon-inbox"></span> {{player.achievements.totalResources}}<br>
+        <span class="glyphicon glyphicon-credit-card"></span> {{player.achievements.totalCards}}<br>
+        <span class="glyphicon glyphicon-flag"></span> <span [class.top]="isBiggestArmy(player)">{{player.achievements.totalUsedKnights}}</span><br>
+        <span class="glyphicon glyphicon-road"></span> <span [class.top]="isLongestWay(player)">{{player.achievements.longestWayLength}}</span>
+    </div>
+
+    <div class="name">{{player.user.username}}</div>
+
+    <div class="avatar"><span class="glyphicon glyphicon-user"></span></div>
+
+    <div class="victory-points">
+        <span class="glyphicon glyphicon-star"></span>
+        <span *ngIf="isCurrentUser(player)">{{player.achievements.realVictoryPoints}}</span>
+        <span *ngIf="!isCurrentUser(player)">{{player.achievements.displayVictoryPoints}}</span>
+    </div>
+
+</div>

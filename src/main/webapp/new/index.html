@@ -7,13 +7,16 @@
 
     <title>IT Catan - Angular 2 migration</title>
 
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
 
     <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
     <script src="node_modules/systemjs/dist/system.src.js"></script>
     <script src="node_modules/rxjs/bundles/Rx.js"></script>
     <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
+
     <script src="node_modules/angular2/bundles/router.dev.js"></script>
+    <script src="node_modules/angular2/bundles/http.dev.js"></script>
 
     <script>
         System.config({
@@ -24,14 +27,14 @@
                 }
             }
         });
-        System.import('app/main')
+        System.import('app/boot')
                 .then(null, console.error.bind(console));
     </script>
 
 </head>
 
 <body>
-<my-app>Loading...</my-app>
+<ct-app>Loading...</ct-app>
 </body>
 
 </html>

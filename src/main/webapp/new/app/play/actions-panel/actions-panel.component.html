@@ -1,0 +1,44 @@
+<button (click)="throwDice()" [disabled]="!isEnabled('THROW_DICE')">
+    <span class="glyphicon glyphicon-th-large"></span><br>
+    Throw
+</button>
+
+<button (click)="build()" [disabled]="!isEnabledGroup('BUILD')">
+    <span class="glyphicon glyphicon-shopping-cart"></span><br>
+    Buy
+</button>
+
+<button (click)="showCards()">
+    <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
+    Cards
+</button>
+
+<button (click)="showTradePanel()" [disabled]="!isEnabledGroup('TRADE')" *ngIf="!isEnabled('TRADE_REPLY')">
+    <span class="glyphicon glyphicon-retweet"></span><br>
+    Trade
+</button>
+
+<button (click)="showTradeReplyPanel()" [disabled]="!isEnabled('TRADE_REPLY')" *ngIf="isEnabled('TRADE_REPLY')">
+    <span class="glyphicon glyphicon-retweet"></span><br>
+    Reply
+</button>
+
+<button (click)="moveRobber()" [disabled]="!isEnabled('MOVE_ROBBER')" *ngIf="isEnabled('MOVE_ROBBER')">
+    <span class="glyphicon glyphicon-fire"></span><br>
+    Move rob
+</button>
+
+<button (click)="choosePlayerToRob()" [disabled]="!isEnabled('CHOOSE_PLAYER_TO_ROB')" *ngIf="isEnabled('CHOOSE_PLAYER_TO_ROB')">
+    <span class="glyphicon glyphicon-map-marker"></span><br>
+    Choose
+</button>
+
+<button (click)="kickOffResources()" [disabled]="!isEnabled('KICK_OFF_RESOURCES')" *ngIf="isEnabled('KICK_OFF_RESOURCES')">
+    <span class="glyphicon glyphicon-download-alt"></span><br>
+    Kick res
+</button>
+
+<button (click)="endTurn()" [disabled]="!isEnabled('END_TURN')">
+    <span class="glyphicon glyphicon-hourglass"></span><br>
+    End turn
+</button>
