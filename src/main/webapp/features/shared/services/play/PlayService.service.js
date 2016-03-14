@@ -2,24 +2,38 @@
 
 angular.module('catan')
         .factory('PlayService', [
-            'Remote', '$q', 'SelectService', 'ModalWindowService',
-        function (Remote, $q, SelectService, ModalWindowService) {
+            'Remote', '$q', 'SelectService', 'ModalWindowService', 'MapMarkingService',
+        function (Remote, $q, SelectService, ModalWindowService, MapMarkingService) {
             var PlayService = {};
 
             PlayService.endTurn = function (game) {
+                beforeAnyAction();
                 return Remote.play.endTurn({gameId: game.getId()});
             };
 
             PlayService.throwDice = function (game) {
+                beforeAnyAction();
                 return Remote.play.throwDice({gameId: game.getId()});
             };
 
             PlayService.buyCard = function (game) {
+                beforeAnyAction();
                 return Remote.play.buyCard({gameId: game.getId()});
             };
 
             PlayService.buildSettlement = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
+
+                var availableNodes = game.getCurrentUserAction("BUILD_SETTLEMENT").nodeIds;
+
+                if (availableNodes.length === 0) {
+                    deferred.reject("NO_AVAILABLE_PLACES");
+                    return deferred.promise;
+                }
+
+                MapMarkingService.markNodes(availableNodes, game.getCurrentUser());
 
                 SelectService.requestSelection('node').then(
                         function(nodeId) {
@@ -28,12 +42,15 @@ angular.module('catan')
                                 nodeId: nodeId
                             }).then(function() {
                                 deferred.resolve();
+                                MapMarkingService.clearMarkingNodes();
                             }, function(response) {
                                 deferred.reject(response);
+                                MapMarkingService.clearMarkingNodes();
                             });
                         },
                         function(response) {
                             deferred.reject(response);
+                            MapMarkingService.clearMarkingNodes();
                         }
                 );
 
@@ -41,7 +58,18 @@ angular.module('catan')
             };
 
             PlayService.buildCity = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
+
+                var availableNodes = game.getCurrentUserAction("BUILD_CITY").nodeIds;
+
+                if (availableNodes.length === 0) {
+                    deferred.reject("NO_AVAILABLE_PLACES");
+                    return deferred.promise;
+                }
+
+                MapMarkingService.markNodes(availableNodes, game.getCurrentUser());
 
                 SelectService.requestSelection('node').then(
                         function(nodeId) {
@@ -50,12 +78,15 @@ angular.module('catan')
                                 nodeId: nodeId
                             }).then(function() {
                                 deferred.resolve();
+                                MapMarkingService.clearMarkingNodes();
                             }, function(response) {
                                 deferred.reject(response);
+                                MapMarkingService.clearMarkingNodes();
                             });
                         },
                         function(response) {
                             deferred.reject(response);
+                            MapMarkingService.clearMarkingNodes();
                         }
                 );
 
@@ -63,7 +94,18 @@ angular.module('catan')
             };
 
             PlayService.buildRoad = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
+
+                var availableEdges = game.getCurrentUserAction("BUILD_ROAD").edgeIds;
+
+                if (availableEdges.length === 0) {
+                    deferred.reject("NO_AVAILABLE_PLACES");
+                    return deferred.promise;
+                }
+
+                MapMarkingService.markEdges(availableEdges, game.getCurrentUser());
 
                 SelectService.requestSelection('edge').then(
                         function(edgeId) {
@@ -72,12 +114,15 @@ angular.module('catan')
                                 edgeId: edgeId
                             }).then(function() {
                                 deferred.resolve();
+                                MapMarkingService.clearMarkingEdges();
                             }, function(response) {
                                 deferred.reject(response);
+                                MapMarkingService.clearMarkingEdges();
                             });
                         },
                         function(response) {
                             deferred.reject(response);
+                            MapMarkingService.clearMarkingEdges();
                         }
                 );
 
@@ -85,6 +130,8 @@ angular.module('catan')
             };
 
             PlayService.useCardYearOfPlenty = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
 
                 var windowAndSelectionId = "CARD_YEAR_OF_PLENTY";
@@ -114,10 +161,13 @@ angular.module('catan')
             };
 
             PlayService.useCardRoadBuilding = function (game) {
+                beforeAnyAction();
                 return Remote.play.useCardRoadBuilding({gameId: game.getId()});
             };
 
             PlayService.useCardMonopoly = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
 
                 var windowAndSelectionId = "CARD_MONOPOLY";
@@ -146,10 +196,13 @@ angular.module('catan')
             };
 
             PlayService.useCardKnight = function (game) {
+                beforeAnyAction();
                 return Remote.play.useCardKnight({gameId: game.getId()});
             };
 
             PlayService.moveRobber = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
 
                 SelectService.requestSelection('hex').then(
@@ -172,7 +225,12 @@ angular.module('catan')
             };
 
             PlayService.choosePlayerToRob = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
+
+                var availableNodes = game.getCurrentUserAction("CHOOSE_PLAYER_TO_ROB").nodeIds;
+                MapMarkingService.markNodes(availableNodes);
 
                 SelectService.requestSelection('node').then(
                         function(nodeId) {
@@ -186,15 +244,19 @@ angular.module('catan')
                                     gameUserId: gameUserId
                                 }).then(function() {
                                     deferred.resolve();
+                                    MapMarkingService.clearMarkingNodes();
                                 }, function(response) {
                                     deferred.reject(response);
+                                    MapMarkingService.clearMarkingNodes();
                                 });
                             } else {
                                 deferred.reject();
+                                MapMarkingService.clearMarkingNodes();
                             }
                         },
                         function(response) {
                             deferred.reject(response);
+                            MapMarkingService.clearMarkingNodes();
                         }
                 );
 
@@ -202,6 +264,8 @@ angular.module('catan')
             };
 
             PlayService.kickOffResources = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
 
                 var windowAndSelectionId = "KICK_OFF_RESOURCES";
@@ -234,6 +298,8 @@ angular.module('catan')
             };
 
             PlayService.tradePort = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
 
                 var selectionId = "TRADE_PORT";
@@ -262,6 +328,8 @@ angular.module('catan')
             };
 
             PlayService.tradePropose = function (game) {
+                beforeAnyAction();
+
                 var deferred = $q.defer();
 
                 var selectionId = "TRADE_PROPOSE";
@@ -290,13 +358,18 @@ angular.module('catan')
             };
 
             PlayService.tradeAccept = function (game, offerId) {
+                beforeAnyAction();
                 return Remote.play.tradeAccept({gameId: game.getId(), offerId: offerId});
             };
 
             PlayService.tradeDecline = function (game, offerId) {
+                beforeAnyAction();
                 return Remote.play.tradeDecline({gameId: game.getId(), offerId: offerId});
             };
 
-
             return PlayService;
+
+            function beforeAnyAction() {
+                SelectService.cancelAllRequestSelections();
+            }
         }]);

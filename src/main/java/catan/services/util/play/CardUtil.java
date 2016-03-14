@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class CardUtil {
@@ -72,7 +71,7 @@ public class CardUtil {
     }
 
     public Integer defineRoadsQuantityToBuild(GameUserBean gameUser, GameBean game) throws PlayException {
-        List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoad(gameUser));
+        List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoadInMainStage(gameUser));
 
         if (availableEdges.isEmpty()) {
             log.debug("There are no available edges build road for current player");

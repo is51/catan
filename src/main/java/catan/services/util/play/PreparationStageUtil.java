@@ -8,12 +8,15 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.ActionOnEdgeParams;
+import catan.domain.model.game.actions.ActionOnNodeParams;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ public class PreparationStageUtil {
     private Logger log = LoggerFactory.getLogger(PreparationStageUtil.class);
 
     private static final Gson GSON = new Gson();
+
+    private ActionParamsUtil actionParamsUtil;
 
     public List<List<GameUserActionCode>> toInitialBuildingsSetFromJson(String initialBuildingsSetJson) {
         return GSON.fromJson(initialBuildingsSetJson, new TypeToken<List<List<GameUserActionCode>>>() {
@@ -111,7 +116,26 @@ public class PreparationStageUtil {
             List<Action> actionsList = new ArrayList<Action>();
 
             if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-                actionsList.add(new Action(getCurrentActionCode(game)));
+                GameUserActionCode actionCode = getCurrentActionCode(game);
+                Action actionToAdd;
+                switch (actionCode) {
+                    case BUILD_SETTLEMENT:
+                        ActionOnNodeParams buildSettlementParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
+                        actionToAdd = new Action(actionCode, buildSettlementParams);
+                        break;
+                    case BUILD_CITY:
+                        ActionOnNodeParams buildCityParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
+                        actionToAdd = new Action(actionCode, buildCityParams);
+                        break;
+                    case BUILD_ROAD:
+                        ActionOnEdgeParams buildRoadParams = new ActionOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
+                        actionToAdd = new Action(actionCode, buildRoadParams);
+                        break;
+                    default:
+                        actionToAdd = new Action(actionCode);
+                        break;
+                }
+                actionsList.add(actionToAdd);
                 isMandatory = true;
             }
 
@@ -184,5 +208,10 @@ public class PreparationStageUtil {
 
             ResourceUtil.produceResources(sourceHex, nodeToBuildOn.getBuilding(), log);
         }
+    }
+
+    @Autowired
+    public void setActionParamsUtil(ActionParamsUtil actionParamsUtil) {
+        this.actionParamsUtil = actionParamsUtil;
     }
 }

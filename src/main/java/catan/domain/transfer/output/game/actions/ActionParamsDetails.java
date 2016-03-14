@@ -3,6 +3,8 @@ package catan.domain.transfer.output.game.actions;
 import catan.domain.transfer.output.game.ResourcesDetails;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActionParamsDetails {
     private Integer brick;
@@ -12,6 +14,8 @@ public class ActionParamsDetails {
     private Integer stone;
     private ResourcesDetails resources;
     private Integer offerId;
+    private List<Integer> nodeIds;
+    private List<Integer> edgeIds;
 
     public ActionParamsDetails() {
     }
@@ -70,5 +74,21 @@ public class ActionParamsDetails {
 
     public void setOfferId(Integer offerId) {
         this.offerId = offerId;
+    }
+
+    public List<Integer> getNodeIds() {
+        return nodeIds;
+    }
+
+    public void setNodeIds(List<Integer> nodeIds) {
+        this.nodeIds = nodeIds;
+    }
+
+    public List<Integer> getEdgeIds() {
+        return edgeIds;
+    }
+
+    public void setEdgeIds(List<Integer> edgeIds) {
+        this.edgeIds = edgeIds;
     }
 }

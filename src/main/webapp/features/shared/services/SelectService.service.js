@@ -22,6 +22,13 @@ angular.module('catan')
             SelectService.cancelRequestSelection = function(type) {
                 if (requestSelectionDeferred[type]) {
                     requestSelectionDeferred[type].reject("CANCELED");
+                    requestSelectionDeferred[type] = null;
+                }
+            };
+
+            SelectService.cancelAllRequestSelections = function() {
+                for (var type in requestSelectionDeferred) {
+                    this.cancelRequestSelection(type);
                 }
             };
 

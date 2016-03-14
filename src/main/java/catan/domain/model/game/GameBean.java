@@ -449,24 +449,13 @@ public class GameBean {
         return edgesWithBuildingsBelongsToGameUser;
     }
 
-    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoad(GameUserBean gameUser) {
+    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoadInMainStage(GameUserBean gameUser) {
         Set<EdgeBean> edges = new HashSet<EdgeBean>();
         for (EdgeBean edge : this.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
             edges.addAll(edge.fetchNeighborEdgesAccessibleForBuildingRoad(gameUser));
         }
 
         return edges;
-    }
-
-    public Set<NodePortType> fetchPortsAvailableForGameUser(GameUserBean gameUser) {
-        Set<NodePortType> portsAvailableForGameUser = new HashSet<NodePortType>();
-        for (NodeBean node : this.nodes) {
-            if (!node.getPort().equals(NodePortType.NONE) && node.getBuilding() != null && gameUser.equals(node.getBuilding().getBuildingOwner())) {
-                portsAvailableForGameUser.add(node.getPort());
-            }
-        }
-
-        return portsAvailableForGameUser;
     }
 
     public Integer calculateDiceSumValue() {
