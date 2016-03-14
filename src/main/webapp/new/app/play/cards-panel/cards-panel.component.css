@@ -1,0 +1,51 @@
+.content {
+    top: 26%;
+    left: 5%;
+    width: 90%;
+    height: 45%;
+    background: #fff;
+    text-align: center;
+}
+
+button,
+.button {
+    display: block;
+    float: left;
+    background: #f5f5f5;
+    color: #68a;
+    border: none;
+    font-size: 15px;
+    width: 90px;
+    height: 140px;
+    margin: 20px 0 0 15px;
+    padding: 17px 5px;
+    border-radius: 10px;
+}
+
+button:hover {
+    background-color: #eee;
+    color: #69c;
+}
+
+button[disabled],
+.button.disabled {
+    background: #f5f5f5;
+    color: #888;
+    opacity: 0.5;
+}
+
+button[disabled] span.badge,
+.button.disabled span.badge {
+    background: #999;
+}
+
+button span.glyphicon,
+.button span.glyphicon {
+    font-size: 27px;
+}
+
+button span.badge,
+.button span.badge {
+    background: #7d9;
+    margin-top: 15px;
+}

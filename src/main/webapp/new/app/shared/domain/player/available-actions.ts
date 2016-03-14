@@ -9,7 +9,7 @@ export class AvailableActions {
 
     constructor(params) {
         this.isImmediate = params.isMandatory;
-        this.list = params.list;
+        this.list = <AvailableAction[]>params.list;
     }
 
     isEnabled(code: string) {

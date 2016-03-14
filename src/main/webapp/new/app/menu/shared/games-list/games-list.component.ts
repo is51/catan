@@ -4,17 +4,24 @@ import { RouterLink } from 'angular2/router';
 import { GameService } from 'app/shared/services/game/game.service';
 import { Game } from 'app/shared/domain/game';
 
+import { PlayersListComponent } from 'app/menu/shared/players-list/players-list.component';
+import { JoinPublicGameButtonDirective } from 'app/menu/shared/join-public-game-button/join-public-game-button.directive';
+
 @Component({
     selector: 'ct-games-list',
     templateUrl: 'app/menu/shared/games-list/games-list.component.html',
     styleUrls: ['app/menu/shared/games-list/games-list.component.css'],
-    directives: [RouterLink],
+    directives: [
+        RouterLink,
+        PlayersListComponent,
+        JoinPublicGameButtonDirective
+    ],
     inputs: ['typeOfGames']
 })
 
 export class GamesListComponent implements OnInit {
     typeOfGames: string;
-    items: Game[] = null;
+    games: Game[] = null;
 
     constructor(private _gameService: GameService) { }
 
@@ -24,10 +31,7 @@ export class GamesListComponent implements OnInit {
 
     update() {
         this._gameService.findAllByType(this.typeOfGames)
-            .then(items => {
-                this.items = items;
-            }, error => {
-                alert('Getting Games List Error: ' + ((error && error.errorCode) ? error.errorCode : 'unknown'));
-            });
+            .then(games => this.games = games)
+            .catch(data => alert('Getting Games List Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 }

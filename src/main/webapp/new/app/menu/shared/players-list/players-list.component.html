@@ -1,0 +1,12 @@
+<div class="user-icon" *ngFor="#player of game.players">
+    <div class="color-{{player.colorId}}"></div>
+    <div>{{player.user.username}}</div>
+    <div *ngIf="showReadyStatus">
+        <span *ngIf="player.ready" class="label label-success">READY</span>
+    </div>
+</div>
+
+<div class="user-icon" *ngFor="#place of vacantPlaces">
+    <div></div>
+    <div>&nbsp;</div>
+</div>

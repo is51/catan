@@ -20,10 +20,10 @@ export class Player {
         this.moveOrder = params.moveOrder;
         this.ready = params.ready;
 
-        this.achievements = params.achievements;
-        this.developmentCards = params.developmentCards;
-        this.resources = params.resources;
-        this.user = params.user;
+        this.achievements = <Achievements>params.achievements;
+        this.developmentCards = <DevelopmentCards>params.developmentCards;
+        this.resources = <Resources>params.resources;
+        this.user = <User>params.user;
 
         if (params.availableActions) {
             this.availableActions = new AvailableActions(params.availableActions);
@@ -37,10 +37,10 @@ export class Player {
         this.moveOrder = params.moveOrder;
         this.ready = params.ready;
 
-        this.achievements = params.achievements;
-        this.developmentCards = params.developmentCards;
-        this.resources = params.resources;
-        this.user = params.user;
+        this.achievements = <Achievements>params.achievements;
+        this.developmentCards = <DevelopmentCards>params.developmentCards;
+        this.resources = <Resources>params.resources;
+        this.user = <User>params.user;
 
         this.availableActions = (params.availableActions) ? new AvailableActions(params.availableActions) : undefined;
     }

@@ -41,7 +41,7 @@ export class Game {
         this.longestWayOwnerId = params.longestWayOwnerId;
 
         this.players = params.gameUsers.map(playerParams => new Player(playerParams));
-        this.dice = params.dice;
+        this.dice = <Dice>params.dice;
         this.map = new GameMap(params.map);
     }
 
@@ -67,7 +67,7 @@ export class Game {
             player.update(params.gameUsers[key]);
         });
 
-        this.dice = params.dice;
+        this.dice = <Dice>params.dice;
         this.map.update(params.map);
     }
 
@@ -89,6 +89,10 @@ export class Game {
 
     getCurrentPlayer(currentUser: User) {
         return this.players.filter(player => player.user.id === currentUser.id)[0];
+    }
+
+    getPlayer(playerId: number) {
+        return this.players.filter(player => player.id === playerId)[0];
     }
 
 }

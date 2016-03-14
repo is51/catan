@@ -15,56 +15,45 @@ export class AuthService {
             this._remote.request('auth.login', {
                 username: username,
                 password: password
-            }).then(data => {
-                if (data && data.token) {
-
-                    this._authToken.set(data.token);
-                    this._authUser.load();
-
-                    resolve(data);
-                } else {
-                    reject(data);
-                }
-            }, data => {
-                reject(data);
-            });
+            })
+                .then(data => {
+                    if (data && data.token) {
+                        this._authToken.set(data.token);
+                        this._authUser.load();
+                        resolve(data);
+                    } else {
+                        reject(data);
+                    }
+                })
+                .catch(data => reject(data));
         });
     }
 
     logout() {
-        /*var deferred = $q.defer();
-
-        Remote.auth.logout().then(function (response, status, headers, config) {
-            AuthToken.delete();
-            User.setToGuest();
-            deferred.resolve(response, status, headers, config);
-        }, function (response, status, headers, config) {
-            deferred.reject(response, status, headers, config);
+        return new Promise((resolve, reject) => {
+            this._remote.request('auth.logout')
+                .then(data => {
+                    this._authToken.delete();
+                    this._authUser.setToGuest();
+                    resolve(data);
+                })
+                .catch(data => reject(data));
         });
-
-        return deferred.promise;*/
     }
 
     registerAndLoginGuest(username) {
-        /*var deferred = $q.defer();
-
-        Remote.auth.registerAndLoginGuest({
-            username: username
-        }).then(function (response, status, headers, config) {
-
-            if (response.data && response.data.token) {
-
-                AuthToken.set(response.data.token);
-                User.load();
-
-                deferred.resolve(response, status, headers, config);
-            } else {
-                deferred.reject(response, 400, headers, config);
-            }
-        }, function (response, status, headers, config) {
-            deferred.reject(response, status, headers, config);
+        return new Promise((resolve, reject) => {
+            this._remote.request('auth.registerAndLoginGuest', {username: username})
+                .then(data => {
+                    if (data.token) {
+                        this._authToken.set(data.token);
+                        this._authUser.load();
+                        resolve(data);
+                    } else {
+                        reject(data);
+                    }
+                })
+                .catch(data => reject(data));
         });
-
-        return deferred.promise;*/
     }
 }

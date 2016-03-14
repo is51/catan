@@ -23,7 +23,7 @@ export class BuyPanelComponent {
 
     constructor(private _authUser: AuthUserService) { }
 
-    isEnabled(actionCode: string) {
+    isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
     }
 

@@ -1,9 +1,9 @@
-<button (click)="throwDice()" [disabled]="!isEnabled('THROW_DICE')">
+<button (click)="throwDice()" [disabled]="!isActionEnabled('THROW_DICE')">
     <span class="glyphicon glyphicon-th-large"></span><br>
     Throw
 </button>
 
-<button (click)="build()" [disabled]="!isEnabledGroup('BUILD')">
+<button (click)="build()" [disabled]="!isActionGroupEnabled('BUILD')">
     <span class="glyphicon glyphicon-shopping-cart"></span><br>
     Buy
 </button>
@@ -13,32 +13,32 @@
     Cards
 </button>
 
-<button (click)="showTradePanel()" [disabled]="!isEnabledGroup('TRADE')" *ngIf="!isEnabled('TRADE_REPLY')">
+<button (click)="showTradePanel()" [disabled]="!isActionGroupEnabled('TRADE')" *ngIf="!isActionEnabled('TRADE_REPLY')">
     <span class="glyphicon glyphicon-retweet"></span><br>
     Trade
 </button>
 
-<button (click)="showTradeReplyPanel()" [disabled]="!isEnabled('TRADE_REPLY')" *ngIf="isEnabled('TRADE_REPLY')">
+<button (click)="showTradeReplyPanel()" [disabled]="!isActionEnabled('TRADE_REPLY')" *ngIf="isActionEnabled('TRADE_REPLY')">
     <span class="glyphicon glyphicon-retweet"></span><br>
     Reply
 </button>
 
-<button (click)="moveRobber()" [disabled]="!isEnabled('MOVE_ROBBER')" *ngIf="isEnabled('MOVE_ROBBER')">
+<button (click)="moveRobber()" [disabled]="!isActionEnabled('MOVE_ROBBER')" *ngIf="isActionEnabled('MOVE_ROBBER')">
     <span class="glyphicon glyphicon-fire"></span><br>
     Move rob
 </button>
 
-<button (click)="choosePlayerToRob()" [disabled]="!isEnabled('CHOOSE_PLAYER_TO_ROB')" *ngIf="isEnabled('CHOOSE_PLAYER_TO_ROB')">
+<button (click)="choosePlayerToRob()" [disabled]="!isActionEnabled('CHOOSE_PLAYER_TO_ROB')" *ngIf="isActionEnabled('CHOOSE_PLAYER_TO_ROB')">
     <span class="glyphicon glyphicon-map-marker"></span><br>
     Choose
 </button>
 
-<button (click)="kickOffResources()" [disabled]="!isEnabled('KICK_OFF_RESOURCES')" *ngIf="isEnabled('KICK_OFF_RESOURCES')">
+<button (click)="kickOffResources()" [disabled]="!isActionEnabled('KICK_OFF_RESOURCES')" *ngIf="isActionEnabled('KICK_OFF_RESOURCES')">
     <span class="glyphicon glyphicon-download-alt"></span><br>
     Kick res
 </button>
 
-<button (click)="endTurn()" [disabled]="!isEnabled('END_TURN')">
+<button (click)="endTurn()" [disabled]="!isActionEnabled('END_TURN')">
     <span class="glyphicon glyphicon-hourglass"></span><br>
     End turn
 </button>

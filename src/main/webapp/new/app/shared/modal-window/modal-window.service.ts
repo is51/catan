@@ -10,8 +10,8 @@ interface ModalWindow {
 export class ModalWindowService {
     private _modalWindows: Map<string, ModalWindow> = new Map<string, ModalWindow>();
 
-    register(id: string, onShow: Function, onHide: Function) {
-        this._modalWindows.set(id, {
+    register(id: string, onShow?: Function, onHide?: Function) {
+        this._modalWindows.set(id, <ModalWindow>{
             isVisible: false,
             onShow,
             onHide

@@ -1,20 +1,22 @@
-import { Directive, ElementRef } from 'angular2/core';
+import { Directive } from 'angular2/core';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 
 @Directive({
     selector: '[ct-modal-window-close]',
-    inputs: ['modalWindowId']
+    inputs: ['modalWindowId'],
+    host: {
+        '(click)': 'onClick($event)',
+    }
 })
 
 export class ModalWindowCloseDirective {
     public modalWindowId: string;
     
-    constructor(
-        public element: ElementRef,
-        private _modalWindowService: ModalWindowService) { }
+    constructor(private _modalWindowService: ModalWindowService) { }
 
     onClick() {
-        alert('asdasd');
         this._modalWindowService.hide(this.modalWindowId);
     }
 }
+
+//TODO: try to find modalWindowId automatically

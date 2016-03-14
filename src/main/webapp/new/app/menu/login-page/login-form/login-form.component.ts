@@ -23,8 +23,7 @@ export class LoginFormComponent {
                 //} else {
                     this._router.navigate(['StartPage']);
                 //}
-            }, data => {
-                alert('Error: ' + ((data && data.errorCode) ? data.errorCode : 'unknown'));
-            });
+            })
+            .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 }

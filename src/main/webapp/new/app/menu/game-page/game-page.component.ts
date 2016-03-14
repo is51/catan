@@ -5,12 +5,18 @@ import { GameService } from 'app/shared/services/game/game.service';
 import { Game } from 'app/shared/domain/game';
 
 import { PlayComponent } from 'app/play/play.component';
+import { GameRoomComponent } from './game-room/game-room.component';
+import { GameResultsComponent } from './game-results/game-results.component';
 
 const GAME_UPDATE_DELAY = 5000;
 
 @Component({
     templateUrl: 'app/menu/game-page/game-page.component.html',
-    directives: [PlayComponent]
+    directives: [
+        PlayComponent,
+        GameRoomComponent,
+        GameResultsComponent
+    ]
 })
 
 export class GamePageComponent implements OnInit, OnDestroy {

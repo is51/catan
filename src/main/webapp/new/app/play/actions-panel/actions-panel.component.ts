@@ -23,11 +23,11 @@ export class ActionsPanelComponent {
         private _gameService: GameService,
         private _modalWindow: ModalWindowService) { }
 
-    isEnabled(actionCode: string) {
+    isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
     }
 
-    isEnabledGroup(groupCode: string) {
+    isActionGroupEnabled(groupCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabledGroup(groupCode);
     }
 
@@ -83,11 +83,11 @@ export class ActionsPanelComponent {
         this._modalWindow.show("BUY_PANEL");
     }
 
-    /*showCards() {
-        ModalWindowService.show("CARDS_PANEL");
+    showCards() {
+        this._modalWindow.show("CARDS_PANEL");
     }
 
-    showTradePanel() {
+    /*showTradePanel() {
         ModalWindowService.show("TRADE_PANEL");
     }
 

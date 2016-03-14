@@ -4,10 +4,12 @@ import { PlayService } from 'app/play/shared/services/play.service';
 
 import { Game } from 'app/shared/domain/game';
 
-import { ResourcesPanelComponent } from 'app/play/resources-panel/resources-panel.component';
-import { PlayersPanelComponent } from 'app/play/players-panel/players-panel.component';
-import { ActionsPanelComponent } from 'app/play/actions-panel/actions-panel.component';
-import { BuyPanelComponent } from 'app/play/buy-panel/buy-panel.component';
+import { ResourcesPanelComponent } from './resources-panel/resources-panel.component';
+import { PlayersPanelComponent } from './players-panel/players-panel.component';
+import { ActionsPanelComponent } from './actions-panel/actions-panel.component';
+import { BuyPanelComponent } from './buy-panel/buy-panel.component';
+import { GameMapComponent } from './game-map/game-map.component';
+import { CardsPanelComponent } from './cards-panel/cards-panel.component';
 
 @Component({
     selector: 'ct-play',
@@ -16,7 +18,9 @@ import { BuyPanelComponent } from 'app/play/buy-panel/buy-panel.component';
         ResourcesPanelComponent,
         PlayersPanelComponent,
         ActionsPanelComponent,
-        BuyPanelComponent
+        BuyPanelComponent,
+        GameMapComponent,
+        CardsPanelComponent
     ],
     providers: [PlayService],
     inputs: ['game']

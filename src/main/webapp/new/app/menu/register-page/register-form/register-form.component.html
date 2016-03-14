@@ -1,0 +1,20 @@
+<form>
+
+    <div class="row">
+        <span class="col-xs-9">
+
+            <input [(ngModel)]="username" placeholder="Username" type="text" class="form-control input-lg">
+
+            <br>
+
+            <input [(ngModel)]="password" placeholder="Password" type="password" class="form-control input-lg">
+
+        </span>
+        <span class="col-xs-3">
+
+            <input type="submit" (click)="submit()" value="Sign Up" class="btn btn-primary btn-lg btn-block">
+
+        </span>
+    </div>
+
+</form>
