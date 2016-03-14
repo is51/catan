@@ -205,6 +205,9 @@ angular.module('catan')
 
                 var deferred = $q.defer();
 
+                var availableHexes = game.getCurrentUserAction("MOVE_ROBBER").hexIds;
+                MapMarkingService.markHexes(availableHexes);
+
                 SelectService.requestSelection('hex').then(
                         function(hexId) {
                             Remote.play.moveRobber({
@@ -212,12 +215,15 @@ angular.module('catan')
                                 hexId: hexId
                             }).then(function() {
                                 deferred.resolve();
+                                MapMarkingService.clearMarkingHexes();
                             }, function(response) {
                                 deferred.reject(response);
+                                MapMarkingService.clearMarkingHexes();
                             });
                         },
                         function(response) {
                             deferred.reject(response);
+                            MapMarkingService.clearMarkingHexes();
                         }
                 );
 
