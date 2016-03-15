@@ -1,7 +1,7 @@
 package catan.controllers.testcases.play;
 
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.ctf.Scenario;
+import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
 import catan.services.util.random.RandomUtil;
@@ -14,12 +14,12 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -101,12 +101,18 @@ public class BuildSettlementTest extends PlayTestUtil {
         giveResourcesToPlayerForSettlementBuilding(1)
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
-                .BUILD_ROAD(1).atEdge(2, -2, "topRight")
+                .BUILD_ROAD(1).atEdge(2, -2, "topRight");
 
-                .getGameDetails(1).gameUser(1).check("resources.brick", greaterThanOrEqualTo(1))
-                .getGameDetails(1).gameUser(1).check("resources.wood", greaterThanOrEqualTo(1))
-                .getGameDetails(1).gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
-                .getGameDetails(1).gameUser(1).check("resources.sheep", greaterThanOrEqualTo(1))
+        Set<Integer> availableNodeIds = new HashSet<Integer>();
+        availableNodeIds.add(scenario.node(2, -2, "topRight").getMapElementId());      // has neighbour road on left edge
+
+        scenario
+                .getGameDetails(1)
+                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + availableNodeIds)
+                .gameUser(1).check("resources.brick", greaterThanOrEqualTo(1))
+                .gameUser(1).check("resources.wood", greaterThanOrEqualTo(1))
+                .gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
+                .gameUser(1).check("resources.sheep", greaterThanOrEqualTo(1))
 
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully();
     }
@@ -130,10 +136,14 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_build_settlement_on_empty_node_in_preparation_stage() {
-        startNewGame()
+    public void should_successfully_build_settlement_on_any_empty_node_in_preparation_stage() {
+        startNewGame();
+        Set<Integer> allNodeIds = scenario.getAllNodeIds();
+
+        scenario
                 //Given
-                .getGameDetails(1).statusIsPlaying().and().node(0, 0, "topLeft").buildingIsEmpty()
+                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIds)
+                .statusIsPlaying().and().node(0, 0, "topLeft").buildingIsEmpty()
 
                 //When
                 .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
@@ -144,13 +154,26 @@ public class BuildSettlementTest extends PlayTestUtil {
 
     @Test
     public void should_fail_if_try_to_build_settlement_on_existing_settlement_in_preparation_stage() {
-        startNewGame()
+        startNewGame();
+        Set<Integer> allNodeIds = scenario.getAllNodeIds();
+        Set<Integer> allNodeIdsExcludeUnavailable = new HashSet<Integer>(allNodeIds);
+
+        scenario
                 //Given
+                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIds)
                 .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
                 .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
-                .END_TURN(1)
+                .END_TURN(1);
 
-                        //When                              //Then
+        allNodeIdsExcludeUnavailable.remove(scenario.node(0, 0, "topLeft").getMapElementId());      // has building
+        allNodeIdsExcludeUnavailable.remove(scenario.node(0, 0, "bottomLeft").getMapElementId());   // bottom neighbour
+        allNodeIdsExcludeUnavailable.remove(scenario.node(0, 0, "top").getMapElementId());          // right neighbour
+        allNodeIdsExcludeUnavailable.remove(scenario.node(-1, 0, "top").getMapElementId());         // left neighbour
+
+        scenario
+                .getGameDetails(2).gameUser(2).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIdsExcludeUnavailable)
+                
+                //When                              //Then
                 .BUILD_SETTLEMENT(2).atNode(0, 0, "topLeft").failsWithError("ERROR")
 
                 //Check that this player still can build settlement on empty node
@@ -167,7 +190,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
                 .END_TURN(1)
 
-                        //When                          //Then
+                //When                          //Then
                 .BUILD_SETTLEMENT(2).atNode(0, 0, "top").failsWithError("ERROR")
 
                 //Check that this player still can build settlement on empty node
@@ -188,7 +211,7 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_give_resources_to_player_when_build_last_initial_settlement_in_preparation_stage() {
+    public void should_successfully_give_resources_to_player_when_build_last_initial_settlement_in_preparation_stage_before_last_road() {
         startNewGame()
                 .startTrackResourcesQuantity()
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft")
@@ -233,7 +256,7 @@ public class BuildSettlementTest extends PlayTestUtil {
     }
 
     @Test
-    public void should_successfully_give_resources_to_player_when_build_last_initial_settlement_in_preparation_stage_2() {
+    public void should_successfully_give_resources_to_player_when_build_last_initial_settlement_in_preparation_stage_if_it_is_last_building() {
         startNewGame(12, 4)
                 .startTrackResourcesQuantity()
 
@@ -323,7 +346,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .joinPublicGame(USER_NAME_2)
                 .joinPublicGame(USER_NAME_3)
 
-                        // take last player from the list each time, when pulling move order from the list to have order: 3, 2, 1
+                // take last player from the list each time, when pulling move order from the list to have order: 3, 2, 1
                 .nextRandomMoveOrderValues(asList(3, 2, 1))
 
                 .setUserReady(USER_NAME_1)

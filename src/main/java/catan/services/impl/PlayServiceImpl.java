@@ -25,6 +25,7 @@ import catan.domain.model.user.UserBean;
 import catan.services.PlayService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.AchievementsUtil;
+import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
@@ -59,6 +60,7 @@ public class PlayServiceImpl implements PlayService {
     private BuildUtil buildUtil;
     private CardUtil cardUtil;
     private AchievementsUtil achievementsUtil;
+    private ActionParamsUtil actionParamsUtil;
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
 
@@ -77,18 +79,22 @@ public class PlayServiceImpl implements PlayService {
         GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
         GameUserBean gameUser = gameUtil.getGameUserJoinedToGame(user, game);
 
-        validateGameStatusIsPlaying(game);
-        validateActionIsAllowedForUser(gameUser, action);
+        try {
+            validateGameStatusIsPlaying(game);
+            validateActionIsAllowedForUser(gameUser, action);
 
-        doAction(action, gameUser, game, params, returnedParams);
+            doAction(action, gameUser, game, params, returnedParams);
 
-        playUtil.updateAchievements(game);
-        playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
-        playUtil.updateAvailableActionsForAllUsers(game);
+            playUtil.updateAchievements(game);
+            playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
+            playUtil.updateAvailableActionsForAllUsers(game);
 
-        gameDao.updateGame(game);
+            gameDao.updateGame(game);
 
-        log.debug("Finish process action {} by {}", action, gameUser);
+        } finally {
+            log.debug("Finish process action {} by {}", action, gameUser);
+        }
+
         return returnedParams;
     }
 
@@ -135,7 +141,7 @@ public class PlayServiceImpl implements PlayService {
                 kickOffResources(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
             case TRADE_PORT:
-                tradeResourcesInPort(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                tradeResourcesInPort(gameUser, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
             case TRADE_PROPOSE:
                 proposeTrade(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
@@ -413,7 +419,7 @@ public class PlayServiceImpl implements PlayService {
         checkRobberShouldBeMovedMandatory(game);
     }
 
-    private void tradeResourcesInPort(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+    private void tradeResourcesInPort(GameUserBean gameUser, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
 
         int usersBrickQuantity = userResources.getBrick();
         int usersWoodQuantity = userResources.getWood();
@@ -421,7 +427,7 @@ public class PlayServiceImpl implements PlayService {
         int usersWheatQuantity = userResources.getWheat();
         int usersStoneQuantity = userResources.getStone();
 
-        ResourcesParams resourcesParams = mainStageUtil.calculateResourcesParams(gameUser, game);
+        ResourcesParams resourcesParams = actionParamsUtil.calculateTradePortParams(gameUser);
         int brickSellCoefficient = resourcesParams.getBrick();
         int woodSellCoefficient = resourcesParams.getWood();
         int sheepSellCoefficient = resourcesParams.getSheep();
@@ -764,6 +770,11 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setAchievementsUtil(AchievementsUtil achievementsUtil) {
         this.achievementsUtil = achievementsUtil;
+    }
+
+    @Autowired
+    public void setActionParamsUtil(ActionParamsUtil actionParamsUtil) {
+        this.actionParamsUtil = actionParamsUtil;
     }
 
     @Autowired

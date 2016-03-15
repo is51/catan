@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('catan')
-        .factory('DrawMapService', ['DrawMapHelper', '$document', function (DrawMapHelper, $document) {
+        .factory('DrawMapService', ['DrawMapHelper', function (DrawMapHelper) {
 
             var HEX_WIDTH = 78;
             var HEX_HEIGHT = 40;

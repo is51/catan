@@ -4,12 +4,13 @@ import catan.domain.exception.GameException;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
 import catan.domain.model.game.actions.AvailableActions;
+import catan.domain.model.game.actions.BuildOnEdgeParams;
+import catan.domain.model.game.actions.BuildOnNodeParams;
 import catan.domain.model.game.actions.ResourcesParams;
 import catan.domain.model.game.actions.TradingParams;
 import catan.domain.model.game.types.DevelopmentCard;
@@ -18,6 +19,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ public class MainStageUtil {
     private Logger log = LoggerFactory.getLogger(MainStageUtil.class);
 
     private static final Gson GSON = new Gson();
+
+    private ActionParamsUtil actionParamsUtil;
 
     public void updateNextMove(GameBean game) {
         Integer nextMoveNumber = game.getCurrentMove().equals(game.getGameUsers().size())
@@ -128,7 +132,8 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.getRoadsToBuildMandatory() > 0) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
+            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD, buildOnEdgeParams));
         }
     }
 
@@ -163,7 +168,8 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesToBuildCity(gameUser)) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_CITY));
+            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_CITY, buildOnNodeParams));
         }
     }
 
@@ -172,7 +178,8 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesForSettlement(gameUser)) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT));
+            BuildOnNodeParams buildOnNodeParams = new BuildOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_SETTLEMENT, buildOnNodeParams));
         }
     }
 
@@ -181,7 +188,8 @@ public class MainStageUtil {
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()
                 && userHasResourcesToBuildRoad(gameUser)) {
-            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD));
+            BuildOnEdgeParams buildOnEdgeParams = new BuildOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
+            actionsList.add(new Action(GameUserActionCode.BUILD_ROAD, buildOnEdgeParams));
         }
     }
 
@@ -241,7 +249,7 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.isDiceThrown()) {
-            ResourcesParams resourcesParams = calculateResourcesParams(gameUser, game);
+            ResourcesParams resourcesParams = actionParamsUtil.calculateTradePortParams(gameUser);
             actionsList.add(new Action(GameUserActionCode.TRADE_PORT, resourcesParams));
         }
     }
@@ -291,40 +299,8 @@ public class MainStageUtil {
         return game.getTradeProposal() == null || game.getTradeProposal().getOfferId() == null;
     }
 
-    public ResourcesParams calculateResourcesParams(GameUserBean gameUser, GameBean game) {
-        int brick = 4;
-        int wood = 4;
-        int sheep = 4;
-        int wheat = 4;
-        int stone = 4;
-
-        for (NodePortType port : game.fetchPortsAvailableForGameUser(gameUser)) {
-           switch (port) {
-                case BRICK:
-                    brick = 2;
-                    break;
-                case WOOD:
-                    wood = 2;
-                    break;
-                case SHEEP:
-                    sheep = 2;
-                    break;
-                case WHEAT:
-                    wheat = 2;
-                    break;
-                case STONE:
-                    stone = 2;
-                    break;
-                case ANY:
-                    brick = brick == 4 ? 3 : brick;
-                    wood = wood == 4 ? 3 : wood;
-                    sheep = sheep == 4 ? 3 : sheep;
-                    wheat = wheat == 4 ? 3 : wheat;
-                    stone = stone == 4 ? 3 : stone;
-                    break;
-            }
-        }
-
-        return new ResourcesParams(brick, wood, sheep, wheat, stone);
+    @Autowired
+    public void setActionParamsUtil(ActionParamsUtil actionParamsUtil) {
+        this.actionParamsUtil = actionParamsUtil;
     }
 }

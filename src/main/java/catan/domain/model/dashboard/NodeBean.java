@@ -1,9 +1,11 @@
 package catan.domain.model.dashboard;
 
+import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
+import catan.domain.model.game.GameUserBean;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
@@ -17,6 +19,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
+
+import static catan.services.impl.PlayServiceImpl.ERROR_CODE_ERROR;
 
 @Entity
 @Table(name = "NODE")
@@ -124,6 +130,53 @@ public class NodeBean implements MapElement{
 
     public void setEdges(VerticalLinks<EdgeBean> edges) {
         this.edges = edges;
+    }
+
+    public boolean hasBuildingBelongsToUser(GameUserBean gameUser) {
+        return this.getBuilding() != null && this.getBuilding().getBuildingOwner().equals(gameUser);
+    }
+
+    public boolean hasAllNeighbourNodesEmpty() {
+        for (EdgeBean edge : getEdges().listAllNotNullItems()) {
+            for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
+                if (!node.equals(this) && node.getBuilding() != null) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean hasNeighbourRoadBelongsToGameUser(GameUserBean gameUser) {
+        for (EdgeBean edge : getEdges().listAllNotNullItems()) {
+            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean couldBeUsedForBuildingSettlementByGameUserInMainStage(GameUserBean gameUser) {
+        if (this.getBuilding() != null) {
+            return false;
+        }
+
+        boolean nodeHasGameUsersNeighbourRoad = false;
+        for (EdgeBean edge : getEdges().listAllNotNullItems()) {
+            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
+                nodeHasGameUsersNeighbourRoad = true;
+            }
+
+            for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
+                if (!node.equals(this) && node.getBuilding() != null) {
+                    return false;
+                }
+            }
+        }
+
+        return nodeHasGameUsersNeighbourRoad;
     }
 
     @Override

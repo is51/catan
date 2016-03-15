@@ -56,19 +56,39 @@ ct-game-map .hex {
 }
 
 ct-game-map .node {
-    cursor: pointer;
+
 }
 
 ct-game-map .node .blank-node {
-    fill: #fff;
+    visibility: hidden;
     stroke: #000;
     stroke-width: 1;
-    visibility: hidden;
-    pointer-events: all;
+    cursor: pointer;
 }
 
-ct-game-map .node:hover .blank-node {
+ct-game-map .node[marked] .blank-node {
     visibility: visible;
+    fill-opacity: 0.6;
+    stroke-opacity: 0.1;
+}
+
+ct-game-map .node[marked]:hover .blank-node {
+    stroke-opacity: 1;
+}
+
+ct-game-map .node[marked] .settlement {
+    visibility: visible;
+    fill-opacity: 0.6;
+    stroke-opacity: 0.1;
+}
+
+ct-game-map .node[marked]:hover .settlement {
+    stroke-opacity: 1;
+    cursor: pointer;
+}
+
+ct-game-map .node[marked]:hover .settlement circle {
+    stroke-width: 2;
 }
 
 ct-game-map .node .settlement circle {
@@ -82,22 +102,21 @@ ct-game-map .node .city circle {
 }
 
 ct-game-map .edge {
-    cursor: pointer;
+    stroke: #000;
+    stroke-width: 1;
 }
 
 ct-game-map .edge .blank-edge {
-    fill: #fff;
-    stroke: #000;
-    stroke-width: 1;
     visibility: hidden;
-    pointer-events: all;
+    cursor: pointer;
 }
 
-ct-game-map .edge:hover .blank-edge {
+ct-game-map .edge[marked] .blank-edge {
     visibility: visible;
+    fill-opacity: 0.6;
+    stroke-opacity: 0.1;
 }
 
-ct-game-map .edge .road rect {
-    stroke: #000;
-    stroke-width: 1;
+ct-game-map .edge[marked]:hover .blank-edge {
+    stroke-opacity: 1;
 }

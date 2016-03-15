@@ -27,6 +27,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
 import catan.services.util.play.AchievementsUtil;
+import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
@@ -87,6 +88,8 @@ public class PlayServiceImplTest {
     @InjectMocks
     private AchievementsUtil achievementsUtil;
     @InjectMocks
+    private ActionParamsUtil actionParamsUtil;
+    @InjectMocks
     private PreparationStageUtil preparationStageUtil;
     @InjectMocks
     private MainStageUtil mainStageUtil;
@@ -116,6 +119,7 @@ public class PlayServiceImplTest {
         playService.setBuildUtil(buildUtil);
         playService.setCardUtil(cardUtil);
         playService.setAchievementsUtil(achievementsUtil);
+        playService.setActionParamsUtil(actionParamsUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
         playService.setMainStageUtil(mainStageUtil);
 
@@ -123,6 +127,10 @@ public class PlayServiceImplTest {
         playUtil.setPreparationStageUtil(preparationStageUtil);
 
         cardUtil.setRandomUtil(randomUtil);
+
+        mainStageUtil.setActionParamsUtil(actionParamsUtil);
+
+        preparationStageUtil.setActionParamsUtil(actionParamsUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
