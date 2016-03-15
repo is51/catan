@@ -74,22 +74,15 @@ public class Scenario {
         return allNodeIds;
     }
 
-    public Set<Integer> getAllHexIdsExceptInitialRobbedAndCurrentlyRobbed() {
+    public Set<Integer> getAllHexIds() {
         getGameDetails(1).gameUser(1);
-        Set<Integer> hexIds = new HashSet<Integer>();
+        Set<Integer> allHexIds = new HashSet<Integer>();
         for (int i = 0; i < (Integer) currentGameDetails.extract().path("map.hexes.size"); i++) {
-            if (currentGameDetails.extract().path("map.hexes[" + i + "].robbed")) {
-                continue;
-            }
-            if ("EMPTY".equals(currentGameDetails.extract().path("map.hexes[" + i + "].type"))) {
-                continue;
-            }
-
             Integer hexIdToAdd = currentGameDetails.extract().path("map.hexes[" + i + "].hexId");
-            hexIds.add(hexIdToAdd);
+            allHexIds.add(hexIdToAdd);
         }
 
-        return hexIds;
+        return allHexIds;
     }
 
     public Scenario registerUser(String username, String password) {
