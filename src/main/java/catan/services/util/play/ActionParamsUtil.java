@@ -66,20 +66,20 @@ public class ActionParamsUtil {
     }
 
     public List<Integer> calculateChoosePlayerToRobParams(GameUserBean gameUser) {
-        List<Integer> nodeIdsToBuildOn = new ArrayList<Integer>();
+        List<Integer> nodeIdsToChooseForRobbing = new ArrayList<Integer>();
         for (HexBean hex : gameUser.getGame().getHexes()) {
             if (!hex.isRobbed()) {
                 continue;
             }
             for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
                 if (node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser)) {
-                    nodeIdsToBuildOn.add(node.getId());
+                    nodeIdsToChooseForRobbing.add(node.getId());
                 }
             }
             break;
         }
 
-        return nodeIdsToBuildOn;
+        return nodeIdsToChooseForRobbing;
     }
 
     public ResourcesParams calculateTradePortParams(GameUserBean gameUser) {
