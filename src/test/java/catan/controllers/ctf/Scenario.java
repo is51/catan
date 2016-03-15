@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
@@ -65,28 +66,31 @@ public class Scenario {
         getGameDetails(1).gameUser(1);
 
         Set<Integer> allNodeIds = new HashSet<Integer>();
-        List<String> nodeNames = Arrays.asList("topLeft", "top", "topRight", "bottomRight", "bottom", "bottomLeft");
-        List<int[]> possibleCoordinates = Arrays.asList(
-                new int[]{0, -2}, new int[]{1, -2}, new int[]{2, -2},
-                new int[]{-1, -1}, new int[]{0, -1}, new int[]{1, -1}, new int[]{2, -1},
-                new int[]{-2, 0}, new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0},
-                new int[]{-2, 1}, new int[]{-1, 1}, new int[]{0, 1}, new int[]{1, 1},
-                new int[]{-2, 2}, new int[]{-1, 2}, new int[]{0, 2});
-
-        for (int[] coordinates : possibleCoordinates) {
-            for (String nodeName : nodeNames) {
-                int x = coordinates[0];
-                int y = coordinates[1];
-                Integer nodeId = node(x, y, nodeName).getMapElementId();
-                //Integer edgeId = edge(x, y, nodeName.equals("top") ? "left" : (nodeName.equals("bottom") ? "right" : nodeName)).getMapElementId();
-
-                allNodeIds.add(nodeId);
-                //System.out.println("Node - (" + x + "," + y + ") " + nodeName + ": " + nodeId);
-                //System.out.println("Edge - (" + x + "," + y + ") " + (nodeName.equals("top") ? "left" : (nodeName.equals("bottom") ? "right" : nodeName)) + ": " + edgeId);
-            }
+        for (int i = 0; i < (Integer) currentGameDetails.extract().path("map.nodes.size"); i++) {
+            Integer nodeIdToAdd = currentGameDetails.extract().path("map.nodes[" + i + "].nodeId");
+            allNodeIds.add(nodeIdToAdd);
         }
 
         return allNodeIds;
+    }
+
+    public Set<Integer> getAllHexIdsExceptInitialRobbedAndCurrentlyRobbed() {
+        getGameDetails(1).gameUser(1);
+        Set<Integer> hexIds = new HashSet<Integer>();
+        for (int i = 0; i < (Integer) currentGameDetails.extract().path("map.hexes.size"); i++) {
+            if (currentGameDetails.extract().path("map.hexes[" + i + "].robbed")) {
+                continue;
+            }
+            if ((Integer) currentGameDetails.extract().path("map.hexes[" + i + "].x") == 0
+                    && (Integer) currentGameDetails.extract().path("map.hexes[" + i + "].y") == 0) {
+                continue;
+            }
+
+            Integer hexIdToAdd = currentGameDetails.extract().path("map.hexes[" + i + "].hexId");
+            hexIds.add(hexIdToAdd);
+        }
+
+        return hexIds;
     }
 
     public Scenario registerUser(String username, String password) {
