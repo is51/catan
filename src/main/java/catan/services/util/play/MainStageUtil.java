@@ -8,6 +8,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.actions.Action;
+import catan.domain.model.game.actions.ActionOnHexParams;
 import catan.domain.model.game.actions.AvailableActions;
 import catan.domain.model.game.actions.ActionOnEdgeParams;
 import catan.domain.model.game.actions.ActionOnNodeParams;
@@ -116,7 +117,8 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && game.isRobberShouldBeMovedMandatory()) {
-            actionsList.add(new Action(GameUserActionCode.MOVE_ROBBER));
+            ActionOnHexParams moveRobberParams = new ActionOnHexParams(actionParamsUtil.calculateMoveRobberParams(gameUser));
+            actionsList.add(new Action(GameUserActionCode.MOVE_ROBBER, moveRobberParams));
         }
     }
 
