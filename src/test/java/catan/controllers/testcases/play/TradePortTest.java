@@ -123,6 +123,7 @@ public class TradePortTest extends PlayTestUtil {
                 .END_TURN(3)
 
                 .TRADE_PORT(1).withResources(0, 1, 0, -3, 0).failsWithError("ERROR")
+                .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
                 .TRADE_PORT(1).withResources(0, 1, 0, -3, 0).successfully();
     }

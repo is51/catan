@@ -122,7 +122,7 @@ public class MoveRobberTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .startTrackResourcesQuantity()
-                .MOVE_ROBBER(1).toCoordinates(1, 0).successfully()
+                .MOVE_ROBBER(1).toCoordinates(-1, 1).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
@@ -131,8 +131,8 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).hasAvailableAction("END_TURN")
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
 
-                .getGameDetails(2)
-                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, -1);
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -1);
     }
 
     @Test
