@@ -13,10 +13,13 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -62,12 +65,12 @@ public class PreparationStageTest extends PlayTestUtil {
         }
     }
 
-    private void checkAvailableForUserActions(String userToken, int gameId, int gameUserNumber, String[] actionCodes) {
+    private void checkAvailableForUserActions(String userToken, int gameId, int gameUserNumber, List<String> actionCodes) {
         ValidatableResponse game = viewGame(userToken, gameId)
                 .then()
                 .statusCode(200)
                 .body("gameUsers[" + gameUserNumber + "].availableActions.isMandatory", equalTo(false))
-                .body("gameUsers[" + gameUserNumber + "].availableActions.list", hasSize(actionCodes.length));
+                .body("gameUsers[" + gameUserNumber + "].availableActions.list", hasSize(actionCodes.size()));
 
         for (String actionCode : actionCodes) {
             game.body("gameUsers[" + gameUserNumber + "].availableActions.list.find {it.code == '" + actionCode + "'}", notNullValue());
@@ -99,14 +102,32 @@ public class PreparationStageTest extends PlayTestUtil {
     }
 
     private void checkAvailableActionsMainStageMove(String[] userTokens, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, int nodeIdToBuild, int edgeIdToBuild) {
-
-        String[] availableActionsThrowDice = {"THROW_DICE"};
+        List<String> availableActionsThrowDice = new ArrayList<String>(singletonList("THROW_DICE"));
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActionsThrowDice);
 
         nextRandomDiceValues(asList(1,1));
         throwDice(userTokens[activeUserNumber], gameId);
 
-        String[] availableActions = {"END_TURN", "TRADE_PORT", "TRADE_PROPOSE"};
+        List<String> availableActions = new ArrayList<String>(Arrays.asList("END_TURN", "TRADE_PORT", "TRADE_PROPOSE"));
+
+        int brickQuantity = viewGame(userTokens[activeUserNumber], gameId).path("gameUsers[" + activeUserNumber + "].resources.brick");
+        int woodQuantity = viewGame(userTokens[activeUserNumber], gameId).path("gameUsers[" + activeUserNumber + "].resources.wood");
+        int sheepQuantity = viewGame(userTokens[activeUserNumber], gameId).path("gameUsers[" + activeUserNumber + "].resources.sheep");
+        int wheatQuantity = viewGame(userTokens[activeUserNumber], gameId).path("gameUsers[" + activeUserNumber + "].resources.wheat");
+        int stoneQuantity = viewGame(userTokens[activeUserNumber], gameId).path("gameUsers[" + activeUserNumber + "].resources.stone");
+
+        if (brickQuantity >= 1 && woodQuantity >= 1) {
+            availableActions.add("BUILD_ROAD");
+            if (sheepQuantity >= 1 && wheatQuantity >= 1) {
+                availableActions.add("BUILD_SETTLEMENT");
+            }
+        }
+        if (wheatQuantity >= 2 && stoneQuantity >= 3) {
+            availableActions.add("BUILD_CITY");
+        }
+        if (sheepQuantity >= 1 && wheatQuantity >= 1 && stoneQuantity >= 1) {
+            availableActions.add("BUY_CARD");
+        }
 
         checkAvailableForUserActions(userTokens[activeUserNumber], gameId, activeUserNumber, availableActions);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");

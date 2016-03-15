@@ -79,18 +79,22 @@ public class PlayServiceImpl implements PlayService {
         GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
         GameUserBean gameUser = gameUtil.getGameUserJoinedToGame(user, game);
 
-        validateGameStatusIsPlaying(game);
-        validateActionIsAllowedForUser(gameUser, action);
+        try {
+            validateGameStatusIsPlaying(game);
+            validateActionIsAllowedForUser(gameUser, action);
 
-        doAction(action, gameUser, game, params, returnedParams);
+            doAction(action, gameUser, game, params, returnedParams);
 
-        playUtil.updateAchievements(game);
-        playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
-        playUtil.updateAvailableActionsForAllUsers(game);
+            playUtil.updateAchievements(game);
+            playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
+            playUtil.updateAvailableActionsForAllUsers(game);
 
-        gameDao.updateGame(game);
+            gameDao.updateGame(game);
 
-        log.debug("Finish process action {} by {}", action, gameUser);
+        } finally {
+            log.debug("Finish process action {} by {}", action, gameUser);
+        }
+
         return returnedParams;
     }
 
