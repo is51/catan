@@ -81,8 +81,7 @@ public class Scenario {
             if (currentGameDetails.extract().path("map.hexes[" + i + "].robbed")) {
                 continue;
             }
-            if ((Integer) currentGameDetails.extract().path("map.hexes[" + i + "].x") == 0
-                    && (Integer) currentGameDetails.extract().path("map.hexes[" + i + "].y") == 0) {
+            if ("EMPTY".equals(currentGameDetails.extract().path("map.hexes[" + i + "].type"))) {
                 continue;
             }
 
