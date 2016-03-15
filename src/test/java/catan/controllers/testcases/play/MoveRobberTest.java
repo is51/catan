@@ -13,6 +13,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static catan.domain.model.dashboard.types.HexType.BRICK;
 import static catan.domain.model.dashboard.types.HexType.EMPTY;
 import static catan.domain.model.dashboard.types.HexType.SHEEP;
@@ -197,8 +200,14 @@ public class MoveRobberTest extends PlayTestUtil {
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).doesntHaveAvailableAction("END_TURN")
-                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN");
+
+        Set<Integer> nodeIds = new HashSet<Integer>();
+        nodeIds.add(scenario.node(0, -2, "topLeft").getMapElementId());     // topLeft owner of settlement on robbed hex
+        nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .nextRandomStolenResources(asList(BRICK))   //Resource to steal
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(2).successfully()
@@ -241,8 +250,14 @@ public class MoveRobberTest extends PlayTestUtil {
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).doesntHaveAvailableAction("END_TURN")
-                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN");
+
+        Set<Integer> nodeIds = new HashSet<Integer>();
+        nodeIds.add(scenario.node(0, -2, "topLeft").getMapElementId());     // topLeft owner of settlement on robbed hex
+        nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(2).successfully()
 
@@ -310,8 +325,14 @@ public class MoveRobberTest extends PlayTestUtil {
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).doesntHaveAvailableAction("END_TURN")
-                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN");
+
+        Set<Integer> nodeIds = new HashSet<Integer>();
+        nodeIds.add(scenario.node(0, -2, "topLeft").getMapElementId());     // topLeft owner of settlement on robbed hex
+        nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(1).failsWithError("ERROR")
 

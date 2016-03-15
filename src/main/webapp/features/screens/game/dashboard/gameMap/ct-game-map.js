@@ -91,7 +91,7 @@ angular.module('catan')
 
             //TODO: move that code to some helper?
             function updateMapMarking(parentElement) {
-                var i, l;
+                var i, l, el;
                 var markedElements = MapMarkingService.marked;
 
                 // Edges
@@ -99,9 +99,11 @@ angular.module('catan')
                         .removeAttr("marked")
                         .removeAttr("player-color");
                 for (i = 0, l = markedElements.edgeIds.length; i < l; i++) {
-                    parentElement.find('.edge[edge-id="' + markedElements.edgeIds[i] + '"]')
-                            .attr("marked", true)
-                            .attr("player-color", markedElements.playerColor);
+                    el = parentElement.find('.edge[edge-id="' + markedElements.edgeIds[i] + '"]');
+                    el.attr("marked", true);
+                    if (markedElements.playerColor !== null) {
+                        el.attr("player-color", markedElements.playerColor);
+                    }
                 }
 
                 // Nodes
@@ -109,9 +111,11 @@ angular.module('catan')
                         .removeAttr("marked")
                         .removeAttr("player-color");
                 for (i = 0, l = markedElements.nodeIds.length; i < l; i++) {
-                    parentElement.find('.node[node-id="' + markedElements.nodeIds[i] + '"]')
-                            .attr("marked", true)
-                            .attr("player-color", markedElements.playerColor);
+                    el = parentElement.find('.node[node-id="' + markedElements.nodeIds[i] + '"]');
+                    el.attr("marked", true);
+                    if (markedElements.playerColor !== null) {
+                        el.attr("player-color", markedElements.playerColor);
+                    }
                 }
 
                 // Hexes

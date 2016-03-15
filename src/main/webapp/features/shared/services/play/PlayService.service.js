@@ -229,6 +229,9 @@ angular.module('catan')
 
                 var deferred = $q.defer();
 
+                var availableNodes = game.getCurrentUserAction("CHOOSE_PLAYER_TO_ROB").nodeIds;
+                MapMarkingService.markNodes(availableNodes);
+
                 SelectService.requestSelection('node').then(
                         function(nodeId) {
                             var node = game.getMapObjectById('node', nodeId);
@@ -241,15 +244,19 @@ angular.module('catan')
                                     gameUserId: gameUserId
                                 }).then(function() {
                                     deferred.resolve();
+                                    MapMarkingService.clearMarkingNodes();
                                 }, function(response) {
                                     deferred.reject(response);
+                                    MapMarkingService.clearMarkingNodes();
                                 });
                             } else {
                                 deferred.reject();
+                                MapMarkingService.clearMarkingNodes();
                             }
                         },
                         function(response) {
                             deferred.reject(response);
+                            MapMarkingService.clearMarkingNodes();
                         }
                 );
 
