@@ -98,6 +98,10 @@ ct-game-map .node[marked]:hover .settlement {
     cursor: pointer;
 }
 
+ct-game-map .node[marked]:hover text {
+    cursor: pointer;
+}
+
 ct-game-map .node[marked]:hover .settlement circle {
     stroke-width: 2;
 }

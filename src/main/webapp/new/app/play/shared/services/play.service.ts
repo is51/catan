@@ -200,6 +200,80 @@ export class PlayService {
         return this._remote.request('play.useCardKnight', {gameId: game.getId()});
     }
 
+
+    moveRobber(game: Game) {
+        this._beforeAnyAction();
+
+        return new Promise((resolve, reject) => {
+            let currentPlayer = game.getCurrentPlayer(this._authUser.get());
+            let availableHexes = currentPlayer.availableActions.getParams("MOVE_ROBBER").hexIds;
+
+            this._marking.mark('hexes', availableHexes);
+
+            this._select.requestSelection('hex')
+                .then(hexId => {
+                    this._remote.request('play.moveRobber', {
+                        gameId: game.getId(),
+                        hexId
+                    })
+                        .then(() => {
+                            resolve();
+                            this._marking.clear('hexes');
+                        })
+                        .catch(data => {
+                            reject(data);
+                            this._marking.clear('hexes');
+                        });
+                })
+                .catch(data => {
+                    reject(data);
+                    this._marking.clear('hexes');
+                }
+            );
+        });
+    }
+
+    choosePlayerToRob(game: Game) {
+        this._beforeAnyAction();
+
+        return new Promise((resolve, reject) => {
+            let currentPlayer = game.getCurrentPlayer(this._authUser.get());
+            let availableNodes = currentPlayer.availableActions.getParams("CHOOSE_PLAYER_TO_ROB").nodeIds;
+
+            this._marking.mark('nodes', availableNodes);
+
+            this._select.requestSelection('node')
+                .then(nodeId => {
+                    let node = game.map.getNodeById(nodeId);
+
+                    if (node.building) {
+                        let playerId = node.building.ownerPlayerId;
+
+                        this._remote.request('play.choosePlayerToRob', {
+                            gameId: game.getId(),
+                            gameUserId: playerId
+                        })
+                            .then(() => {
+                                resolve();
+                                this._marking.clear('nodes');
+                            })
+                            .catch(data => {
+                                reject(data);
+                                this._marking.clear('nodes');
+                            });
+                    } else {
+                        reject();
+                        this._marking.clear('nodes');
+                    }
+                })
+                .catch(data => {
+                    reject(data);
+                    this._marking.clear('nodes');
+                }
+            );
+        });
+    }
+
     kickOffResources(game: Game) {
         this._beforeAnyAction();
 

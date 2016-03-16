@@ -43,25 +43,25 @@ export class ActionsPanelComponent {
             .catch(data => alert('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 
-    /*moveRobber() {
-        PlayService.moveRobber(this.game).then(function() {
-            GameService.refresh(this.game);
-        }, function(reason) {
-            if (reason !== "CANCELED") {
-                alert("Move robber error!");
-            }
-        });
+    moveRobber() {
+        this._play.moveRobber(this.game)
+            .then(() => this._gameService.refresh(this.game))
+            .catch(data => {
+                if (data !== "CANCELED") {
+                    alert("Move robber error!");
+                }
+            });
     }
 
     choosePlayerToRob() {
-        PlayService.choosePlayerToRob(this.game).then(function() {
-            GameService.refresh(this.game);
-        }, function(reason) {
-            if (reason !== "CANCELED") {
-                alert("Choose Player To Rob error!");
-            }
-        });
-    }*/
+        this._play.choosePlayerToRob(this.game)
+            .then(() => this._gameService.refresh(this.game))
+            .catch(data => {
+                if (data !== "CANCELED") {
+                    alert("Choose Player To Rob error!");
+                }
+            });
+    }
 
     kickOffResources() {
         this._play.kickOffResources(this.game)

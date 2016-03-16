@@ -22,4 +22,8 @@ export class GameMap {
         this.nodes.forEach((node, key) => node.update(params.nodes[key]));
         this.edges.forEach((edge, key) => edge.update(params.edges[key]));
     }
+
+    getNodeById(id: number) {
+        return this.nodes.filter(node => node.id === id)[0];
+    }
 }
