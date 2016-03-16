@@ -8,8 +8,9 @@ import { AuthService } from 'app/shared/services/auth/auth.service';
 })
 
 export class LoginFormComponent {
-    username: string = "";
-    password: string = "";
+    //TODO: think about "private data: LoginFormData" interface. To avoid execution of ngOnChanges()
+    username: string = '';
+    password: string = '';
 
     constructor(
         private _auth: AuthService,

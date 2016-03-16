@@ -55,6 +55,7 @@ export class Node {
 
     update(params) {
         if (params.building) {
+            this.building = this.building || <NodeBuilding>{};
             this.building.built = NodeBuildingType[params.building.built];
             this.building.ownerPlayerId = params.building.ownerGameUserId;
         }

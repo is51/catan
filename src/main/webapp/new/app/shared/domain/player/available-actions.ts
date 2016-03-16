@@ -40,6 +40,14 @@ export class AvailableActions {
 
         return relatedActions;
     }
+
+    getParams(code: string) {
+        return this._get(code).params;
+    }
+
+    private _get(code: string) {
+        return this.list.filter(item => item.code === code)[0];
+    }
 }
 
 interface AvailableAction {

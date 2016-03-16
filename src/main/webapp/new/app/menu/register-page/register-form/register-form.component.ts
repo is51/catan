@@ -10,8 +10,8 @@ import { RemoteService } from 'app/shared/services/remote/remote.service';
 })
 
 export class RegisterFormComponent {
-    username: string = "";
-    password: string = "";
+    username: string = '';
+    password: string = '';
 
     constructor(
         private _auth: AuthService,

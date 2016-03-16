@@ -33,20 +33,14 @@ export class ActionsPanelComponent {
 
     endTurn() {
         this._play.endTurn(this.game)
-            .then(() => {
-                this._gameService.refresh(this.game);
-            }, data => {
-                alert('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
-            });
+            .then(() => this._gameService.refresh(this.game))
+            .catch(data => alert('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 
     throwDice() {
         this._play.throwDice(this.game)
-            .then(() => {
-                this._gameService.refresh(this.game);
-            }, data => {
-                alert('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
-            });
+            .then(() => this._gameService.refresh(this.game))
+            .catch(data => alert('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 
     /*moveRobber() {
@@ -87,11 +81,11 @@ export class ActionsPanelComponent {
         this._modalWindow.show("CARDS_PANEL");
     }
 
-    /*showTradePanel() {
-        ModalWindowService.show("TRADE_PANEL");
+    showTradePanel() {
+        this._modalWindow.show("TRADE_PANEL");
     }
 
     showTradeReplyPanel() {
-        ModalWindowService.show("TRADE_REPLY_PANEL");
-    }*/
+        this._modalWindow.show("TRADE_REPLY_PANEL");
+    }
 }

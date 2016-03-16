@@ -18,6 +18,10 @@ export class ModalWindowService {
         });
     }
 
+    isRegistered(id: string) {
+        return !!this._modalWindows.get(id);
+    }
+
     unregister(id: string) {
         this._modalWindows.delete(id);
     }
@@ -53,4 +57,20 @@ export class ModalWindowService {
     isHidden(id: string) {
         return !this.isVisible(id);
     }
+
+    /*onShow(id: string, onShow: Function) {
+        this._modalWindows.get(id).onShow = onShow;
+    }
+
+    onHide(id: string, onHide: Function) {
+        this._modalWindows.get(id).onHide = onHide;
+    }
+
+    removeOnShow(id: string) {
+        this._modalWindows.get(id).onShow = null;
+    }
+
+    removeOnHide(id: string) {
+        this._modalWindows.get(id).onHide = null;
+    }*/
 }

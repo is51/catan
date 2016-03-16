@@ -1,5 +1,6 @@
 import { User } from 'app/shared/interfaces/user';
 import { AvailableActions } from './available-actions';
+import { Resources } from './resources';
 
 export class Player {
     id: number;
@@ -22,7 +23,7 @@ export class Player {
 
         this.achievements = <Achievements>params.achievements;
         this.developmentCards = <DevelopmentCards>params.developmentCards;
-        this.resources = <Resources>params.resources;
+        this.resources = new Resources(params.resources);
         this.user = <User>params.user;
 
         if (params.availableActions) {
@@ -39,7 +40,7 @@ export class Player {
 
         this.achievements = <Achievements>params.achievements;
         this.developmentCards = <DevelopmentCards>params.developmentCards;
-        this.resources = <Resources>params.resources;
+        this.resources.update(params.resources); //TODO: or new? check if resources panel updates
         this.user = <User>params.user;
 
         this.availableActions = (params.availableActions) ? new AvailableActions(params.availableActions) : undefined;
@@ -61,12 +62,4 @@ interface DevelopmentCards {
     roadBuilding: number;
     victoryPoint: number;
     yearOfPlenty: number;
-}
-
-interface Resources {
-    brick: number;
-    wood: number;
-    sheep: number;
-    wheat: number;
-    stone: number;
 }

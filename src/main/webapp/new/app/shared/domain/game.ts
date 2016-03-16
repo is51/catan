@@ -91,6 +91,10 @@ export class Game {
         return this.players.filter(player => player.user.id === currentUser.id)[0];
     }
 
+    getMovingPlayer() {
+        return this.players.filter(player => player.moveOrder === this.currentMove)[0];
+    }
+
     getPlayer(playerId: number) {
         return this.players.filter(player => player.id === playerId)[0];
     }

@@ -3,19 +3,25 @@ import { ModalWindowService } from 'app/shared/modal-window/modal-window.service
 
 @Directive({
     selector: 'ct-modal-window',
-    inputs: ['modalWindowId'],
+    inputs: [
+        'modalWindowId',
+        'onShow',
+        'onHide'
+    ],
     host: {
         '[hidden]': 'isHidden()'
     },
 })
 
 export class ModalWindowDirective implements OnInit, OnDestroy {
-    public modalWindowId: string;
+    modalWindowId: string;
+    onShow: Function;
+    onHide: Function;
     
     constructor(private _modalWindowService: ModalWindowService) { }
 
     ngOnInit() {
-        this._modalWindowService.register(this.modalWindowId);
+        this._modalWindowService.register(this.modalWindowId, this.onShow, this.onHide);
     }
 
     ngOnDestroy() {

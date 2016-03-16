@@ -29,7 +29,7 @@ export class DrawMapService {
 
     drawMap(canvas: Element, game: Game, map: GameMap) {
 
-        //canvas.clear();
+        this._clear(canvas);
 
         let coords;
         let actualSize = { //TODO: try to calculate actual image (map) size somehow more pretty
@@ -56,6 +56,10 @@ export class DrawMapService {
         });
 
         this._setViewBox(canvas, actualSize);
+    }
+
+    private _clear(element: Element) {
+        this._dom.clearNodes(element);
     }
 
     private _updateActualSize(oldActualSize, x: number, y: number, w: number, h: number) {
@@ -188,7 +192,7 @@ export class DrawMapService {
         this._dom.setAttribute(text, 'x', '0');
         this._dom.setAttribute(text, 'y', '4');
         this._dom.setAttribute(text, 'text-anchor', 'middle');
-        this._dom.appendChild(circle, text);
+        this._dom.appendChild(canvas, text);
 
         let textNode = this._dom.createTextNode('s');
         this._dom.appendChild(text, textNode);
@@ -200,7 +204,7 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'class', 'city');
         this._dom.appendChild(canvas, group);
 
-        var CITY_RADIUS = 9;
+        var CITY_RADIUS = 11;
         let circle = this._dom.createElementNS(NS, 'circle');
         this._dom.setAttribute(circle, 'cx', '0');
         this._dom.setAttribute(circle, 'cy', '0');
@@ -212,7 +216,7 @@ export class DrawMapService {
         this._dom.setAttribute(text, 'x', '0');
         this._dom.setAttribute(text, 'y', '5');
         this._dom.setAttribute(text, 'text-anchor', 'middle');
-        this._dom.appendChild(circle, text);
+        this._dom.appendChild(canvas, text);
 
         let textNode = this._dom.createTextNode('C');
         this._dom.appendChild(text, textNode);

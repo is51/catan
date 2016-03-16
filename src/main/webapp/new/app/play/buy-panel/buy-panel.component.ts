@@ -1,5 +1,10 @@
 import { Component } from 'angular2/core';
+
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
+import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
+import { PlayService } from 'app/play/shared/services/play.service';
+import { GameService } from 'app/shared/services/game/game.service';
+
 import { Game } from 'app/shared/domain/game';
 import { ModalWindowDirective } from 'app/shared/modal-window/modal-window.directive';
 import { ModalWindowCloseDirective } from 'app/shared/modal-window/modal-window-close.directive';
@@ -21,52 +26,62 @@ import { ModalWindowCloseDirective } from 'app/shared/modal-window/modal-window-
 export class BuyPanelComponent {
     game: Game;
 
-    constructor(private _authUser: AuthUserService) { }
+    constructor(
+        private _authUser: AuthUserService,
+        private _modalWindow: ModalWindowService,
+        private _play: PlayService,
+        private _gameService: GameService) { }
 
     isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
     }
 
-    /*buildSettlement() {
-        ModalWindowService.hide("BUY_PANEL");
-        PlayService.buildSettlement(scope.game).then(function() {
-            GameService.refresh(scope.game);
-        }, function(reason) {
-            if (reason !== "CANCELED") {
-                alert("Build settlement error!");
-            }
-        });
+    buildSettlement() {
+        this._modalWindow.hide("BUY_PANEL");
+        this._play.buildSettlement(this.game)
+            .then(() => this._gameService.refresh(this.game))
+            .catch(errorCode => {
+                if (errorCode === "NO_AVAILABLE_PLACES") {
+                    alert("NO_AVAILABLE_PLACES");
+                } else if (errorCode !== "CANCELED") {
+                    alert("Build road error!");
+                }
+            });
     }
 
     buildCity() {
-        ModalWindowService.hide("BUY_PANEL");
-        PlayService.buildCity(scope.game).then(function() {
-            GameService.refresh(scope.game);
-        }, function(reason) {
-            if (reason !== "CANCELED") {
-                alert("Build city error!");
-            }
-        });
+        this._modalWindow.hide("BUY_PANEL");
+        this._play.buildCity(this.game)
+            .then(() => this._gameService.refresh(this.game))
+            .catch(errorCode => {
+                if (errorCode === "NO_AVAILABLE_PLACES") {
+                    alert("NO_AVAILABLE_PLACES");
+                } else if (errorCode !== "CANCELED") {
+                    alert("Build road error!");
+                }
+            });
     }
 
     buildRoad() {
-        ModalWindowService.hide("BUY_PANEL");
-        PlayService.buildRoad(scope.game).then(function() {
-            GameService.refresh(scope.game);
-        }, function(reason) {
-            if (reason !== "CANCELED") {
-                alert("Build road error!");
-            }
-        });
+        this._modalWindow.hide("BUY_PANEL");
+        this._play.buildRoad(this.game)
+            .then(() => this._gameService.refresh(this.game))
+            .catch(errorCode => {
+                if (errorCode === "NO_AVAILABLE_PLACES") {
+                    alert("NO_AVAILABLE_PLACES");
+                } else if (errorCode !== "CANCELED") {
+                    alert("Build road error!");
+                }
+            });
     }
 
     buyCard() {
-        ModalWindowService.hide("BUY_PANEL");
-        PlayService.buyCard(scope.game).then(function(response) {
-            alert("Bought card: " + response.data.card);
-            GameService.refresh(scope.game);
-        }, function(response) {
-            alert('Buy Card error: ' + ((response.data.errorCode) ? response.data.errorCode : 'unknown'));
-        });
-    }*/
+        this._modalWindow.hide("BUY_PANEL");
+        this._play.buyCard(this.game)
+            .then(data => {
+                alert("Bought card: " + data.card); //TODO: why red?
+                this._gameService.refresh(this.game);
+            })
+            .catch(data => alert('Buy Card error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+    }
 }

@@ -53,6 +53,7 @@ export class Edge {
 
     update(params) {
         if (params.building) {
+            this.building = this.building || <EdgeBuilding>{};
             this.building.built = EdgeBuildingType[params.building.built];
             this.building.ownerPlayerId = params.building.ownerGameUserId;
         }
