@@ -4,6 +4,7 @@ import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { SelectService } from './select.service';
 import { MarkingService } from './marking.service';
+import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 
 import { Game } from 'app/shared/domain/game';
 
@@ -13,7 +14,8 @@ export class PlayService {
         private _remote: RemoteService,
         private _authUser: AuthUserService,
         private _select: SelectService,
-        private _marking: MarkingService) { }
+        private _marking: MarkingService,
+        private _modalWindow: ModalWindowService) { }
 
     endTurn(game: Game) {
         this._beforeAnyAction();
@@ -132,6 +134,99 @@ export class PlayService {
                     this._marking.clear('edges');
                 }
             );
+        });
+    }
+
+    useCardYearOfPlenty(game: Game) {
+        this._beforeAnyAction();
+
+        return new Promise((resolve, reject) => {
+            let windowAndSelectionId = "CARD_YEAR_OF_PLENTY";
+
+            this._modalWindow.show(windowAndSelectionId);
+
+            this._select.requestSelection(windowAndSelectionId)
+                .then(response => {
+                    this._remote.request('play.useCardYearOfPlenty', {
+                        gameId: game.getId(),
+                        firstResource: response.firstResource,
+                        secondResource: response.secondResource
+                    })
+                        .then(() => resolve())
+                        .catch(response => reject(response));
+
+                    this._modalWindow.hide(windowAndSelectionId);
+                })
+                .catch(response => {
+                    reject(response);
+                    this._modalWindow.hide(windowAndSelectionId);
+                });
+        });
+    }
+
+    useCardRoadBuilding(game: Game) {
+        this._beforeAnyAction();
+        return this._remote.request('play.useCardRoadBuilding', {gameId: game.getId()});
+    }
+
+    useCardMonopoly(game: Game) {
+        this._beforeAnyAction();
+
+        return new Promise((resolve, reject) => {
+            let windowAndSelectionId = "CARD_MONOPOLY";
+
+            this._modalWindow.show(windowAndSelectionId);
+
+            this._select.requestSelection(windowAndSelectionId)
+                .then(response => {
+                    this._remote.request('play.useCardMonopoly', {
+                        gameId: game.getId(),
+                        resource: response.resource
+                    })
+                        .then(data => resolve(data))
+                        .catch(data => reject(data));
+
+                    this._modalWindow.hide(windowAndSelectionId);
+                })
+                .catch(response => {
+                    reject(response);
+                    this._modalWindow.hide(windowAndSelectionId);
+                });
+        });
+    }
+
+    useCardKnight(game: Game) {
+        this._beforeAnyAction();
+        return this._remote.request('play.useCardKnight', {gameId: game.getId()});
+    }
+
+    kickOffResources(game: Game) {
+        this._beforeAnyAction();
+
+        return new Promise((resolve, reject) => {
+            let windowAndSelectionId = "KICK_OFF_RESOURCES";
+
+            this._modalWindow.show(windowAndSelectionId);
+
+            this._select.requestSelection(windowAndSelectionId)
+                .then(data => {
+                    this._remote.request('play.kickOffResources', {
+                        gameId: game.getId(),
+                        brick: data.brick,
+                        wood: data.wood,
+                        sheep: data.sheep,
+                        wheat: data.wheat,
+                        stone: data.stone
+                    })
+                        .then(data => resolve(data))
+                        .catch(data => reject(data));
+
+                    this._modalWindow.hide(windowAndSelectionId);
+                })
+                .catch(data => {
+                    reject(data);
+                    this._modalWindow.hide(windowAndSelectionId);
+                });
         });
     }
 

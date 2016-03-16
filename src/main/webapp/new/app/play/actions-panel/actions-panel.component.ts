@@ -61,17 +61,17 @@ export class ActionsPanelComponent {
                 alert("Choose Player To Rob error!");
             }
         });
-    }
+    }*/
 
     kickOffResources() {
-        PlayService.kickOffResources(this.game).then(function() {
-            GameService.refresh(this.game);
-        }, function(reason) {
-            if (reason !== "CANCELED") {
-                alert("Kick Off Resources error!");
-            }
-        });
-    }*/
+        this._play.kickOffResources(this.game)
+            .then(() => this._gameService.refresh(this.game))
+            .catch(data => {
+                if (data !== "CANCELED") {
+                    alert("Kick Off Resources error!");
+                }
+            });
+    }
 
     build() {
         this._modalWindow.show("BUY_PANEL");
