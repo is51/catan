@@ -3,6 +3,7 @@ package catan.services.util.play;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -66,20 +67,33 @@ public class ActionParamsUtil {
     }
 
     public List<Integer> calculateChoosePlayerToRobParams(GameUserBean gameUser) {
-        List<Integer> nodeIdsToBuildOn = new ArrayList<Integer>();
+        List<Integer> nodeIdsToChooseForRobbing = new ArrayList<Integer>();
         for (HexBean hex : gameUser.getGame().getHexes()) {
             if (!hex.isRobbed()) {
                 continue;
             }
             for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
                 if (node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser)) {
-                    nodeIdsToBuildOn.add(node.getId());
+                    nodeIdsToChooseForRobbing.add(node.getId());
                 }
             }
             break;
         }
 
-        return nodeIdsToBuildOn;
+        return nodeIdsToChooseForRobbing;
+    }
+
+    public List<Integer> calculateMoveRobberParams(GameUserBean gameUser) {
+        List<Integer> hexIdsToMoveRobberTo = new ArrayList<Integer>();
+        for (HexBean hex : gameUser.getGame().getHexes()) {
+            if (hex.isRobbed() || hex.getResourceType() == HexType.EMPTY) {
+                continue;
+            }
+
+            hexIdsToMoveRobberTo.add(hex.getId());
+        }
+
+        return hexIdsToMoveRobberTo;
     }
 
     public ResourcesParams calculateTradePortParams(GameUserBean gameUser) {

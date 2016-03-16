@@ -13,6 +13,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static catan.domain.model.dashboard.types.HexType.BRICK;
 import static catan.domain.model.dashboard.types.HexType.EMPTY;
 import static catan.domain.model.dashboard.types.HexType.SHEEP;
@@ -65,8 +68,14 @@ public class MoveRobberTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                     .hex(-1, 2).isNotRobbed()
-                    .hex(0, 0).isRobbed()
-                    .gameUser(1).hasAvailableAction("MOVE_ROBBER")
+                    .hex(0, 0).isRobbed();
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                    .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
                     .gameUser(1).doesntHaveAvailableAction("TRADE_PROPOSE")
 
                 .startTrackResourcesQuantity()
@@ -98,7 +107,14 @@ public class MoveRobberTest extends PlayTestUtil {
                 .THROW_DICE(3)
                 .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3))
-                .THROW_DICE(1)
+                .THROW_DICE(1);
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
                 .startTrackResourcesQuantity()
                 .MOVE_ROBBER(1).toCoordinates(1, 0).successfully()
@@ -116,7 +132,14 @@ public class MoveRobberTest extends PlayTestUtil {
     public void should_successfully_move_robber_to_hex_with_1_building_and_steal_1_resource_from_player_when_he_has_1_resource() {
         playPreparationStage()
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
-                .THROW_DICE(1)
+                .THROW_DICE(1);
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
                 .startTrackResourcesQuantity()
                 .MOVE_ROBBER(1).toCoordinates(-1, 1).successfully()
@@ -153,11 +176,17 @@ public class MoveRobberTest extends PlayTestUtil {
 
                 .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
-                .THROW_DICE(1)
+                .THROW_DICE(1);
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
                 .startTrackResourcesQuantity()
                 .nextRandomStolenResources(asList(BRICK))   //Resource to steal
-                .nextRandomDiceValues(asList(4, 3))         //Robbers action
                 .MOVE_ROBBER(1).toCoordinates(1, 0).successfully()
 
                 .getGameDetails(1)
@@ -190,15 +219,28 @@ public class MoveRobberTest extends PlayTestUtil {
 
                 .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
-                .THROW_DICE(1)
+                .THROW_DICE(1);
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
                 .MOVE_ROBBER(1).toCoordinates(0, -2).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).doesntHaveAvailableAction("END_TURN")
-                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN");
+
+        Set<Integer> nodeIds = new HashSet<Integer>();
+        nodeIds.add(scenario.node(0, -2, "topLeft").getMapElementId());     // topLeft owner of settlement on robbed hex
+        nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .nextRandomStolenResources(asList(BRICK))   //Resource to steal
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(2).successfully()
@@ -233,16 +275,29 @@ public class MoveRobberTest extends PlayTestUtil {
                 .THROW_DICE(3)
                 .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
-                .THROW_DICE(1)
-                .startTrackResourcesQuantity()
+                .THROW_DICE(1);
 
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+
+                .startTrackResourcesQuantity()
                 .MOVE_ROBBER(1).toCoordinates(0, -2).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).doesntHaveAvailableAction("END_TURN")
-                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN");
+
+        Set<Integer> nodeIds = new HashSet<Integer>();
+        nodeIds.add(scenario.node(0, -2, "topLeft").getMapElementId());     // topLeft owner of settlement on robbed hex
+        nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(2).successfully()
 
@@ -280,7 +335,14 @@ public class MoveRobberTest extends PlayTestUtil {
 
                 .END_TURN(3)
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
-                .THROW_DICE(1)
+                .THROW_DICE(1);
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
                 .nextRandomStolenResources(asList(BRICK))   //Resource to steal
                 .MOVE_ROBBER(1).toCoordinates(1, -2).successfully()
@@ -303,15 +365,28 @@ public class MoveRobberTest extends PlayTestUtil {
         playPreparationStage()
                 .nextRandomDiceValues(asList(4, 3))
                 .startTrackResourcesQuantity()
-                .THROW_DICE(1)
+                .THROW_DICE(1);
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
                 .MOVE_ROBBER(1).toCoordinates(0, -2).successfully()
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).doesntHaveAvailableAction("END_TURN")
-                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).doesntHaveAvailableAction("END_TURN");
+
+        Set<Integer> nodeIds = new HashSet<Integer>();
+        nodeIds.add(scenario.node(0, -2, "topLeft").getMapElementId());     // topLeft owner of settlement on robbed hex
+        nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(1).failsWithError("ERROR")
 
@@ -350,8 +425,14 @@ public class MoveRobberTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                     .hex(0, 2).isNotRobbed()
-                    .hex(0, 0).isRobbed()
-                    .gameUser(1).hasAvailableAction("MOVE_ROBBER")
+                    .hex(0, 0).isRobbed();
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                    .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
                     .gameUser(1).doesntHaveAvailableAction("TRADE_PROPOSE")
 
                 .MOVE_ROBBER(1).toCoordinates(0, 2).failsWithError("ERROR");
@@ -364,10 +445,31 @@ public class MoveRobberTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                    .hex(0, 0).isRobbed()
-                    .gameUser(1).hasAvailableAction("MOVE_ROBBER")
+                .hex(-2, 2).isNotRobbed()
+                .hex(0, 0).isRobbed();
 
-                .MOVE_ROBBER(1).toCoordinates(0, 0).failsWithError("ERROR");
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+
+                .MOVE_ROBBER(1).toCoordinates(-2, 2).successfully()
+                .END_TURN(1)
+
+                .nextRandomDiceValues(asList(4, 3))
+                .THROW_DICE(2)
+
+                .getGameDetails(2)
+                .hex(-2, 2).isRobbed();
+
+        hexIds.remove(scenario.hex(-2, 2).getMapElementId());       //ROBBED hex
+
+        scenario
+                .gameUser(2).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+
+                .MOVE_ROBBER(2).toCoordinates(-2, 2).failsWithError("ERROR");
     }
 
 
@@ -388,7 +490,15 @@ public class MoveRobberTest extends PlayTestUtil {
                 .END_TURN(2)
 
                 .nextRandomDiceValues(asList(4, 3))
-                .THROW_DICE(3)
+                .THROW_DICE(3);
+
+        Set<Integer> hexIds = scenario.getAllHexIds();
+        hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
+
+        scenario
+                .getGameDetails(3).gameUser(3).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+
                 .MOVE_ROBBER(3).toCoordinates(0, -2)
                 .END_TURN(3)
 

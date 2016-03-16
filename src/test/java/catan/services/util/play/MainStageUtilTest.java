@@ -18,9 +18,6 @@ import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
 
-/**
- * Created by oborkovskyi on 12/25/2015.
- */
 public class MainStageUtilTest {
 
     private MainStageUtil mainStageUtil = new MainStageUtil();

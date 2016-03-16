@@ -16,6 +16,7 @@ public class ActionParamsDetails {
     private Integer offerId;
     private List<Integer> nodeIds;
     private List<Integer> edgeIds;
+    private List<Integer> hexIds;
 
     public ActionParamsDetails() {
     }
@@ -56,7 +57,7 @@ public class ActionParamsDetails {
         return stone;
     }
 
-    public void setStone(int stone) {
+    public void setStone(Integer stone) {
         this.stone = stone;
     }
 
@@ -90,5 +91,13 @@ public class ActionParamsDetails {
 
     public void setEdgeIds(List<Integer> edgeIds) {
         this.edgeIds = edgeIds;
+    }
+
+    public List<Integer> getHexIds() {
+        return hexIds;
+    }
+
+    public void setHexIds(List<Integer> hexIds) {
+        this.hexIds = hexIds;
     }
 }
