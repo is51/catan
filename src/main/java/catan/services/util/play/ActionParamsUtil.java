@@ -3,6 +3,7 @@ package catan.services.util.play;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -80,6 +81,19 @@ public class ActionParamsUtil {
         }
 
         return nodeIdsToChooseForRobbing;
+    }
+
+    public List<Integer> calculateMoveRobberParams(GameUserBean gameUser) {
+        List<Integer> hexIdsToMoveRobberTo = new ArrayList<Integer>();
+        for (HexBean hex : gameUser.getGame().getHexes()) {
+            if (hex.isRobbed() || hex.getResourceType() == HexType.EMPTY) {
+                continue;
+            }
+
+            hexIdsToMoveRobberTo.add(hex.getId());
+        }
+
+        return hexIdsToMoveRobberTo;
     }
 
     public ResourcesParams calculateTradePortParams(GameUserBean gameUser) {

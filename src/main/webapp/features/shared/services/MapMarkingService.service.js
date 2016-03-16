@@ -12,12 +12,15 @@ angular.module('catan')
                 playerColor: null
             };
 
-            MapMarkingService.markHexes = function(hexIds, gameUser) {
-                //TODO: write code here for hex choosing (following user story)
+            MapMarkingService.markHexes = function(hexIds) {
+                var service = this;
+                $timeout(function() {
+                    service.marked.hexIds = hexIds;
+                });
             };
 
             MapMarkingService.clearMarkingHexes = function() {
-                //TODO: write code here for hex choosing (following user story)
+                this.marked.hexIds = [];
             };
 
             MapMarkingService.markNodes = function(nodeIds, gameUser) {

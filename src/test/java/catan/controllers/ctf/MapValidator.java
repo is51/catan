@@ -80,7 +80,9 @@ public class MapValidator {
                 "map.hexes" +
                         ".findAll { it.x == " + x + " }" +
                         ".find { it.y == " + y + " }" +
-                        "." + mapElementType + "sIds." + mapElementPosition + "Id");
+                        (mapElementType.equals("hex")
+                                ? ".hexId"
+                                : ("." + mapElementType + "sIds." + mapElementPosition + "Id")));
     }
 
 }
