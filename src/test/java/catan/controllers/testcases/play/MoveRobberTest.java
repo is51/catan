@@ -72,7 +72,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                     .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -111,7 +111,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -136,7 +136,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -180,7 +180,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -223,7 +223,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -279,7 +279,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -339,7 +339,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -369,7 +369,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -429,7 +429,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                     .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
@@ -445,16 +445,31 @@ public class MoveRobberTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                    .hex(0, 0).isRobbed();
+                .hex(-2, 2).isNotRobbed()
+                .hex(0, 0).isRobbed();
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
-                    .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+                .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
-                .MOVE_ROBBER(1).toCoordinates(0, 0).failsWithError("ERROR");
+                .MOVE_ROBBER(1).toCoordinates(-2, 2).successfully()
+                .END_TURN(1)
+
+                .nextRandomDiceValues(asList(4, 3))
+                .THROW_DICE(2)
+
+                .getGameDetails(2)
+                .hex(-2, 2).isRobbed();
+
+        hexIds.remove(scenario.hex(-2, 2).getMapElementId());       //ROBBED hex
+
+        scenario
+                .gameUser(2).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+
+                .MOVE_ROBBER(2).toCoordinates(-2, 2).failsWithError("ERROR");
     }
 
 
@@ -479,7 +494,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         Set<Integer> hexIds = scenario.getAllHexIds();
         hexIds.remove(scenario.hex(0, 0).getMapElementId());       //EMPTY hex
-        hexIds.remove(scenario.hex(0, 2).getMapElementId());        //EMPTY hex
+        hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
                 .getGameDetails(3).gameUser(3).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
