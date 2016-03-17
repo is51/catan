@@ -4,7 +4,7 @@
 
     <hr>
 
-    <ct-register-guest-form></ct-register-guest-form>
+    <ct-register-guest-form [onRegister]="formOnRegister"></ct-register-guest-form>
 
     <div class="row">
     <span class="col-xs-3 col-xs-offset-9" style="padding-top: 102px;">
@@ -14,6 +14,6 @@
     </span>
     </div>
 
-    <a ct-back-button class="btn btn-default btn-back">Back</a>
+    <a (click)="goBack()" class="btn btn-default btn-back">Back</a>
 
 </div>

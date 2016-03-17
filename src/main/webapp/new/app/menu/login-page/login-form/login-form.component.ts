@@ -4,10 +4,13 @@ import { AuthService } from 'app/shared/services/auth/auth.service';
 
 @Component({
     selector: 'ct-login-form',
-    templateUrl: 'app/menu/login-page/login-form/login-form.component.html'
+    templateUrl: 'app/menu/login-page/login-form/login-form.component.html',
+    inputs: ['onLogin']
 })
 
 export class LoginFormComponent {
+    onLogin: Function;
+
     //TODO: think about "private data: LoginFormData" interface. To avoid execution of ngOnChanges()
     username: string = '';
     password: string = '';
@@ -19,11 +22,11 @@ export class LoginFormComponent {
     submit() {
         this._auth.login(this.username, this.password)
             .then(() => {
-                //if ($stateParams.onLogin) {
-                //    $stateParams.onLogin();
-                //} else {
+                if (this.onLogin) {
+                    this.onLogin();
+                } else {
                     this._router.navigate(['StartPage']);
-                //}
+                }
             })
             .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }

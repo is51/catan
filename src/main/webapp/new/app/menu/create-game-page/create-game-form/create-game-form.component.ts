@@ -1,18 +1,18 @@
-import { Component } from 'angular2/core';
+import { Component, OnInit } from 'angular2/core';
 import { Router } from 'angular2/router';
 
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
+import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
 
 @Component({
     selector: 'ct-create-game-form',
-    templateUrl: 'app/menu/create-game-page/create-game-form/create-game-form.component.html'
+    templateUrl: 'app/menu/create-game-page/create-game-form/create-game-form.component.html',
+    inputs: ['data']
 })
 
-export class CreateGameFormComponent {
-    privateGame: boolean = true;
-    targetVictoryPoints: number = 12;
-    initialBuildingsSetId: number = 1;
+export class CreateGameFormComponent implements OnInit {
+    data: CreateGameFormData;
 
     initialBuildingsSetIdValues = [ //TODO: probably should be gotten from back-end
         {value: 1, name: "2 settlements + 2 roads"},
@@ -22,11 +22,26 @@ export class CreateGameFormComponent {
     constructor(
         private _authUser: AuthUserService,
         private _remote: RemoteService,
-        private _router: Router) { }
+        private _router: Router,
+        private _routeData: RouteDataService) { }
+
+    ngOnInit() {
+        if (!this.data) {
+            this._setDefaultData();
+        }
+    }
+
+    private _setDefaultData() {
+        this.data = <CreateGameFormData>{
+            privateGame: true,
+            targetVictoryPoints: 12,
+            initialBuildingsSetId: 1,
+        };
+    }
 
     submit() {
         if (this._authUser.isAuthorized()) {
-            if (!this.privateGame && this._authUser.isTypeGuest()) {
+            if (!this.data.privateGame && this._authUser.isTypeGuest()) {
                 alert("Guest can't create public game. You should register. Registration from guest to regular user is NOT IMPLEMENTED");
             } else {
                 this._createGame();
@@ -34,19 +49,24 @@ export class CreateGameFormComponent {
         }
 
         if (this._authUser.isNotAuthorized()) {
-            if (this.privateGame) {
+            if (this.data.privateGame) {
+                this._routeData.put({
+                    onRegister: () => {
+                        this._goCreateGamePage();
+                        this._createGame();
+                    },
+                    onBack: () => this._goCreateGamePage()
+                });
                 this._router.navigate(['RegisterGuestPage']);
-                //TODO: try to do it using Promise
-                /*$state.go('registerGuest', {
-                    onRegister: goBackAndCreateGame,
-                    onBack: goBack
-                });*/
             } else {
+                this._routeData.put({
+                    onLogin: () => {
+                        this._goCreateGamePage();
+                        this._createGame();
+                    },
+                    onBack: () => this._goCreateGamePage()
+                });
                 this._router.navigate(['LoginPage']);
-                /*$state.go('login', {
-                    onLogin: goBackAndCreateGame,
-                    onBack: goBack
-                });*/
             }
         }
 
@@ -55,24 +75,25 @@ export class CreateGameFormComponent {
         // Remove <form> everywhere and replace <input type=submit> with <button> ???
     }
 
-    /*
-     function goBack() {
-        $state.go('createGame', {data: scope.data});
-     }
 
-     function goBackAndCreateGame() {
-        goBack();
-        createGame();
-     }
-     */
+    private _goCreateGamePage() {
+        this._routeData.put({formData: this.data});
+        this._router.navigate(['CreateGamePage']);
+    }
 
     private _createGame() {
         this._remote.request('game.create', {
-            privateGame: this.privateGame,
-            targetVictoryPoints: this.targetVictoryPoints,
-            initialBuildingsSetId: this.initialBuildingsSetId
+            privateGame: this.data.privateGame,
+            targetVictoryPoints: this.data.targetVictoryPoints,
+            initialBuildingsSetId: this.data.initialBuildingsSetId
         })
             .then(data => this._router.navigate(['GamePage', {gameId: data.gameId}]))
             .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
+}
+
+export interface CreateGameFormData {
+    privateGame: boolean;
+    targetVictoryPoints: number;
+    initialBuildingsSetId: number;
 }

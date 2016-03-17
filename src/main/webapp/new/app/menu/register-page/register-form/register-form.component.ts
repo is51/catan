@@ -6,10 +6,14 @@ import { RemoteService } from 'app/shared/services/remote/remote.service';
 
 @Component({
     selector: 'ct-register-form',
-    templateUrl: 'app/menu/register-page/register-form/register-form.component.html'
+    templateUrl: 'app/menu/register-page/register-form/register-form.component.html',
+    inputs: ['onRegister']
 })
 
 export class RegisterFormComponent {
+    onRegister: Function;
+
+    //TODO: use variable data with Register..FormData interface
     username: string = '';
     password: string = '';
 
@@ -24,14 +28,13 @@ export class RegisterFormComponent {
             password: this.password
         })
             .then(() => {
-
                 this._auth.login(this.username, this.password)
                     .then(() => {
-                        //if ($stateParams.onRegister) {
-                        //    $stateParams.onRegister();
-                        //} else {
+                        if (this.onRegister) {
+                            this.onRegister();
+                        } else {
                             this._router.navigate(['StartPage']);
-                        //}
+                        }
                     }, (data) => {
                         alert('Login error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                     });

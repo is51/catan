@@ -4,8 +4,8 @@
 
     <hr>
 
-    <ct-register-form></ct-register-form>
+    <ct-register-form [onRegister]="formOnRegister"></ct-register-form>
 
-    <a ct-back-button class="btn btn-default btn-back">Back</a>
+    <a (click)="goBack()" class="btn btn-default btn-back">Back</a>
 
 </div>

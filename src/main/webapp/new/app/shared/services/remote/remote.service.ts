@@ -15,6 +15,8 @@ export class RemoteService {
     }
 
     private _setConfig() {
+        //TODO: create and use @RemoteConfig in app.component
+
         this._setDefaultOptions(new RequestOptions({
             headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',

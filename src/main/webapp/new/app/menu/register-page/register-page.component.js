@@ -1,4 +1,4 @@
-System.register(['angular2/core', './register-form/register-form.component'], function(exports_1, context_1) {
+System.register(['angular2/core', 'app/shared/services/route-data/route-data.service', './register-form/register-form.component'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,28 +10,43 @@ System.register(['angular2/core', './register-form/register-form.component'], fu
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, register_form_component_1;
+    var core_1, route_data_service_1, register_form_component_1;
     var RegisterPageComponent;
     return {
         setters:[
             function (core_1_1) {
                 core_1 = core_1_1;
             },
+            function (route_data_service_1_1) {
+                route_data_service_1 = route_data_service_1_1;
+            },
             function (register_form_component_1_1) {
                 register_form_component_1 = register_form_component_1_1;
             }],
         execute: function() {
             RegisterPageComponent = (function () {
-                function RegisterPageComponent() {
+                function RegisterPageComponent(_routeData) {
+                    this._routeData = _routeData;
+                    this._routeData.fetch();
+                    this.formOnRegister = this._routeData.get('onRegister');
                 }
+                RegisterPageComponent.prototype.goBack = function () {
+                    var onBack = this._routeData.get('onBack');
+                    if (onBack) {
+                        onBack();
+                    }
+                    else {
+                    }
+                };
                 RegisterPageComponent = __decorate([
                     core_1.Component({
                         templateUrl: 'app/menu/register-page/register-page.component.html',
                         directives: [register_form_component_1.RegisterFormComponent]
                     }), 
-                    __metadata('design:paramtypes', [])
+                    __metadata('design:paramtypes', [(typeof (_a = typeof route_data_service_1.RouteDataService !== 'undefined' && route_data_service_1.RouteDataService) === 'function' && _a) || Object])
                 ], RegisterPageComponent);
                 return RegisterPageComponent;
+                var _a;
             }());
             exports_1("RegisterPageComponent", RegisterPageComponent);
         }
