@@ -1,4 +1,4 @@
-import { Component } from 'angular2/core';
+import { Component, OnInit } from 'angular2/core';
 import { RouteConfig, RouterOutlet, ROUTER_PROVIDERS } from 'angular2/router';
 import { HTTP_PROVIDERS } from 'angular2/http';
 
@@ -93,8 +93,10 @@ import { GamePageComponent } from 'app/menu/game-page/game-page.component';
     }
 ])
 
-export class AppComponent {
-    constructor(private _authUser: AuthUserService) {
+export class AppComponent implements OnInit {
+    constructor(private _authUser: AuthUserService) { }
+
+    ngOnInit() {
         this._authUser.load();
     }
 }
