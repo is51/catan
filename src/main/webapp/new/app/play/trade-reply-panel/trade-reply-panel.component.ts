@@ -67,7 +67,7 @@ export class TradeReplyPanelComponent implements DoCheck {
         this.offerId = actionParams.offerId;
         this.offerIsActive = true;
 
-        this.proposerName = this.game.getMovingPlayer().user.username;
+        this.proposerName = this.game.getMovingPlayer().user.getDisplayedName();
     }
 
 

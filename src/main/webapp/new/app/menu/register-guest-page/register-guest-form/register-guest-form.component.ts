@@ -10,14 +10,15 @@ import { AuthService } from 'app/shared/services/auth/auth.service';
 export class RegisterGuestFormComponent {
     onRegister: Function;
 
-    //TODO: use variable data with Register..FormData interface
-    username: string = "";
+    data: RegisterGuestFormData = <RegisterGuestFormData>{
+        username: ''
+    };
 
     constructor(
         private _auth: AuthService) { }
 
     submit() {
-        this._auth.registerAndLoginGuest(this.username)
+        this._auth.registerAndLoginGuest(this.data.username)
             .then(() => {
                 if (this.onRegister) {
                     this.onRegister();
@@ -25,4 +26,8 @@ export class RegisterGuestFormComponent {
             })
             .catch(data => alert('Registration guest error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
+}
+
+export interface RegisterGuestFormData {
+    username: string;
 }

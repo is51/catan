@@ -48,9 +48,6 @@ export class JoinPrivateGameFormComponent {
             });
             this._router.navigate(['RegisterGuestPage']);
         }
-
-        return false;
-        // TODO: avoid this? remove form and replace input-submit
     }
 
     private _joinPrivateGame() {

@@ -69,10 +69,6 @@ export class CreateGameFormComponent implements OnInit {
                 this._router.navigate(['LoginPage']);
             }
         }
-
-        return false;
-        // TODO: find a way to avoid "return false".
-        // Remove <form> everywhere and replace <input type=submit> with <button> ???
     }
 
 

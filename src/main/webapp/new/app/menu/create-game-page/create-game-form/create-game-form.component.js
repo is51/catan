@@ -85,9 +85,6 @@ System.register(['angular2/core', 'angular2/router', 'app/shared/services/auth/a
                             this._router.navigate(['LoginPage']);
                         }
                     }
-                    return false;
-                    // TODO: find a way to avoid "return false".
-                    // Remove <form> everywhere and replace <input type=submit> with <button> ???
                 };
                 CreateGameFormComponent.prototype._goCreateGamePage = function () {
                     this._routeData.put({ formData: this.data });

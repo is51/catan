@@ -23,7 +23,7 @@ export class PlayersPanelComponent implements OnChanges {
 
     private _setPlayersSortedByMoveOrderCurrentUserFirst() {
         let currentPlayer = this.game.getCurrentPlayer(this._authUser.get());
-        let players = this.game.players.map(player => player); //one level copy, TODO: refactor
+        let players = this.game.players.slice();
         let playersCount = players.length;
 
         this.players = players.sort((a, b) => {

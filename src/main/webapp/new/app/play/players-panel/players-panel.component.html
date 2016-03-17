@@ -7,7 +7,7 @@
         <span class="glyphicon glyphicon-road"></span> <span [class.top]="isLongestWay(player)">{{player.achievements.longestWayLength}}</span>
     </div>
 
-    <div class="name">{{player.user.username}}</div>
+    <div class="name">{{player.user.getDisplayedName()}}</div>
 
     <div class="avatar"><span class="glyphicon glyphicon-user"></span></div>
 

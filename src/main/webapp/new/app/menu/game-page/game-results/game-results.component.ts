@@ -20,12 +20,12 @@ export class GameResultsComponent {
 
     ngOnInit() {
         this.playersSorted = this._getPlayersSortedByVictoryPoints();
-        this.winnerName = this.playersSorted[0].user.username;
+        this.winnerName = this.playersSorted[0].user.getDisplayedName();
     }
 
     private _getPlayersSortedByVictoryPoints() {
         return this.game.players
-            .map(player => player) //TODO: (it's just one level copy) Use native method
+            .slice()
             .sort((a, b) => b.achievements.realVictoryPoints - a.achievements.realVictoryPoints);
     }
 }

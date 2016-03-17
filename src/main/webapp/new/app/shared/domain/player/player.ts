@@ -1,4 +1,4 @@
-import { User } from 'app/shared/interfaces/user';
+import { User } from 'app/shared/domain/user';
 import { AvailableActions } from './available-actions';
 import { Resources } from './resources';
 
@@ -24,7 +24,7 @@ export class Player {
         this.achievements = <Achievements>params.achievements;
         this.developmentCards = <DevelopmentCards>params.developmentCards;
         this.resources = new Resources(params.resources);
-        this.user = <User>params.user;
+        this.user = new User(params.user);
 
         if (params.availableActions) {
             this.availableActions = new AvailableActions(params.availableActions);
@@ -33,15 +33,15 @@ export class Player {
 
     update(params) {
         //TODO: revise this method
-        this.id = params.id;
+        //this.id = params.id;
         this.colorId = params.colorId;
         this.moveOrder = params.moveOrder;
         this.ready = params.ready;
 
         this.achievements = <Achievements>params.achievements;
         this.developmentCards = <DevelopmentCards>params.developmentCards;
-        this.resources.update(params.resources); //TODO: or new? check if resources panel updates
-        this.user = <User>params.user;
+        this.resources.update(params.resources);
+        this.user.update(params.user);
 
         this.availableActions = (params.availableActions) ? new AvailableActions(params.availableActions) : undefined;
     }

@@ -1,29 +1,26 @@
-<form>
+<label>
+    <input type="checkbox" [(ngModel)]="data.privateGame">
+    &nbsp;Is Private
+</label>
 
-    <label>
-        <input type="checkbox" [(ngModel)]="data.privateGame">
-        &nbsp;Is Private
-    </label>
+<br><br>
 
-    <br><br>
+<div class="row">
+    <div class="col-xs-4">Target Victory Points:</div>
+    <div class="col-xs-2"><input type="text" [(ngModel)]="data.targetVictoryPoints" class="form-control"></div>
+</div>
 
-    <div class="row">
-        <div class="col-xs-4">Target Victory Points:</div>
-        <div class="col-xs-2"><input type="text" [(ngModel)]="data.targetVictoryPoints" class="form-control"></div>
+<br>
+
+<div class="row">
+    <div class="col-xs-4">Initial Set of Buildings:</div>
+    <div class="col-xs-6">
+        <select [(ngModel)]="data.initialBuildingsSetId" class="form-control">
+            <option *ngFor="#option of initialBuildingsSetIdValues" [value]="option.value">{{option.name}}</option>
+        </select>
     </div>
+</div>
 
-    <br>
-
-    <div class="row">
-        <div class="col-xs-4">Initial Set of Buildings:</div>
-        <div class="col-xs-6">
-            <select [(ngModel)]="data.initialBuildingsSetId" class="form-control">
-                <option *ngFor="#option of initialBuildingsSetIdValues" [value]="option.value">{{option.name}}</option>
-            </select>
-        </div>
-    </div>
-
-    <hr>
-    <br><br><br>
-    <input type="submit" (click)="submit()" value="Create" class="btn btn-primary btn-lg pull-right">
-</form>
+<hr>
+<br><br><br>
+<button (click)="submit()" class="btn btn-primary btn-lg pull-right">Create</button>

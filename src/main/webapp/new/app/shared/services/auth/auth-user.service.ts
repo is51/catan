@@ -1,7 +1,7 @@
 import { Injectable } from 'angular2/core';
 import { AuthTokenService } from 'app/shared/services/auth/auth-token.service';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
-import { User } from 'app/shared/interfaces/user';
+import { User } from 'app/shared/domain/user';
 
 enum Status {
     PENDING,
@@ -42,7 +42,7 @@ export class AuthUserService {
         return new Promise((resolve, reject) => {
             if (this._authToken.get()) {
                 this._remote.request('auth.details').then(data => {
-                    this._details = data;
+                    this._details = new User(data);
                     this._status = Status.AUTHORIZED;
                     resolve();
                 }, () => {

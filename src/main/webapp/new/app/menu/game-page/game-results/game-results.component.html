@@ -21,7 +21,7 @@
                 <tbody>
                 <tr *ngFor="#player of playersSorted; #index = index">
                     <td><span class="result-place label color-{{player.colorId}}">{{index + 1}}</span></td>
-                    <td>{{player.user.username}}</td>
+                    <td>{{player.user.getDisplayedName()}}</td>
                     <td class="text-right"><span class="badge">{{player.achievements.realVictoryPoints}}</span></td>
                 </tr>
                 </tbody>

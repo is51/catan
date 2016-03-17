@@ -11,16 +11,17 @@ import { AuthService } from 'app/shared/services/auth/auth.service';
 export class LoginFormComponent {
     onLogin: Function;
 
-    //TODO: think about "private data: LoginFormData" interface. To avoid execution of ngOnChanges()
-    username: string = '';
-    password: string = '';
+    data: LoginFormData = <LoginFormData>{
+        username: '',
+        password: ''
+    };
 
     constructor(
         private _auth: AuthService,
         private _router: Router) { }
 
     submit() {
-        this._auth.login(this.username, this.password)
+        this._auth.login(this.data.username, this.data.password)
             .then(() => {
                 if (this.onLogin) {
                     this.onLogin();
@@ -30,4 +31,9 @@ export class LoginFormComponent {
             })
             .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
+}
+
+export interface LoginFormData {
+    username: string;
+    password: string;
 }

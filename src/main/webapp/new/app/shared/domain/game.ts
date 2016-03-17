@@ -1,4 +1,4 @@
-import { User } from 'app/shared/interfaces/user';
+import { User } from 'app/shared/domain/user';
 import { Player } from 'app/shared/domain/player/player';
 import { GameMap } from 'app/shared/domain/game-map/game-map';
 
@@ -47,7 +47,7 @@ export class Game {
 
     update(params) {
         //TODO: revise this method
-        this.gameId = params.gameId;
+        //this.gameId = params.gameId;
 
         this.creatorId = params.creatorId;
         this.privateGame = params.privateGame;
