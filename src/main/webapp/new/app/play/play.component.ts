@@ -17,6 +17,7 @@ import { TradeReplyPanelComponent } from './trade-reply-panel/trade-reply-panel.
 import { CardYearOfPlentyChooseResourcesPanelComponent } from './card-year-of-plenty-choose-resources-panel/card-year-of-plenty-choose-resources-panel.component';
 import { CardMonopolyChooseResourcePanelComponent } from './card-monopoly-choose-resource-panel/card-monopoly-choose-resource-panel.component';
 import { KickOffResourcesPanelComponent } from './kick-off-resources-panel/kick-off-resources-panel.component';
+import { DiceComponent } from './dice/dice.component';
 
 @Component({
     selector: 'ct-play',
@@ -32,7 +33,8 @@ import { KickOffResourcesPanelComponent } from './kick-off-resources-panel/kick-
         TradeReplyPanelComponent,
         CardYearOfPlentyChooseResourcesPanelComponent,
         CardMonopolyChooseResourcePanelComponent,
-        KickOffResourcesPanelComponent
+        KickOffResourcesPanelComponent,
+        DiceComponent
     ],
     providers: [
         PlayService,
