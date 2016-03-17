@@ -1,4 +1,5 @@
 import { Component } from 'angular2/core';
+import { Router } from 'angular2/router';
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
 import { RegisterFormComponent } from './register-form/register-form.component';
 
@@ -10,7 +11,10 @@ import { RegisterFormComponent } from './register-form/register-form.component';
 export class RegisterPageComponent {
     formOnRegister: Function;
 
-    constructor(private _routeData: RouteDataService) {
+    constructor(
+        private _routeData: RouteDataService,
+        private _router: Router) {
+
         this._routeData.fetch();
         this.formOnRegister = this._routeData.get('onRegister');
     }
@@ -20,7 +24,7 @@ export class RegisterPageComponent {
         if (onBack) {
             onBack();
         } else {
-            //TODO: default action
+            this._router.navigate(['StartPage']);
         }
     }
 }

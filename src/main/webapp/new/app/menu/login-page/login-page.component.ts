@@ -1,4 +1,5 @@
 import { Component } from 'angular2/core';
+import { Router } from 'angular2/router';
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
 import { LoginFormComponent } from './login-form/login-form.component';
 
@@ -10,7 +11,10 @@ import { LoginFormComponent } from './login-form/login-form.component';
 export class LoginPageComponent {
     formOnLogin: Function;
 
-    constructor(private _routeData: RouteDataService) {
+    constructor(
+        private _routeData: RouteDataService,
+        private _router: Router) {
+
         this._routeData.fetch();
         this.formOnLogin = this._routeData.get('onLogin');
     }
@@ -20,7 +24,7 @@ export class LoginPageComponent {
         if (onBack) {
             onBack();
         } else {
-            //TODO: default action
+            this._router.navigate(['StartPage']);
         }
     }
 }

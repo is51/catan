@@ -26,7 +26,7 @@ export class RegisterGuestPageComponent {
         if (this.onBack) {
             this.onBack();
         } else {
-            //TODO: default action
+            this._router.navigate(['StartPage']);
         }
     }
 

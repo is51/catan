@@ -1,4 +1,5 @@
 import { Component } from 'angular2/core';
+import { RouterLink } from 'angular2/router';
 
 import { Game } from 'app/shared/domain/game';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
@@ -17,7 +18,8 @@ import { GameMapOverviewComponent } from './game-map-overview/game-map-overview.
         CancelGameButtonDirective,
         LeaveGameButtonDirective,
         ReadyButtonDirective,
-        GameMapOverviewComponent
+        GameMapOverviewComponent,
+        RouterLink
     ],
     inputs: ['game']
 })
