@@ -29,7 +29,7 @@ export class Node {
         if (params.building) {
             this.building = <NodeBuilding>{
                 built: NodeBuildingType[params.building.built],
-                ownerPlayerId: params.building.ownerGameUserId
+                ownerPlayerId: <number>params.building.ownerGameUserId
             };
         }
     }

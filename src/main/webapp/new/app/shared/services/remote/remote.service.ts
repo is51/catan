@@ -7,7 +7,7 @@ export class RemoteService {
     private _defaultOptions: RequestOptions;
     private _requestsOptions: Map<string, RequestOptions> = new Map<string, RequestOptions>();
 
-    constructor (
+    constructor(
         private _http: Http,
         private _authToken: AuthTokenService) {
 
