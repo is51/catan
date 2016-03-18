@@ -43,7 +43,9 @@ export class Player {
         this.resources.update(params.resources);
         this.user.update(params.user);
 
-        this.availableActions = (params.availableActions) ? new AvailableActions(params.availableActions) : undefined;
+        if (this.availableActions) {
+            this.availableActions.update(params.availableActions);
+        }
     }
 }
 
