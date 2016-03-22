@@ -15,7 +15,7 @@ const ICONS = {
 export class NotificationService {
     constructor (private _appActive: ApplicationActiveService) { }
 
-    notify(message: string, iconCode?: string = 'DEFAULT', tag?: string, showOnlyIfAppIsNotFocused: boolean = true) {
+    notify(message: string, iconCode: string = 'DEFAULT', tag?: string, showOnlyIfAppIsNotFocused: boolean = true) {
 
         if (showOnlyIfAppIsNotFocused && this._appActive.isActive()) {
             return Promise.reject('APP_IS_FOCUSED');
