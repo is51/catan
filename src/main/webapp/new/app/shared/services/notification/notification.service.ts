@@ -44,6 +44,6 @@ export class NotificationService {
     }
 
     requestPermission() {
-        return Notification.requestPermission()ж
+        return Notification.requestPermission();
     }
 }
