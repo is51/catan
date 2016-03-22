@@ -42,4 +42,8 @@ export class NotificationService {
     notifyGlobal(message: string, iconCode?: string) {
         this.notify(message, iconCode, 'GLOBAL');
     }
+
+    requestPermission() {
+        return Notification.requestPermission();
+    }
 }

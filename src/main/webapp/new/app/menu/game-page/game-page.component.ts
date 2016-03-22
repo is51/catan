@@ -38,6 +38,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this._loadGameAndStartRefreshing();
+        this._notification.requestPermission();
     }
 
     private _loadGameAndStartRefreshing() {
@@ -45,15 +46,17 @@ export class GamePageComponent implements OnInit, OnDestroy {
             .then(game => {
                 this.game = game;
 
-                this.game
-                    .getCurrentPlayer(this._authUser.get()).availableActions
-                    .onUpdate(actions => {
-                        actions.forEach(action => {
-                            if (action.notify) {
-                                this._notification.notifyGlobal(action.notifyMessage, action.code); //TODO: why red?
-                            }
+                if (this.game.isPlaying()) {
+                    this.game
+                        .getCurrentPlayer(this._authUser.get()).availableActions
+                        .onUpdate(actions => {
+                            actions.forEach(action => {
+                                if (action.notify) {
+                                    this._notification.notifyGlobal(action.notifyMessage, action.code); //TODO: why red?
+                                }
+                            });
                         });
-                    });
+                }
 
                 this._gameService.startRefreshing(this.game, GAME_UPDATE_DELAY, null, () => {
                     alert('Getting Game Details Error. Probably there is a connection problem');
@@ -68,8 +71,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this._gameService.stopRefreshing();
-        this.game
-            .getCurrentPlayer(this._authUser.get()).availableActions
-            .cancelOnUpdate();
+
+        let availableActions = this.game.getCurrentPlayer(this._authUser.get()).availableActions;
+        if (availableActions) {
+            availableActions.cancelOnUpdate();
+        }
     }
 }
