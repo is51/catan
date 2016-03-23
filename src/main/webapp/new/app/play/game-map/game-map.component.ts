@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, DoCheck } from 'angular2/core';
+import { Component, ElementRef, OnInit } from 'angular2/core';
 import { BrowserDomAdapter } from "angular2/src/platform/browser/browser_adapter";
 
 import { MarkingService } from 'app/play/shared/services/marking.service';
@@ -26,15 +26,10 @@ const CANVAS_PRESERVE_ASPECT_RATIO = "xMidYMid meet";
     inputs: ['game']
 })
 
-export class GameMapComponent implements OnInit, DoCheck {
+export class GameMapComponent implements OnInit {
     game: Game;
 
     private _canvas: Element;
-
-    //TODO: do this in right way
-    prevMarkingHexes;
-    prevMarkingNodes;
-    prevMarkingEdges;
 
     constructor(
         private _element: ElementRef,
@@ -48,6 +43,7 @@ export class GameMapComponent implements OnInit, DoCheck {
         this._createCanvas();
         this._subscribeOnMapElementsClick();
         this._drawMapService.drawMap(this._canvas, this.game, this.game.map);
+        this._subscribeOnMarkingChanging();
     }
 
     private _createCanvas() {
@@ -81,30 +77,10 @@ export class GameMapComponent implements OnInit, DoCheck {
         });
     }
 
-    ngDoCheck() {
-        this._checkMarking();
-    }
-
-    //TODO: do this in right way (probably using differ services)
-    private _checkMarking() {
-        let isMarkingHexesChanged = this.prevMarkingHexes !== this._marking.get('hexes');
-        let isMarkingNodesChanged = this.prevMarkingNodes !== this._marking.get('nodes');
-        let isMarkingEdgesChanged = this.prevMarkingEdges !== this._marking.get('edges');
-
-        if (isMarkingHexesChanged || isMarkingNodesChanged || isMarkingEdgesChanged) {
-            this._updateMapMarking(this._canvas);
-        }
-
-        this.prevMarkingHexes = this._marking.get('hexes');
-        this.prevMarkingNodes = this._marking.get('nodes');
-        this.prevMarkingEdges = this._marking.get('edges');
-    }
-
-    //TODO: move this somewhere
-    private _updateMapMarking(element: Element) {
-        this._updateMapMarkingByType(element, 'hexes', 'hex');
-        this._updateMapMarkingByType(element, 'nodes', 'node');
-        this._updateMapMarkingByType(element, 'edges', 'edge');
+    private _subscribeOnMarkingChanging() {
+        this._marking.onUpdate('hexes', () => this._updateMapMarkingByType(this._canvas, 'hexes', 'hex'));
+        this._marking.onUpdate('nodes', () => this._updateMapMarkingByType(this._canvas, 'nodes', 'node'));
+        this._marking.onUpdate('edges', () => this._updateMapMarkingByType(this._canvas, 'edges', 'edge'));
     }
 
     private _updateMapMarkingByType(element: Element, type: string, typeClass: string) {
