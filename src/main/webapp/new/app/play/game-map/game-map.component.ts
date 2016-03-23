@@ -53,24 +53,22 @@ export class GameMapComponent implements OnInit {
     }
 
     private _subscribeOnMapElementsClick() {
-        //TODO: Subscribing on click is much complex when it was with jquery (make it in dom helper?)
-        this._dom.on(this._canvas, 'click', event => {
-            let element = this._domHelper.getClosest(this._canvas, event.target, this._drawMapService.NODE_SELECTOR);
-            if (element && this._dom.getAttribute(element, 'marked')) {
+        this._domHelper.on(this._canvas, 'click', this._drawMapService.NODE_SELECTOR, element => {
+            if (this._dom.getAttribute(element, 'marked')) {
                 let id = +this._dom.getAttribute(element, 'node-id');
                 this._select.select('node', id);
-                return;
             }
+        });
 
-            let element = this._domHelper.getClosest(this._canvas, event.target, this._drawMapService.EDGE_SELECTOR);
-            if (element && this._dom.getAttribute(element, 'marked')) {
+        this._domHelper.on(this._canvas, 'click', this._drawMapService.EDGE_SELECTOR, element => {
+            if (this._dom.getAttribute(element, 'marked')) {
                 let id = +this._dom.getAttribute(element, 'edge-id');
                 this._select.select('edge', id);
-                return;
             }
+        });
 
-            let element = this._domHelper.getClosest(this._canvas, event.target, this._drawMapService.HEX_SELECTOR);
-            if (element && this._dom.getAttribute(element, 'marked')) {
+        this._domHelper.on(this._canvas, 'click', this._drawMapService.HEX_SELECTOR, element => {
+            if (this._dom.getAttribute(element, 'marked')) {
                 let id = +this._dom.getAttribute(element, 'hex-id');
                 this._select.select('hex', id);
             }

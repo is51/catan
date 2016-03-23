@@ -27,4 +27,13 @@ export class DomHelper {
         var matches = document.querySelectorAll(selector);
         return Array.prototype.some.call(matches, e => e === element);
     }
+
+    on(root: Element, eventName: string, selector: string, action: Function) {
+        this._browserDomAdapter.on(root, eventName, event => {
+            let element = this.getClosest(root, event.target, selector);
+            if (element) {
+                action(element, event);
+            }
+        });
+    }
 }
