@@ -5,6 +5,7 @@ import { MarkingService } from 'app/play/shared/services/marking.service';
 import { SelectService } from 'app/play/shared/services/select.service';
 import { DomHelper } from 'app/shared/services/dom/dom.helper';
 import { DrawMapService } from './services/draw-map.service';
+import { DrawMapMarkingService } from './services/draw-map-marking.service';
 import { DrawMapHelper } from './helpers/draw-map.helper';
 
 import { Game } from 'app/shared/domain/game';
@@ -20,6 +21,7 @@ const CANVAS_PRESERVE_ASPECT_RATIO = "xMidYMid meet";
     providers: [
         BrowserDomAdapter,
         DrawMapService,
+        DrawMapMarkingService,
         DrawMapHelper,
         DomHelper
     ],
@@ -36,6 +38,7 @@ export class GameMapComponent implements OnInit {
         private _dom: BrowserDomAdapter,
         private _domHelper: DomHelper,
         private _drawMapService: DrawMapService,
+        private _drawMapMarkingService: DrawMapMarkingService,
         private _marking: MarkingService,
         private _select: SelectService) { }
 
@@ -76,27 +79,8 @@ export class GameMapComponent implements OnInit {
     }
 
     private _subscribeOnMarkingChanging() {
-        this._marking.onUpdate('hexes', () => this._updateMapMarkingByType(this._canvas, 'hexes', 'hex'));
-        this._marking.onUpdate('nodes', () => this._updateMapMarkingByType(this._canvas, 'nodes', 'node'));
-        this._marking.onUpdate('edges', () => this._updateMapMarkingByType(this._canvas, 'edges', 'edge'));
-    }
-
-    private _updateMapMarkingByType(element: Element, type: string, typeClass: string) {
-        let previousMarked = this._dom.querySelectorAll(element, '.' + typeClass + '[marked]');
-        for (let elem of previousMarked) {
-            this._dom.removeAttribute(elem, 'marked');
-            this._dom.removeAttribute(elem, 'player-color');
-        }
-
-        let marking = this._marking.get(type);
-        if (marking) {
-            marking.ids.forEach(id => {
-                let elem = this._dom.querySelector(element, '.' + typeClass + '[' + typeClass + '-id="' + id + '"]');
-                this._dom.setAttribute(elem, 'marked', "true");
-                if (marking.player) {
-                    this._dom.setAttribute(elem, 'player-color', <string>marking.player.colorId);
-                }
-            });
-        }
+        this._marking.onUpdate('hexes', () => this._drawMapMarkingService.updateByType(this._canvas, 'hexes', 'hex'));
+        this._marking.onUpdate('nodes', () => this._drawMapMarkingService.updateByType(this._canvas, 'nodes', 'node'));
+        this._marking.onUpdate('edges', () => this._drawMapMarkingService.updateByType(this._canvas, 'edges', 'edge'));
     }
 }
