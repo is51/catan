@@ -22,8 +22,8 @@ export class AvailableActions {
         this.isImmediate = params.isMandatory;
         this.list = <AvailableAction[]>params.list;
 
-        if (newActions.length && this._onUpdate) {
-            this._onUpdate(newActions);
+        if (newActions.length) {
+            this.triggerUpdate(newActions);
         }
     }
 
@@ -68,9 +68,13 @@ export class AvailableActions {
     onUpdate(onUpdate: Function) {
         this._onUpdate = onUpdate;
     }
-
     cancelOnUpdate() {
         this._onUpdate = undefined;
+    }
+    triggerUpdate(newActions: AvailableAction[]) {
+        if (this._onUpdate) {
+            this._onUpdate(newActions);
+        }
     }
 }
 

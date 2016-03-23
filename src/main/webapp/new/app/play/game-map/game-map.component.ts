@@ -1,8 +1,9 @@
-import { Component, ElementRef, OnInit, OnChanges, DoCheck } from 'angular2/core';
+import { Component, ElementRef, OnInit, DoCheck } from 'angular2/core';
 import { BrowserDomAdapter } from "angular2/src/platform/browser/browser_adapter";
 
 import { MarkingService } from 'app/play/shared/services/marking.service';
 import { SelectService } from 'app/play/shared/services/select.service';
+import { DomHelper } from 'app/shared/services/dom/dom.helper';
 import { DrawMapService } from './services/draw-map.service';
 import { DrawMapHelper } from './helpers/draw-map.helper';
 
@@ -19,12 +20,13 @@ const CANVAS_PRESERVE_ASPECT_RATIO = "xMidYMid meet";
     providers: [
         BrowserDomAdapter,
         DrawMapService,
-        DrawMapHelper
+        DrawMapHelper,
+        DomHelper
     ],
     inputs: ['game']
 })
 
-export class GameMapComponent implements OnInit, OnChanges, DoCheck {
+export class GameMapComponent implements OnInit, DoCheck {
     game: Game;
 
     private _canvas: Element;
@@ -37,6 +39,7 @@ export class GameMapComponent implements OnInit, OnChanges, DoCheck {
     constructor(
         private _element: ElementRef,
         private _dom: BrowserDomAdapter,
+        private _domHelper: DomHelper,
         private _drawMapService: DrawMapService,
         private _marking: MarkingService,
         private _select: SelectService) { }
@@ -44,6 +47,7 @@ export class GameMapComponent implements OnInit, OnChanges, DoCheck {
     ngOnInit() {
         this._createCanvas();
         this._subscribeOnMapElementsClick();
+        this._drawMapService.drawMap(this._canvas, this.game, this.game.map);
     }
 
     private _createCanvas() {
@@ -53,23 +57,23 @@ export class GameMapComponent implements OnInit, OnChanges, DoCheck {
     }
 
     private _subscribeOnMapElementsClick() {
-        //TODO: Subscribing on click is much complex when it was with jquery (make own dom adapter?)
+        //TODO: Subscribing on click is much complex when it was with jquery (make it in dom helper?)
         this._dom.on(this._canvas, 'click', event => {
-            let element = this._getClosestElement(this._canvas, event.target, this._drawMapService.NODE_SELECTOR);
+            let element = this._domHelper.getClosest(this._canvas, event.target, this._drawMapService.NODE_SELECTOR);
             if (element && this._dom.getAttribute(element, 'marked')) {
                 let id = +this._dom.getAttribute(element, 'node-id');
                 this._select.select('node', id);
                 return;
             }
 
-            let element = this._getClosestElement(this._canvas, event.target, this._drawMapService.EDGE_SELECTOR);
+            let element = this._domHelper.getClosest(this._canvas, event.target, this._drawMapService.EDGE_SELECTOR);
             if (element && this._dom.getAttribute(element, 'marked')) {
                 let id = +this._dom.getAttribute(element, 'edge-id');
                 this._select.select('edge', id);
                 return;
             }
 
-            let element = this._getClosestElement(this._canvas, event.target, this._drawMapService.HEX_SELECTOR);
+            let element = this._domHelper.getClosest(this._canvas, event.target, this._drawMapService.HEX_SELECTOR);
             if (element && this._dom.getAttribute(element, 'marked')) {
                 let id = +this._dom.getAttribute(element, 'hex-id');
                 this._select.select('hex', id);
@@ -77,47 +81,8 @@ export class GameMapComponent implements OnInit, OnChanges, DoCheck {
         });
     }
 
-    //TODO: find other way/method or create own dom adapter to avoid this method here
-    private _getClosestElement(canvas: Element, element: Element|Node, selector: string) {
-        do {
-            if (element === canvas) {
-                return null;
-            }
-
-            if (this.elementMatches(element, selector)) {
-                return element;
-            }
-
-            element = this._dom.parentElement(element);
-        }
-        while (element);
-
-        return null;
-    }
-
-    //TODO: find other way or create own dom adapter to avoid this method here
-    private elementMatches(element: Element|Node, selector: string) {
-        var matches = document.querySelectorAll(selector);
-        return Array.prototype.some.call(matches, e => e === element);
-    }
-
-    ngOnChanges() {
-
-    }
-
     ngDoCheck() {
-        //TODO: it should happen only when something changes in the map
-        //TODO: it should be not redrawing but just updating of map -- needs to be totally refactored
-        this._updateMap();
-
-        //TODO: it's useless because map is updated on every check, and after every map redrawing marking should be updated
-        //it'll stop to be useless when redrawing of the map is changed to updating
         this._checkMarking();
-    }
-
-    private _updateMap() {
-        this._drawMapService.drawMap(this._canvas, this.game, this.game.map);
-        this._updateMapMarking(this._canvas);
     }
 
     //TODO: do this in right way (probably using differ services)

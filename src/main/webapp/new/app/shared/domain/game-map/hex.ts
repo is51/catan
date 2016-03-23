@@ -17,6 +17,8 @@ export class Hex {
     nodesIds: NodesIds;
     nodes: Nodes;
 
+    private _onUpdate: Function;
+
     constructor(params) {
         this.id = params.hexId;
         this.x = params.x;
@@ -51,11 +53,27 @@ export class Hex {
     }
 
     update(params) {
-        this.robbed = params.robbed;
+        if (this.robbed !== params.robbed) {
+            this.robbed = params.robbed;
+            this.triggerUpdate();
+        }
     }
 
     getTypeToString() {
         return HexType[this.type];
+    }
+
+    //TODO: try to replace with Subscribable (it's used in game-page.component)
+    onUpdate(onUpdate: Function) {
+        this._onUpdate = onUpdate;
+    }
+    cancelOnUpdate() {
+        this._onUpdate = undefined;
+    }
+    triggerUpdate() {
+        if (this._onUpdate) {
+            this._onUpdate();
+        }
     }
 }
 

@@ -31,7 +31,6 @@ export class DrawMapService {
 
         this._clear(canvas);
 
-        let coords;
         let actualSize = { //TODO: try to calculate actual image (map) size somehow more pretty
             xMin: null,
             xMax: null,
@@ -40,18 +39,18 @@ export class DrawMapService {
         };
 
         map.hexes.forEach(hex => {
-            coords = this._helper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
+            let coords = this._helper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
             actualSize = this._updateActualSize(actualSize, coords.x, coords.y, HEX_HEIGHT, HEX_HEIGHT);
             this.drawHex(canvas, coords, hex);
         });
 
         map.edges.forEach(edge => {
-            coords = this._helper.getEdgeCoords(edge, HEX_WIDTH, HEX_HEIGHT);
+            let coords = this._helper.getEdgeCoords(edge, HEX_WIDTH, HEX_HEIGHT);
             this.drawEdge(canvas, game, coords, edge);
         });
 
         map.nodes.forEach(node => {
-            coords = this._helper.getNodeCoords(node, HEX_WIDTH, HEX_HEIGHT);
+            let coords = this._helper.getNodeCoords(node, HEX_WIDTH, HEX_HEIGHT);
             this.drawNode(canvas, game, coords, node);
         });
 
@@ -133,6 +132,18 @@ export class DrawMapService {
         let hexDiceText = ((hex.robbed) ? '(R)' : '') + ((hex.dice) ? hex.dice : '');
         let hexDiceTextNode = this._dom.createTextNode(hexDiceText);
         this._dom.appendChild(hexDice, hexDiceTextNode);
+
+        hex.onUpdate(() => this.updateHex(group, hex));
+    }
+
+    updateHex(element: Element, hex: Hex) {
+        // Updatable properties of HEX:
+        // 1. hex.robbed
+        // --
+
+        let hexDiceText = ((hex.robbed) ? '(R)' : '') + ((hex.dice) ? hex.dice : '');
+        let hexDice = this._dom.querySelector(element, '.dice');
+        this._dom.setText(hexDice, hexDiceText);
     }
 
     drawNode(canvas: Element, game: Game, coords: Point, node: Node) {
@@ -157,6 +168,29 @@ export class DrawMapService {
             }
         } else {
             this.drawEmptyNode(group, <Point>{x: 0, y: 0});
+        }
+
+        node.onUpdate(() => this.updateNode(group, game, node));
+    }
+
+    updateNode(element: Element, game: Game, node: Node) {
+        // Updatable properties of NODE:
+        // 1. node.building
+        // --
+
+        this._dom.clearNodes(element);
+
+        if (node.building) {
+            let colorId = game.getPlayer(node.building.ownerPlayerId).colorId;
+
+            if (node.hasSettlement()) {
+                this.drawSettlement(element, <Point>{x: 0, y: 0}, colorId);
+            }
+            if (node.hasCity()) {
+                this.drawCity(element, <Point>{x: 0, y: 0}, colorId);
+            }
+        } else {
+            this.drawEmptyNode(element, <Point>{x: 0, y: 0});
         }
     }
 
@@ -247,6 +281,23 @@ export class DrawMapService {
             this.drawRoad(group, <Point>{x: 0, y: 0}, edge.orientation, colorId);
         } else {
             this.drawEmptyEdge(group, <Point>{x: 0, y: 0}, edge.orientation);
+        }
+
+        edge.onUpdate(() => this.updateEdge(group, game, edge));
+    }
+
+    updateEdge(element: Element, game: Game, edge: Edge) {
+        // Updatable properties of EDGE:
+        // 1. edge.building
+        // --
+
+        this._dom.clearNodes(element);
+
+        if (edge.building) {
+            let colorId = game.getPlayer(edge.building.ownerPlayerId).colorId;
+            this.drawRoad(element, <Point>{x: 0, y: 0}, edge.orientation, colorId);
+        } else {
+            this.drawEmptyEdge(element, <Point>{x: 0, y: 0}, edge.orientation);
         }
     }
 

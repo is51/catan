@@ -1,3 +1,5 @@
+/* TODO: bug, city can't be marked (when choose player to rob) */
+
 ct-game-map svg {
     position: absolute;
     width: 100%;
