@@ -85,7 +85,7 @@ export class Node {
         return this.building.built === NodeBuildingType.CITY;
     }
 
-    //TODO: try to replace with Subscribable (it's used in game-page.component)
+    //TODO: try to replace with Subscribable
     onUpdate(onUpdate: Function) {
         this._onUpdate = onUpdate;
     }

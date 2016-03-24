@@ -7,6 +7,7 @@ import { DomHelper } from 'app/shared/services/dom/dom.helper';
 import { DrawMapService } from './services/draw-map.service';
 import { DrawMapMarkingService } from './services/draw-map-marking.service';
 import { MapTemplatesService } from './services/map-templates.service';
+import { MapAnimationService } from './services/map-animation.service';
 import { DrawMapHelper } from './helpers/draw-map.helper';
 
 import { Game } from 'app/shared/domain/game';
@@ -25,7 +26,8 @@ const CANVAS_PRESERVE_ASPECT_RATIO = "xMidYMid meet";
         DrawMapMarkingService,
         DrawMapHelper,
         DomHelper,
-        MapTemplatesService
+        MapTemplatesService,
+        MapAnimationService
     ],
     inputs: ['game']
 })
@@ -42,13 +44,15 @@ export class GameMapComponent implements OnInit {
         private _drawMapService: DrawMapService,
         private _drawMapMarkingService: DrawMapMarkingService,
         private _marking: MarkingService,
-        private _select: SelectService) { }
+        private _select: SelectService,
+        private _animation: MapAnimationService) { }
 
     ngOnInit() {
         this._createCanvas();
         this._subscribeOnMapElementsClick();
         this._drawMapService.drawMap(this._canvas, this.game, this.game.map);
         this._subscribeOnMarkingChanging();
+        this._subscribeOnDiceThrowing();
     }
 
     private _createCanvas() {
@@ -84,5 +88,15 @@ export class GameMapComponent implements OnInit {
         this._marking.onUpdate('hexes', () => this._drawMapMarkingService.updateByType(this._canvas, 'hexes', 'hex'));
         this._marking.onUpdate('nodes', () => this._drawMapMarkingService.updateByType(this._canvas, 'nodes', 'node'));
         this._marking.onUpdate('edges', () => this._drawMapMarkingService.updateByType(this._canvas, 'edges', 'edge'));
+    }
+
+    private _subscribeOnDiceThrowing() {
+        this.game.dice.onThrow(value => {
+            if (value === 7) {
+                this._animation.robberThrown(this._canvas);
+            } else {
+                this._animation.hexDiceThrown(this._canvas, this.game.map, value);
+            }
+        });
     }
 }

@@ -67,7 +67,7 @@ export class Edge {
         }
     }
 
-    //TODO: try to replace with Subscribable (it's used in game-page.component)
+    //TODO: try to replace with Subscribable
     onUpdate(onUpdate: Function) {
         this._onUpdate = onUpdate;
     }

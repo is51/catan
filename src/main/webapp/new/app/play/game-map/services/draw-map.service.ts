@@ -23,6 +23,7 @@ export class DrawMapService {
     HEX_SELECTOR: string = '.hex';
     NODE_SELECTOR: string = '.node';
     EDGE_SELECTOR: string = '.edge';
+    ROBBER_SELECTOR: string = '.robber';
     NS: string = NS;
 
     constructor(

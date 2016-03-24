@@ -6,10 +6,13 @@ ct-game-map svg {
     height: 100%;
 }
 
-ct-game-map .hex.highlighted .hex-background {
+ct-game-map .hex.hex-animated {
     animation: blinking 1s linear infinite;
 }
-/*@keyframes blinking { 50% { fill-opacity: 0.5; }, 100% { fill-opacity: 1; } }*/
+ct-game-map .robber.robber-animated {
+    animation: blinking 0.5s linear infinite;
+}
+@keyframes blinking { 50% { fill-opacity: 0.5; }, 100% { fill-opacity: 1; } }
 
 
 ct-game-map [resource-type="brick"] {

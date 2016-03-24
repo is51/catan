@@ -1,6 +1,7 @@
 import { User } from 'app/shared/domain/user';
 import { Player } from 'app/shared/domain/player/player';
 import { GameMap } from 'app/shared/domain/game-map/game-map';
+import { Dice } from 'app/shared/domain/dice';
 
 export class Game {
     gameId: number;
@@ -41,7 +42,7 @@ export class Game {
         this.longestWayOwnerId = params.longestWayOwnerId;
 
         this.players = params.gameUsers.map(playerParams => new Player(playerParams));
-        this.dice = <Dice>params.dice;
+        this.dice = new Dice(params.dice);
         this.map = new GameMap(params.map);
     }
 
@@ -79,7 +80,7 @@ export class Game {
             }
         }
 
-        this.dice = <Dice>params.dice;
+        this.dice.update(params.dice);
         this.map.update(params.map);
     }
 
@@ -111,11 +112,4 @@ export class Game {
         return this.players.filter(player => player.id === playerId)[0];
     }
 
-}
-
-interface Dice {
-    thrown: boolean;
-    first: number;
-    second: number;
-    value: number;
 }
