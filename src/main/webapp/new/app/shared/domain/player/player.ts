@@ -43,8 +43,14 @@ export class Player {
         this.resources.update(params.resources);
         this.user.update(params.user);
 
-        if (this.availableActions) {
-            this.availableActions.update(params.availableActions);
+        if (params.availableActions) {
+            if (this.availableActions) {
+                this.availableActions.update(params.availableActions);
+            } else {
+                this.availableActions = new AvailableActions(params.availableActions);
+            }
+        } else {
+            this.availableActions = undefined;
         }
     }
 }
