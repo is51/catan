@@ -7,6 +7,10 @@ export class Dice {
     private _onThrow: Function;
 
     constructor(params) {
+        if (!params) {
+            return;
+        }
+
         this.thrown = params.thrown;
         this.first = params.first;
         this.second = params.second;
@@ -14,6 +18,10 @@ export class Dice {
     }
 
     update(params) {
+        if (!params) {
+            return;
+        }
+
         // TODO: add dice.id (number) to indicate if new dice thrown
 
         if (this.thrown !== params.thrown ||
