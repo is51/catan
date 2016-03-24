@@ -5,8 +5,11 @@ import { Node, NodeOrientation } from 'app/shared/domain/game-map/node';
 import { Edge } from 'app/shared/domain/game-map/edge';
 import { Point } from 'app/shared/domain/game-map/point';
 
+const ISOMETRIC_RATIO =  Math.tan(Math.PI / 6);
+
 @Injectable()
 export class DrawMapHelper {
+
     getFirstHexOfNode(node: Node) {
         for (let k in node.hexes) {
             if (node.hexes[k]) {
@@ -34,10 +37,18 @@ export class DrawMapHelper {
     }
 
     getHexCoords(hex: Hex, hexWidth: number, hexHeight: number) {
-        return <Point>{
-            x: hex.x * hexWidth + hex.y * hexWidth / 2,
-            y: hex.y * hexHeight
-        }
+        let x = 0;
+        let y = 0;
+
+        // x affection
+        x = x + (hex.x + hex.y/2) * hexWidth;
+        y = y - (hex.x + hex.y/2) * hexWidth * ISOMETRIC_RATIO;
+
+        // y affection
+        y = y + hex.y * hexHeight * ISOMETRIC_RATIO;
+        x = x + hex.y * hexHeight;
+
+        return <Point>{x, y};
     }
 
     getNodeCoords(node: Node, hexWidth: number, hexHeight: number) {
@@ -46,12 +57,16 @@ export class DrawMapHelper {
         let hexCoords = this.getHexCoords(hex, hexWidth, hexHeight);
 
         let x = hexCoords.x;
-        if (position === "topLeft" || position === "bottomLeft") { x -= Math.round(hexWidth/2); }
-        if (position === "topRight" || position === "bottomRight") { x += Math.round(hexWidth/2); }
+        if (position === "topLeft") { x -= hexWidth*3/4; }
+        if (position === "top" || position === "bottomLeft") { x -= hexWidth/4; }
+        if (position === "topRight" || position === "bottom") { x += hexWidth/4; }
+        if (position === "bottomRight") { x += hexWidth*3/4; }
 
-        var y = hexCoords.y;
-        if (position === "topRight" || position === "top" || position === "topLeft") { y -= Math.round(hexHeight/2); }
-        if (position === "bottomRight" || position === "bottom" || position === "bottomLeft") { y += Math.round(hexHeight/2); }
+        let y = hexCoords.y;
+        if (position === "topRight") { y -= hexHeight*3/2 * ISOMETRIC_RATIO; }
+        if (position === "top" || position === "bottomRight") { y -= hexHeight/2 * ISOMETRIC_RATIO; }
+        if (position === "topLeft" || position === "bottom") { y += hexHeight/2 * ISOMETRIC_RATIO; }
+        if (position === "bottomLeft") { y += hexHeight*3/2 * ISOMETRIC_RATIO; }
 
         return <Point>{x: x, y: y}
     }
@@ -62,45 +77,54 @@ export class DrawMapHelper {
         let hexCoords = this.getHexCoords(hex, hexWidth, hexHeight);
 
         let x = hexCoords.x;
-        if (position === "left") { x -= Math.round(hexWidth/2); }
-        if (position === "topLeft" || position === "bottomLeft") { x -= Math.round(hexWidth/4); }
-        if (position === "topRight" || position === "bottomRight") { x += Math.round(hexWidth/4); }
-        if (position === "right") { x += Math.round(hexWidth/2); }
+        if (position === "topLeft" || position === "left") { x -= hexWidth/2; }
+        if (position === "bottomRight" || position === "right") { x += hexWidth/2; }
 
         let y = hexCoords.y;
-        if (position === "topLeft" || position === "topRight") { y -= Math.round(hexHeight/2); }
-        if (position === "bottomLeft" || position === "bottomRight") { y += Math.round(hexHeight/2); }
+        if (position === "topRight" || position === "right") { y -= hexHeight * ISOMETRIC_RATIO; }
+        if (position === "left" || position === "bottomLeft") { y += hexHeight * ISOMETRIC_RATIO; }
 
         return <Point>{x: x, y: y}
     }
 
-    getPortOffset(node: Node) {
-        let x, y;
+    getPortOffset(node: Node, portDistance: number) {
+        let xDec, yDec;
 
         if (node.orientation === NodeOrientation.SINGLE_BOTTOM) {
-            y = (node.hexes.bottom) ? -1 : 1;
+            yDec = (node.hexes.bottom) ? -1 : 1;
 
             if (node.hexes.topLeft && !node.hexes.topRight) {
-                x = 1;
+                xDec = 1;
             } else if (!node.hexes.topLeft && node.hexes.topRight) {
-                x = -1;
+                xDec = -1;
             } else {
-                x = 0;
+                xDec = 0;
             }
         }
 
         if (node.orientation === NodeOrientation.SINGLE_TOP) {
-            y = (node.hexes.top) ? 1 : -1;
+            yDec = (node.hexes.top) ? 1 : -1;
 
             if (node.hexes.bottomLeft && !node.hexes.bottomRight) {
-                x = 1;
+                xDec = 1;
             } else if (!node.hexes.bottomLeft && node.hexes.bottomRight) {
-                x = -1;
+                xDec = -1;
             } else {
-                x = 0;
+                xDec = 0;
             }
         }
 
-        return <Point>{x: x, y: y};
+        let x = 0;
+        let y = 0;
+
+        // x affection
+        x = x + xDec * portDistance;
+        y = y - xDec * portDistance * ISOMETRIC_RATIO;
+
+        // y affection
+        y = y + yDec * portDistance * ISOMETRIC_RATIO;
+        x = x + yDec * portDistance;
+
+        return <Point>{x, y};
     }
 }

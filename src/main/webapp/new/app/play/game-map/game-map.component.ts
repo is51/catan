@@ -6,6 +6,7 @@ import { SelectService } from 'app/play/shared/services/select.service';
 import { DomHelper } from 'app/shared/services/dom/dom.helper';
 import { DrawMapService } from './services/draw-map.service';
 import { DrawMapMarkingService } from './services/draw-map-marking.service';
+import { MapTemplatesService } from './services/map-templates.service';
 import { DrawMapHelper } from './helpers/draw-map.helper';
 
 import { Game } from 'app/shared/domain/game';
@@ -23,7 +24,8 @@ const CANVAS_PRESERVE_ASPECT_RATIO = "xMidYMid meet";
         DrawMapService,
         DrawMapMarkingService,
         DrawMapHelper,
-        DomHelper
+        DomHelper,
+        MapTemplatesService
     ],
     inputs: ['game']
 })
