@@ -24,6 +24,8 @@ export class Game {
     dice: Dice;
     map: GameMap;
 
+    private _onStartPlaying: Function;
+
     constructor(params) {
         this.gameId = params.gameId;
 
@@ -58,7 +60,6 @@ export class Game {
         this.minPlayers = params.minPlayers;
         this.targetVictoryPoints = params.targetVictoryPoints;
 
-        this.status = params.status;
         this.dateStarted = params.dateStarted;
         this.currentMove = params.currentMove;
         this.biggestArmyOwnerId = params.biggestArmyOwnerId;
@@ -82,6 +83,17 @@ export class Game {
 
         this.dice.update(params.dice);
         this.map.update(params.map);
+
+
+
+        if (this.status !== params.status) {
+            this.status = params.status;
+
+            if (this.isPlaying()) {
+                this.triggerStartPlaying();
+            }
+        }
+
     }
 
     getId() {
@@ -110,6 +122,21 @@ export class Game {
 
     getPlayer(playerId: number) {
         return this.players.filter(player => player.id === playerId)[0];
+    }
+
+
+
+    //TODO: try to replace with Subscribable
+    onStartPlaying(onStartPlaying: Function) {
+        this._onStartPlaying = onStartPlaying;
+    }
+    cancelOnStartPlaying() {
+        this._onStartPlaying = undefined;
+    }
+    triggerStartPlaying() {
+        if (this._onStartPlaying) {
+            this._onStartPlaying();
+        }
     }
 
 }
