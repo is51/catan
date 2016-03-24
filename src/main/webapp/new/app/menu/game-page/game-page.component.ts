@@ -52,7 +52,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
                         .onUpdate(actions => {
                             actions.forEach(action => {
                                 if (action.notify) {
-                                    this._notification.notifyGlobal(action.notifyMessage, action.code); //TODO: why red?
+                                    this._notification.notifyGlobal(action.notifyMessage, action.code);
                                 }
                             });
                         });

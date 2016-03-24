@@ -63,9 +63,21 @@ export class Game {
         this.biggestArmyOwnerId = params.biggestArmyOwnerId;
         this.longestWayOwnerId = params.longestWayOwnerId;
 
-        this.players.forEach((player, key) => {
-            player.update(params.gameUsers[key]);
+        params.gameUsers.forEach(playerParams => {
+            let player = this.players.filter(player => player.id === playerParams.id)[0];
+            if (player) {
+                player.update(playerParams);
+            } else {
+                this.players.push(new Player(playerParams));
+            }
         });
+        for (let i = 0; i < this.players.length; i++) {
+            let playerParams = params.gameUsers.filter(playerParams => playerParams.id === this.players[i].id)[0];
+            if (!playerParams) {
+                this.players.splice(i, 1);
+                i--;
+            }
+        }
 
         this.dice = <Dice>params.dice;
         this.map.update(params.map);
