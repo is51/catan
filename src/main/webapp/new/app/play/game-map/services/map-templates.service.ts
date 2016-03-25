@@ -16,7 +16,7 @@ export class MapTemplatesService {
 
         this._templates.set('hex-bg', `
             <g transform="scale(0.5)">
-                <polygon fill="#FFFFFF" points="-75,14.43375 25,-43.30125 75,-14.43375 -25,43.30125" />
+                <polygon fill="#FFFFFF" points="-75,14.433756729741 25,-43.301270189222 75,-14.433756729741 -25,43.301270189222" />
             </g>
         `);
 
