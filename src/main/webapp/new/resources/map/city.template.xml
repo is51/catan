@@ -1,0 +1,6 @@
+<g transform="scale(1, 0.57735)">
+    <circle cx="0" cy="0" r="10" player-color="{colorId}"></circle>
+    <circle cx="0" cy="-3" r="10" player-color="{colorId}"></circle>
+    <circle cx="0" cy="-6" r="10" player-color="{colorId}"></circle>
+    <text x="0" y="-1" text-anchor="middle">C</text>
+</g>

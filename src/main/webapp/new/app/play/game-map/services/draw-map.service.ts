@@ -15,8 +15,39 @@ const NS = 'http://www.w3.org/2000/svg';
 const HEX_WIDTH = 50;
 const HEX_HEIGHT = 25;
 const PORT_DISTANCE = 9;
-const ROBBED_DICE_OFFSET = {x: 5, y: -3};
-const ROBBER_RESOURCE_OFFSET = {x: -5, y: 2};
+
+const DICE_COLORS = {
+    brick: {
+        colorNumber: '#3699D1',
+        colorMarkerGrad1: '#4BB0DD',
+        colorMarkerGrad2: '#4BB0DD',
+        colorMarkerGrad3: '#3699D1'
+    },
+    wood: {
+        colorNumber: '#d2c14d',
+        colorMarkerGrad1: '#d8ce80',
+        colorMarkerGrad2: '#d8ce80',
+        colorMarkerGrad3: '#d2c14d'
+    },
+    sheep: {
+        colorNumber: '#00c553',
+        colorMarkerGrad1: '#45d980',
+        colorMarkerGrad2: '#45d980',
+        colorMarkerGrad3: '#00c553'
+    },
+    wheat: {
+        colorNumber: '#93729d',
+        colorMarkerGrad1: '#aa93b2',
+        colorMarkerGrad2: '#aa93b2',
+        colorMarkerGrad3: '#93729d'
+    },
+    stone: {
+        colorNumber: '#ff9169',
+        colorMarkerGrad1: '#eea98d',
+        colorMarkerGrad2: '#eea98d',
+        colorMarkerGrad3: '#ff9169'
+    },
+};
 
 @Injectable()
 export class DrawMapService {
@@ -114,16 +145,18 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'hex-id', <string>hex.id);
         this._dom.appendChild(canvas, group);
 
-        let diceCoords = (hex.robbed) ? ROBBED_DICE_OFFSET : {x: 0, y: 0};
+        let resourceTypeStr = hex.getTypeToString().toLowerCase();
 
         this._dom.setInnerHTML(group,
             this._templates.get('hex-bg') +
-            this._templates.get('hex-resource-' + hex.getTypeToString().toLowerCase()) +
-            this._templates.get('hex-dice', {
-                number: (hex.dice)?hex.dice:'',
-                x: diceCoords.x,
-                y: diceCoords.y
-            })
+            this._templates.get('hex-' + resourceTypeStr) +
+            ((hex.dice)
+                ? this._templates.get('hex-dice', Object.assign({
+                    number: (hex.dice)?hex.dice:'',
+                    resourceType: resourceTypeStr,
+                }, DICE_COLORS[resourceTypeStr]))
+
+                : '' )
         );
 
         hex.onUpdate(() => this.updateHex(canvas, group, hex));
@@ -137,10 +170,7 @@ export class DrawMapService {
         let hexDice = this._dom.querySelector(element, '.dice');
 
         if (hex.robbed) {
-            this._dom.setAttribute(hexDice, 'transform', 'translate('+ROBBED_DICE_OFFSET.x+', '+ROBBED_DICE_OFFSET.y+')');
             this.updateRobber(canvas, hex);
-        } else {
-            this._dom.setAttribute(hexDice, 'transform', 'translate(0, 0)');
         }
     }
 
@@ -158,13 +188,7 @@ export class DrawMapService {
     }
 
     updateRobber(canvas: Element, robbedHex: Hex) {
-        let robbedHexCoords = this._helper.getHexCoords(robbedHex, HEX_WIDTH, HEX_HEIGHT);
-        let offset = (robbedHex.dice) ? ROBBER_RESOURCE_OFFSET : {x: 0, y: 0};
-        let coords = {
-            x: robbedHexCoords.x + offset.x,
-            y: robbedHexCoords.y + offset.y
-        };
-
+        let coords = this._helper.getHexCoords(robbedHex, HEX_WIDTH, HEX_HEIGHT);
         let robber = this._dom.querySelector(canvas, '.robber');
         this._dom.setAttribute(robber, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
     }
