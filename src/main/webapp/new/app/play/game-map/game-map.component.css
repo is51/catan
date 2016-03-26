@@ -78,6 +78,7 @@ ct-game-map .node[marked] .city {
 ct-game-map .node[marked]:hover .settlement,
 ct-game-map .node[marked]:hover .city {
     stroke-opacity: 1;
+    fill-opacity: 1;
 }
 
 ct-game-map .node[marked]:hover text {

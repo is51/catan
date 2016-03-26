@@ -1,6 +1,245 @@
-<g transform="scale(1, 0.57735)">
-    <circle stroke="#000000" stroke-width="0.5" cx="0" cy="0" r="10" player-color="{colorId}"></circle>
-    <circle stroke="#000000" stroke-width="0.5" cx="0" cy="-3" r="10" player-color="{colorId}"></circle>
-    <circle stroke="#000000" stroke-width="0.5" cx="0" cy="-6" r="10" player-color="{colorId}"></circle>
-    <text x="0" y="-1" text-anchor="middle">C</text>
+<g transform="scale(0.55)">
+    <g>
+        <g>
+            <g>
+                <polygon fill="#6E6E6E" points="-10.379,1.834 -8.375,0.641 -8.375,-0.11 -10.391,-1.257 			"/>
+                <polygon fill="#969696" points="7.774,0.109 9.454,1.09 9.476,-2.088 7.774,-1.074 			"/>
+                <linearGradient id="city-grad-1_" gradientUnits="userSpaceOnUse" x1="-12.1812" y1="-34.3926" x2="12.1807" y2="-34.3926">
+                    <stop  offset="0" style="stop-color:#CDCED1"/>
+                    <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                    <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                    <stop  offset="0.1668" style="stop-color:#98999B"/>
+                    <stop  offset="0.2571" style="stop-color:#88898B"/>
+                    <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                    <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                    <stop  offset="0.7001" style="stop-color:#78797B"/>
+                    <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                    <stop  offset="1" style="stop-color:#606062"/>
+                </linearGradient>
+                <polygon fill="url(#city-grad-1_)" points="-1.108,-27.36 -12.181,-33.753 1.107,-41.425 12.181,-35.032 			"/>
+                <g>
+                    <linearGradient id="city-grad-2_" gradientUnits="userSpaceOnUse" x1="0.5498" y1="-30.6094" x2="12.9218" y2="10.7933">
+                        <stop  offset="0.1362" style="stop-color:#898A8D"/>
+                        <stop  offset="0.3224" style="stop-color:#858689"/>
+                        <stop  offset="0.514" style="stop-color:#797A7D"/>
+                        <stop  offset="0.708" style="stop-color:#646568"/>
+                        <stop  offset="0.9026" style="stop-color:#48494B"/>
+                        <stop  offset="1" style="stop-color:#37383A"/>
+                    </linearGradient>
+                    <polygon fill="url(#city-grad-2_)" points="12.181,-35.032 -1.108,-27.36 -1.108,7.187 1.418,5.729 1.406,2.529 9.476,-2.088 
+					9.454,1.09 12.181,-0.484 				"/>
+                </g>
+                <g>
+                    <linearGradient id="city-grad-3_" gradientUnits="userSpaceOnUse" x1="-11.498" y1="-33.3867" x2="0.9103" y2="18.0011">
+                        <stop  offset="0" style="stop-color:#EEEFF3"/>
+                        <stop  offset="0.105" style="stop-color:#D5D6D9"/>
+                        <stop  offset="0.2608" style="stop-color:#B7B7BA"/>
+                        <stop  offset="0.4237" style="stop-color:#9F9FA2"/>
+                        <stop  offset="0.5947" style="stop-color:#8E8E91"/>
+                        <stop  offset="0.7789" style="stop-color:#848486"/>
+                        <stop  offset="1" style="stop-color:#818183"/>
+                    </linearGradient>
+                    <polygon fill="url(#city-grad-3_)" points="-1.108,7.187 -2.778,6.223 -2.776,3.078 -10.391,-1.257 -10.379,1.834 -12.181,0.794 
+					-12.181,-33.753 -1.108,-27.36 				"/>
+                </g>
+            </g>
+            <g>
+                <linearGradient id="city-grad-4_" gradientUnits="userSpaceOnUse" x1="14.8232" y1="-36.5869" x2="-20.3648" y2="-31.4951">
+                    <stop  offset="0.0056" style="stop-color:#B9B7B2"/>
+                    <stop  offset="0.1671" style="stop-color:#C2BFB9"/>
+                    <stop  offset="0.4353" style="stop-color:#DCD5CB"/>
+                    <stop  offset="0.5337" style="stop-color:#E7DFD3"/>
+                    <stop  offset="0.7592" style="stop-color:#F2E8DD"/>
+                    <stop  offset="1" style="stop-color:#F6EBE0"/>
+                </linearGradient>
+                <polygon fill="url(#city-grad-4_)" points="-1.017,-27.987 -11.178,-33.854 1.016,-40.894 11.177,-35.027 			"/>
+            </g>
+            <g>
+                <polygon fill="#63666B" points="10.549,-34.665 11.177,-35.027 1.016,-40.894 -11.178,-33.854 -10.551,-33.492 1.016,-40.169 			
+				"/>
+            </g>
+            <g>
+                <g>
+                    <linearGradient id="city-grad-5_" gradientUnits="userSpaceOnUse" x1="14.1577" y1="-35.8994" x2="-3.6642" y2="-32.035">
+                        <stop  offset="0" style="stop-color:#CDCED1"/>
+                        <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                        <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                        <stop  offset="0.1668" style="stop-color:#98999B"/>
+                        <stop  offset="0.2571" style="stop-color:#88898B"/>
+                        <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                        <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                        <stop  offset="0.7001" style="stop-color:#78797B"/>
+                        <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                        <stop  offset="1" style="stop-color:#606062"/>
+                    </linearGradient>
+                    <polygon fill="url(#city-grad-5_)" points="5.12,-33.912 -0.509,-30.662 -0.509,-32.746 5.12,-35.994 				"/>
+                </g>
+                <g>
+                    <polygon fill="#C8C9CC" points="-0.509,-30.662 -6.017,-33.841 -6.017,-35.924 -0.509,-32.746 				"/>
+                </g>
+                <g>
+                    <linearGradient id="city-grad-6_" gradientUnits="userSpaceOnUse" x1="-6.0469" y1="-35.96" x2="5.0898" y2="-35.96">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.0064" style="stop-color:#FEFEFE"/>
+                        <stop  offset="0.1414" style="stop-color:#EEEEEF"/>
+                        <stop  offset="0.292" style="stop-color:#E4E5E7"/>
+                        <stop  offset="0.4888" style="stop-color:#E1E2E4"/>
+                        <stop  offset="0.7001" style="stop-color:#DEDFE1"/>
+                        <stop  offset="0.8622" style="stop-color:#D5D5D7"/>
+                        <stop  offset="1" style="stop-color:#C6C6C8"/>
+                    </linearGradient>
+                    <path fill="url(#city-grad-6_)" d="M-0.417-39.174l-5.63,3.25l5.506,3.179l5.63-3.249L-0.417-39.174z"/>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <linearGradient id="city-grad-7_" gradientUnits="userSpaceOnUse" x1="-0.2827" y1="-35.7236" x2="2.8691" y2="-35.7236">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.0782" style="stop-color:#EFEFF0"/>
+                        <stop  offset="0.1931" style="stop-color:#DFDFE2"/>
+                        <stop  offset="0.3214" style="stop-color:#D5D6D9"/>
+                        <stop  offset="0.4888" style="stop-color:#D2D3D6"/>
+                        <stop  offset="0.7001" style="stop-color:#CFD0D3"/>
+                        <stop  offset="0.8622" style="stop-color:#C6C7C9"/>
+                        <stop  offset="1" style="stop-color:#B8B8BA"/>
+                    </linearGradient>
+                    <polygon fill="url(#city-grad-7_)" points="0.53,-34.814 -0.283,-35.283 2.057,-36.633 2.869,-36.165 				"/>
+                </g>
+                <linearGradient id="city-grad-8_" gradientUnits="userSpaceOnUse" x1="-0.3057" y1="-34.5791" x2="4.1022" y2="-35.5586">
+                    <stop  offset="0" style="stop-color:#CDCED1"/>
+                    <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                    <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                    <stop  offset="0.1668" style="stop-color:#98999B"/>
+                    <stop  offset="0.2571" style="stop-color:#88898B"/>
+                    <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                    <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                    <stop  offset="0.7001" style="stop-color:#78797B"/>
+                    <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                    <stop  offset="1" style="stop-color:#606062"/>
+                </linearGradient>
+                <polygon fill="url(#city-grad-8_)" points="2.869,-35.237 0.53,-33.886 0.53,-34.814 2.869,-36.165 			"/>
+                <g>
+                    <linearGradient id="city-grad-9_" gradientUnits="userSpaceOnUse" x1="-0.9551" y1="-35.2695" x2="1.2095" y2="-33.8949">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.1012" style="stop-color:#E8E8E9"/>
+                        <stop  offset="0.2096" style="stop-color:#D8D9DA"/>
+                        <stop  offset="0.3307" style="stop-color:#CECFD1"/>
+                        <stop  offset="0.4888" style="stop-color:#CBCCCE"/>
+                        <stop  offset="0.7001" style="stop-color:#C8C9CB"/>
+                        <stop  offset="0.8622" style="stop-color:#BFBFC1"/>
+                        <stop  offset="1" style="stop-color:#B0B0B2"/>
+                    </linearGradient>
+                    <polygon fill="url(#city-grad-9_)" points="0.53,-33.886 -0.283,-34.355 -0.283,-35.283 0.53,-34.814 				"/>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <linearGradient id="city-grad-10_" gradientUnits="userSpaceOnUse" x1="-3.2524" y1="-37.8457" x2="-0.1006" y2="-37.8457">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.0782" style="stop-color:#EFEFF0"/>
+                        <stop  offset="0.1931" style="stop-color:#DFDFE2"/>
+                        <stop  offset="0.3214" style="stop-color:#D5D6D9"/>
+                        <stop  offset="0.4888" style="stop-color:#D2D3D6"/>
+                        <stop  offset="0.7001" style="stop-color:#CFD0D3"/>
+                        <stop  offset="0.8622" style="stop-color:#C6C7C9"/>
+                        <stop  offset="1" style="stop-color:#B8B8BA"/>
+                    </linearGradient>
+                    <polygon fill="url(#city-grad-10_)" points="-2.44,-36.936 -3.252,-37.405 -0.913,-38.755 -0.101,-38.287 				"/>
+                </g>
+                <linearGradient id="city-grad-11_" gradientUnits="userSpaceOnUse" x1="-3.2754" y1="-36.7002" x2="1.1337" y2="-37.68">
+                    <stop  offset="0" style="stop-color:#CDCED1"/>
+                    <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                    <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                    <stop  offset="0.1668" style="stop-color:#98999B"/>
+                    <stop  offset="0.2571" style="stop-color:#88898B"/>
+                    <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                    <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                    <stop  offset="0.7001" style="stop-color:#78797B"/>
+                    <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                    <stop  offset="1" style="stop-color:#606062"/>
+                </linearGradient>
+                <polygon fill="url(#city-grad-11_)" points="-0.101,-37.358 -2.44,-36.007 -2.44,-36.936 -0.101,-38.287 			"/>
+                <g>
+                    <linearGradient id="city-grad-12_" gradientUnits="userSpaceOnUse" x1="-3.9243" y1="-37.3906" x2="-1.7583" y2="-36.0151">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.1012" style="stop-color:#E8E8E9"/>
+                        <stop  offset="0.2096" style="stop-color:#D8D9DA"/>
+                        <stop  offset="0.3307" style="stop-color:#CECFD1"/>
+                        <stop  offset="0.4888" style="stop-color:#CBCCCE"/>
+                        <stop  offset="0.7001" style="stop-color:#C8C9CB"/>
+                        <stop  offset="0.8622" style="stop-color:#BFBFC1"/>
+                        <stop  offset="1" style="stop-color:#B0B0B2"/>
+                    </linearGradient>
+                    <polygon fill="url(#city-grad-12_)" points="-2.44,-36.007 -3.252,-36.477 -3.252,-37.405 -2.44,-36.936 				"/>
+                </g>
+            </g>
+        </g>
+        <g>
+            <polygon fill="{color}" points="0.125,-24.737 11.083,-31.022 11.089,-4.768 0.131,1.516 		"/>
+            <g opacity="0.1">
+                <polygon points="0.125,-24.737 11.083,-31.022 11.085,-24.525 8.876,-23.259 8.876,-19.966 0.126,-14.949 0.126,-16.505 
+				3.441,-18.406 3.44,-20.142 7.858,-22.676 7.858,-25.968 1.144,-22.117 1.144,-20.471 0.126,-19.888 			"/>
+                <polygon points="11.086,-21.144 10.068,-20.56 10.068,-19.003 11.086,-19.586 			"/>
+                <polygon points="2.337,-14.479 5.563,-16.329 5.563,-14.772 2.337,-12.922 			"/>
+                <polygon points="0.128,-9.919 3.355,-11.77 3.355,-10.212 0.128,-8.362 			"/>
+                <polygon points="8.877,-13.291 8.877,-11.733 4.547,-9.25 4.547,-10.807 			"/>
+                <polygon points="11.086,-16.204 10.069,-15.621 10.071,-7.478 11.088,-8.061 			"/>
+                <polygon points="3.355,-6.83 3.355,-5.273 0.129,-3.422 0.129,-4.979 			"/>
+                <polygon points="4.461,-4.17 4.461,-2.614 0.131,-0.129 0.129,-1.687 			"/>
+            </g>
+            <g opacity="0.3" fill="#FFFFFF">
+                <polygon points="0.125,-24.722 0.125,-23.922 11.089,-30.172 11.083,-31.007 			"/>
+                <polygon points="0.125,-23.144 0.125,-22.344 11.089,-28.594 11.083,-29.429 			"/>
+                <polygon points="0.125,-21.637 0.125,-20.837 11.089,-27.087 11.083,-27.922 			"/>
+                <polygon points="0.125,-20.059 0.125,-19.259 11.089,-25.509 11.083,-26.344 			"/>
+                <polygon points="0.125,-18.308 0.125,-17.508 11.089,-23.758 11.083,-24.593 			"/>
+                <polygon points="0.125,-16.729 0.125,-15.93 11.089,-22.18 11.083,-23.015 			"/>
+                <polygon points="0.125,-15.223 0.125,-14.423 11.089,-20.673 11.083,-21.508 			"/>
+                <polygon points="0.125,-13.645 0.125,-12.845 11.089,-19.095 11.083,-19.93 			"/>
+                <polygon points="0.129,-11.958 0.129,-11.158 11.093,-17.408 11.087,-18.243 			"/>
+                <polygon points="0.129,-10.38 0.129,-9.58 11.093,-15.83 11.087,-16.665 			"/>
+                <polygon points="0.129,-8.874 0.129,-8.074 11.093,-14.324 11.087,-15.159 			"/>
+                <polygon points="0.129,-7.295 0.129,-6.496 11.093,-12.746 11.087,-13.581 			"/>
+                <polygon points="0.129,-5.544 0.129,-4.744 11.093,-10.994 11.087,-11.829 			"/>
+                <polygon points="0.129,-3.966 0.129,-3.166 11.093,-9.416 11.087,-10.251 			"/>
+                <polygon points="0.129,-2.459 0.129,-1.66 11.093,-7.91 11.087,-8.745 			"/>
+                <polygon points="0.129,-0.881 0.129,-0.082 11.093,-6.332 11.087,-7.167 			"/>
+                <polygon points="0.129,0.716 0.129,1.516 11.093,-4.734 11.087,-5.569 			"/>
+            </g>
+        </g>
+        <g>
+            <polygon fill="{color}" points="-11.012,-29.65 -2.264,-24.633 -2.269,1.622 -11.017,-3.397 		"/>
+            <g id="Layer_13" opacity="0.1">
+                <polygon fill="#121605" points="-11.012,-29.65 -7.786,-27.8 -7.787,-24.597 -11.013,-26.446 			"/>
+                <polygon fill="#121605" points="-6.595,-27.117 -2.264,-24.633 -2.264,-23.076 -6.595,-25.56 			"/>
+                <polygon fill="#121605" points="-11.013,-23.064 -7.788,-21.214 -7.788,-22.86 -2.265,-19.693 -2.266,-18.136 -5.579,-20.037 
+				-5.58,-18.39 -7.701,-19.607 -7.701,-17.96 -11.014,-19.861 			"/>
+                <polygon points="-11.015,-16.479 -7.789,-14.628 -7.789,-16.275 -2.266,-13.107 -2.267,-9.904 -7.702,-13.021 -7.703,-11.375 
+				-9.911,-12.642 -9.911,-10.995 -11.016,-11.629 			"/>
+                <polygon points="-11.017,-8.246 -10,-7.662 -10,-4.46 -11.017,-5.043 			"/>
+                <polygon points="-5.494,-1.785 -2.269,0.064 -2.269,1.622 -5.495,-0.229 			"/>
+                <polygon points="-7.791,-3.103 -6.686,-2.469 -6.687,-0.913 -8.808,-2.13 -8.808,-6.979 -7.703,-6.345 -7.703,-7.992 
+				-2.268,-4.875 -2.268,-3.318 -6.686,-5.852 -6.686,-4.206 -7.791,-4.84 			"/>
+            </g>
+            <g opacity="0.3" fill="#FFFFFF">
+                <polygon points="-11.017,-28.853 -11.012,-29.65 -2.264,-24.633 -2.264,-23.844 			"/>
+                <polygon points="-11.021,-27.306 -11.016,-28.104 -2.268,-23.086 -2.268,-22.297 			"/>
+                <polygon points="-11.021,-25.696 -11.016,-26.494 -2.268,-21.477 -2.268,-20.688 			"/>
+                <polygon points="-11.025,-24.149 -11.02,-24.947 -2.272,-19.93 -2.272,-19.141 			"/>
+                <polygon points="-11.017,-22.5 -11.012,-23.298 -2.264,-18.281 -2.264,-17.491 			"/>
+                <polygon points="-11.021,-20.953 -11.016,-21.751 -2.268,-16.734 -2.268,-15.944 			"/>
+                <polygon points="-11.021,-19.344 -11.016,-20.142 -2.268,-15.125 -2.268,-14.335 			"/>
+                <polygon points="-11.025,-17.797 -11.02,-18.595 -2.272,-13.578 -2.272,-12.788 			"/>
+                <polygon points="-11.009,-16.212 -11.004,-17.01 -2.256,-11.993 -2.256,-11.203 			"/>
+                <polygon points="-11.013,-14.665 -11.008,-15.463 -2.26,-10.446 -2.26,-9.656 			"/>
+                <polygon points="-11.013,-13.056 -11.008,-13.854 -2.26,-8.836 -2.26,-8.047 			"/>
+                <polygon points="-11.017,-11.509 -11.012,-12.307 -2.264,-7.29 -2.264,-6.5 			"/>
+                <polygon points="-11.004,-9.704 -11,-10.502 -2.251,-5.485 -2.251,-4.695 			"/>
+                <polygon points="-11.008,-8.157 -11.003,-8.955 -2.255,-3.938 -2.255,-3.148 			"/>
+                <polygon points="-11.008,-6.548 -11.003,-7.346 -2.255,-2.329 -2.255,-1.539 			"/>
+                <polygon points="-11.022,-4.996 -11.017,-5.794 -2.269,-0.777 -2.269,0.013 			"/>
+                <polygon points="-11.022,-3.387 -11.017,-4.185 -2.269,0.833 -2.269,1.622 			"/>
+            </g>
+        </g>
+    </g>
 </g>
