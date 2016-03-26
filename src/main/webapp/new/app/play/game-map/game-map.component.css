@@ -45,7 +45,7 @@ ct-game-map .marking {
     visibility: hidden;
 }
 
-ct-game-map [marked] .marking {
+ct-game-map [marked]:not([marked-many]) .marking {
     visibility: visible;
 
     -webkit-animation:spin 5s linear infinite;
