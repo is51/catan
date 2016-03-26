@@ -51,10 +51,10 @@ const DICE_COLORS = {
         colorMarkerGrad3: '#93729d'
     },
     stone: {
-        colorNumber: '#ff9169',
-        colorMarkerGrad1: '#eea98d',
-        colorMarkerGrad2: '#eea98d',
-        colorMarkerGrad3: '#ff9169'
+        colorNumber: '#f38057',
+        colorMarkerGrad1: '#e69677',
+        colorMarkerGrad2: '#e69677',
+        colorMarkerGrad3: '#f38057'
     },
 };
 
