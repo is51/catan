@@ -34,13 +34,19 @@ ct-game-map [player-color="4"] {
 
 ct-game-map .hex[marked] {
     cursor: pointer;
-    fill-opacity: 0.6;
 }
 
-ct-game-map .hex[marked]:hover {
+ct-game-map .hex[marked] .resource-inner {
+    fill-opacity: 0.5;
+}
+
+ct-game-map .hex[marked]:hover .resource-inner {
+    fill-opacity: 1;
+}
+
+ct-game-map .hex[marked]:hover .hex-border {
     stroke: #000;
     stroke-width: 1;
-    fill-opacity: 1;
 }
 
 ct-game-map .node .blank-node {
