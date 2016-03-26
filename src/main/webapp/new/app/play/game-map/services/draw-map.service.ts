@@ -58,7 +58,7 @@ const DICE_COLORS = {
     },
 };
 
-const CITY_COLORS = {
+const BUILDING_COLORS = {
     1: '#f6663d',
     2: '#727df4',
     3: '#ddcc00',
@@ -275,7 +275,7 @@ export class DrawMapService {
         this._dom.appendChild(canvas, group);
 
         this._dom.setInnerHTML(group,
-            this._templates.get('settlement', {colorId})
+            this._templates.get('settlement', {color: BUILDING_COLORS[colorId]})
         );
     }
 
@@ -286,7 +286,7 @@ export class DrawMapService {
         this._dom.appendChild(canvas, group);
 
         this._dom.setInnerHTML(group,
-            this._templates.get('city', {color: CITY_COLORS[colorId]})
+            this._templates.get('city', {color: BUILDING_COLORS[colorId]})
         );
     }
 
