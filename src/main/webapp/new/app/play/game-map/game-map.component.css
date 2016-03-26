@@ -40,13 +40,18 @@ ct-game-map .hex[marked] .resource-inner {
     fill-opacity: 0.5;
 }
 
+ct-game-map .hex[marked] .hex-border {
+    stroke: #fff;
+    stroke-width: 1;
+    stroke-dasharray: 1,1;
+}
+
 ct-game-map .hex[marked]:hover .resource-inner {
     fill-opacity: 1;
 }
 
 ct-game-map .hex[marked]:hover .hex-border {
-    stroke: #000;
-    stroke-width: 1;
+    stroke-dasharray: none;
 }
 
 ct-game-map .node .blank-node {
