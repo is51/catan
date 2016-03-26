@@ -15,31 +15,7 @@ ct-game-map .robber.robber-animated {
 @keyframes blinking { 50% { fill-opacity: 0.5; }, 100% { fill-opacity: 1; } }
 
 
-ct-game-map [resource-type="brick"] {
-    fill: #43a8d9;
-}
-
-ct-game-map [resource-type="wood"] {
-    fill: #d5c867;
-}
-
-ct-game-map [resource-type="sheep"] {
-    fill: #48da83;
-}
-
-ct-game-map [resource-type="wheat"] {
-    fill: #a187aa;
-}
-
-ct-game-map [resource-type="stone"] {
-    fill: #f69f7e;
-}
-
-ct-game-map [resource-type="empty"],
-ct-game-map [resource-type="any"] {
-    fill: #ccc;
-}
-
+/* TODO: remove from css, set in some config-services */
 ct-game-map [player-color="1"] {
     fill: #f50;
 }
@@ -56,10 +32,6 @@ ct-game-map [player-color="4"] {
     fill: #0f5;
 }
 
-ct-game-map .hex {
-
-}
-
 ct-game-map .hex[marked] {
     cursor: pointer;
     fill-opacity: 0.6;
@@ -71,30 +43,23 @@ ct-game-map .hex[marked]:hover {
     fill-opacity: 1;
 }
 
-ct-game-map .node {
-
-}
-
 ct-game-map .node .blank-node {
     visibility: hidden;
-    stroke: #000;
-    stroke-width: 1;
-    cursor: pointer;
 }
 
 ct-game-map .node[marked] .blank-node {
     visibility: visible;
-    fill-opacity: 0.6;
-    stroke-opacity: 0.1;
+    cursor: pointer;
 }
 
-ct-game-map .node[marked]:hover .blank-node {
+ct-game-map .node[marked]:hover .blank-node circle {
     stroke-opacity: 1;
 }
 
 ct-game-map .node[marked] .settlement,
 ct-game-map .node[marked] .city {
     visibility: visible;
+    cursor: pointer;
     fill-opacity: 0.6;
     stroke-opacity: 0.1;
 }
@@ -102,7 +67,6 @@ ct-game-map .node[marked] .city {
 ct-game-map .node[marked]:hover .settlement,
 ct-game-map .node[marked]:hover .city {
     stroke-opacity: 1;
-    cursor: pointer;
 }
 
 ct-game-map .node[marked]:hover text {
@@ -112,21 +76,6 @@ ct-game-map .node[marked]:hover text {
 ct-game-map .node[marked]:hover .settlement circle,
 ct-game-map .node[marked]:hover .city circle {
     stroke-width: 1.2;
-}
-
-ct-game-map .node .settlement circle {
-    stroke: #000;
-    stroke-width: 0.8;
-}
-
-ct-game-map .node .city circle {
-    stroke: #000;
-    stroke-width: 0.8;
-}
-
-ct-game-map .edge {
-    stroke: #000;
-    stroke-width: 0.8;
 }
 
 ct-game-map .edge .blank-edge {

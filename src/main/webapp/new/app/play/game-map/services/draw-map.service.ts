@@ -16,6 +16,15 @@ const HEX_WIDTH = 50;
 const HEX_HEIGHT = 25;
 const PORT_DISTANCE = 9;
 
+const PORT_COLORS = {
+    brick: '#43a8d9',
+    wood: '#d5c867',
+    sheep: '#48da83',
+    wheat: '#a187aa',
+    stone: '#f69f7e',
+    any: '#cccccc'
+};
+
 const DICE_COLORS = {
     brick: {
         colorNumber: '#3699D1',
@@ -286,7 +295,7 @@ export class DrawMapService {
         this._dom.appendChild(canvas, group);
 
         this._dom.setInnerHTML(group,
-            this._templates.get('port', {type: portTypeString.toLowerCase()})
+            this._templates.get('port', {color: PORT_COLORS[portTypeString.toLowerCase()]})
         );
     }
 
