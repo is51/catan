@@ -69,28 +69,3 @@ export class MapTemplatesService {
     }
 
 }
-
-/*
-
-HOW TO CALCULATE COORDS OF HEX DEPEND ON PROPORTION
-[ http://sandbox.onlinephpfunctions.com/code/ee6f3fdfb7a67e0f278ecdb0c8023b815b939680 ]
-
-$N = 0.95; // N=1 - normal hex, N<1 - thinner
-$W = 100;  // rhombus width
-$K = tan(pi()/6);
-
-$a = (2+$N)/4*$W;
-$b = (3-2*$N)/4*$W;
-
-$x = array(-$a, $b, $a, -$b);
-$y = array($b*$K, -$a*$K, -$b*$K, $a*$K);
-$p = array(
-    $x[0].','.$y[0],
-    $x[1].','.$y[1],
-    $x[2].','.$y[2],
-    $x[3].','.$y[3]
-);
-
-echo implode(' ', $p);
-
-*/
