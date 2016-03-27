@@ -20,19 +20,23 @@ ct-game-map .robber.robber-animated {
 
 /* TODO: remove from css, set in some config-services */
 ct-game-map [player-color="1"] {
-    fill: #f50;
+    fill: #f6663d;
+    stroke: #f6663d;
 }
 
 ct-game-map [player-color="2"] {
-    fill: #55f;
+    fill: #727df4;
+    stroke: #727df4;
 }
 
 ct-game-map [player-color="3"] {
-    fill: #dc0;
+    fill: #ddcc00;
+    stroke: #ddcc00;
 }
 
 ct-game-map [player-color="4"] {
-    fill: #0f5;
+    fill: #00ff55;
+    stroke: #00ff55;
 }
 
 ct-game-map .hex[marked] {
@@ -84,6 +88,7 @@ ct-game-map .node[marked] .city {
     visibility: visible;
     cursor: pointer;
     fill-opacity: 0.6;
+    stroke-width: 0;
 }
 
 ct-game-map .node[marked]:hover .blank-node {
@@ -105,10 +110,9 @@ ct-game-map .edge .blank-edge {
 
 ct-game-map .edge[marked] .blank-edge {
     visibility: visible;
-    fill-opacity: 0.4;
-    stroke-opacity: 0.1;
+    opacity: 0.5;
 }
 
 ct-game-map .edge[marked]:hover .blank-edge {
-    stroke-opacity: 1;
+    opacity: 1;
 }
