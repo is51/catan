@@ -12,7 +12,7 @@ mkdir tmp
 COPY %~dp0target\ROOT.war  %~dp0deploy\tmp\
 COPY %~dp0target\ROOT-classes.jar  %~dp0deploy\tmp\
 winscp.com /command ^
-    "open sftp://55fe79942d5271339400003a@catan-1server.rhcloud.com/ -privatekey=catan1_private_key.ppk" ^
+    "open sftp://55fe79942d5271339400003a@catan-1server.rhcloud.com/ -privatekey=catan1_private_key.ppk  -hostkey=""ssh-rsa 2048 cf:ee:77:cb:0e:fc:02:d7:72:7e:ae:80:c0:90:88:a7""" ^
     "cd /var/lib/openshift/55fe79942d5271339400003a/app-root/runtime/dependencies/jbossews/webapps" ^
     "option transfer binary" ^
     "put %~dp0deploy\tmp\ROOT-classes.jar" ^
