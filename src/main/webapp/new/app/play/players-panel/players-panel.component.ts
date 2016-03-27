@@ -1,4 +1,4 @@
-import { Component, OnChanges } from 'angular2/core';
+import { Component, OnInit } from 'angular2/core';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 
 import { Game } from 'app/shared/domain/game';
@@ -14,7 +14,7 @@ const AVATARS_COUNT = 4;
     inputs: ['game']
 })
 
-export class PlayersPanelComponent implements OnChanges {
+export class PlayersPanelComponent implements OnInit {
     game: Game;
     players: Player[];
 
@@ -25,7 +25,7 @@ export class PlayersPanelComponent implements OnChanges {
 
     constructor(private _authUser: AuthUserService) { }
 
-    ngOnChanges() {
+    ngOnInit() {
         this._setPlayersSortedByMoveOrderCurrentUserFirst();
     }
 
@@ -44,6 +44,10 @@ export class PlayersPanelComponent implements OnChanges {
 
     isActive(player: Player) {
         return this.game.currentMove === player.moveOrder;
+    }
+
+    isActivePrevious(index: number) {
+        return index > 0 && this.isActive(this.players[index-1]);
     }
 
     isCurrentUser(player: Player) {

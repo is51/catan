@@ -11,21 +11,38 @@
                 <feMergeNode in="SourceGraphic"/>
             </feMerge>
         </filter>
+        <filter id="dropshadow-active-player" height="130%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.2"/>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
     </defs>
 
     <!-- PLAYERS PANEL -->
-    <g (click)="toggleDisplayCompact()" font-family="Arial" font-weight="bold" text-anchor="middle" transform="translate(0,55)" filter="url(#dropshadow-players-panel)">
+    <g (click)="toggleDisplayCompact()"
+       font-family="Arial"
+       font-weight="bold"
+       text-anchor="middle"
+       transform="translate(0,55)"
+       filter="url(#dropshadow-players-panel)">
 
         <g *ngFor="#player of players; #index = index" [attr.transform]="'translate(0,'+getPlayerBlockY(index)+')'">
 
-            <g [attr.transform]="isActive(player) ? 'scale(' + ACTIVE_PLAYER_BLOCK_SCALE + ')' : ''">
+            <g [attr.transform]="isActive(player) ? 'scale(' + ACTIVE_PLAYER_BLOCK_SCALE + ')' : ''"
+               [attr.filter]="isActive(player) ? 'url(#dropshadow-active-player)' : ''">
 
                 <!-- Separator -->
                 <rect [attr.visibility]="index === 0 ? 'hidden' : 'visible'" fill="#ddd" width="84" height="1"/>
 
-                <!-- Avatar -->
+                <!-- Avatar background -->
                 <rect y="1" fill="#ddd" width="84" height="79"/>
 
+                <!-- Avatar -->
                 <image x="0" y="0" width="250" height="250" [attr.xlink:href]="getAvatarUrl(player)" />
 
                 <g font-size="12" transform="translate(7, 16)" text-anchor="start">
@@ -46,6 +63,16 @@
                     c-0.176,0.1-0.337,0.1-0.481,0.1c-0.168,0-0.296-0.1-0.385-0.2c-0.08-0.101-0.12-0.2-0.12-0.399c0,0,0.008-0.101,0.024-0.201
                     l1.034-6.1L-9.7-1.55C-9.9-1.75-10-1.95-10-2.15c0-0.3,0.225-0.5,0.673-0.5l6.033-0.9l2.705-5.5C-0.437-9.35-0.24-9.55,0-9.55
                     s0.437,0.2,0.589,0.5l2.704,5.5l6.034,0.9C9.775-2.65,10-2.45,10-2.15"/>
+                </g>
+
+                <!-- Shadow under active player -->
+                <g *ngIf="isActivePrevious(index)">
+                    <linearGradient id="shadow-under-active-player" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="79">
+                        <stop  offset="0" stop-opacity="0.4" stop-color="#999999" />
+                        <stop  offset="0.2" stop-opacity="0" stop-color="#dddddd" />
+                        <stop  offset="1" stop-opacity="0" stop-color="#dddddd" />
+                    </linearGradient>
+                    <rect y="0" fill="url(#shadow-under-active-player)" width="84" height="80"/>
                 </g>
 
                 <!-- Params -->
@@ -120,13 +147,16 @@
                                 {{player.achievements.longestWayLength}}
                             </text>
                         </g>
-
                     </g>
+
+                    <!-- Shadow under active player -->
+                    <g *ngIf="isActivePrevious(index)">
+                        <rect y="0" fill="url(#shadow-under-active-player)" width="75" height="80"/>
+                    </g>
+
                 </g>
             </g>
         </g>
-
-
 
 
     </g>
