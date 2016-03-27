@@ -37,9 +37,16 @@ To start Server without running tests:
 ```
 mvn clean install tomcat7:run -D skipTests
 ```
-    Server is available under the following link:
-    ```
-    http://localhost:8091/
-    ```
+Server is available under the following link:
+```
+http://localhost:8091/
+```
+
+## How to deploy a new build to TEST server
+
+Run the following batch file from command line:
+```
+deploy.bat
+```
 
 
