@@ -1,0 +1,23 @@
+svg {
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+svg > g {
+    pointer-events: all;
+}
+
+svg .shadow {
+    pointer-events: none;
+}
+
+svg .zero .background {
+    fill-opacity: 0.3;
+}
+
+svg .zero .count {
+    fill-opacity: 0.2;
+}

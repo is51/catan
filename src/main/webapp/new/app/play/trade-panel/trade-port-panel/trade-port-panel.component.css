@@ -1,0 +1,10 @@
+.ratio {
+    padding-top: 15px;
+}
+
+.ratio > span {
+    display: inline-block;
+    text-align: center;
+    width: 65px;
+    margin-left: 13px;
+}
