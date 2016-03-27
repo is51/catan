@@ -1,20 +1,128 @@
-<div *ngFor="#player of players" class="player color-{{player.colorId}}" [class.active]="isActive(player)">
+<svg width="100%" height="100%" preserveAspectRatio="xMinYMid meet" viewBox="0 0 200 660">
 
-    <div class="achievements">
-        <span class="glyphicon glyphicon-inbox"></span> {{player.achievements.totalResources}}<br>
-        <span class="glyphicon glyphicon-credit-card"></span> {{player.achievements.totalCards}}<br>
-        <span class="glyphicon glyphicon-flag"></span> <span [class.top]="isBiggestArmy(player)">{{player.achievements.totalUsedKnights}}</span><br>
-        <span class="glyphicon glyphicon-road"></span> <span [class.top]="isLongestWay(player)">{{player.achievements.longestWayLength}}</span>
-    </div>
+    <defs>
+        <filter id="dropshadow-players-panel" height="130%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.3"/>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
 
-    <div class="name">{{player.user.getDisplayedName()}}</div>
+    <!-- PLAYERS PANEL -->
+    <g (click)="toggleDisplayCompact()" font-family="Arial" font-weight="bold" text-anchor="middle" transform="translate(0,55)" filter="url(#dropshadow-players-panel)">
 
-    <div class="avatar"><span class="glyphicon glyphicon-user"></span></div>
+        <g *ngFor="#player of players; #index = index" [attr.transform]="'translate(0,'+getPlayerBlockY(index)+')'">
 
-    <div class="victory-points">
-        <span class="glyphicon glyphicon-star"></span>
-        <span *ngIf="isCurrentUser(player)">{{player.achievements.realVictoryPoints}}</span>
-        <span *ngIf="!isCurrentUser(player)">{{player.achievements.displayVictoryPoints}}</span>
-    </div>
+            <g [attr.transform]="isActive(player) ? 'scale(' + ACTIVE_PLAYER_BLOCK_SCALE + ')' : ''">
 
-</div>
+                <!-- Separator -->
+                <rect [attr.visibility]="index === 0 ? 'hidden' : 'visible'" fill="#ddd" width="84" height="1"/>
+
+                <!-- Avatar -->
+                <rect y="1" fill="#ddd" width="84" height="79"/>
+                <text fill="#aaa" font-size="12" x="42" y="44" text-anchor="middle">{{player.user.getDisplayedName()}}</text>
+
+                <!-- Victory points -->
+                <g transform="translate(0,80)">
+                    <rect [attr.fill]="getColor(player.colorId)" width="84" height="31"/>
+
+                    <text fill="#FFFFFF" font-size="21" x="54" y="23">
+                        {{isCurrentUser(player) ? player.achievements.realVictoryPoints : player.achievements.displayVictoryPoints}}
+                    </text>
+
+                    <path transform="translate(26,15)" fill="#F0C419" d="M10-2.15c0,0.2-0.104,0.4-0.312,0.6l-4.362,4.2l1.032,6.1c0.009,0,0.013,0.101,0.013,0.201
+                    c0,0.199-0.044,0.299-0.132,0.399c-0.08,0.101-0.2,0.2-0.361,0.2c-0.152,0-0.312,0-0.48-0.1L0,6.55l-5.396,2.9
+                    c-0.176,0.1-0.337,0.1-0.481,0.1c-0.168,0-0.296-0.1-0.385-0.2c-0.08-0.101-0.12-0.2-0.12-0.399c0,0,0.008-0.101,0.024-0.201
+                    l1.034-6.1L-9.7-1.55C-9.9-1.75-10-1.95-10-2.15c0-0.3,0.225-0.5,0.673-0.5l6.033-0.9l2.705-5.5C-0.437-9.35-0.24-9.55,0-9.55
+                    s0.437,0.2,0.589,0.5l2.704,5.5l6.034,0.9C9.775-2.65,10-2.45,10-2.15"/>
+                </g>
+
+                <!-- Params -->
+                <g transform="translate(83.8,0)" *ngIf="!displayCompact">
+
+                    <!-- Separator -->
+                    <rect [attr.visibility]="index === 0 ? 'hidden' : 'visible'" fill="#ddd" width="75" height="1"/>
+
+                    <!-- BG -->
+                    <rect y="1" opacity="0.85" fill="#FBFCFC" width="75" height="110"/>
+
+                    <g transform="translate(0,10)">
+
+                        <!-- Resources -->
+                        <g transform="translate(0,0)">
+                            <g [attr.fill]="getColor(player.colorId)" transform="translate(22,10)">
+                                <path d="M10.463-5.334c0-0.85-0.689-1.539-1.539-1.539h-17.85c-0.85,0-1.538,0.689-1.538,1.539v0.888h20.927V-5.334z"/>
+                                <path d="M-10.463,5.334c0,0.85,0.688,1.539,1.538,1.539h17.85c0.85,0,1.539-0.688,1.539-1.539V-2.19h-20.927V5.334z
+                                M-8.412,2.774c0-0.362,0.338-0.656,0.755-0.656h3.927c0.416,0,0.755,0.294,0.755,0.656v1.509c0,0.362-0.339,0.656-0.755,0.656
+                                h-3.927c-0.417,0-0.755-0.293-0.755-0.656V2.774z"/>
+                            </g>
+                            <text fill="#fff" font-size="12" x="24" y="17">R</text>
+
+                            <text fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.totalResources}}
+                            </text>
+                        </g>
+
+                        <!-- Cards -->
+                        <g transform="translate(0,24)">
+                            <g [attr.fill]="getColor(player.colorId)" transform="translate(22,10)">
+                                <path d="M10.463-5.334c0-0.85-0.689-1.539-1.539-1.539h-17.85c-0.85,0-1.538,0.689-1.538,1.539v0.888h20.927V-5.334z"/>
+                                <path d="M-10.463,5.334c0,0.85,0.688,1.539,1.538,1.539h17.85c0.85,0,1.539-0.688,1.539-1.539V-2.19h-20.927V5.334z
+                                M-8.412,2.774c0-0.362,0.338-0.656,0.755-0.656h3.927c0.416,0,0.755,0.294,0.755,0.656v1.509c0,0.362-0.339,0.656-0.755,0.656
+                                h-3.927c-0.417,0-0.755-0.293-0.755-0.656V2.774z"/>
+                            </g>
+                            <text fill="#fff" font-size="12" x="24" y="17">C</text>
+
+                            <text fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.totalCards}}
+                            </text>
+                        </g>
+
+                        <!-- Army -->
+                        <g transform="translate(0,48)" [class.top]="isBiggestArmy(player)">
+                            <g [attr.fill]="getColor(player.colorId)" transform="translate(22,10)">
+                                <path d="M10.463-5.334c0-0.85-0.689-1.539-1.539-1.539h-17.85c-0.85,0-1.538,0.689-1.538,1.539v0.888h20.927V-5.334z"/>
+                                <path d="M-10.463,5.334c0,0.85,0.688,1.539,1.538,1.539h17.85c0.85,0,1.539-0.688,1.539-1.539V-2.19h-20.927V5.334z
+                                M-8.412,2.774c0-0.362,0.338-0.656,0.755-0.656h3.927c0.416,0,0.755,0.294,0.755,0.656v1.509c0,0.362-0.339,0.656-0.755,0.656
+                                h-3.927c-0.417,0-0.755-0.293-0.755-0.656V2.774z"/>
+                            </g>
+                            <text fill="#fff" font-size="12" x="24" y="17">A</text>
+
+                            <circle class="top-visible" r="12" cx="54" cy="10" fill="#fff" stroke="#000" stroke-opacity="0.1"/>
+                            <text class="value" fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.totalUsedKnights}}
+                            </text>
+                        </g>
+
+                        <!-- Way -->
+                        <g transform="translate(0,73)" [class.top]="isLongestWay(player)">
+                            <g [attr.fill]="getColor(player.colorId)" transform="translate(22,10)">
+                                <path d="M10.463-5.334c0-0.85-0.689-1.539-1.539-1.539h-17.85c-0.85,0-1.538,0.689-1.538,1.539v0.888h20.927V-5.334z"/>
+                                <path d="M-10.463,5.334c0,0.85,0.688,1.539,1.538,1.539h17.85c0.85,0,1.539-0.688,1.539-1.539V-2.19h-20.927V5.334z
+                                M-8.412,2.774c0-0.362,0.338-0.656,0.755-0.656h3.927c0.416,0,0.755,0.294,0.755,0.656v1.509c0,0.362-0.339,0.656-0.755,0.656
+                                h-3.927c-0.417,0-0.755-0.293-0.755-0.656V2.774z"/>
+                            </g>
+                            <text fill="#fff" font-size="12" x="24" y="17">W</text>
+
+                            <circle class="top-visible" r="12" cx="54" cy="10" fill="#fff" stroke="#000" stroke-opacity="0.1"/>
+                            <text class="value" fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.longestWayLength}}
+                            </text>
+                        </g>
+
+                    </g>
+                </g>
+            </g>
+        </g>
+
+
+
+
+    </g>
+
+</svg>

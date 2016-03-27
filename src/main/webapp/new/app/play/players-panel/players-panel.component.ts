@@ -15,6 +15,11 @@ export class PlayersPanelComponent implements OnChanges {
     game: Game;
     players: Player[];
 
+    displayCompact: boolean = false;
+
+    PLAYER_BLOCK_HEIGHT: number = 111;
+    ACTIVE_PLAYER_BLOCK_SCALE: number = 1.12;
+
     constructor(private _authUser: AuthUserService) { }
 
     ngOnChanges() {
@@ -48,5 +53,30 @@ export class PlayersPanelComponent implements OnChanges {
 
     isLongestWay(player: Player) {
         return this.game.longestWayOwnerId === player.id;
+    }
+
+    getPlayerBlockY(index: number) {
+
+        let isActivePlayerBefore = this.players
+            .slice(0, index)
+            .some((player, pIndex) => this.isActive(player));
+
+        return index * this.PLAYER_BLOCK_HEIGHT
+            + ((isActivePlayerBefore) ? (this.ACTIVE_PLAYER_BLOCK_SCALE - 1) * this.PLAYER_BLOCK_HEIGHT : 0);
+    }
+
+    //TODO: use global config for colors
+    getColor(colorId: number) {
+        let colors = {
+            1: '#ab4242',
+            2: '#3e77ae',
+            3: '#B58B3C',
+            4: '#42ab73'
+        };
+        return colors[colorId];
+    }
+
+    toggleDisplayCompact() {
+        this.displayCompact = !this.displayCompact;
     }
 }
