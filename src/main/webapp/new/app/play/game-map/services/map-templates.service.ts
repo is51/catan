@@ -2,6 +2,8 @@ import { Injectable } from 'angular2/core';
 import { Http } from 'angular2/http';
 import { Observable } from 'rxjs/Rx';
 
+//TODO: defs (filers, gradients) should be loaded separately and only once - on first loading of template
+
 const TEMPLATES_PATH = '/new/resources/map/'; // Depends on #rootpath
 const TEMPLATES_SUFFIX = '.template.xml';
 const TEMPLATES = [
