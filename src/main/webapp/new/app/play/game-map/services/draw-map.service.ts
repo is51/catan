@@ -65,6 +65,13 @@ const BUILDING_COLORS = {
     4: '#00ff55'
 };
 
+const ROAD_COLORS = {
+    1: '#f6663d',
+    2: '#727df4',
+    3: '#ddcc00',
+    4: '#00ff55'
+};
+
 @Injectable()
 export class DrawMapService {
     HEX_SELECTOR: string = '.hex';
@@ -359,9 +366,9 @@ export class DrawMapService {
 
         let rect = this._dom.createElementNS(NS, 'rect');
         if (orientation === EdgeOrientation.VERTICAL) {
-            this._dom.setInnerHTML(group, this._templates.get('road-vertical', {colorId}));
+            this._dom.setInnerHTML(group, this._templates.get('road-vertical', {color: ROAD_COLORS[colorId]}));
         } else {
-            this._dom.setInnerHTML(group, this._templates.get('road-horizontal', {colorId}));
+            this._dom.setInnerHTML(group, this._templates.get('road-horizontal', {color: ROAD_COLORS[colorId]}));
         }
     }
 
