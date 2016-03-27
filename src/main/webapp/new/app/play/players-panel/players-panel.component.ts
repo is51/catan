@@ -4,6 +4,9 @@ import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { Game } from 'app/shared/domain/game';
 import { Player } from 'app/shared/domain/player/player';
 
+const AVATARS_PATH = '/new/resources/avatars/'; // Depends on #rootpath
+const AVATARS_COUNT = 4;
+
 @Component({
     selector: 'ct-players-panel',
     templateUrl: 'app/play/players-panel/players-panel.component.html',
@@ -65,15 +68,20 @@ export class PlayersPanelComponent implements OnChanges {
             + ((isActivePlayerBefore) ? (this.ACTIVE_PLAYER_BLOCK_SCALE - 1) * this.PLAYER_BLOCK_HEIGHT : 0);
     }
 
+    getAvatarUrl(player: Player) {
+        let avatarId = player.user.id % AVATARS_COUNT + 1;
+        return AVATARS_PATH + 'a' + avatarId + '.svg';
+    }
+
     //TODO: use global config for colors
-    getColor(colorId: number) {
+    getColor(player: Player) {
         let colors = {
             1: '#ab4242',
             2: '#3e77ae',
             3: '#B58B3C',
             4: '#42ab73'
         };
-        return colors[colorId];
+        return colors[player.colorId];
     }
 
     toggleDisplayCompact() {
