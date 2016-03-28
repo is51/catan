@@ -2,6 +2,8 @@
 ## Uncomment if Java and Maven env variables are not set
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_73.jdk/Contents/Home
 export M2_HOME=/Users/a1/Documents/programs/apache-maven-3.3.9
+#export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home
+#export M2_HOME=/Applications/maven
 export M2=$M2_HOME/bin
 export PATH=$M2:$PATH
 java -version
