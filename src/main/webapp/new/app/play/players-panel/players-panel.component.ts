@@ -7,8 +7,6 @@ import { Player } from 'app/shared/domain/player/player';
 const AVATARS_PATH = '/new/resources/avatars/'; // Depends on #rootpath
 const AVATARS_COUNT = 4;
 
-//TODO: highlight resources count if it is more than 7
-
 @Component({
     selector: 'ct-players-panel',
     templateUrl: 'app/play/players-panel/players-panel.component.html',
@@ -62,6 +60,10 @@ export class PlayersPanelComponent implements OnInit {
 
     isLongestWay(player: Player) {
         return this.game.longestWayOwnerId === player.id;
+    }
+
+    isResourcesCountCritical(player: Player) {
+        return player.achievements.totalResources > 7; //TODO: put to config? "7" is used in kick-resources panel as well
     }
 
     getPlayerBlockY(index: number) {

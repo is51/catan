@@ -87,7 +87,7 @@
                     <g transform="translate(0,10)">
 
                         <!-- Resources -->
-                        <g transform="translate(0,0)">
+                        <g transform="translate(0,0)" [class.critical]="isResourcesCountCritical(player)">
                             <g [attr.fill]="getColor(player)" transform="translate(22,10)">
                                 <path d="M10.463-5.334c0-0.85-0.689-1.539-1.539-1.539h-17.85c-0.85,0-1.538,0.689-1.538,1.539v0.888h20.927V-5.334z"/>
                                 <path d="M-10.463,5.334c0,0.85,0.688,1.539,1.538,1.539h17.85c0.85,0,1.539-0.688,1.539-1.539V-2.19h-20.927V5.334z
@@ -96,7 +96,7 @@
                             </g>
                             <text fill="#fff" font-size="12" x="24" y="17">R</text>
 
-                            <text fill="#333333" font-size="20" x="54" y="17">
+                            <text class="value" fill="#333333" font-size="20" x="54" y="17">
                                 {{player.achievements.totalResources}}
                             </text>
                         </g>
