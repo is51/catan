@@ -7,6 +7,8 @@ import { Player } from 'app/shared/domain/player/player';
 const AVATARS_PATH = '/new/resources/avatars/'; // Depends on #rootpath
 const AVATARS_COUNT = 4;
 
+//TODO: highlight resources count if it is more than 7
+
 @Component({
     selector: 'ct-players-panel',
     templateUrl: 'app/play/players-panel/players-panel.component.html',
