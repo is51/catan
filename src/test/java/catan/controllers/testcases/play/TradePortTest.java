@@ -135,7 +135,7 @@ public class TradePortTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2")
+                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2").and().withoutNotification()
 
                 .getGameDetails(2)
                 .gameUser(2).doesntHaveAvailableAction("TRADE_PORT")
@@ -163,7 +163,7 @@ public class TradePortTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2")
+                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2").and().withoutNotification()
 
                 .TRADE_PORT(1).withResources(0, 0, 1, -6, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (lower)
                 .TRADE_PORT(1).withResources(0, 0, 0, -3, 0).failsWithError("ERROR")        // single source resource correct, single target resource not correct (empty)
@@ -189,7 +189,7 @@ public class TradePortTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2")
+                .gameUser(1).hasAvailableAction("TRADE_PORT").withParameters("brick=3", "wood=3", "sheep=3", "wheat=3", "stone=2").and().withoutNotification()
 
                 .TRADE_PORT(1).withResources(-3, 1, 0, 0, 0).failsWithError("ERROR")
                 .getGameDetails(1)

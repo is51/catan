@@ -88,7 +88,7 @@ public class BuildRoadTest extends PlayTestUtil {
         allEdgeIds.add(scenario.edge(-2, 0, "left").getMapElementId());         // top edge of road of 1st user
 
         scenario
-                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds)
+                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds).and().withoutNotification()
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight").successfully()
                 .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(-1, -1, 0, 0, 0);
     }
@@ -104,7 +104,7 @@ public class BuildRoadTest extends PlayTestUtil {
         allEdgeIds.add(scenario.edge(1, -2, "topRight").getMapElementId());     // left edge of settlement of 1st user
 
         scenario
-                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds)
+                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds).and().withoutNotification()
                 .getGameDetails(1).gameUser(1).check("resources.brick", is(0))
                 .getGameDetails(1).gameUser(1).check("resources.wood", is(0))
 
@@ -162,7 +162,7 @@ public class BuildRoadTest extends PlayTestUtil {
         allEdgeIds.add(scenario.edge(-2, 1, "bottomLeft").getMapElementId());   // left edge of settlement of 1st user
 
         scenario
-                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds)
+                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds).and().withoutNotification()
 
                 .BUILD_ROAD(3).atEdge(0, 2, "topRight").failsWithError("ERROR");
     }
@@ -183,7 +183,7 @@ public class BuildRoadTest extends PlayTestUtil {
                 .END_TURN(3)
 
                 .BUILD_SETTLEMENT(3).atNode(-2, 2, "topLeft")
-                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD")
+                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_ROAD").withoutNotification()
 
                 .BUILD_ROAD(3).atEdge(0, 2, "left").failsWithError("ERROR");
     }
