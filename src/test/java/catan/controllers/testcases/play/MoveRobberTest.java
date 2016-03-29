@@ -75,7 +75,7 @@ public class MoveRobberTest extends PlayTestUtil {
         hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
-                    .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+                    .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds).and().withoutNotification()
                     .gameUser(1).doesntHaveAvailableAction("TRADE_PROPOSE")
 
                 .startTrackResourcesQuantity()
@@ -240,6 +240,7 @@ public class MoveRobberTest extends PlayTestUtil {
         nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
 
         scenario
+                .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .nextRandomStolenResources(asList(BRICK))   //Resource to steal
@@ -282,9 +283,9 @@ public class MoveRobberTest extends PlayTestUtil {
         hexIds.remove(scenario.hex(0, 2).getMapElementId());       //EMPTY hex
 
         scenario
+                .startTrackResourcesQuantity()
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
-                .startTrackResourcesQuantity()
                 .MOVE_ROBBER(1).toCoordinates(0, -2).successfully()
 
                 .getGameDetails(1)
@@ -297,6 +298,7 @@ public class MoveRobberTest extends PlayTestUtil {
         nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
 
         scenario
+                .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(2).successfully()
@@ -386,6 +388,7 @@ public class MoveRobberTest extends PlayTestUtil {
         nodeIds.add(scenario.node(0, -2, "topRight").getMapElementId());    // topRight owner of settlement on robbed hex
 
         scenario
+                .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
 
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(1).failsWithError("ERROR")
@@ -467,6 +470,7 @@ public class MoveRobberTest extends PlayTestUtil {
         hexIds.remove(scenario.hex(-2, 2).getMapElementId());       //ROBBED hex
 
         scenario
+                .getGameDetails(2)
                 .gameUser(2).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
 
                 .MOVE_ROBBER(2).toCoordinates(-2, 2).failsWithError("ERROR");

@@ -44,6 +44,7 @@ public class TradeWithPlayersTest extends PlayTestUtil {
     private Scenario scenario;
     public static final int OFFER_ID = 555;
     public static final int INVALID_OFFER_ID = 21;
+    public static final String NOTIFY_MESSAGE_TRADE_REPLY = "Trade proposition!";
 
     @Before
     public void setup() {
@@ -64,7 +65,7 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters()
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters().and().withoutNotification()
 
                 .TRADE_PROPOSE(1).withResources(0, 0, 0, 0, 0).failsWithError("ERROR")
                 .TRADE_PROPOSE(1).withResources(0, 0, 0, 0, -2).failsWithError("ERROR")
@@ -87,7 +88,7 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters().and().withoutNotification()
                 .gameUser(1).doesntHaveAvailableAction("TRADE_REPLY")
 
                 .getGameDetails(2)
@@ -113,7 +114,7 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters().and().withoutNotification()
 
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
                 .TRADE_PROPOSE(1).withResources(0, 0, 1, 0, -1).failsWithError("ERROR");
@@ -126,7 +127,7 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .startTrackResourcesQuantity()
 
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters()
+                .gameUser(1).hasAvailableAction("TRADE_PROPOSE").withoutParameters().and().withoutNotification()
 
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -3, -2).successfully()
 
@@ -144,7 +145,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
 
                 .getGameDetails(2)
-                .gameUser(2).hasAvailableAction("TRADE_REPLY").withParameters("offerId=" + OFFER_ID)
+                .gameUser(2).hasAvailableAction("TRADE_REPLY")
+                .withParameters("offerId=" + OFFER_ID)
+                .and()
+                .withNotification(NOTIFY_MESSAGE_TRADE_REPLY)
 
                 .TRADE_DECLINE(2).withOfferId(OFFER_ID).successfully()
 
@@ -153,7 +157,10 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .gameUser(2).doesntHaveAvailableAction("TRADE_REPLY")
 
                 .getGameDetails(3)
-                .gameUser(3).hasAvailableAction("TRADE_REPLY").withParameters("offerId=" + OFFER_ID)
+                .gameUser(3).hasAvailableAction("TRADE_REPLY")
+                .withParameters("offerId=" + OFFER_ID)
+                .and()
+                .withNotification(NOTIFY_MESSAGE_TRADE_REPLY)
 
                 .TRADE_DECLINE(3).withOfferId(OFFER_ID).successfully()
 

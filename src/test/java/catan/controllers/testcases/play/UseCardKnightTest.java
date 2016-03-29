@@ -61,6 +61,9 @@ public class UseCardKnightTest extends PlayTestUtil {
     @Test
     public void should_successfully_use_card_knight() {
         playPreparationStageAndBuyCardKnightAndPassCycle()
+                .getGameDetails(1)
+                    .gameUser(1).hasAvailableAction("USE_CARD_KNIGHT").withoutNotification()
+
                 .startTrackDevCardsQuantity()
                 .USE_CARD_KNIGHT(1).successfully()
                 .getGameDetails(1)
