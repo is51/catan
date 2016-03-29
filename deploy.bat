@@ -1,13 +1,51 @@
+:: @ECHO OFF
+:: ---------------------------------------------------------------------
+:: Read input data from console
+:: ---------------------------------------------------------------------
+
+set /p npmInstall=Do you want to npmInstall (y/n)?
+set /p mvnInstall=Do you want to mvnInstall (y/n)?
+set /p sendFile=Do you want to sendFile (y/n)?
+
+if /i "%mvnInstall:~,1%" EQU "n" goto npm
+
+call java -version
+call mvn -v
+echo JAVA_HOME=%JAVA_HOME%
+set /p javaHomeCorrect=Is JAVA_HOME correct (y/n)?
+IF NOT EXIST "%JAVA_HOME%" SET javaHomeCorrect=n
+if /i "%javaHomeCorrect:~,1%" EQU "y" goto npm
+SET /p javaHomePath= "Enter path to Java home (e.g. C:\Program Files\Java\jdk1.8.0_45): "
+SET JAVA_HOME=%javaHomePath%
+SET PATH=%JAVA_HOME%\bin;%PATH%
+call java -version
+call mvn -v
+
+:: ---------------------------------------------------------------------
+:: Install NPM
+:: ---------------------------------------------------------------------
+:npm
+if /i "%npmInstall:~,1%" EQU "n" goto mvn
 cd src\main\webapp\new
 call npm install
 call npm run tsc
 cd ../../../../
-rem set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_45
-rem set PATH=%JAVA_HOME%\bin;%PATH%
-rem echo %JAVA_HOME%
-call java -version
-call mvn -v
+
+
+:: ---------------------------------------------------------------------
+:: Maven Build
+:: ---------------------------------------------------------------------
+:mvn
+if /i "%mvnInstall:~,1%" EQU "n" goto send
 call mvn clean package -DskipTests
+
+
+:: ---------------------------------------------------------------------
+:: Upload files to server
+:: ---------------------------------------------------------------------
+:send
+if /i "%sendFile:~,1%" EQU "n" exit /b
+
 cd deploy
 mkdir tmp
 COPY %~dp0target\ROOT.war  %~dp0deploy\tmp\
@@ -20,8 +58,7 @@ winscp.com /command ^
     "put %~dp0deploy\tmp\ROOT.war" ^
     "close" ^
     "exit"
-# [WHEN PROMPTED, ENTER PASSWORD: 12345]
-#
-# ( The key fingerprint is: a1:d1:b5:fe:8f:32:62:6a:f5:0e:84:f4:a8:64:bb:38 atomix@kievnet.com.ua
+
 rmdir /s /q tmp
 cd ..
+
