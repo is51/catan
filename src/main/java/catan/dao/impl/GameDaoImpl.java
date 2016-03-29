@@ -51,7 +51,7 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
                         "SELECT user.id " +
                         "FROM " + UserBean.class.getName() + " AS user " +
                         "WHERE user.id = :creatorId)");
-        query.setString("creatorId", String.valueOf(creatorId));
+        query.setInteger("creatorId", creatorId);
 
         //noinspection unchecked
         return (List<GameBean>) query.list();
@@ -64,7 +64,7 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
                 "FROM " + GameBean.class.getSimpleName() + " AS game " +
                     "LEFT JOIN game.gameUsers as gameUser " +
                 "WHERE gameUser.user.id = :userId)");
-        query.setString("userId", String.valueOf(userId));
+        query.setInteger("userId", userId);
 
         //noinspection unchecked
         return (List<GameBean>) query.list();

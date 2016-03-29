@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "EDGE")
+@Table(name = "CT_EDGE")
 public class EdgeBean implements MapElement {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
