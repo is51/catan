@@ -33,7 +33,7 @@ const TEMPLATES = [
 ];
 
 @Injectable()
-export class MapTemplatesService {
+export class TemplatesService {
     private _templates: Map<string, string> = new Map<string, string>();
 
     constructor(private _http: Http) { }

@@ -2,7 +2,7 @@ import { Injectable } from 'angular2/core';
 import { BrowserDomAdapter } from "angular2/src/platform/browser/browser_adapter";
 
 import { DrawMapHelper } from '../helpers/draw-map.helper';
-import { MapTemplatesService } from '../services/map-templates.service';
+import { TemplatesService } from 'app/play/shared/services/templates.service';
 
 import { Game } from 'app/shared/domain/game';
 import { GameMap } from 'app/shared/domain/game-map/game-map';
@@ -81,7 +81,7 @@ export class DrawMapService {
     NS: string = NS;
 
     constructor(
-        private _templates: MapTemplatesService,
+        private _templates: TemplatesService,
         private _helper: DrawMapHelper,
         private _dom: BrowserDomAdapter) {}
 
