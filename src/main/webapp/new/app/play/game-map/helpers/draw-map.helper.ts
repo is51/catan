@@ -4,6 +4,7 @@ import { Hex } from 'app/shared/domain/game-map/hex';
 import { Node, NodeOrientation } from 'app/shared/domain/game-map/node';
 import { Edge } from 'app/shared/domain/game-map/edge';
 import { Point } from 'app/shared/domain/game-map/point';
+import { NodesPair } from 'app/shared/domain/game-map/nodes-pair';
 
 const ISOMETRIC_RATIO =  Math.tan(Math.PI / 6);
 
@@ -48,7 +49,7 @@ export class DrawMapHelper {
         y = y + hex.y * hexHeight * ISOMETRIC_RATIO;
         x = x + hex.y * hexHeight;
 
-        return <Point>{x, y};
+        return new Point(x, y);
     }
 
     getNodeCoords(node: Node, hexWidth: number, hexHeight: number) {
@@ -68,7 +69,7 @@ export class DrawMapHelper {
         if (position === "topLeft" || position === "bottom") { y += hexHeight/2 * ISOMETRIC_RATIO; }
         if (position === "bottomLeft") { y += hexHeight*3/2 * ISOMETRIC_RATIO; }
 
-        return <Point>{x: x, y: y}
+        return new Point(x, y);
     }
 
     getEdgeCoords(edge: Edge, hexWidth: number, hexHeight: number) {
@@ -84,7 +85,7 @@ export class DrawMapHelper {
         if (position === "topRight" || position === "right") { y -= hexHeight * ISOMETRIC_RATIO; }
         if (position === "left" || position === "bottomLeft") { y += hexHeight * ISOMETRIC_RATIO; }
 
-        return <Point>{x: x, y: y}
+        return new Point(x, y);
     }
 
     getPortOffset(node: Node, portDistance: number) {
@@ -125,6 +126,30 @@ export class DrawMapHelper {
         y = y + yDec * portDistance * ISOMETRIC_RATIO;
         x = x + yDec * portDistance;
 
-        return <Point>{x, y};
+        return new Point(x, y);
+    }
+
+    getPortPairs(nodes: Node[]) {
+        let portNodes = nodes.filter(node => node.hasPort());
+        let pairs: NodesPair[] = <NodesPair[]>[];
+
+        while (portNodes.length) {
+            let pair: NodesPair = <NodesPair>{};
+            pair.firstNode = portNodes.shift();
+
+            portNodes.some((node, i) => {
+                let jointEdge = node.getJointEdge(pair.firstNode);
+                if (jointEdge) {
+                    pair.edge = jointEdge;
+                    pair.secondNode = node;
+                    portNodes.splice(i, 1);
+                    return true;
+                }
+            });
+
+            pairs.push(pair);
+        }
+
+        return pairs;
     }
 }

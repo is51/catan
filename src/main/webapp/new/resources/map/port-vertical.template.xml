@@ -1,6 +1,6 @@
 <g>
-    <line x1="-12.5" y1="-7.216875" x2="{x2}" y2="{y2}" stroke-width="2" stroke="#969696" stroke-dasharray="1,1" />
-    <line x1="12.5" y1="7.216875" x2="{x1}" y2="{y1}" stroke-width="2" stroke="#969696" stroke-dasharray="1,1" />
+    <line x1="-12.5" y1="-7.216875" x2="{x1}" y2="{y1}" stroke-width="2" stroke="#969696" stroke-dasharray="1,1" />
+    <line x1="12.5" y1="7.216875" x2="{x2}" y2="{y2}" stroke-width="2" stroke="#969696" stroke-dasharray="1,1" />
 
     <g transform="scale(1, 0.57735)">
         <g transform="rotate(-45)">

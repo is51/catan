@@ -14,7 +14,7 @@ import { Point } from 'app/shared/domain/game-map/point';
 const NS = 'http://www.w3.org/2000/svg';
 const HEX_WIDTH = 50;
 const HEX_HEIGHT = 25;
-const PORT_DISTANCE = 9;
+const PORT_DISTANCE = 18;
 
 const PORT_COLORS = {
     brick: '#43a8d9',
@@ -96,6 +96,8 @@ export class DrawMapService {
             yMax: null
         };
 
+        this.drawPorts(canvas, map);
+
         map.hexes.forEach(hex => {
             let coords = this._helper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
             actualSize = this._updateActualSize(actualSize, coords.x, coords.y, HEX_HEIGHT, HEX_HEIGHT);
@@ -113,8 +115,6 @@ export class DrawMapService {
         });
 
         this.drawRobber(canvas, map);
-
-        this.drawPorts(canvas, map);
 
 
         this._setViewBox(canvas, actualSize);
@@ -229,18 +229,18 @@ export class DrawMapService {
             let colorId = game.getPlayer(node.building.ownerPlayerId).colorId;
 
             if (node.hasSettlement()) {
-                this.drawSettlement(group, <Point>{x: 0, y: 0}, colorId);
+                this.drawSettlement(group, new Point(0, 0), colorId);
             }
             if (node.hasCity()) {
-                this.drawCity(group, <Point>{x: 0, y: 0}, colorId);
+                this.drawCity(group, new Point(0, 0), colorId);
             }
         } else {
-            this.drawEmptyNode(group, <Point>{x: 0, y: 0});
+            this.drawEmptyNode(group, new Point(0, 0));
         }
 
-        if (node.hasPort()) {
+        /*if (node.hasPort()) {
             this.drawPort(canvas, coords, this._helper.getPortOffset(node, PORT_DISTANCE), node.getPortToString());
-        }
+        }*/
 
         node.onUpdate(() => this.updateNode(group, game, node));
     }
@@ -256,13 +256,13 @@ export class DrawMapService {
             let colorId = game.getPlayer(node.building.ownerPlayerId).colorId;
 
             if (node.hasSettlement()) {
-                this.drawSettlement(element, <Point>{x: 0, y: 0}, colorId);
+                this.drawSettlement(element, new Point(0, 0), colorId);
             }
             if (node.hasCity()) {
-                this.drawCity(element, <Point>{x: 0, y: 0}, colorId);
+                this.drawCity(element, new Point(0, 0), colorId);
             }
         } else {
-            this.drawEmptyNode(element, <Point>{x: 0, y: 0});
+            this.drawEmptyNode(element, new Point(0, 0));
         }
     }
 
@@ -299,11 +299,8 @@ export class DrawMapService {
         );
     }
 
-    drawPort(canvas: Element, nodeCoords: Point, offset: Point, portTypeString: string) {
-        let finalCoords = <Point>{
-            x: nodeCoords.x + offset.x,
-            y: nodeCoords.y + offset.y
-        };
+    /*drawPort(canvas: Element, nodeCoords: Point, offset: Point, portTypeString: string) {
+        let finalCoords = nodeCoords.plus(offset);
 
         let group = this._dom.createElementNS(NS, 'g');
         this._dom.setAttribute(group, 'transform', 'translate(' + finalCoords.x + ',' + finalCoords.y + ')');
@@ -313,7 +310,7 @@ export class DrawMapService {
         this._dom.setInnerHTML(group,
             this._templates.get('port', {color: PORT_COLORS[portTypeString.toLowerCase()]})
         );
-    }
+    }*/
 
     drawEdge(canvas: Element, game: Game, coords: Point, edge: Edge) {
         let group = this._dom.createElementNS(NS, 'g');
@@ -324,9 +321,9 @@ export class DrawMapService {
 
         if (edge.building) {
             let colorId = game.getPlayer(edge.building.ownerPlayerId).colorId;
-            this.drawRoad(group, <Point>{x: 0, y: 0}, edge.orientation, colorId);
+            this.drawRoad(group, new Point(0, 0), edge.orientation, colorId);
         } else {
-            this.drawEmptyEdge(group, <Point>{x: 0, y: 0}, edge.orientation);
+            this.drawEmptyEdge(group, new Point(0, 0), edge.orientation);
         }
 
         edge.onUpdate(() => this.updateEdge(group, game, edge));
@@ -341,9 +338,9 @@ export class DrawMapService {
 
         if (edge.building) {
             let colorId = game.getPlayer(edge.building.ownerPlayerId).colorId;
-            this.drawRoad(element, <Point>{x: 0, y: 0}, edge.orientation, colorId);
+            this.drawRoad(element, new Point(0, 0), edge.orientation, colorId);
         } else {
-            this.drawEmptyEdge(element, <Point>{x: 0, y: 0}, edge.orientation);
+            this.drawEmptyEdge(element, new Point(0, 0), edge.orientation);
         }
     }
 
@@ -375,65 +372,34 @@ export class DrawMapService {
     }
 
     drawPorts(canvas: Element, map: GameMap) {
-        let portNodes = map.nodes.filter(node => node.hasPort());
-        let pairs = [];
+        let portPairs = this._helper.getPortPairs(map.nodes);
 
-        while (portNodes.length) {
-            let pair = [];
-            let node = portNodes.shift();
+        portPairs.forEach(pair => {
 
-            portNodes.forEach((iNode, i) => {
+            let node1Coords = this._helper.getNodeCoords(pair.firstNode, HEX_WIDTH, HEX_HEIGHT);
+            let node1PortOffset = this._helper.getPortOffset(pair.firstNode, PORT_DISTANCE);
+            let node1PortCoords =  node1Coords.plus(node1PortOffset);
 
-                let jointEdge = iNode.getJointEdge(node);
+            let node2Coords = this._helper.getNodeCoords(pair.secondNode, HEX_WIDTH, HEX_HEIGHT);
+            let node2PortOffset = this._helper.getPortOffset(pair.secondNode, PORT_DISTANCE);
+            let node2PortCoords =  node2Coords.plus(node2PortOffset);
 
-                if (jointEdge) {
+            let coords = node1PortCoords.average(node2PortCoords);
 
-                    if (!pair.length) {
-                        pair.push(jointEdge);
-                    }
+            let node1OffsetBack = node1Coords.minus(coords);
+            let node2OffsetBack = node2Coords.minus(coords);
 
-                    pair.push(iNode);
-                    portNodes.splice(i, 1);
-                }
-            });
-
-            pair.push(node);
-            pairs.push(pair);
-        }
-
-        pairs.forEach(pair => {
-
-            let node1Coords = this._helper.getNodeCoords(pair[1], HEX_WIDTH, HEX_HEIGHT);
-            let port1Offset = this._helper.getPortOffset(pair[1], PORT_DISTANCE*2);
-            let coords1 = <Point>{
-                x: node1Coords.x + port1Offset.x,
-                y: node1Coords.y + port1Offset.y
-            };
-
-            let node2Coords = this._helper.getNodeCoords(pair[2], HEX_WIDTH, HEX_HEIGHT);
-            let port2Offset = this._helper.getPortOffset(pair[2], PORT_DISTANCE*2);
-            let coords2 = <Point>{
-                x: node2Coords.x + port2Offset.x,
-                y: node2Coords.y + port2Offset.y
-            };
-
-            let coords = {
-                x: (coords1.x + coords2.x) / 2,
-                y: (coords1.y + coords2.y) / 2
-            };
-
+            let portTemplateName = (pair.edge.isVertical()) ? 'port-vertical' : 'port-horizontal';
 
             let group = this._dom.createElementNS(NS, 'g');
             this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
-            //this._dom.setAttribute(group, 'class', 'port');
             this._dom.appendChild(canvas, group);
-
             this._dom.setInnerHTML(group,
-                this._templates.get( (pair[0].isVertical()) ? 'port-vertical' : 'port-horizontal', {
-                    x1: -coords.x + node1Coords.x,
-                    x2: -coords.x + node2Coords.x,
-                    y1: -coords.y + node1Coords.y,
-                    y2: -coords.y + node2Coords.y
+                this._templates.get(portTemplateName, {
+                    x1: node1OffsetBack.x,
+                    x2: node2OffsetBack.x,
+                    y1: node1OffsetBack.y,
+                    y2: node2OffsetBack.y
                 })
             );
         });
