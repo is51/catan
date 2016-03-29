@@ -23,6 +23,8 @@ const TEMPLATES = [
     'city',
 
     'port',
+    'port-horizontal',
+    'port-vertical',
 
     'road-vertical',
     'road-horizontal',

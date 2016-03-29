@@ -114,6 +114,8 @@ export class DrawMapService {
 
         this.drawRobber(canvas, map);
 
+        this.drawTestPort(canvas);
+
 
         this._setViewBox(canvas, actualSize);
     }
@@ -370,6 +372,32 @@ export class DrawMapService {
         } else {
             this._dom.setInnerHTML(group, this._templates.get('road-horizontal', {color: ROAD_COLORS[colorId]}));
         }
+    }
+
+    drawTestPort(canvas: Element) {
+        let coords = {x: -66, y: -53};
+
+        let group = this._dom.createElementNS(NS, 'g');
+        this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
+        //this._dom.setAttribute(group, 'class', 'port');
+        this._dom.appendChild(canvas, group);
+
+        this._dom.setInnerHTML(group,
+            this._templates.get('port-horizontal')
+        );
+
+
+
+        let coords = {x: -126, y: -53};
+
+        let group = this._dom.createElementNS(NS, 'g');
+        this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
+        //this._dom.setAttribute(group, 'class', 'port');
+        this._dom.appendChild(canvas, group);
+
+        this._dom.setInnerHTML(group,
+            this._templates.get('port-vertical')
+        );
     }
 
 }
