@@ -1,18 +1,34 @@
-:: @ECHO OFF
+@ECHO OFF
 :: ---------------------------------------------------------------------
 :: Read input data from console
 :: ---------------------------------------------------------------------
 
-set /p npmInstall=Do you want to npmInstall (y/n)?
-set /p mvnInstall=Do you want to mvnInstall (y/n)?
-set /p sendFile=Do you want to sendFile (y/n)?
+:: Check if install npm and compile javascript required
+:setNpmInstall
+set /p npmInstall=Do you want to install npm and compile javascript (y/n)?
+if /i "%npmInstall:~,1%" NEQ "n" if /i "%npmInstall:~,1%" NEQ "y" goto setNpmInstall
 
+:: Check if Maven build required
+:setMvnInstall
+set /p mvnInstall=Do you want to perform Maven build (y/n)?
+if /i "%mvnInstall:~,1%" NEQ "n" if /i "%mvnInstall:~,1%" NEQ "y" goto setMvnInstall
+
+:: Check if send file to SFTP required
+:setSendFile
+set /p sendFile=Do you want to send file to SFTP (y/n)?
+if /i "%sendFile:~,1%" NEQ "n" if /i "%sendFile:~,1%" NEQ "y" goto setSendFile
+
+:: Check Java and Maven version
 if /i "%mvnInstall:~,1%" EQU "n" goto npm
 
 call java -version
 call mvn -v
 echo JAVA_HOME=%JAVA_HOME%
-set /p javaHomeCorrect=Is JAVA_HOME correct (y/n)?
+:: Check JAVA_HOME and Maven versions correct
+:setJavaHomeCorrect
+set /p javaHomeCorrect=Is JAVA_HOME and Maven versions correct (y - Proceed with current values / n - Exit deployment script / e - Edit JAVA_HOME path)?
+if /i "%setJavaHomeCorrect:~,1%" NEQ "n" if /i "%setJavaHomeCorrect:~,1%" NEQ "y" if /i "%setJavaHomeCorrect:~,1%" NEQ "e" goto setJavaHomeCorrect
+
 IF NOT EXIST "%JAVA_HOME%" SET javaHomeCorrect=n
 if /i "%javaHomeCorrect:~,1%" EQU "y" goto npm
 SET /p javaHomePath= "Enter path to Java home (e.g. C:\Program Files\Java\jdk1.8.0_45): "
@@ -21,11 +37,13 @@ SET PATH=%JAVA_HOME%\bin;%PATH%
 call java -version
 call mvn -v
 
+
 :: ---------------------------------------------------------------------
 :: Install NPM
 :: ---------------------------------------------------------------------
 :npm
 if /i "%npmInstall:~,1%" EQU "n" goto mvn
+
 cd src\main\webapp\new
 call npm install
 call npm run tsc
@@ -37,6 +55,7 @@ cd ../../../../
 :: ---------------------------------------------------------------------
 :mvn
 if /i "%mvnInstall:~,1%" EQU "n" goto send
+
 call mvn clean package -DskipTests
 
 
