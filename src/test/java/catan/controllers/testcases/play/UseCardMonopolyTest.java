@@ -60,6 +60,9 @@ public class UseCardMonopolyTest extends PlayTestUtil {
     @Test
     public void should_successfully_take_all_rivals_resources_and_give_them_to_player() {
         playPreparationStageAndBuyCardMonopolyAndPassCycle()
+                .getGameDetails(1)
+                    .gameUser(1).hasAvailableAction("USE_CARD_MONOPOLY").withoutNotification()
+
                 .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
 
                 .USE_CARD_MONOPOLY(1, "STONE").successfully()
