@@ -60,8 +60,11 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
     @Test
     public void should_successfully_give_two_different_resources() {
         playPreparationStageAndBuyCardYearOfPlentyAndPassCycle()
-                .startTrackResourcesQuantity()
-                .startTrackDevCardsQuantity()
+                .getGameDetails(1)
+                    .gameUser(1).hasAvailableAction("USE_CARD_YEAR_OF_PLENTY").withoutNotification()
+
+                .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
+
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
                 .getGameDetails(1)
                     .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
