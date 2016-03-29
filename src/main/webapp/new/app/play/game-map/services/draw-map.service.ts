@@ -153,12 +153,12 @@ export class DrawMapService {
     }
 
     private _setViewBox(canvas: Element, actualSize) {
-        let additionalWidth = 2 * HEX_WIDTH;
+        let additionalWidth = 3.8 * HEX_WIDTH;
         let additionalHeight = 2.5 * HEX_HEIGHT;
         let width = actualSize.xMax - actualSize.xMin + additionalWidth;
         let height = actualSize.yMax - actualSize.yMin + additionalHeight;
-        let offsetX = actualSize.xMin - HEX_WIDTH;
-        let offsetY = actualSize.yMin - HEX_HEIGHT;
+        let offsetX = actualSize.xMin - additionalWidth / 2;
+        let offsetY = actualSize.yMin - additionalHeight / 2.5;
 
         this._dom.setAttribute(canvas, 'viewBox', offsetX + ' ' + offsetY + ' ' + width + ' ' + height);
     }
