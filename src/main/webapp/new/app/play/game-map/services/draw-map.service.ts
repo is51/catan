@@ -114,7 +114,7 @@ export class DrawMapService {
 
         this.drawRobber(canvas, map);
 
-        this.drawTestPort(canvas);
+        this.drawPorts(canvas, map);
 
 
         this._setViewBox(canvas, actualSize);
@@ -374,8 +374,17 @@ export class DrawMapService {
         }
     }
 
+    drawPorts(canvas: Element, map: GameMap) {
+        let portNodes = map.nodes.filter(node => node.hasPort());
+        let pairs: Node[] = <Node[]>[];
+
+    }
+
+
+
+
     drawTestPort(canvas: Element) {
-        let coords = {x: -66, y: -53};
+        let coords = {x: -66.5, y: -53};
 
         let group = this._dom.createElementNS(NS, 'g');
         this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
