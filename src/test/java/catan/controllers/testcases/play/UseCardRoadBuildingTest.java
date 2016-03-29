@@ -60,6 +60,9 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
     @Test
     public void should_successfully_build_2_available_roads_that_can_be_built_separately() {
         playPreparationStageAndBuyCardRoadBuildingAndPassCycle()
+                .getGameDetails(1)
+                    .gameUser(1).hasAvailableAction("USE_CARD_ROAD_BUILDING").withoutNotification()
+
                 .startTrackResourcesQuantity().and().startTrackDevCardsQuantity()
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("BUILD_ROAD")

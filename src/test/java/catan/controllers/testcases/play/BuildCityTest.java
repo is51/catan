@@ -74,7 +74,7 @@ public class BuildCityTest extends PlayTestUtil {
         allNodeIds.add(scenario.node(0, -1, "topLeft").getMapElementId());       // settlement of 1st user
 
         scenario
-                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds)
+                .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds).and().withoutNotification()
                 .startTrackResourcesQuantity()
 
                 .BUILD_CITY(1).atNode(1, -1, "top").successfully()
@@ -127,7 +127,7 @@ public class BuildCityTest extends PlayTestUtil {
         allNodeIds.remove(scenario.node(1, 1, "bottomRight").getMapElementId());    // right node to settlement of 3rd user
 
         scenario
-                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds)
+                .getGameDetails(3).gameUser(3).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds).and().withoutNotification()
                 .getGameDetails(3).gameUser(3).check("resources.wheat", is(0))
                 .getGameDetails(3).gameUser(3).check("resources.stone", is(0))
                 .startTrackResourcesQuantity()
@@ -143,7 +143,7 @@ public class BuildCityTest extends PlayTestUtil {
         Set<Integer> allNodeIdsExcludeUnavailable = new HashSet<Integer>(allNodeIds);
 
         scenario
-                .gameUser(1).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds)
+                .gameUser(1).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIds).and().withoutNotification()
                 .BUILD_CITY(1).atNode(0, 0, "topLeft").successfully()
                 .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
                 .END_TURN(1);
@@ -154,7 +154,7 @@ public class BuildCityTest extends PlayTestUtil {
         allNodeIdsExcludeUnavailable.remove(scenario.node(-1, 0, "top").getMapElementId());         // left neighbour
 
         scenario
-                .getGameDetails(2).gameUser(2).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIdsExcludeUnavailable)
+                .getGameDetails(2).gameUser(2).hasAvailableAction("BUILD_CITY").withParameters("nodeIds=" + allNodeIdsExcludeUnavailable).and().withoutNotification()
 
                 //When                              //Then
                 .BUILD_CITY(2).atNode(0, 0, "topLeft").failsWithError("ERROR")
