@@ -1,6 +1,7 @@
 import { User } from 'app/shared/domain/user';
 import { Player } from 'app/shared/domain/player/player';
 import { GameMap } from 'app/shared/domain/game-map/game-map';
+import { Dice } from 'app/shared/domain/dice';
 
 export class Game {
     gameId: number;
@@ -23,6 +24,8 @@ export class Game {
     dice: Dice;
     map: GameMap;
 
+    private _onStartPlaying: Function;
+
     constructor(params) {
         this.gameId = params.gameId;
 
@@ -41,7 +44,7 @@ export class Game {
         this.longestWayOwnerId = params.longestWayOwnerId;
 
         this.players = params.gameUsers.map(playerParams => new Player(playerParams));
-        this.dice = <Dice>params.dice;
+        this.dice = new Dice(params.dice);
         this.map = new GameMap(params.map);
     }
 
@@ -57,18 +60,40 @@ export class Game {
         this.minPlayers = params.minPlayers;
         this.targetVictoryPoints = params.targetVictoryPoints;
 
-        this.status = params.status;
         this.dateStarted = params.dateStarted;
         this.currentMove = params.currentMove;
         this.biggestArmyOwnerId = params.biggestArmyOwnerId;
         this.longestWayOwnerId = params.longestWayOwnerId;
 
-        this.players.forEach((player, key) => {
-            player.update(params.gameUsers[key]);
+        params.gameUsers.forEach(playerParams => {
+            let player = this.players.filter(player => player.id === playerParams.id)[0];
+            if (player) {
+                player.update(playerParams);
+            } else {
+                this.players.push(new Player(playerParams));
+            }
         });
+        for (let i = 0; i < this.players.length; i++) {
+            let playerParams = params.gameUsers.filter(playerParams => playerParams.id === this.players[i].id)[0];
+            if (!playerParams) {
+                this.players.splice(i, 1);
+                i--;
+            }
+        }
 
-        this.dice = <Dice>params.dice;
+        this.dice.update(params.dice);
         this.map.update(params.map);
+
+
+
+        if (this.status !== params.status) {
+            this.status = params.status;
+
+            if (this.isPlaying()) {
+                this.triggerStartPlaying();
+            }
+        }
+
     }
 
     getId() {
@@ -99,11 +124,19 @@ export class Game {
         return this.players.filter(player => player.id === playerId)[0];
     }
 
-}
 
-interface Dice {
-    thrown: boolean;
-    first: number;
-    second: number;
-    value: number;
+
+    //TODO: try to replace with Subscribable
+    onStartPlaying(onStartPlaying: Function) {
+        this._onStartPlaying = onStartPlaying;
+    }
+    cancelOnStartPlaying() {
+        this._onStartPlaying = undefined;
+    }
+    triggerStartPlaying() {
+        if (this._onStartPlaying) {
+            this._onStartPlaying();
+        }
+    }
+
 }

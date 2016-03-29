@@ -16,6 +16,8 @@ export class Node {
 
     building: NodeBuilding;
 
+    private _onUpdate: Function;
+
     constructor(params) {
         this.id = params.nodeId;
         this.orientation = NodeOrientation[params.orientation];
@@ -54,10 +56,16 @@ export class Node {
     }
 
     update(params) {
-        if (params.building) {
+        let buildingChanged =
+            (!this.building && params.building) ||
+            (this.building && params.building && this.building.built !== NodeBuildingType[params.building.built]);
+
+        if (buildingChanged) {
             this.building = this.building || <NodeBuilding>{};
             this.building.built = NodeBuildingType[params.building.built];
             this.building.ownerPlayerId = params.building.ownerGameUserId;
+
+            this.triggerUpdate();
         }
     }
 
@@ -75,6 +83,19 @@ export class Node {
 
     hasCity() {
         return this.building.built === NodeBuildingType.CITY;
+    }
+
+    //TODO: try to replace with Subscribable
+    onUpdate(onUpdate: Function) {
+        this._onUpdate = onUpdate;
+    }
+    cancelOnUpdate() {
+        this._onUpdate = undefined;
+    }
+    triggerUpdate() {
+        if (this._onUpdate) {
+            this._onUpdate();
+        }
     }
 }
 

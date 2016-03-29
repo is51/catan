@@ -2,6 +2,7 @@ import { Injectable } from 'angular2/core';
 import { BrowserDomAdapter } from "angular2/src/platform/browser/browser_adapter";
 
 import { DrawMapHelper } from '../helpers/draw-map.helper';
+import { MapTemplatesService } from '../services/map-templates.service';
 
 import { Game } from 'app/shared/domain/game';
 import { GameMap } from 'app/shared/domain/game-map/game-map';
@@ -11,19 +12,22 @@ import { Edge, EdgeOrientation } from 'app/shared/domain/game-map/edge';
 import { Point } from 'app/shared/domain/game-map/point';
 
 const NS = 'http://www.w3.org/2000/svg';
-const HEX_WIDTH = 78;
-const HEX_HEIGHT = 40;
-const HEX_ROUNDING = 4;
-const EDGE_WIDTH = 3;
+const HEX_WIDTH = 50;
+const HEX_HEIGHT = 25;
+const PORT_DISTANCE = 9;
+const ROBBED_DICE_OFFSET = {x: 5, y: -3};
+const ROBBER_RESOURCE_OFFSET = {x: -5, y: 2};
 
 @Injectable()
 export class DrawMapService {
     HEX_SELECTOR: string = '.hex';
     NODE_SELECTOR: string = '.node';
     EDGE_SELECTOR: string = '.edge';
+    ROBBER_SELECTOR: string = '.robber';
     NS: string = NS;
 
     constructor(
+        private _templates: MapTemplatesService,
         private _helper: DrawMapHelper,
         private _dom: BrowserDomAdapter) {}
 
@@ -31,7 +35,6 @@ export class DrawMapService {
 
         this._clear(canvas);
 
-        let coords;
         let actualSize = { //TODO: try to calculate actual image (map) size somehow more pretty
             xMin: null,
             xMax: null,
@@ -40,20 +43,23 @@ export class DrawMapService {
         };
 
         map.hexes.forEach(hex => {
-            coords = this._helper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
+            let coords = this._helper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
             actualSize = this._updateActualSize(actualSize, coords.x, coords.y, HEX_HEIGHT, HEX_HEIGHT);
             this.drawHex(canvas, coords, hex);
         });
 
         map.edges.forEach(edge => {
-            coords = this._helper.getEdgeCoords(edge, HEX_WIDTH, HEX_HEIGHT);
+            let coords = this._helper.getEdgeCoords(edge, HEX_WIDTH, HEX_HEIGHT);
             this.drawEdge(canvas, game, coords, edge);
         });
 
         map.nodes.forEach(node => {
-            coords = this._helper.getNodeCoords(node, HEX_WIDTH, HEX_HEIGHT);
+            let coords = this._helper.getNodeCoords(node, HEX_WIDTH, HEX_HEIGHT);
             this.drawNode(canvas, game, coords, node);
         });
+
+        this.drawRobber(canvas, map);
+
 
         this._setViewBox(canvas, actualSize);
     }
@@ -108,31 +114,59 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'hex-id', <string>hex.id);
         this._dom.appendChild(canvas, group);
 
-        // Background rectangle
-        let rectangle = this._dom.createElementNS(NS, 'rect');
-        this._dom.setAttribute(rectangle, 'x', <string>(-HEX_WIDTH/2));
-        this._dom.setAttribute(rectangle, 'y', <string>(-HEX_HEIGHT/2));
-        this._dom.setAttribute(rectangle, 'width', <string>HEX_WIDTH);
-        this._dom.setAttribute(rectangle, 'height', <string>HEX_HEIGHT);
-        this._dom.setAttribute(rectangle, 'rx', <string>HEX_ROUNDING);
-        this._dom.setAttribute(rectangle, 'ry', <string>HEX_ROUNDING);
-        this._dom.setAttribute(rectangle, 'transform', 'scale(0.95, 0.9)');
-        this._dom.setAttribute(rectangle, 'class', 'hex-background');
-        this._dom.setAttribute(rectangle, 'resource-type', hex.getTypeToString().toLowerCase());
-        this._dom.appendChild(group, rectangle);
+        let diceCoords = (hex.robbed) ? ROBBED_DICE_OFFSET : {x: 0, y: 0};
 
-        // Dice text
-        let hexDice = this._dom.createElementNS(NS, 'text');
-        this._dom.setAttribute(hexDice, 'x', "1");
-        this._dom.setAttribute(hexDice, 'y', "5");
-        this._dom.setAttribute(hexDice, 'class', 'dice');
-        this._dom.setAttribute(hexDice, 'text-anchor', 'middle');
-        this._dom.appendChild(group, hexDice);
+        this._dom.setInnerHTML(group,
+            this._templates.get('hex-bg') +
+            this._templates.get('hex-resource-' + hex.getTypeToString().toLowerCase()) +
+            this._templates.get('hex-dice', {
+                number: (hex.dice)?hex.dice:'',
+                x: diceCoords.x,
+                y: diceCoords.y
+            })
+        );
 
-        // Dice text element
-        let hexDiceText = ((hex.robbed) ? '(R)' : '') + ((hex.dice) ? hex.dice : '');
-        let hexDiceTextNode = this._dom.createTextNode(hexDiceText);
-        this._dom.appendChild(hexDice, hexDiceTextNode);
+        hex.onUpdate(() => this.updateHex(canvas, group, hex));
+    }
+
+    updateHex(canvas: Element, element: Element, hex: Hex) {
+        // Updatable properties of HEX:
+        // 1. hex.robbed
+        // --
+
+        let hexDice = this._dom.querySelector(element, '.dice');
+
+        if (hex.robbed) {
+            this._dom.setAttribute(hexDice, 'transform', 'translate('+ROBBED_DICE_OFFSET.x+', '+ROBBED_DICE_OFFSET.y+')');
+            this.updateRobber(canvas, hex);
+        } else {
+            this._dom.setAttribute(hexDice, 'transform', 'translate(0, 0)');
+        }
+    }
+
+    drawRobber(canvas: Element, map: GameMap) {
+        let group = this._dom.createElementNS(NS, 'g');
+        this._dom.setAttribute(group, 'class', 'robber');
+        this._dom.appendChild(canvas, group);
+
+        this._dom.setInnerHTML(group,
+            this._templates.get('robber')
+        );
+
+        let robbedHex = map.hexes.filter(hex => hex.robbed)[0];
+        this.updateRobber(canvas, robbedHex);
+    }
+
+    updateRobber(canvas: Element, robbedHex: Hex) {
+        let robbedHexCoords = this._helper.getHexCoords(robbedHex, HEX_WIDTH, HEX_HEIGHT);
+        let offset = (robbedHex.dice) ? ROBBER_RESOURCE_OFFSET : {x: 0, y: 0};
+        let coords = {
+            x: robbedHexCoords.x + offset.x,
+            y: robbedHexCoords.y + offset.y
+        };
+
+        let robber = this._dom.querySelector(canvas, '.robber');
+        this._dom.setAttribute(robber, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
     }
 
     drawNode(canvas: Element, game: Game, coords: Point, node: Node) {
@@ -141,10 +175,6 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'class', 'node');
         this._dom.setAttribute(group, 'node-id', <string>node.id);
         this._dom.appendChild(canvas, group);
-
-        if (node.hasPort()) {
-            this.drawPort(group, this._helper.getPortOffset(node), node.getPortToString());
-        }
 
         if (node.building) {
             let colorId = game.getPlayer(node.building.ownerPlayerId).colorId;
@@ -158,6 +188,33 @@ export class DrawMapService {
         } else {
             this.drawEmptyNode(group, <Point>{x: 0, y: 0});
         }
+
+        if (node.hasPort()) {
+            this.drawPort(canvas, coords, this._helper.getPortOffset(node, PORT_DISTANCE), node.getPortToString());
+        }
+
+        node.onUpdate(() => this.updateNode(group, game, node));
+    }
+
+    updateNode(element: Element, game: Game, node: Node) {
+        // Updatable properties of NODE:
+        // 1. node.building
+        // --
+
+        this._dom.clearNodes(element);
+
+        if (node.building) {
+            let colorId = game.getPlayer(node.building.ownerPlayerId).colorId;
+
+            if (node.hasSettlement()) {
+                this.drawSettlement(element, <Point>{x: 0, y: 0}, colorId);
+            }
+            if (node.hasCity()) {
+                this.drawCity(element, <Point>{x: 0, y: 0}, colorId);
+            }
+        } else {
+            this.drawEmptyNode(element, <Point>{x: 0, y: 0});
+        }
     }
 
     drawEmptyNode(canvas: Element, coords: Point) {
@@ -166,12 +223,9 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'class', 'blank-node');
         this._dom.appendChild(canvas, group);
 
-        var NODE_BACKGROUND_RADIUS = 7;
-        let circle = this._dom.createElementNS(NS, 'circle');
-        this._dom.setAttribute(circle, 'cx', '0');
-        this._dom.setAttribute(circle, 'cy', '0');
-        this._dom.setAttribute(circle, 'r', <string>NODE_BACKGROUND_RADIUS);
-        this._dom.appendChild(group, circle);
+        this._dom.setInnerHTML(group,
+            this._templates.get('blank-node')
+        );
     }
 
     drawSettlement(canvas: Element, coords: Point, colorId: number) {
@@ -180,22 +234,9 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'class', 'settlement');
         this._dom.appendChild(canvas, group);
 
-        var SETTLEMENT_RADIUS = 9;
-        let circle = this._dom.createElementNS(NS, 'circle');
-        this._dom.setAttribute(circle, 'cx', '0');
-        this._dom.setAttribute(circle, 'cy', '0');
-        this._dom.setAttribute(circle, 'r', <string>SETTLEMENT_RADIUS);
-        this._dom.setAttribute(circle, 'player-color', <string>colorId);
-        this._dom.appendChild(group, circle);
-
-        let text = this._dom.createElementNS(NS, 'text');
-        this._dom.setAttribute(text, 'x', '0');
-        this._dom.setAttribute(text, 'y', '4');
-        this._dom.setAttribute(text, 'text-anchor', 'middle');
-        this._dom.appendChild(canvas, text);
-
-        let textNode = this._dom.createTextNode('s');
-        this._dom.appendChild(text, textNode);
+        this._dom.setInnerHTML(group,
+            this._templates.get('settlement', {colorId})
+        );
     }
 
     drawCity(canvas: Element, coords: Point, colorId: number) {
@@ -204,35 +245,25 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'class', 'city');
         this._dom.appendChild(canvas, group);
 
-        var CITY_RADIUS = 11;
-        let circle = this._dom.createElementNS(NS, 'circle');
-        this._dom.setAttribute(circle, 'cx', '0');
-        this._dom.setAttribute(circle, 'cy', '0');
-        this._dom.setAttribute(circle, 'r', <string>CITY_RADIUS);
-        this._dom.setAttribute(circle, 'player-color', <string>colorId);
-        this._dom.appendChild(group, circle);
-
-        let text = this._dom.createElementNS(NS, 'text');
-        this._dom.setAttribute(text, 'x', '0');
-        this._dom.setAttribute(text, 'y', '5');
-        this._dom.setAttribute(text, 'text-anchor', 'middle');
-        this._dom.appendChild(canvas, text);
-
-        let textNode = this._dom.createTextNode('C');
-        this._dom.appendChild(text, textNode);
+        this._dom.setInnerHTML(group,
+            this._templates.get('city', {colorId})
+        );
     }
 
-    drawPort(canvas: Element, offset: Point, portTypeString: string) {
-        let PORT_DISTANCE = 12;
+    drawPort(canvas: Element, nodeCoords: Point, offset: Point, portTypeString: string) {
+        let finalCoords = <Point>{
+            x: nodeCoords.x + offset.x,
+            y: nodeCoords.y + offset.y
+        };
+
         let group = this._dom.createElementNS(NS, 'g');
-        this._dom.setAttribute(group, 'transform', 'translate(' + offset.x * PORT_DISTANCE + ',' + offset.y * PORT_DISTANCE + ')');
+        this._dom.setAttribute(group, 'transform', 'translate(' + finalCoords.x + ',' + finalCoords.y + ')');
         this._dom.setAttribute(group, 'class', 'port');
         this._dom.appendChild(canvas, group);
 
-        let path = this._dom.createElementNS(NS, 'path');
-        this._dom.setAttribute(path, 'd', 'M0 -6 L-5 3 L5 3 Z');
-        this._dom.setAttribute(path, 'resource-type', portTypeString.toLowerCase());
-        this._dom.appendChild(group, path);
+        this._dom.setInnerHTML(group,
+            this._templates.get('port', {type: portTypeString.toLowerCase()})
+        );
     }
 
     drawEdge(canvas: Element, game: Game, coords: Point, edge: Edge) {
@@ -248,6 +279,23 @@ export class DrawMapService {
         } else {
             this.drawEmptyEdge(group, <Point>{x: 0, y: 0}, edge.orientation);
         }
+
+        edge.onUpdate(() => this.updateEdge(group, game, edge));
+    }
+
+    updateEdge(element: Element, game: Game, edge: Edge) {
+        // Updatable properties of EDGE:
+        // 1. edge.building
+        // --
+
+        this._dom.clearNodes(element);
+
+        if (edge.building) {
+            let colorId = game.getPlayer(edge.building.ownerPlayerId).colorId;
+            this.drawRoad(element, <Point>{x: 0, y: 0}, edge.orientation, colorId);
+        } else {
+            this.drawEmptyEdge(element, <Point>{x: 0, y: 0}, edge.orientation);
+        }
     }
 
     drawEmptyEdge(canvas: Element, coords: Point, orientation: EdgeOrientation) {
@@ -256,19 +304,11 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'class', 'blank-edge');
         this._dom.appendChild(canvas, group);
 
-        let rect = this._dom.createElementNS(NS, 'rect');
         if (orientation === EdgeOrientation.VERTICAL) {
-            this._dom.setAttribute(rect, 'x', <string>(-EDGE_WIDTH));
-            this._dom.setAttribute(rect, 'y', <string>(-HEX_HEIGHT/2));
-            this._dom.setAttribute(rect, 'width', <string>(2*EDGE_WIDTH));
-            this._dom.setAttribute(rect, 'height', <string>HEX_HEIGHT);
+            this._dom.setInnerHTML(group, this._templates.get('blank-edge-vertical'));
         } else {
-            this._dom.setAttribute(rect, 'x', <string>(-HEX_WIDTH/4));
-            this._dom.setAttribute(rect, 'y', <string>(-EDGE_WIDTH));
-            this._dom.setAttribute(rect, 'width', <string>(HEX_WIDTH/2));
-            this._dom.setAttribute(rect, 'height', <string>(2*EDGE_WIDTH));
+            this._dom.setInnerHTML(group, this._templates.get('blank-edge-horizontal'));
         }
-        this._dom.appendChild(group, rect);
     }
 
     drawRoad(canvas: Element, coords: Point, orientation: EdgeOrientation, colorId: number) {
@@ -279,18 +319,10 @@ export class DrawMapService {
 
         let rect = this._dom.createElementNS(NS, 'rect');
         if (orientation === EdgeOrientation.VERTICAL) {
-            this._dom.setAttribute(rect, 'x', <string>(-EDGE_WIDTH));
-            this._dom.setAttribute(rect, 'y', <string>(-HEX_HEIGHT/2));
-            this._dom.setAttribute(rect, 'width', <string>(2*EDGE_WIDTH));
-            this._dom.setAttribute(rect, 'height', <string>HEX_HEIGHT);
+            this._dom.setInnerHTML(group, this._templates.get('road-vertical', {colorId}));
         } else {
-            this._dom.setAttribute(rect, 'x', <string>(-HEX_WIDTH/4));
-            this._dom.setAttribute(rect, 'y', <string>(-EDGE_WIDTH));
-            this._dom.setAttribute(rect, 'width', <string>(HEX_WIDTH/2));
-            this._dom.setAttribute(rect, 'height', <string>(2*EDGE_WIDTH));
+            this._dom.setInnerHTML(group, this._templates.get('road-horizontal', {colorId}));
         }
-        this._dom.setAttribute(rect, 'player-color', <string>colorId);
-        this._dom.appendChild(group, rect);
     }
 
 }

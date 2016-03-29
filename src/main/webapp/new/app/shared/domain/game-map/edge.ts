@@ -15,6 +15,8 @@ export class Edge {
 
     building: EdgeBuilding;
 
+    private _onUpdate: Function;
+
     constructor(params) {
         this.id = params.edgeId;
         this.orientation = EdgeOrientation[params.orientation];
@@ -52,10 +54,29 @@ export class Edge {
     }
 
     update(params) {
-        if (params.building) {
+        let buildingChanged =
+            (!this.building && params.building) ||
+            (this.building && params.building && this.building.built !== EdgeBuildingType[params.building.built]);
+
+        if (buildingChanged) {
             this.building = this.building || <EdgeBuilding>{};
             this.building.built = EdgeBuildingType[params.building.built];
             this.building.ownerPlayerId = params.building.ownerGameUserId;
+
+            this.triggerUpdate();
+        }
+    }
+
+    //TODO: try to replace with Subscribable
+    onUpdate(onUpdate: Function) {
+        this._onUpdate = onUpdate;
+    }
+    cancelOnUpdate() {
+        this._onUpdate = undefined;
+    }
+    triggerUpdate() {
+        if (this._onUpdate) {
+            this._onUpdate();
         }
     }
 }

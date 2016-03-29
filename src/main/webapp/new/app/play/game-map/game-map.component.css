@@ -1,13 +1,18 @@
+/* TODO: bug, city can't be marked (when choose player to rob) */
+
 ct-game-map svg {
     position: absolute;
     width: 100%;
     height: 100%;
 }
 
-ct-game-map .hex.highlighted .hex-background {
+ct-game-map .hex.hex-animated {
     animation: blinking 1s linear infinite;
 }
-/*@keyframes blinking { 50% { fill-opacity: 0.5; }, 100% { fill-opacity: 1; } }*/
+ct-game-map .robber.robber-animated {
+    animation: blinking 0.5s linear infinite;
+}
+@keyframes blinking { 50% { fill-opacity: 0.5; }, 100% { fill-opacity: 1; } }
 
 
 ct-game-map [resource-type="brick"] {
@@ -87,13 +92,15 @@ ct-game-map .node[marked]:hover .blank-node {
     stroke-opacity: 1;
 }
 
-ct-game-map .node[marked] .settlement {
+ct-game-map .node[marked] .settlement,
+ct-game-map .node[marked] .city {
     visibility: visible;
     fill-opacity: 0.6;
     stroke-opacity: 0.1;
 }
 
-ct-game-map .node[marked]:hover .settlement {
+ct-game-map .node[marked]:hover .settlement,
+ct-game-map .node[marked]:hover .city {
     stroke-opacity: 1;
     cursor: pointer;
 }
@@ -102,23 +109,24 @@ ct-game-map .node[marked]:hover text {
     cursor: pointer;
 }
 
-ct-game-map .node[marked]:hover .settlement circle {
-    stroke-width: 2;
+ct-game-map .node[marked]:hover .settlement circle,
+ct-game-map .node[marked]:hover .city circle {
+    stroke-width: 1.2;
 }
 
 ct-game-map .node .settlement circle {
     stroke: #000;
-    stroke-width: 1;
+    stroke-width: 0.8;
 }
 
 ct-game-map .node .city circle {
     stroke: #000;
-    stroke-width: 2;
+    stroke-width: 0.8;
 }
 
 ct-game-map .edge {
     stroke: #000;
-    stroke-width: 1;
+    stroke-width: 0.8;
 }
 
 ct-game-map .edge .blank-edge {
@@ -128,7 +136,7 @@ ct-game-map .edge .blank-edge {
 
 ct-game-map .edge[marked] .blank-edge {
     visibility: visible;
-    fill-opacity: 0.6;
+    fill-opacity: 0.4;
     stroke-opacity: 0.1;
 }
 

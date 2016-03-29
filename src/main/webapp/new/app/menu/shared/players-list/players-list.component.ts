@@ -1,4 +1,4 @@
-import { Component, OnChanges } from 'angular2/core';
+import { Component, DoCheck } from 'angular2/core';
 import { Game } from 'app/shared/domain/game';
 
 @Component({
@@ -8,13 +8,14 @@ import { Game } from 'app/shared/domain/game';
     inputs: ['game', 'showReadyStatus']
 })
 
-export class PlayersListComponent implements OnChanges {
+export class PlayersListComponent implements DoCheck {
     game: Game;
     showReadyStatus: string;
 
     vacantPlaces: any[];
 
-    ngOnChanges() {
+    ngDoCheck() {
+        //TODO: not optimal (needs to be updated only on changes)
         this._calculateVacantPlaces();
     }
 

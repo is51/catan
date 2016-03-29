@@ -47,15 +47,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 this.game = game;
 
                 if (this.game.isPlaying()) {
-                    this.game
-                        .getCurrentPlayer(this._authUser.get()).availableActions
-                        .onUpdate(actions => {
-                            actions.forEach(action => {
-                                if (action.notify) {
-                                    this._notification.notifyGlobal(action.notifyMessage, action.code); //TODO: why red?
-                                }
-                            });
-                        });
+                    this._subscribeOnUpdateAvailableActions();
+                } else {
+                    this.game.onStartPlaying(() => this._subscribeOnUpdateAvailableActions());
                 }
 
                 this._gameService.startRefreshing(this.game, GAME_UPDATE_DELAY, null, () => {
@@ -66,6 +60,18 @@ export class GamePageComponent implements OnInit, OnDestroy {
             }, () => {
                 alert('Getting Game Details Error');
                 this._router.navigate(['StartPage']);
+            });
+    }
+
+    private _subscribeOnUpdateAvailableActions() {
+        this.game
+            .getCurrentPlayer(this._authUser.get()).availableActions
+            .onUpdate(actions => {
+                actions.forEach(action => {
+                    if (action.notify) {
+                        this._notification.notifyGlobal(action.notifyMessage, action.code);
+                    }
+                });
             });
     }
 
