@@ -27,7 +27,7 @@ echo JAVA_HOME=%JAVA_HOME%
 :: Check JAVA_HOME and Maven versions correct
 :setJavaHomeCorrect
 set /p javaHomeCorrect=Is JAVA_HOME and Maven versions correct (y - Proceed with current values / n - Exit deployment script / e - Edit JAVA_HOME path)?
-if /i "%setJavaHomeCorrect:~,1%" NEQ "n" if /i "%setJavaHomeCorrect:~,1%" NEQ "y" if /i "%setJavaHomeCorrect:~,1%" NEQ "e" goto setJavaHomeCorrect
+if /i "%javaHomeCorrect:~,1%" NEQ "n" if /i "%javaHomeCorrect:~,1%" NEQ "y" if /i "%javaHomeCorrect:~,1%" NEQ "e" goto setJavaHomeCorrect
 
 IF NOT EXIST "%JAVA_HOME%" SET javaHomeCorrect=n
 if /i "%javaHomeCorrect:~,1%" EQU "y" goto npm
