@@ -85,6 +85,21 @@ export class Node {
         return this.building.built === NodeBuildingType.CITY;
     }
 
+    /*isNeighborOf(node: Node) {
+        return !!this.getJointEdge(node);
+    }*/
+
+    getJointEdge(node: Node) {
+        for (let i in node.edges) {
+            for (let j in this.edges) {
+                if (node.edges[i] === this.edges[j]) {
+                    return node.edges[i];
+                }
+            }
+        }
+        return false;
+    }
+
     //TODO: try to replace with Subscribable
     onUpdate(onUpdate: Function) {
         this._onUpdate = onUpdate;

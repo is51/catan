@@ -67,6 +67,10 @@ export class Edge {
         }
     }
 
+    isVertical() {
+        return this.orientation === EdgeOrientation.VERTICAL;
+    }
+
     //TODO: try to replace with Subscribable
     onUpdate(onUpdate: Function) {
         this._onUpdate = onUpdate;

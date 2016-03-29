@@ -376,37 +376,67 @@ export class DrawMapService {
 
     drawPorts(canvas: Element, map: GameMap) {
         let portNodes = map.nodes.filter(node => node.hasPort());
-        let pairs: Node[] = <Node[]>[];
+        let pairs = [];
 
-    }
+        while (portNodes.length) {
+            let pair = [];
+            let node = portNodes.shift();
+
+            portNodes.forEach((iNode, i) => {
+
+                let jointEdge = iNode.getJointEdge(node);
+
+                if (jointEdge) {
+
+                    if (!pair.length) {
+                        pair.push(jointEdge);
+                    }
+
+                    pair.push(iNode);
+                    portNodes.splice(i, 1);
+                }
+            });
+
+            pair.push(node);
+            pairs.push(pair);
+        }
+
+        pairs.forEach(pair => {
+
+            let node1Coords = this._helper.getNodeCoords(pair[1], HEX_WIDTH, HEX_HEIGHT);
+            let port1Offset = this._helper.getPortOffset(pair[1], PORT_DISTANCE*2);
+            let coords1 = <Point>{
+                x: node1Coords.x + port1Offset.x,
+                y: node1Coords.y + port1Offset.y
+            };
+
+            let node2Coords = this._helper.getNodeCoords(pair[2], HEX_WIDTH, HEX_HEIGHT);
+            let port2Offset = this._helper.getPortOffset(pair[2], PORT_DISTANCE*2);
+            let coords2 = <Point>{
+                x: node2Coords.x + port2Offset.x,
+                y: node2Coords.y + port2Offset.y
+            };
+
+            let coords = {
+                x: (coords1.x + coords2.x) / 2,
+                y: (coords1.y + coords2.y) / 2
+            };
 
 
+            let group = this._dom.createElementNS(NS, 'g');
+            this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
+            //this._dom.setAttribute(group, 'class', 'port');
+            this._dom.appendChild(canvas, group);
 
-
-    drawTestPort(canvas: Element) {
-        let coords = {x: -66.5, y: -53};
-
-        let group = this._dom.createElementNS(NS, 'g');
-        this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
-        //this._dom.setAttribute(group, 'class', 'port');
-        this._dom.appendChild(canvas, group);
-
-        this._dom.setInnerHTML(group,
-            this._templates.get('port-horizontal')
-        );
-
-
-
-        let coords = {x: -126, y: -53};
-
-        let group = this._dom.createElementNS(NS, 'g');
-        this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
-        //this._dom.setAttribute(group, 'class', 'port');
-        this._dom.appendChild(canvas, group);
-
-        this._dom.setInnerHTML(group,
-            this._templates.get('port-vertical')
-        );
+            this._dom.setInnerHTML(group,
+                this._templates.get( (pair[0].isVertical()) ? 'port-vertical' : 'port-horizontal', {
+                    x1: -coords.x + node1Coords.x,
+                    x2: -coords.x + node2Coords.x,
+                    y1: -coords.y + node1Coords.y,
+                    y2: -coords.y + node2Coords.y
+                })
+            );
+        });
     }
 
 }
