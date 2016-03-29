@@ -3293,7 +3293,7 @@ public class PlayServiceImplTest {
     }
     
     private void allowUserKickOffResources(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES));
+        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, MainStageUtil.NOTIFY_MESSAGE_KICK_OFF_RESOURCE));
     }
 
     private void allowUserToMoveRobber(GameUserBean user) {
@@ -3317,7 +3317,7 @@ public class PlayServiceImplTest {
     }
 
     private void allowUserToThrowDice(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE));
+        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE, true, MainStageUtil.NOTIFY_MESSAGE_THROW_DICE));
     }
 
     private void allowUserToBuildCity(GameUserBean user) {

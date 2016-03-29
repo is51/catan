@@ -1,5 +1,5 @@
 import { Component, OnInit } from 'angular2/core';
-import { RouteConfig, RouterOutlet, ROUTER_PROVIDERS } from 'angular2/router';
+import { RouteConfig, RouterOutlet } from 'angular2/router';
 import { HTTP_PROVIDERS } from 'angular2/http';
 
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
@@ -9,6 +9,8 @@ import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { GameService } from 'app/shared/services/game/game.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
+import { NotificationService } from 'app/shared/services/notification/notification.service';
+import { ApplicationActiveService } from 'app/shared/services/application-active/application-active.service';
 
 import { StartPageComponent } from 'app/menu/start-page/start-page.component';
 import { LoginPageComponent } from 'app/menu/login-page/login-page.component';
@@ -26,7 +28,6 @@ import { GamePageComponent } from 'app/menu/game-page/game-page.component';
     template: '<router-outlet></router-outlet>',
     directives: [RouterOutlet],
     providers: [
-        ROUTER_PROVIDERS,
         HTTP_PROVIDERS,
 
         AuthUserService,
@@ -35,7 +36,9 @@ import { GamePageComponent } from 'app/menu/game-page/game-page.component';
         RemoteService,
         GameService,
         ModalWindowService,
-        RouteDataService
+        RouteDataService,
+        NotificationService,
+        ApplicationActiveService
     ]
 })
 

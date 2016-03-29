@@ -117,7 +117,7 @@ public class GameUserValidator {
             this.action = action;
         }
 
-        public Scenario withParameters(String... params){
+        public ActionParameterValidator withParameters(String... params){
             check("availableActions.list.find {it.code == '" + action + "'}.params", notNullValue());
             for(String param : params){
                 String[] keyValue = param.split("=");
@@ -131,7 +131,30 @@ public class GameUserValidator {
                 }
             }
 
-            return scenario;
+            return this;
+        }
+
+        public ActionParameterValidator withoutParameters(){
+            check("availableActions.list.find {it.code == '" + action + "'}.params", nullValue());
+
+            return this;
+        }
+
+        public ActionParameterValidator withNotification(String notification){
+            check("availableActions.list.find {it.code == '" + action + "'}.notifyMessage", equalTo(notification));
+            check("availableActions.list.find {it.code == '" + action + "'}.notify", equalTo(true));
+
+            return this;
+        }
+
+        public ActionParameterValidator withoutNotification(){
+            check("availableActions.list.find {it.code == '" + action + "'}.notify", equalTo(false));
+
+            return this;
+        }
+
+        public ActionParameterValidator and() {
+            return this;
         }
 
         private void compareArrayParameter(String parameterName, String strArrayParamValue) {
@@ -158,12 +181,6 @@ public class GameUserValidator {
 
             check("availableActions.list.find {it.code == '" + action + "'}.params." + parameterName,
                     equalTo(intParamValue != null ? intParamValue : strParamValue));
-        }
-
-        public Scenario withoutParameters(){
-            check("availableActions.list.find {it.code == '" + action + "'}.params", nullValue());
-
-            return scenario;
         }
     }
 }

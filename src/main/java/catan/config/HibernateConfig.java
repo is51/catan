@@ -18,7 +18,10 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan({"catan.dao"})
-@PropertySource(value = {"classpath:application.properties"})
+@PropertySource(value = {
+        "file:/var/lib/openshift/55fe79942d5271339400003a/jbossews/conf/catan/application-override.properties",
+        "classpath:${properties.folder}/application.properties"},
+        ignoreResourceNotFound = true)
 public class HibernateConfig {
 
     @Autowired

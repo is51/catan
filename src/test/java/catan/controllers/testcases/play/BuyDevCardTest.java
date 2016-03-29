@@ -142,7 +142,7 @@ public class BuyDevCardTest extends PlayTestUtil {
         giveResourcesToPlayerForDevCardBuying(1, 1)
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
-                .getGameDetails(1).gameUser(1).hasAvailableAction("BUY_CARD")
+                .getGameDetails(1).gameUser(1).hasAvailableAction("BUY_CARD").withoutNotification()
 
                 .BUY_CARD(1).successfully();
     }

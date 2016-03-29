@@ -108,7 +108,7 @@ public class BuildSettlementTest extends PlayTestUtil {
 
         scenario
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + availableNodeIds)
+                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + availableNodeIds).and().withoutNotification()
                 .gameUser(1).check("resources.brick", greaterThanOrEqualTo(1))
                 .gameUser(1).check("resources.wood", greaterThanOrEqualTo(1))
                 .gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
@@ -142,7 +142,7 @@ public class BuildSettlementTest extends PlayTestUtil {
 
         scenario
                 //Given
-                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIds)
+                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIds).and().withoutNotification()
                 .statusIsPlaying().and().node(0, 0, "topLeft").buildingIsEmpty()
 
                 //When
@@ -160,7 +160,7 @@ public class BuildSettlementTest extends PlayTestUtil {
 
         scenario
                 //Given
-                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIds)
+                .gameUser(1).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIds).and().withoutNotification()
                 .BUILD_SETTLEMENT(1).atNode(0, 0, "topLeft")
                 .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
                 .END_TURN(1);
@@ -171,7 +171,7 @@ public class BuildSettlementTest extends PlayTestUtil {
         allNodeIdsExcludeUnavailable.remove(scenario.node(-1, 0, "top").getMapElementId());         // left neighbour
 
         scenario
-                .getGameDetails(2).gameUser(2).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIdsExcludeUnavailable)
+                .getGameDetails(2).gameUser(2).hasAvailableAction("BUILD_SETTLEMENT").withParameters("nodeIds=" + allNodeIdsExcludeUnavailable).and().withoutNotification()
                 
                 //When                              //Then
                 .BUILD_SETTLEMENT(2).atNode(0, 0, "topLeft").failsWithError("ERROR")
