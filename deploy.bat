@@ -5,7 +5,7 @@
 
 :: Check if install npm and compile javascript required
 :setNpmInstall
-set /p npmInstall=Do you want to install npm and compile javascript (y/n)?
+set /p npmInstall=Do you want to install NPM and compile javascript (y/n)?
 if /i "%npmInstall:~,1%" NEQ "n" if /i "%npmInstall:~,1%" NEQ "y" goto setNpmInstall
 
 :: Check if Maven build required
@@ -43,8 +43,25 @@ call mvn -v
 :: ---------------------------------------------------------------------
 :npm
 if /i "%npmInstall:~,1%" EQU "n" goto mvn
-
 cd src\main\webapp\new
+
+:: Check if clean NPM is required
+:cleanNpm
+set /p cleanNpm=Do you want to clean NPM folders and remove *.js files to perform hard reset of project front-ent? (y/n)?
+if /i "%cleanNpm:~,1%" NEQ "n" if /i "%cleanNpm:~,1%" NEQ "y" goto cleanNpm
+
+:: Clean NPM folders and remove *.js files
+if /i "%cleanNpm:~,1%" EQU "n" goto npmInstall
+del /q /f /s typings\*
+del /q /f /s node\*
+del /q /f /s node_modules\*
+del /q /f /s app\*.js
+rmdir /s /q typings
+rmdir /s /q node
+rmdir /s /q node_modules
+
+:: Install NPM and run 'tsc'
+:npmInstall
 call npm install
 call npm run tsc
 cd ../../../../

@@ -3,7 +3,6 @@ package catan.domain.model.game;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
-import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
@@ -29,7 +28,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -37,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "GAME")
+@Table(name = "CT_GAME")
 public class GameBean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
