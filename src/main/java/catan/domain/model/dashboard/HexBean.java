@@ -30,6 +30,9 @@ public class HexBean implements MapElement{
     @Column(name = "HEX_ID", unique = true, nullable = false)
     private int id;
 
+    @Column(name = "HEX_ABSOLUTE_ID", unique = false, nullable = false)
+    private Integer absoluteId;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GAME_ID", nullable = false)
     private GameBean game;
@@ -71,7 +74,8 @@ public class HexBean implements MapElement{
     public HexBean() {
     }
 
-    public HexBean(GameBean game, Coordinates coordinates, HexType resourceType, Integer dice, boolean robbed) {
+    public HexBean(int absoluteId, GameBean game, Coordinates coordinates, HexType resourceType, Integer dice, boolean robbed) {
+        this.absoluteId = absoluteId;
         this.game = game;
         this.coordinates = coordinates;
         this.resourceType = resourceType;
@@ -85,6 +89,15 @@ public class HexBean implements MapElement{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public Integer getAbsoluteId() {
+        return absoluteId;
+    }
+
+    public void setAbsoluteId(Integer absoluteId) {
+        this.absoluteId = absoluteId;
     }
 
     public GameBean getGame() {
@@ -193,6 +206,7 @@ public class HexBean implements MapElement{
     public String toString() {
         return "Hex{" +
                 "id=" + id +
+                ", absoluteId=" + absoluteId +
                 ", " + (robbed ? "robbed" : "not robbed") +
                 ", dice=" + dice +
                 ", type=" + resourceType +

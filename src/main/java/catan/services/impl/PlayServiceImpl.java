@@ -318,12 +318,12 @@ public class PlayServiceImpl implements PlayService {
         achievementsUtil.updateBiggestArmyOwner(gameUser, game);
     }
 
-    private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexId) throws PlayException, GameException {
-        HexBean hexToRob = toValidHex(game, hexId);
+    private void moveRobber(GameUserBean gameUser, GameBean game, Resources userResources, String hexAbsoluteId) throws PlayException, GameException {
+        HexBean hexToRob = toValidHex(game, hexAbsoluteId);
         validateHexCouldBeRobbed(hexToRob);
 
         changeRobbedHex(game, hexToRob);
-        log.info("Hex {} successfully robbed", hexId);
+        log.info("Hex {} successfully robbed", hexAbsoluteId);
         game.setRobberShouldBeMovedMandatory(false);
 
         List<GameUserBean> playersAtHex = new ArrayList<GameUserBean>(hexToRob.fetchGameUsersWithBuildingsAtNodes());
@@ -373,7 +373,7 @@ public class PlayServiceImpl implements PlayService {
                 continue;
             }
             if (!hex.fetchGameUsersWithBuildingsAtNodes().remove(robbedGameUser)) {
-                log.error("GameUser {} doesn't have any buildings at robbed hex {} and couldn't be robbed", robbedGameUser.getGameUserId(), hex.getId());
+                log.error("GameUser {} doesn't have any buildings at robbed hex {} and couldn't be robbed", robbedGameUser.getGameUserId(), hex.getAbsoluteId());
                 throw new PlayException(ERROR_CODE_ERROR);
             }
             break;
@@ -665,27 +665,27 @@ public class PlayServiceImpl implements PlayService {
 
     private void validateHexCouldBeRobbed(HexBean hexToRob) throws PlayException {
         if (hexToRob.isRobbed() || hexToRob.getResourceType().equals(HexType.EMPTY)) {
-            log.error("Hex {} cannot be robbed", hexToRob.getId());
+            log.error("Hex {} cannot be robbed", hexToRob.getAbsoluteId());
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
 
-    private HexBean toValidHex(GameBean game, String hexIdString) throws PlayException {
-        int hexId;
+    private HexBean toValidHex(GameBean game, String hexAbsoluteIdString) throws PlayException {
+        int hexAbsoluteId;
         try {
-            hexId = Integer.parseInt(hexIdString);
+            hexAbsoluteId = Integer.parseInt(hexAbsoluteIdString);
         } catch (Exception e) {
-            log.error("Cannot convert hexId to integer value");
+            log.error("Cannot convert hexAbsoluteId to integer value");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
         for (HexBean hex : game.getHexes()) {
-            if (hex.getId() == hexId) {
+            if (hex.getAbsoluteId() == hexAbsoluteId) {
                 return hex;
             }
         }
 
-        log.error("Hex {} does not belong to game {}", hexId, game.getGameId());
+        log.error("Hex {} does not belong to game {}", hexAbsoluteId, game.getGameId());
         throw new PlayException(ERROR_CODE_ERROR);
     }
 
