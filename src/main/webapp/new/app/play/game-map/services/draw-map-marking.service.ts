@@ -3,6 +3,8 @@ import { BrowserDomAdapter } from "angular2/src/platform/browser/browser_adapter
 
 import { MarkingService } from 'app/play/shared/services/marking.service';
 
+const MARKED_MANY_COUNT = 7;
+
 @Injectable()
 export class DrawMapMarkingService {
 
@@ -14,6 +16,7 @@ export class DrawMapMarkingService {
         let previousMarked = this._dom.querySelectorAll(element, '.' + typeClass + '[marked]');
         for (let elem of previousMarked) {
             this._dom.removeAttribute(elem, 'marked');
+            this._dom.removeAttribute(elem, 'marked-many');
             this._dom.removeAttribute(elem, 'player-color');
         }
 
@@ -22,6 +25,9 @@ export class DrawMapMarkingService {
             marking.ids.forEach(id => {
                 let elem = this._dom.querySelector(element, '.' + typeClass + '[' + typeClass + '-id="' + id + '"]');
                 this._dom.setAttribute(elem, 'marked', "true");
+                if (marking.ids.length >= MARKED_MANY_COUNT) {
+                    this._dom.setAttribute(elem, 'marked-many', "true");
+                }
                 if (marking.player) {
                     this._dom.setAttribute(elem, 'player-color', <string>marking.player.colorId);
                 }

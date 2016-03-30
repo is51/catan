@@ -16,7 +16,7 @@ const CANVAS_PRESERVE_ASPECT_RATIO = "xMidYMid meet";
 
 @Component({
     selector: 'ct-game-map',
-    template: '',
+    template: '<div>Map loading...</div>',
     //TODO: find way use css like that:  (instead of link in index.html)
     //try just add to all elements attr like "_ngcontent-cgr-10" - same throw all css scope
     //styleUrls: ['app/play/game-map/game-map.component.css'],
@@ -45,14 +45,33 @@ export class GameMapComponent implements OnInit {
         private _drawMapMarkingService: DrawMapMarkingService,
         private _marking: MarkingService,
         private _select: SelectService,
-        private _animation: MapAnimationService) { }
+        private _animation: MapAnimationService,
+        private _templates: MapTemplatesService) { }
 
     ngOnInit() {
-        this._createCanvas();
-        this._subscribeOnMapElementsClick();
-        this._drawMapService.drawMap(this._canvas, this.game, this.game.map);
-        this._subscribeOnMarkingChanging();
-        this._subscribeOnDiceThrowing();
+        this._templates.load()
+            .then(() => {
+                this._hideLoadingMessage();
+
+                this._createCanvas();
+                this._subscribeOnMapElementsClick();
+                this._drawMapService.drawMap(this._canvas, this.game, this.game.map);
+                this._subscribeOnMarkingChanging();
+                this._subscribeOnDiceThrowing();
+            })
+            .catch(() => {
+                this._displayErrorMessage();
+            });
+    }
+
+    private _hideLoadingMessage() {
+        let statusElement = this._dom.querySelector(this._element.nativeElement, 'div');
+        this._dom.remove(statusElement);
+    }
+
+    private _displayErrorMessage() {
+        let statusElement = this._dom.querySelector(this._element.nativeElement, 'div');
+        this._dom.setText(statusElement, 'Map loading error!');
     }
 
     private _createCanvas() {
