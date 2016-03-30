@@ -1,20 +1,192 @@
-<div *ngFor="#player of players" class="player color-{{player.colorId}}" [class.active]="isActive(player)">
+<svg width="100%" height="100%" preserveAspectRatio="xMinYMid meet" viewBox="0 0 200 660">
 
-    <div class="achievements">
-        <span class="glyphicon glyphicon-inbox"></span> {{player.achievements.totalResources}}<br>
-        <span class="glyphicon glyphicon-credit-card"></span> {{player.achievements.totalCards}}<br>
-        <span class="glyphicon glyphicon-flag"></span> <span [class.top]="isBiggestArmy(player)">{{player.achievements.totalUsedKnights}}</span><br>
-        <span class="glyphicon glyphicon-road"></span> <span [class.top]="isLongestWay(player)">{{player.achievements.longestWayLength}}</span>
-    </div>
+    <defs>
+        <filter id="dropshadow-players-panel" height="130%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.3"/>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+        <filter id="dropshadow-active-player" height="130%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.2"/>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
 
-    <div class="name">{{player.user.getDisplayedName()}}</div>
+    <!-- PLAYERS PANEL -->
+    <g (click)="toggleDisplayCompact()"
+       font-family="Arial"
+       font-weight="bold"
+       text-anchor="middle"
+       transform="translate(0,55)"
+       filter="url(#dropshadow-players-panel)">
 
-    <div class="avatar"><span class="glyphicon glyphicon-user"></span></div>
+        <g *ngFor="#player of players; #index = index" [attr.transform]="'translate(0,'+getPlayerBlockY(index)+')'">
 
-    <div class="victory-points">
-        <span class="glyphicon glyphicon-star"></span>
-        <span *ngIf="isCurrentUser(player)">{{player.achievements.realVictoryPoints}}</span>
-        <span *ngIf="!isCurrentUser(player)">{{player.achievements.displayVictoryPoints}}</span>
-    </div>
+            <g [attr.transform]="isActive(player) ? 'scale(' + ACTIVE_PLAYER_BLOCK_SCALE + ')' : ''"
+               [attr.filter]="isActive(player) ? 'url(#dropshadow-active-player)' : ''">
 
-</div>
+                <!-- Separator -->
+                <rect [attr.visibility]="index === 0 ? 'hidden' : 'visible'" fill="#ddd" width="84" height="1"/>
+
+                <!-- Avatar background -->
+                <rect y="1" fill="#ddd" width="84" height="79"/>
+
+                <!-- Avatar -->
+                <image x="0" y="0" width="84" height="79" [attr.xlink:href]="getAvatarUrl(player)" />
+
+                <g font-size="12" transform="translate(7, 16)" text-anchor="start">
+                    <text fill="#fff" stroke="#fff" stroke-width="2" opacity="0.7">{{player.user.getDisplayedName()}}</text>
+                    <text fill="#333">{{player.user.getDisplayedName()}}</text>
+                </g>
+
+                <!-- Victory points -->
+                <g transform="translate(0,80)">
+                    <rect [attr.fill]="getColor(player)" width="84" height="31"/>
+
+                    <text fill="#FFFFFF" font-size="21" x="54" y="23">
+                        {{isCurrentUser(player) ? player.achievements.realVictoryPoints : player.achievements.displayVictoryPoints}}
+                    </text>
+
+                    <path transform="translate(26,15)" fill="#F0C419" d="M10-2.15c0,0.2-0.104,0.4-0.312,0.6l-4.362,4.2l1.032,6.1c0.009,0,0.013,0.101,0.013,0.201
+                    c0,0.199-0.044,0.299-0.132,0.399c-0.08,0.101-0.2,0.2-0.361,0.2c-0.152,0-0.312,0-0.48-0.1L0,6.55l-5.396,2.9
+                    c-0.176,0.1-0.337,0.1-0.481,0.1c-0.168,0-0.296-0.1-0.385-0.2c-0.08-0.101-0.12-0.2-0.12-0.399c0,0,0.008-0.101,0.024-0.201
+                    l1.034-6.1L-9.7-1.55C-9.9-1.75-10-1.95-10-2.15c0-0.3,0.225-0.5,0.673-0.5l6.033-0.9l2.705-5.5C-0.437-9.35-0.24-9.55,0-9.55
+                    s0.437,0.2,0.589,0.5l2.704,5.5l6.034,0.9C9.775-2.65,10-2.45,10-2.15"/>
+                </g>
+
+                <!-- Shadow under active player -->
+                <g *ngIf="isActivePrevious(index)">
+                    <linearGradient id="shadow-under-active-player" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="79">
+                        <stop  offset="0" stop-opacity="0.4" stop-color="#999999" />
+                        <stop  offset="0.2" stop-opacity="0" stop-color="#dddddd" />
+                        <stop  offset="1" stop-opacity="0" stop-color="#dddddd" />
+                    </linearGradient>
+                    <rect y="0" fill="url(#shadow-under-active-player)" width="84" height="80"/>
+                </g>
+
+                <!-- Params -->
+                <g transform="translate(83.8,0)" *ngIf="!displayCompact">
+
+                    <!-- Separator -->
+                    <rect [attr.visibility]="index === 0 ? 'hidden' : 'visible'" fill="#ddd" width="75" height="1"/>
+
+                    <!-- BG -->
+                    <rect y="1" opacity="0.85" fill="#FBFCFC" width="75" height="110"/>
+
+                    <g transform="translate(0,10)">
+
+                        <!-- Resources -->
+                        <g transform="translate(0,0)" [class.critical]="isResourcesCountCritical(player)">
+                            <g [attr.fill]="getColor(player)" transform="translate(22,9.5)">
+                                <g transform="scale(0.5)">
+                                    <path d="M-5.144,0.75c0,0.641-0.518,1.16-1.158,1.16H-19.09c-0.641,0-1.16-0.52-1.16-1.16v-9.641
+	                                    c0-0.641,0.52-1.16,1.16-1.16h12.788c0.641,0,1.158,0.52,1.158,1.16V0.75z M-8.602-7.822c0-0.131-0.28-0.238-0.628-0.238h-6.933
+	                                    c-0.348,0-0.629,0.107-0.629,0.238v1.984c0,0.133,0.281,0.239,0.629,0.239h6.933c0.348,0,0.628-0.106,0.628-0.239V-7.822z"/>
+                                    <path d="M-5.144,15c0,0.641-0.518,1.16-1.158,1.16H-19.09c-0.641,0-1.16-0.52-1.16-1.16V5.359
+	                                    c0-0.641,0.52-1.16,1.16-1.16h12.788c0.641,0,1.158,0.52,1.158,1.16V15z M-8.602,6.428c0-0.131-0.28-0.238-0.628-0.238h-6.933
+	                                    c-0.348,0-0.629,0.107-0.629,0.238v1.984c0,0.133,0.281,0.24,0.629,0.24h6.933c0.348,0,0.628-0.107,0.628-0.24V6.428z"/>
+                                    <path d="M0.666,16.16h4.667H6.25v-1.078V8.666c0,0-0.061-0.73-0.428-1.123C5.385,7.074,5.102,7.271,4.65,6.934
+	                                    C4.15,6.559,4,5.998,4,5.998V-6.246c0,0-0.019-0.402-0.271-0.68C3.385-7.304,3.01-7.303,3.01-7.303h-4.104
+	                                    c0,0-0.459-0.017-0.74,0.219c-0.379,0.317-0.322,0.839-0.322,0.839v9.693c0,0,0.219,0.594,0.906,1.092
+	                                    C-0.672,4.957,0.031,5.01,0.031,5.01L0,14.832c0,0-0.094,0.584,0.188,1.021C0.367,16.133,0.666,16.16,0.666,16.16z"/>
+                                    <path d="M8.973,16.16h9.11V6.492c0,0,0.138-0.732,0.434-1.082c0.229-0.271,0.809-0.31,1.25-0.604
+	                                    c0.375-0.25,0.483-0.813,0.483-0.813V-6.246c0,0,0.016-0.746-0.275-1.058c-0.346-0.372-1.642-0.448-1.642-0.448H9.166
+	                                    c0,0-1.127,0.027-1.649,0.448c-0.5,0.402-0.601,1.886-0.601,1.886v8.5v0.95c0,0,0.182,0.647,0.494,0.876
+	                                    c0.393,0.288,0.974,0.26,1.271,0.668c0.333,0.457,0.273,0.956,0.273,0.956L8.973,16.16z"/>
+                                    <circle cx="4.535" cy="-12.66" r="3.5"/>
+                                    <circle cx="13.583" cy="-12.66" r="3.5"/>
+                                </g>
+                            </g>
+
+                            <text class="value" fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.totalResources}}
+                            </text>
+                        </g>
+
+                        <!-- Cards -->
+                        <g transform="translate(0,24)">
+                            <g [attr.fill]="getColor(player)" transform="translate(22,10)">
+                                <g transform="scale(0.5)">
+                                    <path d="M-12.56,16.087H3.023c0,0,1.709-0.375,1.75-2c0.037-1.441-1.832-1.916-1.832-1.916h-5.318
+                                        c0,0-0.108,0.066-0.328-0.146c-0.297-0.287-0.193-0.688-0.193-0.688l-0.078-10.75l2.25-1.333c0,0,2.394,1.843,3.333,2.167
+                                        c0.672,0.231,2.127,0.335,2.834,0.25c1.026-0.125,2.979-0.896,3.916-1.334c1.855-0.866,5.654-2.707,7-4.25
+                                        c0.552-0.633,1.163-2.261,1.334-3.083c0.152-0.734,0.168-2.269,0-3c-0.215-0.926-1.08-2.67-1.668-3.417
+                                        c-0.6-0.763-2.27-1.878-3.166-2.25c-0.833-0.345-2.682-0.456-3.584-0.417c-0.828,0.036-2.465,0.396-3.25,0.667
+                                        C5.23-15.14,3.675-14.486,2.941-14.08c-0.709,0.392-2.068,1.291-2.667,1.833c-0.646,0.585-1.771,1.938-2.25,2.667
+                                        c-0.358,0.545-0.951,1.718-1.167,2.333c-0.099,0.281-0.25,1.167-0.25,1.167l-13.333,6.5c0,0-1.062,1.038-1.083,1.5
+                                        c-0.05,1.119,1.311,3.311,2.292,3.854c0.561,0.311,1.94,0.09,2.562-0.062c1.656-0.405,6.125-3,6.125-3l0.016,8.859
+                                        c0,0,0.035,0.371-0.141,0.562c-0.172,0.188-0.521,0.287-0.521,0.287h-5.083c0,0-1.764,0.477-1.827,1.645
+                                        C-14.477,15.75-12.56,16.087-12.56,16.087z"/>
+                                </g>
+                            </g>
+
+                            <text fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.totalCards}}
+                            </text>
+                        </g>
+
+                        <!-- Army -->
+                        <g transform="translate(0,48)" [class.top]="isBiggestArmy(player)">
+                            <g [attr.fill]="getColor(player)" transform="translate(22,10)">
+                                <g transform="scale(0.5)">
+                                    <path d="M18.844,0.156c0,3.188-4.379,1.588-4.505,2.354c-1.007,6.119-5.88,10.937-12.027,11.861
+                                        c-0.703,0.105,1.034,4.582-2.155,4.598c-4.041,0.02-1.917-4.533-2.833-4.717C-8.437,13.1-12.954,8.508-13.993,2.709
+                                        c-0.148-0.828-4.851,0.822-4.851-2.553c0-3.75,4.713-1.833,4.88-2.711c1.088-5.703,5.545-10.21,11.223-11.372
+                                        c0.554-0.113-0.093-2.136,0.334-3.542c0.294-0.969,1.39-1.5,2.562-1.5c1.106,0,1.817,0.899,2,1.875
+                                        c0.258,1.375-0.265,2.973,0.145,3.034c6.027,0.901,10.832,5.546,11.973,11.492C14.443-1.686,18.844-3.594,18.844,0.156z
+                                         M0.156-10.869c-6.089,0-11.025,4.936-11.025,11.025c0,6.089,4.936,11.025,11.025,11.025c6.089,0,11.025-4.937,11.025-11.025
+                                        C11.182-5.933,6.245-10.869,0.156-10.869z"/>
+                                    <circle cx="0.156" cy="0.157" r="7.985"/>
+                                </g>
+                            </g>
+
+                            <circle class="top-visible" r="12" cx="54" cy="10" fill="#fff" stroke="#000" stroke-opacity="0.1"/>
+                            <text class="value" fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.totalUsedKnights}}
+                            </text>
+                        </g>
+
+                        <!-- Way -->
+                        <g transform="translate(0,73)" [class.top]="isLongestWay(player)">
+                            <g [attr.fill]="getColor(player)" transform="translate(22,10)">
+                                <g transform="scale(0.5)">
+                                    <path d="M8.984,4.492c-1.425,0-2.726,0.487-3.784,1.28l-0.786,0.9l-7.339-4.676l0.248-1.145c0.005-0.099,0.03-0.191,0.03-0.29
+                                        c0-0.356-0.048-0.701-0.104-1.041l-0.361-0.874L3.8-5.881l0.779,0.58c0.907,0.5,1.933,0.81,3.042,0.81
+                                        c3.5,0,6.337-2.837,6.337-6.337c0-3.5-2.837-6.337-6.337-6.337c-3.5,0-6.337,2.837-6.337,6.337c0,0.313,0.048,0.614,0.092,0.915
+                                        l0.314,0.771l-7.15,4.501l-0.514-0.34c-0.899-0.49-1.915-0.793-3.01-0.793c-3.5,0-6.337,2.837-6.337,6.337s2.837,6.337,6.337,6.337
+                                        c1.314,0,2.535-0.4,3.547-1.085l0.42-0.41l7.927,4.917c-0.262,4.01,2.575,6.847,6.075,6.847c3.5,0,6.337-2.837,6.337-6.337
+                                        C15.321,7.329,12.484,4.492,8.984,4.492z"/>
+                                </g>
+                            </g>
+
+                            <circle class="top-visible" r="12" cx="54" cy="10" fill="#fff" stroke="#000" stroke-opacity="0.1"/>
+                            <text class="value" fill="#333333" font-size="20" x="54" y="17">
+                                {{player.achievements.longestWayLength}}
+                            </text>
+                        </g>
+                    </g>
+
+                    <!-- Shadow under active player -->
+                    <g *ngIf="isActivePrevious(index)">
+                        <rect y="0" fill="url(#shadow-under-active-player)" width="75" height="80"/>
+                    </g>
+
+                </g>
+            </g>
+        </g>
+
+
+    </g>
+
+</svg>

@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "GAME_USER")
+@Table(name = "CT_GAME_USER")
 public class GameUserBean {
 
     @Id

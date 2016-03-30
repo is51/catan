@@ -1,75 +1,27 @@
-:host {
+svg {
+    z-index: 100;
     position: absolute;
-    top: 40px;
+    top: 0;
     left: 0;
+    pointer-events: none;
 }
 
-.player {
-    width: 86px;
-    height: 54px;
-    padding: 2px 3px;
-    margin-bottom: 2px;
-    color: #fff;
+svg > g {
+    pointer-events: all;
 }
 
-.player.active {
-    width: 105px;
-    height: 62px;
+.top-visible {
+    visibility: hidden;
 }
 
-.player.color-1 {
-    background: #f50;
+.top .top-visible {
+    visibility: visible;
 }
 
-.player.color-2 {
-    background: #55f;
+.top .value {
+    fill: #f66;
 }
 
-.player.color-3 {
-    background: #dc0;
-}
-
-.player.color-4 {
-    background: #0f5;
-}
-
-.player .name {
-    font-size: 13px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.player .avatar {
-    font-size: 16px;
-    line-height: 16px;
-    color: #000;
-    opacity: 0.5;
-}
-
-.player.active .avatar {
-    font-size: 22px;
-    line-height: 22px;
-}
-
-.player .victory-points {
-    font-size: 12px;
-
-}
-
-.player .achievements {
-    padding-top: 1px;
-    float: right;
-    width: 26px;
-    font-size: 10px;
-    line-height: 11px;
-}
-
-.player .achievements .top {
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-.player.active .achievements {
-    padding-top: 4px;
+.critical .value {
+    fill: #f66;
 }

@@ -1,6 +1,5 @@
 package catan.domain.model.dashboard;
 
-import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.dashboard.types.NodeOrientationType;
 import catan.domain.model.dashboard.types.NodePortType;
@@ -19,13 +18,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.HashSet;
-import java.util.Set;
-
-import static catan.services.impl.PlayServiceImpl.ERROR_CODE_ERROR;
 
 @Entity
-@Table(name = "NODE")
+@Table(name = "CT_NODE")
 public class NodeBean implements MapElement{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

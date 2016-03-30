@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "HEX")
+@Table(name = "CT_HEX")
 public class HexBean implements MapElement{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

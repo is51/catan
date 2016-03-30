@@ -1,7 +1,5 @@
 package catan.domain.model.user;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,10 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
-
 @Entity
-@Table(name = "USER")
+@Table(name = "CT_USER")
 public class UserBean {
 
     @Id
