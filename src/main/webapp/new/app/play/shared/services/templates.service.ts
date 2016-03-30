@@ -16,6 +16,13 @@ const TEMPLATES = [
     'hex-stone',
     'hex-empty',
 
+    'icon-brick',
+    'icon-wood',
+    'icon-sheep',
+    'icon-wheat',
+    'icon-stone',
+    'icon-any',
+
     'robber',
 
     'blank-node',

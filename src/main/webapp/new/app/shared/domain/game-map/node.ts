@@ -77,6 +77,10 @@ export class Node {
         return this.port !== NodePort.NONE;
     }
 
+    hasPortAny() {
+        return this.port === NodePort.ANY;
+    }
+
     hasSettlement() {
         return this.building.built === NodeBuildingType.SETTLEMENT;
     }

@@ -391,6 +391,8 @@ export class DrawMapService {
 
             let portTemplateName = (pair.edge.isVertical()) ? 'port-vertical' : 'port-horizontal';
 
+            let resourceIconTemplate = this._templates.get('icon-' + pair.firstNode.getPortToString().toLowerCase());
+
             let group = this._dom.createElementNS(NS, 'g');
             this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
             this._dom.appendChild(canvas, group);
@@ -399,7 +401,9 @@ export class DrawMapService {
                     x1: node1OffsetBack.x,
                     x2: node2OffsetBack.x,
                     y1: node1OffsetBack.y,
-                    y2: node2OffsetBack.y
+                    y2: node2OffsetBack.y,
+                    icon: resourceIconTemplate,
+                    iconLabel: (pair.firstNode.hasPortAny()) ? '3:1' : '2:1'
                 })
             );
         });
