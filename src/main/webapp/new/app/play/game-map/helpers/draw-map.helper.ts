@@ -12,21 +12,11 @@ const ISOMETRIC_RATIO =  Math.tan(Math.PI / 6);
 export class DrawMapHelper {
 
     getFirstHexOfNode(node: Node) {
-        for (let k in node.hexes) {
-            if (node.hexes[k]) {
-                return node.hexes[k];
-            }
-        }
-        return null;
+        return node.getFirstHex();
     }
 
     getFirstHexOfEdge(edge: Edge) {
-        for (let k in edge.hexes) {
-            if (edge.hexes[k]) {
-                return edge.hexes[k];
-            }
-        }
-        return null;
+        return edge.getFirstHex();
     }
 
     getObjectPosition(where: any, what: any) {
@@ -130,7 +120,9 @@ export class DrawMapHelper {
     }
 
     getPortPairs(nodes: Node[]) {
-        let portNodes = nodes.filter(node => node.hasPort());
+        let portNodes = nodes
+            .filter(node => node.hasPort())
+            .sort((a, b) => (a.gridY === b.gridY) ? b.gridX - a.gridX : b.gridY - a.gridY);
         let pairs: NodesPair[] = <NodesPair[]>[];
 
         while (portNodes.length) {

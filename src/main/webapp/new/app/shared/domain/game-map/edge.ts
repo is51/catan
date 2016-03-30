@@ -71,6 +71,15 @@ export class Edge {
         return this.orientation === EdgeOrientation.VERTICAL;
     }
 
+    getFirstHex() {
+        for (let k in this.hexes) {
+            if (this.hexes[k]) {
+                return this.hexes[k];
+            }
+        }
+        return null;
+    }
+
     //TODO: try to replace with Subscribable
     onUpdate(onUpdate: Function) {
         this._onUpdate = onUpdate;

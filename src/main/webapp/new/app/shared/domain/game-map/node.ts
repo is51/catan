@@ -16,6 +16,10 @@ export class Node {
 
     building: NodeBuilding;
 
+
+    gridX: number;
+    gridY: number;
+
     private _onUpdate: Function;
 
     constructor(params) {
@@ -53,6 +57,30 @@ export class Node {
             let newKey = i.slice(0, -2);
             this.hexes[newKey] = hexes.filter(hex => hex.id === this.hexesIds[i])[0];
         }
+
+        this._calculateGridCoords();
+    }
+
+    private _calculateGridCoords() {
+        let hex = this.getFirstHex();
+        let x = hex.x;
+        let y = hex.y;
+        let position = this.getPosition(hex);
+
+        if (position === 'topLeft' || position === 'top' || position === 'topRight') {
+            y = y - 0.5;
+        } else {
+            y = y + 0.5;
+        }
+
+        if (position === 'topLeft' || position === 'bottomLeft') {
+            x = x - 0.5;
+        } else if (position === 'topRight' || position === 'bottomRight') {
+            x = x + 0.5;
+        }
+
+        this.gridX = x;
+        this.gridY = y;
     }
 
     update(params) {
@@ -102,6 +130,23 @@ export class Node {
             }
         }
         return false;
+    }
+
+    getFirstHex() {
+        for (let k in this.hexes) {
+            if (this.hexes[k]) {
+                return this.hexes[k];
+            }
+        }
+        return null;
+    }
+
+    getPosition(hex: Hex) {
+        for (let k in hex.nodes) {
+            if (hex.nodes[k] === this) {
+                return k;
+            }
+        }
     }
 
     //TODO: try to replace with Subscribable
