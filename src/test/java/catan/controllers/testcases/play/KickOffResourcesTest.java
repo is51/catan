@@ -42,6 +42,7 @@ public class KickOffResourcesTest extends PlayTestUtil {
     private RandomUtil randomUtil;
 
     private Scenario scenario;
+    public static final String NOTIFY_MESSAGE_KICK_OFF_RESOURCES = "You are robbed!";
 
     @Before
     public void setup() {
@@ -82,10 +83,10 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(2)
-                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(3)
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
@@ -99,7 +100,7 @@ public class KickOffResourcesTest extends PlayTestUtil {
                     .gameUser(1).resourcesQuantityChangedBy(-2, -3, 0, 0, -2)
 
                 .getGameDetails(2)
-                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                     .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .getGameDetails(3)
@@ -130,10 +131,10 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES")
+                .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(2)
-                .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(3)
                 .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
@@ -143,11 +144,11 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                     .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .getGameDetails(2)
-                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                     .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .getGameDetails(3)
@@ -163,10 +164,10 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(2)
-                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(3)
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
@@ -176,11 +177,11 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                     .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .getGameDetails(2)
-                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                     .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .getGameDetails(3)
@@ -196,10 +197,10 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES")
+                .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(2)
-                .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
 
                 .getGameDetails(3)
                 .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
@@ -209,11 +210,11 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
-                .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES")
+                .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .getGameDetails(2)
-                .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES")
+                .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                 .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
 
                 .getGameDetails(3)

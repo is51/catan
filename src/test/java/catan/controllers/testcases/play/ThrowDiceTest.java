@@ -43,6 +43,7 @@ public class ThrowDiceTest extends PlayTestUtil {
     private RandomUtil randomUtil;
 
     private Scenario scenario;
+    public static final String NOTIFY_MESSAGE_THROW_DICE = "Your turn!";
 
     @Before
     public void setup() {
@@ -62,7 +63,7 @@ public class ThrowDiceTest extends PlayTestUtil {
 
         playPreparationStage()
                 .getGameDetails(1)
-                .gameUser(1).hasAvailableAction("THROW_DICE")
+                .gameUser(1).hasAvailableAction("THROW_DICE").withNotification(NOTIFY_MESSAGE_THROW_DICE)
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1).successfully()
                 .getGameDetails(1)
@@ -70,7 +71,7 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .END_TURN(1)
 
                 .getGameDetails(2)
-                .gameUser(2).hasAvailableAction("THROW_DICE")
+                .gameUser(2).hasAvailableAction("THROW_DICE").withNotification(NOTIFY_MESSAGE_THROW_DICE)
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(2).successfully()
                 .getGameDetails(2)
