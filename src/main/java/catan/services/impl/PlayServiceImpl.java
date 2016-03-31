@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service("playService")
 @Transactional
@@ -64,6 +66,8 @@ public class PlayServiceImpl implements PlayService {
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
 
+    private ConcurrentMap<Long, Long> locks = new ConcurrentHashMap<Long, Long>();
+
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId) throws PlayException, GameException {
         return processAction(action, user, gameId, new HashMap<String, String>());
@@ -75,27 +79,30 @@ public class PlayServiceImpl implements PlayService {
         Map<String, String> returnedParams = new HashMap<String, String>();
 
         validateUserNotEmpty(user);
+        validateGameIdNotEmpty(gameId);
 
-        GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
-        GameUserBean gameUser = gameUtil.getGameUserJoinedToGame(user, game);
+        synchronized (getGameIdSyncObject(Long.parseLong(gameId))) {
+            GameBean game = gameUtil.getGameById(gameId, ERROR_CODE_ERROR);
+            GameUserBean gameUser = gameUtil.getGameUserJoinedToGame(user, game);
 
-        try {
-            validateGameStatusIsPlaying(game);
-            validateActionIsAllowedForUser(gameUser, action);
+            try {
+                validateGameStatusIsPlaying(game);
+                validateActionIsAllowedForUser(gameUser, action);
 
-            doAction(action, gameUser, game, params, returnedParams);
+                doAction(action, gameUser, game, params, returnedParams);
 
-            playUtil.updateAchievements(game);
-            playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
-            playUtil.updateAvailableActionsForAllUsers(game);
+                playUtil.updateAchievements(game);
+                playUtil.finishGameIfTargetVictoryPointsReached(gameUser, game);
+                playUtil.updateAvailableActionsForAllUsers(game);
 
-            gameDao.updateGame(game);
+                gameDao.updateGame(game);
 
-        } finally {
-            log.debug("Finish process action {} by {}", action, gameUser);
+            } finally {
+                log.debug("Finish process action {} by {}", action, gameUser);
+            }
+
+            return returnedParams;
         }
-
-        return returnedParams;
     }
 
     private void doAction(GameUserActionCode action, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
@@ -702,6 +709,14 @@ public class PlayServiceImpl implements PlayService {
         return diceFirstValue + diceSecondValue == 7;
     }
 
+
+    private void validateGameIdNotEmpty(String gameId) throws GameException {
+        if (gameId == null || gameId.trim().length() == 0) {
+            log.error("Cannot get game with empty gameId");
+            throw new GameException(ERROR_CODE_ERROR);
+        }
+    }
+
     private void validateUserNotEmpty(UserBean user) throws PlayException {
         if (user == null) {
             log.debug("User should not be empty");
@@ -735,6 +750,12 @@ public class PlayServiceImpl implements PlayService {
             log.debug("Required action {} is not allowed for {}", requiredAction.name(), gameUser);
             throw new PlayException(ERROR_CODE_ERROR);
         }
+    }
+
+    private Object getGameIdSyncObject(final Long id) {
+        locks.putIfAbsent(id, id);
+
+        return locks.get(id);
     }
 
     @Autowired

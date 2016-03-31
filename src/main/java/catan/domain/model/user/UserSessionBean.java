@@ -13,7 +13,7 @@ import javax.persistence.UniqueConstraint;
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Entity
-@Table(name = "USER_SESSION", uniqueConstraints = {@UniqueConstraint(columnNames = "TOKEN")})
+@Table(name = "CT_USER_SESSION", uniqueConstraints = {@UniqueConstraint(columnNames = "TOKEN")})
 public class UserSessionBean {
 
     @Id
