@@ -23,11 +23,102 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
     }
 
     @Override
+    public void refreshGameBean(GameBean gameBean){
+        getSession().refresh(gameBean);
+    }
+
+    @Override
+    public void updateGame(GameBean game) {
+        update(game);
+
+        getSession().flush();
+        getSession().clear();
+    }
+
+    @Override
+    public void updateGameUser(GameUserBean gameUserBean) {
+        persist(gameUserBean);
+
+        getSession().flush();
+        getSession().clear();
+    }
+
+    @Override
     public GameBean getGameByGameId(int gameId) {
         Criteria criteria = getSession().createCriteria(GameBean.class);
         criteria.add(Restrictions.eq("gameId", gameId));
 
         GameBean game = (GameBean) criteria.uniqueResult();
+
+        return withMapElementsLinks(game);
+    }
+
+
+    @Override
+    public GameBean getGameByPrivateCode(String privateCode) {
+        Criteria criteria = getSession().createCriteria(GameBean.class);
+        criteria.add(Restrictions.eq("privateCode", privateCode));
+
+        GameBean game = (GameBean) criteria.uniqueResult();
+
+        return withMapElementsLinks(game);
+    }
+
+    @Override
+    public List<GameBean> getGamesByCreatorId(int creatorId) {
+        Query query = getSession().createQuery(
+                "SELECT game " +
+                        "FROM " + GameBean.class.getSimpleName() + " AS game " +
+                        "WHERE game.creator.id in (" +
+                        "SELECT user.id " +
+                        "FROM " + UserBean.class.getName() + " AS user " +
+                        "WHERE user.id = :creatorId)");
+        query.setInteger("creatorId", creatorId);
+
+        //TODO: mapElementsLinks are not populated
+        //noinspection unchecked
+        return (List<GameBean>) query.list();
+    }
+
+    @Override
+    public List<GameBean> getGamesWithJoinedUser(int userId) {
+        Query query = getSession().createQuery(
+                "SELECT game " +
+                "FROM " + GameBean.class.getSimpleName() + " AS game " +
+                    "LEFT JOIN game.gameUsers as gameUser " +
+                "WHERE gameUser.user.id = :userId)");
+        query.setInteger("userId", userId);
+
+        //TODO: mapElementsLinks are not populated
+        //noinspection unchecked
+        return (List<GameBean>) query.list();
+    }
+
+    @Override
+    public List<GameBean> getAllNewPublicGames() {
+        Criteria criteria = getSession().createCriteria(GameBean.class);
+        criteria.add(Restrictions.eq("privateGame", false));
+        criteria.add(Restrictions.eq("status", GameStatus.NEW));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        //TODO: mapElementsLinks are not populated
+        //noinspection unchecked
+        return (List<GameBean>) criteria.list();
+    }
+
+    @Override
+    public List<String> getUsedActiveGamePrivateCodes() {
+        Query query = getSession().createQuery(
+                "SELECT game.privateCode " +
+                        "FROM " + GameBean.class.getSimpleName() + " AS game " +
+                        "WHERE game.status = '" + GameStatus.NEW.name() + "' AND game.privateGame = TRUE");
+
+
+        //noinspection unchecked
+        return (List<String>) query.list();
+    }
+
+    private GameBean withMapElementsLinks(GameBean game) {
         if(game == null){
             return null;
         }
@@ -76,85 +167,4 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
 
         return game;
     }
-
-    @Override
-    public GameBean getGameByPrivateCode(String privateCode) {
-        Criteria criteria = getSession().createCriteria(GameBean.class);
-        criteria.add(Restrictions.eq("privateCode", privateCode));
-
-        return (GameBean) criteria.uniqueResult();
-    }
-
-    @Override
-    public void refreshGameBean(GameBean gameBean){
-        getSession().refresh(gameBean);
-    }
-
-    @Override
-    public List<GameBean> getGamesByCreatorId(int creatorId) {
-        Query query = getSession().createQuery(
-                "SELECT game " +
-                        "FROM " + GameBean.class.getSimpleName() + " AS game " +
-                        "WHERE game.creator.id in (" +
-                        "SELECT user.id " +
-                        "FROM " + UserBean.class.getName() + " AS user " +
-                        "WHERE user.id = :creatorId)");
-        query.setInteger("creatorId", creatorId);
-
-        //noinspection unchecked
-        return (List<GameBean>) query.list();
-    }
-
-    @Override
-    public List<GameBean> getGamesWithJoinedUser(int userId) {
-        Query query = getSession().createQuery(
-                "SELECT game " +
-                "FROM " + GameBean.class.getSimpleName() + " AS game " +
-                    "LEFT JOIN game.gameUsers as gameUser " +
-                "WHERE gameUser.user.id = :userId)");
-        query.setInteger("userId", userId);
-
-        //noinspection unchecked
-        return (List<GameBean>) query.list();
-    }
-
-    @Override
-    public List<GameBean> getAllNewPublicGames() {
-        Criteria criteria = getSession().createCriteria(GameBean.class);
-        criteria.add(Restrictions.eq("privateGame", false));
-        criteria.add(Restrictions.eq("status", GameStatus.NEW));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-
-        //noinspection unchecked
-        return (List<GameBean>) criteria.list();
-    }
-
-    @Override
-    public List<String> getUsedActiveGamePrivateCodes() {
-        Query query = getSession().createQuery(
-                "SELECT game.privateCode " +
-                        "FROM " + GameBean.class.getSimpleName() + " AS game " +
-                        "WHERE game.status = '" + GameStatus.NEW.name() + "' AND game.privateGame = TRUE");
-
-
-        //noinspection unchecked
-        return (List<String>) query.list();
-    }
-
-    @Override
-    public void updateGame(GameBean game) {
-        update(game);
-
-        getSession().flush();
-        getSession().clear();
-    }
-
-    @Override
-    public void updateGameUser(GameUserBean gameUserBean) {
-        persist(gameUserBean);
-
-        getSession().flush();
-        getSession().clear();
-    }
-
 }
