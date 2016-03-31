@@ -63,7 +63,7 @@ export class Node {
 
     private _calculateGridCoords() {
         let hex = this.getFirstHex();
-        let x = hex.x;
+        let x = hex.x + hex.y / 2;
         let y = hex.y;
         let position = this.getPosition(hex);
 
