@@ -2,7 +2,7 @@ import { Injectable } from 'angular2/core';
 import { BrowserDomAdapter } from "angular2/src/platform/browser/browser_adapter";
 
 import { DrawMapHelper } from '../helpers/draw-map.helper';
-import { MapTemplatesService } from '../services/map-templates.service';
+import { TemplatesService } from 'app/play/shared/services/templates.service';
 
 import { Game } from 'app/shared/domain/game';
 import { GameMap } from 'app/shared/domain/game-map/game-map';
@@ -14,7 +14,7 @@ import { Point } from 'app/shared/domain/game-map/point';
 const NS = 'http://www.w3.org/2000/svg';
 const HEX_WIDTH = 50;
 const HEX_HEIGHT = 25;
-const PORT_DISTANCE = 9;
+const PORT_DISTANCE = 18;
 
 const PORT_COLORS = {
     brick: '#43a8d9',
@@ -81,7 +81,7 @@ export class DrawMapService {
     NS: string = NS;
 
     constructor(
-        private _templates: MapTemplatesService,
+        private _templates: TemplatesService,
         private _helper: DrawMapHelper,
         private _dom: BrowserDomAdapter) {}
 
@@ -95,6 +95,8 @@ export class DrawMapService {
             yMin: null,
             yMax: null
         };
+
+        this.drawPorts(canvas, map);
 
         map.hexes.forEach(hex => {
             let coords = this._helper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
@@ -227,17 +229,13 @@ export class DrawMapService {
             let colorId = game.getPlayer(node.building.ownerPlayerId).colorId;
 
             if (node.hasSettlement()) {
-                this.drawSettlement(group, <Point>{x: 0, y: 0}, colorId);
+                this.drawSettlement(group, new Point(0, 0), colorId);
             }
             if (node.hasCity()) {
-                this.drawCity(group, <Point>{x: 0, y: 0}, colorId);
+                this.drawCity(group, new Point(0, 0), colorId);
             }
         } else {
-            this.drawEmptyNode(group, <Point>{x: 0, y: 0});
-        }
-
-        if (node.hasPort()) {
-            this.drawPort(canvas, coords, this._helper.getPortOffset(node, PORT_DISTANCE), node.getPortToString());
+            this.drawEmptyNode(group, new Point(0, 0));
         }
 
         node.onUpdate(() => this.updateNode(group, game, node));
@@ -254,13 +252,13 @@ export class DrawMapService {
             let colorId = game.getPlayer(node.building.ownerPlayerId).colorId;
 
             if (node.hasSettlement()) {
-                this.drawSettlement(element, <Point>{x: 0, y: 0}, colorId);
+                this.drawSettlement(element, new Point(0, 0), colorId);
             }
             if (node.hasCity()) {
-                this.drawCity(element, <Point>{x: 0, y: 0}, colorId);
+                this.drawCity(element, new Point(0, 0), colorId);
             }
         } else {
-            this.drawEmptyNode(element, <Point>{x: 0, y: 0});
+            this.drawEmptyNode(element, new Point(0, 0));
         }
     }
 
@@ -297,22 +295,6 @@ export class DrawMapService {
         );
     }
 
-    drawPort(canvas: Element, nodeCoords: Point, offset: Point, portTypeString: string) {
-        let finalCoords = <Point>{
-            x: nodeCoords.x + offset.x,
-            y: nodeCoords.y + offset.y
-        };
-
-        let group = this._dom.createElementNS(NS, 'g');
-        this._dom.setAttribute(group, 'transform', 'translate(' + finalCoords.x + ',' + finalCoords.y + ')');
-        this._dom.setAttribute(group, 'class', 'port');
-        this._dom.appendChild(canvas, group);
-
-        this._dom.setInnerHTML(group,
-            this._templates.get('port', {color: PORT_COLORS[portTypeString.toLowerCase()]})
-        );
-    }
-
     drawEdge(canvas: Element, game: Game, coords: Point, edge: Edge) {
         let group = this._dom.createElementNS(NS, 'g');
         this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
@@ -322,9 +304,9 @@ export class DrawMapService {
 
         if (edge.building) {
             let colorId = game.getPlayer(edge.building.ownerPlayerId).colorId;
-            this.drawRoad(group, <Point>{x: 0, y: 0}, edge.orientation, colorId);
+            this.drawRoad(group, new Point(0, 0), edge.orientation, colorId);
         } else {
-            this.drawEmptyEdge(group, <Point>{x: 0, y: 0}, edge.orientation);
+            this.drawEmptyEdge(group, new Point(0, 0), edge.orientation);
         }
 
         edge.onUpdate(() => this.updateEdge(group, game, edge));
@@ -339,9 +321,9 @@ export class DrawMapService {
 
         if (edge.building) {
             let colorId = game.getPlayer(edge.building.ownerPlayerId).colorId;
-            this.drawRoad(element, <Point>{x: 0, y: 0}, edge.orientation, colorId);
+            this.drawRoad(element, new Point(0, 0), edge.orientation, colorId);
         } else {
-            this.drawEmptyEdge(element, <Point>{x: 0, y: 0}, edge.orientation);
+            this.drawEmptyEdge(element, new Point(0, 0), edge.orientation);
         }
     }
 
@@ -370,6 +352,44 @@ export class DrawMapService {
         } else {
             this._dom.setInnerHTML(group, this._templates.get('road-horizontal', {color: ROAD_COLORS[colorId]}));
         }
+    }
+
+    drawPorts(canvas: Element, map: GameMap) {
+        let portPairs = this._helper.getPortPairs(map.nodes);
+
+        portPairs.forEach(pair => {
+
+            let node1Coords = this._helper.getNodeCoords(pair.firstNode, HEX_WIDTH, HEX_HEIGHT);
+            let node1PortOffset = this._helper.getPortOffset(pair.firstNode, PORT_DISTANCE);
+            let node1PortCoords =  node1Coords.plus(node1PortOffset);
+
+            let node2Coords = this._helper.getNodeCoords(pair.secondNode, HEX_WIDTH, HEX_HEIGHT);
+            let node2PortOffset = this._helper.getPortOffset(pair.secondNode, PORT_DISTANCE);
+            let node2PortCoords =  node2Coords.plus(node2PortOffset);
+
+            let coords = node1PortCoords.average(node2PortCoords);
+
+            let node1OffsetBack = node1Coords.minus(coords);
+            let node2OffsetBack = node2Coords.minus(coords);
+
+            let portTemplateName = (pair.edge.isVertical()) ? 'port-vertical' : 'port-horizontal';
+
+            let resourceIconTemplate = this._templates.get('icon-' + pair.firstNode.getPortToString().toLowerCase());
+
+            let group = this._dom.createElementNS(NS, 'g');
+            this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
+            this._dom.appendChild(canvas, group);
+            this._dom.setInnerHTML(group,
+                this._templates.get(portTemplateName, {
+                    x1: node1OffsetBack.x,
+                    x2: node2OffsetBack.x,
+                    y1: node1OffsetBack.y,
+                    y2: node2OffsetBack.y,
+                    icon: resourceIconTemplate,
+                    iconLabel: (pair.firstNode.hasPortAny()) ? '3:1' : '2:1'
+                })
+            );
+        });
     }
 
 }
