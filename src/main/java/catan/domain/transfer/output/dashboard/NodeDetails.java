@@ -16,7 +16,7 @@ public class NodeDetails {
     }
 
     public NodeDetails(NodeBean node) {
-        this.nodeId = node.getId();
+        this.nodeId = node.getAbsoluteId();
         this.port = node.getPort().name();
         this.orientation = node.getOrientation().name();
         this.building = node.getBuilding() != null ? new BuildingDetails(node.getBuilding()) : null;

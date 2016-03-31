@@ -67,7 +67,7 @@ public class BuildUtil {
 
         MapElement mapElementToBuildOn = null;
         for (MapElement mapElement : mapElements) {
-            if (mapElement.getId() == mapElementId) {
+            if (mapElement.getAbsoluteId() == mapElementId) {
                 mapElementToBuildOn = mapElement;
             }
         }

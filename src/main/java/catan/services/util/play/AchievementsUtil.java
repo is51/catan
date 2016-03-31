@@ -47,27 +47,27 @@ public class AchievementsUtil {
         return null;
     }
 
-    private int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeIds, List<Integer> checkedNodeIds, EdgeBean edge, int currMaxWayLength) {
-        int edgeId = edge.getId();
-        if (checkedEdgeIds.contains(edgeId) || edgeDoesNotContainGameUsersRoad(gameUser, edge)) {
+    private int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeAbsoluteIds, List<Integer> checkedNodeAbsoluteIds, EdgeBean edge, int currMaxWayLength) {
+        int edgeAbsoluteId = edge.getAbsoluteId();
+        if (checkedEdgeAbsoluteIds.contains(edgeAbsoluteId) || edgeDoesNotContainGameUsersRoad(gameUser, edge)) {
             return lastMaxWayLength;
         }
 
-        checkedEdgeIds.add(edgeId);
+        checkedEdgeAbsoluteIds.add(edgeAbsoluteId);
         currMaxWayLength++;
         for (NodeBean node : edge.getNodes().listAllNotNullItems()) {
-            int nodeId = node.getId();
-            if (checkedNodeIds.contains(nodeId) || nodeContainsOpponentsBuilding(gameUser, node)) {
+            int nodeAbsoluteId = node.getAbsoluteId();
+            if (checkedNodeAbsoluteIds.contains(nodeAbsoluteId) || nodeContainsOpponentsBuilding(gameUser, node)) {
                 continue;
             }
 
-            checkedNodeIds.add(nodeId);
+            checkedNodeAbsoluteIds.add(nodeAbsoluteId);
             for (EdgeBean nextEdge : node.getEdges().listAllNotNullItems()) {
-                lastMaxWayLength = calculateMaxWayLength(gameUser, lastMaxWayLength, checkedEdgeIds, checkedNodeIds, nextEdge, currMaxWayLength);
+                lastMaxWayLength = calculateMaxWayLength(gameUser, lastMaxWayLength, checkedEdgeAbsoluteIds, checkedNodeAbsoluteIds, nextEdge, currMaxWayLength);
             }
-            checkedNodeIds.remove(new Integer(nodeId));
+            checkedNodeAbsoluteIds.remove(new Integer(nodeAbsoluteId));
         }
-        checkedEdgeIds.remove(new Integer(edgeId));
+        checkedEdgeAbsoluteIds.remove(new Integer(edgeAbsoluteId));
 
         return currMaxWayLength > lastMaxWayLength
                 ? currMaxWayLength

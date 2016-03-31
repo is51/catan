@@ -4,7 +4,7 @@ import catan.domain.model.game.GameBean;
 
 public interface MapElement {
 
-    int getId();
+    Integer getAbsoluteId();
 
     GameBean getGame();
 }

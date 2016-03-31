@@ -28,7 +28,7 @@ public class GameDetails {
     public GameDetails() {
     }
 
-    public GameDetails(GameBean game, int detailsRequesterId) {
+    public GameDetails(GameBean game, int detailsRequesterId, boolean populateMapDetails) {
         this.gameId = game.getGameId();
         this.creatorId = game.getCreator().getId();
         this.privateGame = game.isPrivateGame();
@@ -50,7 +50,10 @@ public class GameDetails {
         this.dice = game.isDiceThrown() == null
                 ? null
                 : new DiceDetails(game.isDiceThrown(), game.calculateDiceSumValue(), game.getDiceFirstValue(), game.getDiceSecondValue());
-        this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
+
+        if (populateMapDetails) {
+            this.map = new MapDetails(game.getEdgeDetails(), game.getHexDetails(), game.getNodeDetails());
+        }
     }
 
     public int getGameId() {

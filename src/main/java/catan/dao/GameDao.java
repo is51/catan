@@ -8,11 +8,15 @@ import java.util.List;
 public interface GameDao {
     void addNewGame(GameBean newGame);
 
+    void refreshGameBean(GameBean gameBean);
+
+    void updateGame(GameBean game);
+
+    void updateGameUser(GameUserBean gameUserBean);
+
     GameBean getGameByGameId(int gameId);
 
     GameBean getGameByPrivateCode(String privateCode);
-
-    void refreshGameBean(GameBean gameBean);
 
     List<GameBean> getGamesByCreatorId(int creatorId);
 
@@ -21,8 +25,4 @@ public interface GameDao {
     List<GameBean> getAllNewPublicGames();
 
     List<String> getUsedActiveGamePrivateCodes();
-
-    void updateGame(GameBean game);
-
-    void updateGameUser(GameUserBean gameUserBean);
 }
