@@ -45,7 +45,10 @@ export class Game {
 
         this.players = params.gameUsers.map(playerParams => new Player(playerParams));
         this.dice = new Dice(params.dice);
-        this.map = new GameMap(params.map);
+
+        if (params.map) {
+            this.map = new GameMap(params.map);
+        }
     }
 
     update(params) {
@@ -82,7 +85,16 @@ export class Game {
         }
 
         this.dice.update(params.dice);
-        this.map.update(params.map);
+
+        if (params.map) {
+            if (this.map) {
+                this.map.update(params.map);
+            } else {
+                this.map = new GameMap(params.map);
+            }
+        } else {
+            this.map = null;
+        }
 
 
 
