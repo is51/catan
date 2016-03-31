@@ -74,24 +74,6 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
             hex.getNodes().getBottomLeft().getEdges().setTop(hex.getEdges().getLeft());
         }
 
-        game.getEdges().clear();
-        game.getNodes().clear();
-        for (HexBean hex : game.getHexes()) {
-            game.getEdges().add(hex.getEdges().getTopLeft());
-            game.getEdges().add(hex.getEdges().getTopRight());
-            game.getEdges().add(hex.getEdges().getRight());
-            game.getEdges().add(hex.getEdges().getBottomRight());
-            game.getEdges().add(hex.getEdges().getBottomLeft());
-            game.getEdges().add(hex.getEdges().getLeft());
-
-            game.getNodes().add(hex.getNodes().getTopLeft());
-            game.getNodes().add(hex.getNodes().getTop());
-            game.getNodes().add(hex.getNodes().getTopRight());
-            game.getNodes().add(hex.getNodes().getBottomRight());
-            game.getNodes().add(hex.getNodes().getBottom());
-            game.getNodes().add(hex.getNodes().getBottomLeft());
-        }
-
         return game;
     }
 

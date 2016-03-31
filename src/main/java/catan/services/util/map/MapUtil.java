@@ -31,6 +31,9 @@ import static java.util.Arrays.asList;
 @Component
 public class MapUtil {
     private RandomUtil randomUtil;
+    private int hexAbsoluteIdSequence;
+    private int nodeAbsoluteIdSequence;
+    private int edgeAbsoluteIdSequence;
 
     public void generateNewRoundGameMap(GameBean game, int size) {
         Map<Coordinates, HexBean> tempCoordinatesToHexMap = new HashMap<Coordinates, HexBean>();
@@ -51,6 +54,10 @@ public class MapUtil {
                 WHEAT, WHEAT, WHEAT, WHEAT,
                 BRICK, BRICK, BRICK,
                 STONE, STONE, STONE));
+
+        hexAbsoluteIdSequence = 1;
+        nodeAbsoluteIdSequence = 1;
+        edgeAbsoluteIdSequence = 1;
 
         for (int x = -size; x <= size; x++) {
             for (int y = -size; y <= size; y++) {
@@ -113,7 +120,7 @@ public class MapUtil {
                            Integer diceNumber,
                            boolean robbed) {
         Coordinates coordinates = new Coordinates(x, y);
-        HexBean hex = new HexBean(game, coordinates, hexType, diceNumber, robbed);
+        HexBean hex = new HexBean(hexAbsoluteIdSequence++, game, coordinates, hexType, diceNumber, robbed);
 
         for (NodePosition position : NodePosition.values()) {
             createNodeAtPosition(tempCoordinatesToHexMap, hex, position);
@@ -139,7 +146,7 @@ public class MapUtil {
 
         //If neighbour hex is not defined yet, or doesn't exists in map, create a new node
         if (node == null) {
-            node = new NodeBean(hex.getGame(), NodePortType.NONE);
+            node = new NodeBean(nodeAbsoluteIdSequence++, hex.getGame(), NodePortType.NONE);
         }
 
         //Populate relationship between node and hex and set orientation of node
@@ -188,7 +195,7 @@ public class MapUtil {
 
         //If RIGHT neighbour hex of node is not defined yet, or doesn't exists in map, create a new edge
         if (edge == null) {
-            edge = new EdgeBean(innerHex.getGame());
+            edge = new EdgeBean(edgeAbsoluteIdSequence++, innerHex.getGame());
         }
 
         //Populate relationship between edge, node and hex and set orientation of edge and port to appropriate node
