@@ -2,6 +2,7 @@ package catan.dao.impl;
 
 import catan.dao.AbstractDao;
 import catan.dao.GameDao;
+import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStatus;
@@ -26,7 +27,72 @@ public class GameDaoImpl extends AbstractDao implements GameDao {
         Criteria criteria = getSession().createCriteria(GameBean.class);
         criteria.add(Restrictions.eq("gameId", gameId));
 
-        return (GameBean) criteria.uniqueResult();
+        GameBean game = (GameBean) criteria.uniqueResult();
+        if(game == null){
+            return null;
+        }
+
+        for (HexBean hex : game.getHexes()) {
+            hex.getEdges().getTopLeft().getHexes().setBottomRight(hex);
+            hex.getEdges().getTopRight().getHexes().setBottomLeft(hex);
+            hex.getEdges().getRight().getHexes().setLeft(hex);
+            hex.getEdges().getBottomRight().getHexes().setTopLeft(hex);
+            hex.getEdges().getBottomLeft().getHexes().setTopRight(hex);
+            hex.getEdges().getLeft().getHexes().setRight(hex);
+
+            hex.getEdges().getTopLeft().getNodes().setBottomLeft(hex.getNodes().getTopLeft());
+            hex.getEdges().getTopLeft().getNodes().setTopRight(hex.getNodes().getTop());
+            hex.getEdges().getTopRight().getNodes().setTopLeft(hex.getNodes().getTop());
+            hex.getEdges().getTopRight().getNodes().setBottomRight(hex.getNodes().getTopRight());
+            hex.getEdges().getRight().getNodes().setTop(hex.getNodes().getTopRight());
+            hex.getEdges().getRight().getNodes().setBottom(hex.getNodes().getBottomRight());
+            hex.getEdges().getBottomRight().getNodes().setTopRight(hex.getNodes().getBottomRight());
+            hex.getEdges().getBottomRight().getNodes().setBottomLeft(hex.getNodes().getBottom());
+            hex.getEdges().getBottomLeft().getNodes().setBottomRight(hex.getNodes().getBottom());
+            hex.getEdges().getBottomLeft().getNodes().setTopLeft(hex.getNodes().getBottomLeft());
+            hex.getEdges().getLeft().getNodes().setBottom(hex.getNodes().getBottomLeft());
+            hex.getEdges().getLeft().getNodes().setTop(hex.getNodes().getTopLeft());
+
+            hex.getNodes().getTopLeft().getHexes().setBottomRight(hex);
+            hex.getNodes().getTop().getHexes().setBottom(hex);
+            hex.getNodes().getTopRight().getHexes().setBottomLeft(hex);
+            hex.getNodes().getBottomRight().getHexes().setTopLeft(hex);
+            hex.getNodes().getBottom().getHexes().setTop(hex);
+            hex.getNodes().getBottomLeft().getHexes().setTopRight(hex);
+
+            hex.getNodes().getTopLeft().getEdges().setBottom(hex.getEdges().getLeft());
+            hex.getNodes().getTopLeft().getEdges().setTopRight(hex.getEdges().getTopLeft());
+            hex.getNodes().getTop().getEdges().setBottomLeft(hex.getEdges().getTopLeft());
+            hex.getNodes().getTop().getEdges().setBottomRight(hex.getEdges().getTopRight());
+            hex.getNodes().getTopRight().getEdges().setTopLeft(hex.getEdges().getTopRight());
+            hex.getNodes().getTopRight().getEdges().setBottom(hex.getEdges().getRight());
+            hex.getNodes().getBottomRight().getEdges().setTop(hex.getEdges().getRight());
+            hex.getNodes().getBottomRight().getEdges().setBottomLeft(hex.getEdges().getBottomRight());
+            hex.getNodes().getBottom().getEdges().setTopRight(hex.getEdges().getBottomRight());
+            hex.getNodes().getBottom().getEdges().setTopLeft(hex.getEdges().getBottomLeft());
+            hex.getNodes().getBottomLeft().getEdges().setBottomRight(hex.getEdges().getBottomLeft());
+            hex.getNodes().getBottomLeft().getEdges().setTop(hex.getEdges().getLeft());
+        }
+
+        game.getEdges().clear();
+        game.getNodes().clear();
+        for (HexBean hex : game.getHexes()) {
+            game.getEdges().add(hex.getEdges().getTopLeft());
+            game.getEdges().add(hex.getEdges().getTopRight());
+            game.getEdges().add(hex.getEdges().getRight());
+            game.getEdges().add(hex.getEdges().getBottomRight());
+            game.getEdges().add(hex.getEdges().getBottomLeft());
+            game.getEdges().add(hex.getEdges().getLeft());
+
+            game.getNodes().add(hex.getNodes().getTopLeft());
+            game.getNodes().add(hex.getNodes().getTop());
+            game.getNodes().add(hex.getNodes().getTopRight());
+            game.getNodes().add(hex.getNodes().getBottomRight());
+            game.getNodes().add(hex.getNodes().getBottom());
+            game.getNodes().add(hex.getNodes().getBottomLeft());
+        }
+
+        return game;
     }
 
     @Override

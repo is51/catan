@@ -5,8 +5,6 @@ import catan.domain.model.dashboard.types.EdgeOrientationType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -17,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ public class EdgeBean implements MapElement {
     @Column(name = "ORIENTATION", unique = false, nullable = false)
     private EdgeOrientationType orientation;
 
-    @Embedded
+/*    @Embedded
     @AssociationOverrides({
             @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "HEX_TOP_LEFT")),
             @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "HEX_TOP_RIGHT")),
@@ -46,10 +45,11 @@ public class EdgeBean implements MapElement {
             @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "HEX_BOTTOM_RIGHT")),
             @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "HEX_BOTTOM_LEFT")),
             @AssociationOverride(name = "left", joinColumns = @JoinColumn(name = "HEX_LEFT"))
-    })
+    })*/
+    @Transient
     private HorizontalLinks<HexBean> hexes = new HorizontalLinks<HexBean>();
 
-    @Embedded
+/*    @Embedded
     @AssociationOverrides({
             @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "NODE_TOP_LEFT")),
             @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "NODE_TOP")),
@@ -57,8 +57,9 @@ public class EdgeBean implements MapElement {
             @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "NODE_BOTTOM_RIGHT")),
             @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "NODE_BOTTOM")),
             @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "NODE_BOTTOM_LEFT"))
-    })
-    private VerticalLinks<NodeBean> nodes = new VerticalLinks<NodeBean>();
+    })*/
+@Transient
+private VerticalLinks<NodeBean> nodes = new VerticalLinks<NodeBean>();
 
     public EdgeBean() {
     }
