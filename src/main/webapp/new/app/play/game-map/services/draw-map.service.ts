@@ -238,10 +238,6 @@ export class DrawMapService {
             this.drawEmptyNode(group, new Point(0, 0));
         }
 
-        /*if (node.hasPort()) {
-            this.drawPort(canvas, coords, this._helper.getPortOffset(node, PORT_DISTANCE), node.getPortToString());
-        }*/
-
         node.onUpdate(() => this.updateNode(group, game, node));
     }
 
@@ -298,19 +294,6 @@ export class DrawMapService {
             this._templates.get('city', {color: BUILDING_COLORS[colorId]})
         );
     }
-
-    /*drawPort(canvas: Element, nodeCoords: Point, offset: Point, portTypeString: string) {
-        let finalCoords = nodeCoords.plus(offset);
-
-        let group = this._dom.createElementNS(NS, 'g');
-        this._dom.setAttribute(group, 'transform', 'translate(' + finalCoords.x + ',' + finalCoords.y + ')');
-        this._dom.setAttribute(group, 'class', 'port');
-        this._dom.appendChild(canvas, group);
-
-        this._dom.setInnerHTML(group,
-            this._templates.get('port', {color: PORT_COLORS[portTypeString.toLowerCase()]})
-        );
-    }*/
 
     drawEdge(canvas: Element, game: Game, coords: Point, edge: Edge) {
         let group = this._dom.createElementNS(NS, 'g');

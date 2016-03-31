@@ -129,7 +129,7 @@ export class Node {
                 }
             }
         }
-        return false;
+        return null;
     }
 
     getFirstHex() {

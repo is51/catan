@@ -11,14 +11,6 @@ const ISOMETRIC_RATIO =  Math.tan(Math.PI / 6);
 @Injectable()
 export class DrawMapHelper {
 
-    getFirstHexOfNode(node: Node) {
-        return node.getFirstHex();
-    }
-
-    getFirstHexOfEdge(edge: Edge) {
-        return edge.getFirstHex();
-    }
-
     getObjectPosition(where: any, what: any) {
         for (let k in where) {
             if (where[k] === what) {
@@ -43,7 +35,7 @@ export class DrawMapHelper {
     }
 
     getNodeCoords(node: Node, hexWidth: number, hexHeight: number) {
-        let hex = this.getFirstHexOfNode(node);
+        let hex = node.getFirstHex();
         let position = this.getObjectPosition(hex.nodes, node);
         let hexCoords = this.getHexCoords(hex, hexWidth, hexHeight);
 
@@ -63,7 +55,7 @@ export class DrawMapHelper {
     }
 
     getEdgeCoords(edge: Edge, hexWidth: number, hexHeight: number) {
-        let hex = this.getFirstHexOfEdge(edge);
+        let hex = edge.getFirstHex();
         let position = this.getObjectPosition(hex.edges, edge);
         let hexCoords = this.getHexCoords(hex, hexWidth, hexHeight);
 
