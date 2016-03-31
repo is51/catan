@@ -1,8 +1,10 @@
-import { Component } from 'angular2/core';
+import { Component, OnInit, OnDestroy } from 'angular2/core';
 
 import { PlayService } from './shared/services/play.service';
 import { SelectService } from './shared/services/select.service';
 import { MarkingService } from './shared/services/marking.service';
+import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
+import { NotificationService } from 'app/shared/services/notification/notification.service';
 
 import { Game } from 'app/shared/domain/game';
 
@@ -44,6 +46,29 @@ import { DiceComponent } from './dice/dice.component';
     inputs: ['game']
 })
 
-export class PlayComponent {
+export class PlayComponent implements OnInit, OnDestroy {
     game: Game;
+
+    constructor(
+        private _notification: NotificationService,
+        private _authUser: AuthUserService) { }
+
+    ngOnInit() {
+        let availableActions = this.game.getCurrentPlayer(this._authUser.get()).availableActions;
+
+        availableActions.onUpdate(actions => {
+
+            // Notifications
+            actions.forEach(action => {
+                if (action.notify) {
+                    this._notification.notifyGlobal(action.notifyMessage, action.code);
+                }
+            });
+
+        });
+    }
+
+    ngOnDestroy() {
+        this.game.getCurrentPlayer(this._authUser.get()).availableActions.cancelOnUpdate();
+    }
 }
