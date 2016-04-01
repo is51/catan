@@ -72,9 +72,12 @@ export class PlayComponent implements OnInit, OnDestroy {
             this._checkIfHasNotificationAndNotify(newActions);
             this._checkIfImmediateAndRun();
         });
-        
+
         this._templates.load()
-            .then(() => this.templatesLoaded = true);
+            .then(() => {
+
+                this.templatesLoaded = true;
+            });
     }
 
     ngOnDestroy() {
