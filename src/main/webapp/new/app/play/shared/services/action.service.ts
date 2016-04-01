@@ -45,17 +45,43 @@ export class ActionService {
                     }
                 });
         },
-        'BUILD_SETTLEMENT': () => {
-
+        'BUILD_SETTLEMENT': (game: Game) => {
+            this._play.buildSettlement(game)
+                .then(() => this._gameService.refresh(game))
+                .catch(errorCode => {
+                    if (errorCode === "NO_AVAILABLE_PLACES") {
+                        alert("NO_AVAILABLE_PLACES");
+                    } else if (errorCode !== "CANCELED") {
+                        alert("Build road error!");
+                    }
+                });
         },
-        'BUILD_CITY': () => {
-
+        'BUILD_CITY': (game: Game) => {
+            this._play.buildCity(game)
+                .then(() => this._gameService.refresh(game))
+                .catch(errorCode => {
+                    if (errorCode === "NO_AVAILABLE_PLACES") {
+                        alert("NO_AVAILABLE_PLACES");
+                    } else if (errorCode !== "CANCELED") {
+                        alert("Build road error!");
+                    }
+                });
         },
-        'BUILD_ROAD': () => {
-
+        'BUILD_ROAD': (game: Game) => {
+            this._play.buildRoad(game)
+                .then(() => this._gameService.refresh(game))
+                .catch(errorCode => {
+                    if (errorCode === "NO_AVAILABLE_PLACES") {
+                        alert("NO_AVAILABLE_PLACES");
+                    } else if (errorCode !== "CANCELED") {
+                        alert("Build road error!");
+                    }
+                });
         },
-        'END_TURN': () => {
-
+        'END_TURN': (game: Game) => {
+            this._play.endTurn(game)
+                .then(() => this._gameService.refresh(game))
+                .catch(data => alert('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         }
     };
 

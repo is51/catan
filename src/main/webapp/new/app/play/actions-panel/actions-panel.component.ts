@@ -34,9 +34,7 @@ export class ActionsPanelComponent {
     }
 
     endTurn() {
-        this._play.endTurn(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => alert('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        this._action.run('END_TURN', this.game);
     }
 
     throwDice() {
