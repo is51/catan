@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Rx';
 
 //TODO: defs (filers, gradients) should be loaded separately and only once - on first loading of template
 
-const TEMPLATES_PATH = '/new/resources/map/'; // Depends on #rootpath
+const TEMPLATES_PATH = '/new/resources/templates/'; // Depends on #rootpath
 const TEMPLATES_SUFFIX = '.template.xml';
 const TEMPLATES = [
     'hex-bg',
@@ -16,6 +16,13 @@ const TEMPLATES = [
     'hex-stone',
     'hex-empty',
 
+    'icon-brick',
+    'icon-wood',
+    'icon-sheep',
+    'icon-wheat',
+    'icon-stone',
+    'icon-any',
+
     'robber',
 
     'blank-node',
@@ -23,6 +30,8 @@ const TEMPLATES = [
     'city',
 
     'port',
+    'port-horizontal',
+    'port-vertical',
 
     'road-vertical',
     'road-horizontal',
@@ -31,7 +40,7 @@ const TEMPLATES = [
 ];
 
 @Injectable()
-export class MapTemplatesService {
+export class TemplatesService {
     private _templates: Map<string, string> = new Map<string, string>();
 
     constructor(private _http: Http) { }

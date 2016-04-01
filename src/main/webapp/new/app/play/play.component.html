@@ -1,23 +1,31 @@
-<ct-game-map [game]="game"></ct-game-map>
+<div *ngIf="!templatesLoaded">
+    Templates loading...
+</div>
 
-<ct-resources-panel [game]="game"></ct-resources-panel>
+<div *ngIf="templatesLoaded">
 
-<ct-players-panel [game]="game"></ct-players-panel>
+    <ct-game-map [game]="game"></ct-game-map>
 
-<ct-actions-panel [game]="game"></ct-actions-panel>
+    <ct-resources-panel [game]="game"></ct-resources-panel>
 
-<ct-buy-panel [game]="game"></ct-buy-panel>
+    <ct-players-panel [game]="game"></ct-players-panel>
 
-<ct-cards-panel [game]="game"></ct-cards-panel>
+    <ct-actions-panel [game]="game"></ct-actions-panel>
 
-<ct-dice [game]="game"></ct-dice>
+    <ct-buy-panel [game]="game"></ct-buy-panel>
 
-<ct-trade-panel [game]="game"></ct-trade-panel>
+    <ct-cards-panel [game]="game"></ct-cards-panel>
 
-<ct-trade-reply-panel [game]="game"></ct-trade-reply-panel>
+    <ct-dice [game]="game"></ct-dice>
 
-<ct-kick-off-resources-panel [game]="game"></ct-kick-off-resources-panel>
+    <ct-trade-panel [game]="game"></ct-trade-panel>
 
-<ct-card-year-of-plenty-choose-resources-panel [game]="game"></ct-card-year-of-plenty-choose-resources-panel>
+    <ct-trade-reply-panel [game]="game"></ct-trade-reply-panel>
 
-<ct-card-monopoly-choose-resource-panel [game]="game"></ct-card-monopoly-choose-resource-panel>
+    <ct-kick-off-resources-panel [game]="game"></ct-kick-off-resources-panel>
+
+    <ct-card-year-of-plenty-choose-resources-panel [game]="game"></ct-card-year-of-plenty-choose-resources-panel>
+
+    <ct-card-monopoly-choose-resource-panel [game]="game"></ct-card-monopoly-choose-resource-panel>
+
+</div>
