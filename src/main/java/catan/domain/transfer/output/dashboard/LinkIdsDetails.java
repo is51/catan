@@ -22,21 +22,21 @@ public class LinkIdsDetails {
     }
 
     public LinkIdsDetails(Links mapElements) {
-        this.topLeftId = mapElements.getTopLeft() != null ? ((MapElement) mapElements.getTopLeft()).getId() : null;
-        this.topRightId = mapElements.getTopRight() != null ? ((MapElement) mapElements.getTopRight()).getId() : null;
-        this.bottomRightId = mapElements.getBottomRight() != null ? ((MapElement) mapElements.getBottomRight()).getId() : null;
-        this.bottomLeftId = mapElements.getBottomLeft() != null ? ((MapElement) mapElements.getBottomLeft()).getId() : null;
+        this.topLeftId = mapElements.getTopLeft() != null ? ((MapElement) mapElements.getTopLeft()).getAbsoluteId() : null;
+        this.topRightId = mapElements.getTopRight() != null ? ((MapElement) mapElements.getTopRight()).getAbsoluteId() : null;
+        this.bottomRightId = mapElements.getBottomRight() != null ? ((MapElement) mapElements.getBottomRight()).getAbsoluteId() : null;
+        this.bottomLeftId = mapElements.getBottomLeft() != null ? ((MapElement) mapElements.getBottomLeft()).getAbsoluteId() : null;
 
         if(mapElements instanceof HorizontalLinks){
             HorizontalLinks horizontalElements = (HorizontalLinks) mapElements;
 
-            this.rightId = horizontalElements.getRight() != null ? ((MapElement) horizontalElements.getRight()).getId() : null;
-            this.leftId = horizontalElements.getLeft() != null ? ((MapElement) horizontalElements.getLeft()).getId() : null;
+            this.rightId = horizontalElements.getRight() != null ? ((MapElement) horizontalElements.getRight()).getAbsoluteId() : null;
+            this.leftId = horizontalElements.getLeft() != null ? ((MapElement) horizontalElements.getLeft()).getAbsoluteId() : null;
         } else if(mapElements instanceof VerticalLinks){
             VerticalLinks verticalElements = (VerticalLinks) mapElements;
 
-            this.topId = verticalElements.getTop() != null ? ((MapElement) verticalElements.getTop()).getId() : null;
-            this.bottomId = verticalElements.getBottom() != null ? ((MapElement) verticalElements.getBottom()).getId() : null;
+            this.topId = verticalElements.getTop() != null ? ((MapElement) verticalElements.getTop()).getAbsoluteId() : null;
+            this.bottomId = verticalElements.getBottom() != null ? ((MapElement) verticalElements.getBottom()).getAbsoluteId() : null;
         }
     }
 

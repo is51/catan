@@ -12,7 +12,7 @@ cd src/main/webapp/new
 npm install  || true
 npm run tsc  || true
 cd ../../../../
-mvn clean package -DskipTests
+mvn clean package -DskipTests git-commit-id:revision
 chmod 400 deploy/catan2_private_key.ppk
 scp -vCq -i deploy/catan2_private_key.ppk target/ROOT.war 55fe79942d5271339400003a@catan-1server.rhcloud.com:/var/lib/openshift/55fe79942d5271339400003a/app-root/runtime/dependencies/jbossews/webapps/
 scp -vCq -i deploy/catan2_private_key.ppk target/ROOT-classes.jar 55fe79942d5271339400003a@catan-1server.rhcloud.com:/var/lib/openshift/55fe79942d5271339400003a/app-root/runtime/dependencies/jbossews/webapps/

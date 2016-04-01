@@ -62,7 +62,7 @@ public class GameController {
 
         List<GameDetails> gamesToReturn = new ArrayList<GameDetails>();
         for (GameBean game : games) {
-            gamesToReturn.add(new GameDetails(game, 0));
+            gamesToReturn.add(new GameDetails(game, 0, false));
         }
 
         return gamesToReturn;
@@ -97,7 +97,7 @@ public class GameController {
         UserBean detailsRequester = authenticationService.authenticateUserByToken(token);
         GameBean game = gameService.getGameByGameIdWithJoinedUser(detailsRequester, gameId);
 
-        return new GameDetails(game, detailsRequester.getId());
+        return new GameDetails(game, detailsRequester.getId(), true);
     }
 
     @RequestMapping(value = "leave",

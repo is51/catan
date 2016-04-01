@@ -2308,7 +2308,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2365,7 +2365,7 @@ public class PlayServiceImplTest {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
-            fail("No other exceptions should be thrown");
+            fail("No other exceptions should be thrown, but get: " + e);
         }
     }
 
@@ -2380,7 +2380,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_1.getId()));
+        params.put("hexId", Integer.toString(hex_0_1.getAbsoluteId()));
 
         try {
             // WHEN
@@ -2407,7 +2407,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_1_0.getId()));
+        params.put("hexId", Integer.toString(hex_1_0.getAbsoluteId()));
 
         try {
             // WHEN
@@ -2436,7 +2436,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2460,7 +2460,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2486,7 +2486,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2515,7 +2515,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2555,7 +2555,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2593,7 +2593,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2628,7 +2628,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2663,7 +2663,7 @@ public class PlayServiceImplTest {
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_0_0.getId()));
+        params.put("hexId", Integer.toString(hex_0_0.getAbsoluteId()));
 
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
@@ -2700,7 +2700,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", Integer.toString(hex_1_0.getId()));
+        params.put("hexId", Integer.toString(hex_1_0.getAbsoluteId()));
 
         try {
             // WHEN
@@ -2796,7 +2796,7 @@ public class PlayServiceImplTest {
         playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser2.getUser(), "1", params);
 
 
-        params.put("hexId", Integer.toString(hex_1_0.getId()));
+        params.put("hexId", Integer.toString(hex_1_0.getAbsoluteId()));
         playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
         assertNotNull(game);
@@ -3354,39 +3354,43 @@ public class PlayServiceImplTest {
         gameUser3 = new GameUserBean(user3, 3, game);
         gameUser4 = new GameUserBean(user4, 4, game);
 
-        hex_0_0 = new HexBean(game, new Coordinates(0, 0), HexType.BRICK, 2, false);
-        hex_1_0 = new HexBean(game, new Coordinates(1, 0), HexType.WOOD, 10, false);
-        hex_0_1 = new HexBean(game, new Coordinates(0, 1), HexType.STONE, 11, true);
+        int hexAbsoluteIdSequence = 1;
+        int nodeAbsoluteIdSequence = 1;
+        int edgeAbsoluteIdSequence = 1;
 
-        NodeBean node_1_1 = new NodeBean(game, NodePortType.ANY);
-        NodeBean node_1_2 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_1_3 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_1_4 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_1_5 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_1_6 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_2_2 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_2_3 = new NodeBean(game, NodePortType.STONE);
-        NodeBean node_2_4 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_2_5 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_3_4 = new NodeBean(game, NodePortType.NONE);
-        NodeBean node_3_5 = new NodeBean(game, NodePortType.WOOD);
-        NodeBean node_3_6 = new NodeBean(game, NodePortType.NONE);
+        hex_0_0 = new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, 0), HexType.BRICK, 2, false);
+        hex_1_0 = new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, 0), HexType.WOOD, 10, false);
+        hex_0_1 = new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, 1), HexType.STONE, 11, true);
 
-        EdgeBean edge_1_1 = new EdgeBean(game);
-        EdgeBean edge_1_2 = new EdgeBean(game);
-        EdgeBean edge_1_3 = new EdgeBean(game);
-        EdgeBean edge_1_4 = new EdgeBean(game);
-        EdgeBean edge_1_5 = new EdgeBean(game);
-        EdgeBean edge_1_6 = new EdgeBean(game);
-        EdgeBean edge_2_1 = new EdgeBean(game);
-        EdgeBean edge_2_2 = new EdgeBean(game);
-        EdgeBean edge_2_3 = new EdgeBean(game);
-        EdgeBean edge_2_4 = new EdgeBean(game);
-        EdgeBean edge_2_5 = new EdgeBean(game);
-        EdgeBean edge_3_3 = new EdgeBean(game);
-        EdgeBean edge_3_4 = new EdgeBean(game);
-        EdgeBean edge_3_5 = new EdgeBean(game);
-        EdgeBean edge_3_6 = new EdgeBean(game);
+        NodeBean node_1_1 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.ANY);
+        NodeBean node_1_2 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_1_3 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_1_4 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_1_5 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_1_6 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_2_2 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_2_3 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.STONE);
+        NodeBean node_2_4 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_2_5 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_3_4 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+        NodeBean node_3_5 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.WOOD);
+        NodeBean node_3_6 = new NodeBean(nodeAbsoluteIdSequence++, game, NodePortType.NONE);
+
+        EdgeBean edge_1_1 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_1_2 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_1_3 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_1_4 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_1_5 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_1_6 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_2_1 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_2_2 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_2_3 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_2_4 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_2_5 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_3_3 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_3_4 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_3_5 = new EdgeBean(edgeAbsoluteIdSequence++, game);
+        EdgeBean edge_3_6 = new EdgeBean(edgeAbsoluteIdSequence++, game);
 
         user1.setId(1);
         user2.setId(2);

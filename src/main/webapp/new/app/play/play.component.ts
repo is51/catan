@@ -6,6 +6,7 @@ import { MarkingService } from './shared/services/marking.service';
 import { ActionService } from './shared/services/action.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { NotificationService } from 'app/shared/services/notification/notification.service';
+import { TemplatesService } from './shared/services/templates.service';
 
 import { Game } from 'app/shared/domain/game';
 import { AvailableActions, AvailableAction } from 'app/shared/domain/player/available-actions';
@@ -43,8 +44,9 @@ import { DiceComponent } from './dice/dice.component';
     providers: [
         PlayService,
         SelectService,
-        MarkingService,
         ActionService
+        MarkingService,
+        TemplatesService
     ],
     inputs: ['game']
 })
@@ -53,10 +55,13 @@ export class PlayComponent implements OnInit, OnDestroy {
     game: Game;
     availableActions: AvailableActions;
 
+    templatesLoaded: boolean = false;
+
     constructor(
         private _notification: NotificationService,
         private _authUser: AuthUserService,
-        private _action: ActionService) { }
+        private _action: ActionService,
+        private _templates: TemplatesService) { }
 
     ngOnInit() {
         this.availableActions = this.game.getCurrentPlayer(this._authUser.get()).availableActions;
@@ -67,6 +72,9 @@ export class PlayComponent implements OnInit, OnDestroy {
             this._checkIfHasNotificationAndNotify(newActions);
             this._checkIfImmediateAndRun();
         });
+        
+        this._templates.load()
+            .then(() => this.templatesLoaded = true);
     }
 
     ngOnDestroy() {

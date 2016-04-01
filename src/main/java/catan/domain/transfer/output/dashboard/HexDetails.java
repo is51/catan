@@ -18,7 +18,7 @@ public class HexDetails {
     }
 
     public HexDetails(HexBean hex) {
-        this.hexId = hex.getId();
+        this.hexId = hex.getAbsoluteId();
         this.x = hex.getCoordinates().getxCoordinate();
         this.y = hex.getCoordinates().getyCoordinate();
         this.type = hex.getResourceType().name();

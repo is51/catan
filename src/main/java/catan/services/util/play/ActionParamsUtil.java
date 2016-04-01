@@ -28,7 +28,7 @@ public class ActionParamsUtil {
         List<Integer> nodeIdsToBuildOn = new ArrayList<Integer>();
         for (NodeBean node : game.getNodes()) {
             if (node.couldBeUsedForBuildingSettlementByGameUserInMainStage(gameUser)) {
-                nodeIdsToBuildOn.add(node.getId());
+                nodeIdsToBuildOn.add(node.getAbsoluteId());
             }
         }
 
@@ -45,7 +45,7 @@ public class ActionParamsUtil {
         for (NodeBean node : game.getNodes()) {
             if (node.hasBuildingBelongsToUser(gameUser)
                     && node.getBuilding().getBuilt().equals(SETTLEMENT)) {
-                nodeIdsToBuildOn.add(node.getId());
+                nodeIdsToBuildOn.add(node.getAbsoluteId());
             }
         }
 
@@ -60,7 +60,7 @@ public class ActionParamsUtil {
 
         List<Integer> edgeIdsToBuildOn = new ArrayList<Integer>();
         for (EdgeBean edge : game.fetchEdgesAccessibleForBuildingRoadInMainStage(gameUser)) {
-            edgeIdsToBuildOn.add(edge.getId());
+            edgeIdsToBuildOn.add(edge.getAbsoluteId());
         }
 
         return edgeIdsToBuildOn;
@@ -74,7 +74,7 @@ public class ActionParamsUtil {
             }
             for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
                 if (node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser)) {
-                    nodeIdsToChooseForRobbing.add(node.getId());
+                    nodeIdsToChooseForRobbing.add(node.getAbsoluteId());
                 }
             }
             break;
@@ -90,7 +90,7 @@ public class ActionParamsUtil {
                 continue;
             }
 
-            hexIdsToMoveRobberTo.add(hex.getId());
+            hexIdsToMoveRobberTo.add(hex.getAbsoluteId());
         }
 
         return hexIdsToMoveRobberTo;
@@ -137,7 +137,7 @@ public class ActionParamsUtil {
         List<Integer> nodeIdsToBuildOn = new ArrayList<Integer>();
         for (NodeBean node : game.getNodes()) {
             if (node.getBuilding() == null && node.hasAllNeighbourNodesEmpty()) {
-                nodeIdsToBuildOn.add(node.getId());
+                nodeIdsToBuildOn.add(node.getAbsoluteId());
             }
         }
 
@@ -150,7 +150,7 @@ public class ActionParamsUtil {
             if (node.hasBuildingBelongsToUser(gameUser)
                     && !node.hasNeighbourRoadBelongsToGameUser(gameUser)) {
                 for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
-                    edgeIdsToBuildOn.add(edge.getId());
+                    edgeIdsToBuildOn.add(edge.getAbsoluteId());
                 }
                 break;
             }
