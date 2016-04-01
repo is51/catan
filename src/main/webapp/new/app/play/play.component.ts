@@ -8,6 +8,7 @@ import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { NotificationService } from 'app/shared/services/notification/notification.service';
 
 import { Game } from 'app/shared/domain/game';
+import { AvailableActions, AvailableAction } from 'app/shared/domain/player/available-actions';
 
 import { ResourcesPanelComponent } from './resources-panel/resources-panel.component';
 import { PlayersPanelComponent } from './players-panel/players-panel.component';
@@ -50,6 +51,7 @@ import { DiceComponent } from './dice/dice.component';
 
 export class PlayComponent implements OnInit, OnDestroy {
     game: Game;
+    availableActions: AvailableActions;
 
     constructor(
         private _notification: NotificationService,
@@ -57,26 +59,31 @@ export class PlayComponent implements OnInit, OnDestroy {
         private _action: ActionService) { }
 
     ngOnInit() {
-        let availableActions = this.game.getCurrentPlayer(this._authUser.get()).availableActions;
+        this.availableActions = this.game.getCurrentPlayer(this._authUser.get()).availableActions;
 
-        availableActions.onUpdate(actions => {
+        this._checkIfImmediateAndRun();
 
-            // Notifications
-            actions.forEach(action => {
-                if (action.notify) {
-                    this._notification.notifyGlobal(action.notifyMessage, action.code);
-                }
-            });
-
-            // Immediately actions
-            if (availableActions.isImmediate) {
-                this._action.run(availableActions.list[0].code, this.game);
-            }
-
+        this.availableActions.onUpdate(newActions => {
+            this._checkIfHasNotificationAndNotify(newActions);
+            this._checkIfImmediateAndRun();
         });
     }
 
     ngOnDestroy() {
-        this.game.getCurrentPlayer(this._authUser.get()).availableActions.cancelOnUpdate();
+        this.availableActions.cancelOnUpdate();
+    }
+
+    private _checkIfHasNotificationAndNotify(actions: AvailableAction[]) {
+        actions.forEach(action => {
+            if (action.notify) {
+                this._notification.notifyGlobal(action.notifyMessage, action.code);
+            }
+        });
+    }
+
+    private _checkIfImmediateAndRun() {
+        if (this.availableActions.isImmediate) {
+            this._action.run(this.availableActions.list[0].code, this.game);
+        }
     }
 }
