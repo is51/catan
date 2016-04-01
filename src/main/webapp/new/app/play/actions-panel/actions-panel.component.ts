@@ -1,6 +1,7 @@
 import { Component } from 'angular2/core';
 
 import { PlayService } from 'app/play/shared/services/play.service';
+import { ActionService } from 'app/play/shared/services/action.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { GameService } from 'app/shared/services/game/game.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
@@ -21,7 +22,8 @@ export class ActionsPanelComponent {
         private _authUser: AuthUserService,
         private _play: PlayService,
         private _gameService: GameService,
-        private _modalWindow: ModalWindowService) { }
+        private _modalWindow: ModalWindowService,
+        private _action: ActionService) { }
 
     isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
@@ -44,33 +46,15 @@ export class ActionsPanelComponent {
     }
 
     moveRobber() {
-        this._play.moveRobber(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert("Move robber error!");
-                }
-            });
+        this._action.run('MOVE_ROBBER', this.game);
     }
 
     choosePlayerToRob() {
-        this._play.choosePlayerToRob(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert("Choose Player To Rob error!");
-                }
-            });
+        this._action.run('CHOOSE_PLAYER_TO_ROB', this.game);
     }
 
     kickOffResources() {
-        this._play.kickOffResources(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert("Kick Off Resources error!");
-                }
-            });
+        this._action.run('KICK_OFF_RESOURCES', this.game);
     }
 
     build() {
@@ -86,6 +70,6 @@ export class ActionsPanelComponent {
     }
 
     showTradeReplyPanel() {
-        this._modalWindow.show("TRADE_REPLY_PANEL");
+        this._action.run('TRADE_REPLY');
     }
 }

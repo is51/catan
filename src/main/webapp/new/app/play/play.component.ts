@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from 'angular2/core';
 import { PlayService } from './shared/services/play.service';
 import { SelectService } from './shared/services/select.service';
 import { MarkingService } from './shared/services/marking.service';
+import { ActionService } from './shared/services/action.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { NotificationService } from 'app/shared/services/notification/notification.service';
 
@@ -41,7 +42,8 @@ import { DiceComponent } from './dice/dice.component';
     providers: [
         PlayService,
         SelectService,
-        MarkingService
+        MarkingService,
+        ActionService
     ],
     inputs: ['game']
 })
@@ -51,7 +53,8 @@ export class PlayComponent implements OnInit, OnDestroy {
 
     constructor(
         private _notification: NotificationService,
-        private _authUser: AuthUserService) { }
+        private _authUser: AuthUserService,
+        private _action: ActionService) { }
 
     ngOnInit() {
         let availableActions = this.game.getCurrentPlayer(this._authUser.get()).availableActions;
@@ -64,6 +67,11 @@ export class PlayComponent implements OnInit, OnDestroy {
                     this._notification.notifyGlobal(action.notifyMessage, action.code);
                 }
             });
+
+            // Immediately actions
+            if (availableActions.isImmediate) {
+                this._action.run(availableActions.list[0].code, this.game);
+            }
 
         });
     }
