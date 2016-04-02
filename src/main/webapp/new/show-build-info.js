@@ -7,7 +7,7 @@
     var request = new XMLHttpRequest();
     request.open(method, url, async);
     request.onreadystatechange = function () {
-        if (r.readyState != 4 || r.status != 200) return;
+        if (request.readyState != 4 || request.status != 200) return;
         displayInfo(request.responseText);
     };
     request.send();
