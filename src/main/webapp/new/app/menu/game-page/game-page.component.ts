@@ -44,6 +44,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
             .then(game => {
                 this.game = game;
 
+                this._subscribeOnGameStarting();
+
                 this._gameService.startRefreshing(this.game, GAME_UPDATE_DELAY, null, () => {
                     alert('Getting Game Details Error. Probably there is a connection problem');
                     return false;
@@ -53,6 +55,13 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 alert('Getting Game Details Error');
                 this._router.navigate(['StartPage']);
             });
+    }
+
+    private _subscribeOnGameStarting() {
+        this.game.onStartPlaying(() => {
+            //TODO: revise this temp notification (probably it will be done using log)
+            this._notification.notifyGlobal('Game is started');
+        });
     }
 
     ngOnDestroy() {
