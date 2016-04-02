@@ -170,21 +170,75 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'hex-id', <string>hex.id);
         this._dom.appendChild(canvas, group);
 
-        let resourceTypeStr = hex.getTypeToString().toLowerCase();
-
-        this._dom.setInnerHTML(group,
-            this._templates.get('hex-bg') +
-            this._templates.get('hex-' + resourceTypeStr) +
-            ((hex.dice)
-                ? this._templates.get('hex-dice', Object.assign({
-                    number: (hex.dice)?hex.dice:'',
-                    resourceType: resourceTypeStr,
-                }, DICE_COLORS[resourceTypeStr]))
-
-                : '' )
-        );
+        this._dom.setInnerHTML(group, this._getHexHTML(hex));
 
         hex.onUpdate(() => this.updateHex(canvas, group, hex));
+    }
+
+    private _getHexHTML(hex: Hex) {
+        let html = this._templates.get('hex-bg');
+
+        if (!hex.edges.bottomLeft.isJoint()) {
+            html += this._templates.get('hex-bg-edge-bottom-left');
+        }
+        if (!hex.edges.bottomRight.isJoint()) {
+            html += this._templates.get('hex-bg-edge-bottom-right');
+        }
+        if (!hex.edges.left.isJoint()) {
+            html += this._templates.get('hex-bg-edge-left');
+        }
+        if (!hex.edges.right.isJoint()) {
+            html += this._templates.get('hex-bg-edge-right');
+        }
+        if (!hex.edges.topLeft.isJoint()) {
+            html += this._templates.get('hex-bg-edge-top-left');
+        }
+        if (!hex.edges.topRight.isJoint()) {
+            html += this._templates.get('hex-bg-edge-top-right');
+        }
+
+        if (!hex.nodes.top.isJoint()) {
+            html += this._templates.get('hex-bg-node-top');
+        }
+        if (!hex.nodes.bottom.isJoint()) {
+            html += this._templates.get('hex-bg-node-bottom');
+        }
+        if (!hex.nodes.topRight.isJoint()) {
+            html += this._templates.get('hex-bg-node-top-right');
+            html += this._templates.get('hex-bg-node-right-top');
+        }
+        if (!hex.nodes.topLeft.isJoint()) {
+            html += this._templates.get('hex-bg-node-top-left');
+            html += this._templates.get('hex-bg-node-left-top');
+        }
+        if (!hex.nodes.bottomRight.isJoint()) {
+            html += this._templates.get('hex-bg-node-bottom-right');
+            html += this._templates.get('hex-bg-node-right-bottom');
+        }
+        if (!hex.nodes.bottomLeft.isJoint()) {
+            html += this._templates.get('hex-bg-node-bottom-left');
+            html += this._templates.get('hex-bg-node-left-bottom');
+        }
+
+        if (!hex.nodes.bottomRight.hexes.bottom && hex.nodes.bottomRight.hexes.topRight) {
+            html += this._templates.get('hex-bg-node-bottom-right');
+        }
+        if (!hex.nodes.topRight.hexes.top && hex.nodes.topRight.hexes.bottomRight) {
+            html += this._templates.get('hex-bg-node-top-right');
+        }
+
+        let resourceTypeStr = hex.getTypeToString().toLowerCase();
+
+        html += this._templates.get('hex-' + resourceTypeStr);
+
+        if (hex.dice) {
+            html += this._templates.get('hex-dice', Object.assign({
+                number: (hex.dice)?hex.dice:'',
+                resourceType: resourceTypeStr,
+            }, DICE_COLORS[resourceTypeStr]))
+        }
+
+        return html;
     }
 
     updateHex(canvas: Element, element: Element, hex: Hex) {
