@@ -44,7 +44,7 @@ import { DiceComponent } from './dice/dice.component';
     providers: [
         PlayService,
         SelectService,
-        ActionService
+        ActionService,
         MarkingService,
         TemplatesService
     ],
