@@ -60,7 +60,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     private _subscribeOnGameStarting() {
         this.game.onStartPlaying(() => {
             //TODO: revise this temp notification (probably it will be done using log)
-            this._notification.notifyGlobal('Game is started');
+            this._notification.notifyGlobal('Game is started!', 'GAME_IS_STARTED');
         });
     }
 
