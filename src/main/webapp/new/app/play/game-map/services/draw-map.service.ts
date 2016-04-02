@@ -153,8 +153,8 @@ export class DrawMapService {
     }
 
     private _setViewBox(canvas: Element, actualSize) {
-        let additionalWidth = 3.8 * HEX_WIDTH;
-        let additionalHeight = 2.5 * HEX_HEIGHT;
+        let additionalWidth = 3.9 * HEX_WIDTH;
+        let additionalHeight = 2.8 * HEX_HEIGHT;
         let width = actualSize.xMax - actualSize.xMin + additionalWidth;
         let height = actualSize.yMax - actualSize.yMin + additionalHeight;
         let offsetX = actualSize.xMin - additionalWidth / 2;
