@@ -11,7 +11,7 @@
         <g transform="rotate(-45)">
             <g transform="scale(1.67, 1)">
                 <circle r="250" cx="0" cy="0" fill="#e1e1e1" />
-                <circle r="115" cx="0" cy="0" fill="#CFDDAE" filter="url(#shadow-bottom)" />
+                <circle r="110" cx="0" cy="0" fill="#CFDDAE" filter="url(#shadow-bottom)" />
             </g>
         </g>
     </g>
