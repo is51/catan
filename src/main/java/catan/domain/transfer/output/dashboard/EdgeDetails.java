@@ -15,7 +15,7 @@ public class EdgeDetails {
     }
 
     public EdgeDetails(EdgeBean edge) {
-        this.edgeId = edge.getId();
+        this.edgeId = edge.getAbsoluteId();
         this.orientation = edge.getOrientation().name();
         this.building = edge.getBuilding() != null ? new BuildingDetails(edge.getBuilding()) : null;
         this.hexesIds = new LinkIdsDetails(edge.getHexes());

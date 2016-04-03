@@ -1,8 +1,9 @@
-import { Component } from 'angular2/core';
+import { Component, OnInit } from 'angular2/core';
 
 import { PlayService } from './shared/services/play.service';
 import { SelectService } from './shared/services/select.service';
 import { MarkingService } from './shared/services/marking.service';
+import { TemplatesService } from './shared/services/templates.service';
 
 import { Game } from 'app/shared/domain/game';
 
@@ -39,11 +40,23 @@ import { DiceComponent } from './dice/dice.component';
     providers: [
         PlayService,
         SelectService,
-        MarkingService
+        MarkingService,
+        TemplatesService
     ],
     inputs: ['game']
 })
 
-export class PlayComponent {
+export class PlayComponent implements OnInit {
     game: Game;
+
+    templatesLoaded: boolean = false;
+
+    constructor(private _templates: TemplatesService) { }
+
+    ngOnInit() {
+        this._templates.load()
+            .then(() => {
+                this.templatesLoaded = true;
+            });
+    }
 }

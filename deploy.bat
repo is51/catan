@@ -73,7 +73,7 @@ cd ../../../../
 :mvn
 if /i "%mvnInstall:~,1%" EQU "n" goto send
 
-call mvn clean package -DskipTests
+call mvn clean package -DskipTests git-commit-id:revision
 
 
 :: ---------------------------------------------------------------------

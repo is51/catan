@@ -6,8 +6,6 @@ import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -18,14 +16,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "CT_NODE")
-public class NodeBean implements MapElement{
+public class NodeBean implements MapElement {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "NODE_ID", unique = true, nullable = false)
     private int id;
+
+    @Column(name = "NODE_ABSOLUTE_ID", unique = false, nullable = false)
+    private Integer absoluteId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GAME_ID", nullable = false)
@@ -40,33 +42,18 @@ public class NodeBean implements MapElement{
     @Column(name = "ORIENTATION", unique = false, nullable = false)
     private NodeOrientationType orientation;
 
-    @Embedded
-    @AssociationOverrides({
-            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "HEX_TOP_LEFT")),
-            @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "HEX_TOP")),
-            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "HEX_TOP_RIGHT")),
-            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "HEX_BOTTOM_RIGHT")),
-            @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "HEX_BOTTOM")),
-            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "HEX_BOTTOM_LEFT"))
-    })
+    @Transient
     private VerticalLinks<HexBean> hexes = new VerticalLinks<HexBean>();
 
-    @Embedded
-    @AssociationOverrides({
-            @AssociationOverride(name = "topLeft", joinColumns = @JoinColumn(name = "EDGE_TOP_LEFT")),
-            @AssociationOverride(name = "top", joinColumns = @JoinColumn(name = "EDGE_TOP")),
-            @AssociationOverride(name = "topRight", joinColumns = @JoinColumn(name = "EDGE_TOP_RIGHT")),
-            @AssociationOverride(name = "bottomRight", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_RIGHT")),
-            @AssociationOverride(name = "bottom", joinColumns = @JoinColumn(name = "EDGE_BOTTOM")),
-            @AssociationOverride(name = "bottomLeft", joinColumns = @JoinColumn(name = "EDGE_BOTTOM_LEFT"))
-    })
+    @Transient
     private VerticalLinks<EdgeBean> edges = new VerticalLinks<EdgeBean>();
 
 
     public NodeBean() {
     }
 
-    public NodeBean(GameBean game, NodePortType port) {
+    public NodeBean(int absoluteId, GameBean game, NodePortType port) {
+        this.absoluteId = absoluteId;
         this.game = game;
         this.port = port;
     }
@@ -77,6 +64,15 @@ public class NodeBean implements MapElement{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public Integer getAbsoluteId() {
+        return absoluteId;
+    }
+
+    public void setAbsoluteId(Integer absoluteId) {
+        this.absoluteId = absoluteId;
     }
 
     public GameBean getGame() {
@@ -177,22 +173,21 @@ public class NodeBean implements MapElement{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NodeBean)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         NodeBean nodeBean = (NodeBean) o;
 
-        if (!hexes.equals(nodeBean.hexes)) return false;
-        if (orientation != nodeBean.orientation) return false;
+        if (absoluteId != null ? !absoluteId.equals(nodeBean.absoluteId) : nodeBean.absoluteId != null) return false;
         if (port != nodeBean.port) return false;
+        return orientation == nodeBean.orientation;
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = port.hashCode();
-        result = 31 * result + orientation.hashCode();
-        result = 31 * result + hexes.hashCode();
+        int result = absoluteId != null ? absoluteId.hashCode() : 0;
+        result = 31 * result + (port != null ? port.hashCode() : 0);
+        result = 31 * result + (orientation != null ? orientation.hashCode() : 0);
 
         return result;
     }
