@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <base href="/new/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
 
@@ -11,6 +10,17 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="app/menu/game-page/game-room/game-map-overview/game-map-overview.component.css">
     <link rel="stylesheet" href="app/play/game-map/game-map.component.css">
+
+    <!-- Safari polyfill -->
+    <script src="node_modules/innersvg-polyfill/innersvg.js"></script>
+    <script src="node_modules/intl/dist/Intl.min.js"></script>
+    <script src="node_modules/intl/locale-data/jsonp/en.js"></script>
+
+    <!-- IE required polyfills -->
+    <script src="node_modules/es6-shim/es6-shim.min.js"></script>
+    <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
+    <script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+
 
     <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
     <script src="node_modules/systemjs/dist/system.src.js"></script>

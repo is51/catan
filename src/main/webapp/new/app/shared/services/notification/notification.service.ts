@@ -1,8 +1,6 @@
 import { Injectable } from 'angular2/core';
 import { ApplicationActiveService } from 'app/shared/services/application-active/application-active.service';
 
-declare var Notification: any;
-
 const ICONS_PATH = 'app/shared/services/notification/images/';
 const ICONS = {
     DEFAULT: ICONS_PATH + 'default.png',
@@ -13,29 +11,31 @@ const ICONS = {
 
 @Injectable()
 export class NotificationService {
-    constructor (private _appActive: ApplicationActiveService) { }
+    private _nativeService: any = null;
+
+    constructor (private _appActive: ApplicationActiveService) {
+        this._nativeService = window.Notification;
+    }
 
     notify(message: string, iconCode: string = 'DEFAULT', tag?: string, showOnlyIfAppIsNotFocused: boolean = true) {
+        if (!this._nativeService) {
+            return;
+        }
 
         if (showOnlyIfAppIsNotFocused && this._appActive.isActive()) {
-            return Promise.reject('APP_IS_FOCUSED');
+            return;
         }
 
         let icon = ICONS[iconCode];
 
-        return new Promise((resolve, reject) => {
-            Notification.requestPermission(permission => {
-                if (permission === "granted") {
-                    let notification = new Notification(message, {
-                        tag,
-                        icon
-                    });
-                    notification.onclick = () => notification.close(); //TODO: make close when user click inside app window or window.focus
-                    resolve(notification);
-                } else {
-                    reject(permission);
-                }
-            });
+        this._nativeService.requestPermission(permission => {
+            if (permission === "granted") {
+                let notification = new this._nativeService(message, {
+                    tag,
+                    icon
+                });
+                notification.onclick = () => notification.close(); //TODO: make close when user click inside app window or window.focus
+            }
         });
     }
 
@@ -44,6 +44,8 @@ export class NotificationService {
     }
 
     requestPermission() {
-        return Notification.requestPermission();
+        if (this._nativeService) {
+            this._nativeService.requestPermission();
+        }
     }
 }
