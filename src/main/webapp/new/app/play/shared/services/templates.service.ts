@@ -56,7 +56,10 @@ const TEMPLATES = [
     'road-vertical',
     'road-horizontal',
     'blank-edge-vertical',
-    'blank-edge-horizontal'
+    'blank-edge-horizontal',
+
+    'clouds',
+    'map-bottom'
 ];
 
 @Injectable()
