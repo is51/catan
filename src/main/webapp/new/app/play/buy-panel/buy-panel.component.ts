@@ -40,17 +40,17 @@ export class BuyPanelComponent {
 
     buildSettlement() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.run('BUILD_SETTLEMENT', this.game);
+        this._action.execute('BUILD_SETTLEMENT', this.game);
     }
 
     buildCity() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.run('BUILD_CITY', this.game);
+        this._action.execute('BUILD_CITY', this.game);
     }
 
     buildRoad() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.run('BUILD_ROAD', this.game);
+        this._action.execute('BUILD_ROAD', this.game);
     }
 
     buyCard() {

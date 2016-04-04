@@ -66,11 +66,11 @@ export class PlayComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.availableActions = this.game.getCurrentPlayer(this._authUser.get()).availableActions;
 
-        this._checkIfImmediateAndRun();
+        this._checkIfImmediateAndExecute();
 
         this.availableActions.onUpdate(newActions => {
             this._checkIfHasNotificationAndNotify(newActions);
-            this._checkIfImmediateAndRun();
+            this._checkIfImmediateAndExecute();
         });
 
         this._templates.load()
@@ -92,9 +92,9 @@ export class PlayComponent implements OnInit, OnDestroy {
         });
     }
 
-    private _checkIfImmediateAndRun() {
+    private _checkIfImmediateAndExecute() {
         if (this.availableActions.isImmediate) {
-            this._action.run(this.availableActions.list[0].code, this.game);
+            this._action.execute(this.availableActions.list[0].code, this.game);
         }
     }
 }

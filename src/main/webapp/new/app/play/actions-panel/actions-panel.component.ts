@@ -34,7 +34,7 @@ export class ActionsPanelComponent {
     }
 
     endTurn() {
-        this._action.run('END_TURN', this.game);
+        this._action.execute('END_TURN', this.game);
     }
 
     throwDice() {
@@ -44,15 +44,15 @@ export class ActionsPanelComponent {
     }
 
     moveRobber() {
-        this._action.run('MOVE_ROBBER', this.game);
+        this._action.execute('MOVE_ROBBER', this.game);
     }
 
     choosePlayerToRob() {
-        this._action.run('CHOOSE_PLAYER_TO_ROB', this.game);
+        this._action.execute('CHOOSE_PLAYER_TO_ROB', this.game);
     }
 
     kickOffResources() {
-        this._action.run('KICK_OFF_RESOURCES', this.game);
+        this._action.execute('KICK_OFF_RESOURCES', this.game);
     }
 
     build() {
@@ -68,6 +68,6 @@ export class ActionsPanelComponent {
     }
 
     showTradeReplyPanel() {
-        this._action.run('TRADE_REPLY');
+        this._action.execute('TRADE_REPLY');
     }
 }
