@@ -85,7 +85,7 @@ export class ActionService {
         }
     };
 
-    execute(code: string, param?: any) { //TODO: try to use ES6 spread instead "param?: any"
-        this._ACTIONS[code](param);
+    execute(code: string, game?: Game) { //TODO: try to use ES6 spread instead "game?: Game"
+        this._ACTIONS[code](game);
     }
 }
