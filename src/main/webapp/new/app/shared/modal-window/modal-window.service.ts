@@ -10,24 +10,19 @@ interface ModalWindow {
 export class ModalWindowService {
     private _modalWindows: Map<string, ModalWindow> = new Map<string, ModalWindow>();
 
-    register(id: string, onShow?: Function, onHide?: Function) {
-        this._modalWindows.set(id, <ModalWindow>{
-            isVisible: false,
-            onShow,
-            onHide
-        });
-    }
-
-    isRegistered(id: string) {
-        return !!this._modalWindows.get(id);
-    }
-
-    unregister(id: string) {
-        this._modalWindows.delete(id);
+    private _getOrCreate(id: string) {
+        if (!this._modalWindows.has(id)) {
+            this._modalWindows.set(id, <ModalWindow>{
+                isVisible: false,
+                onShow: null,
+                onHide: null
+            });
+        }
+        return this._modalWindows.get(id);
     }
 
     show(id: string) {
-        let modalWindow = this._modalWindows.get(id);
+        let modalWindow = this._getOrCreate(id);
         modalWindow.isVisible = true;
         if (modalWindow.onShow) {
             modalWindow.onShow();
@@ -35,7 +30,7 @@ export class ModalWindowService {
     }
 
     hide(id: string) {
-        let modalWindow = this._modalWindows.get(id);
+        let modalWindow = this._getOrCreate(id);
         modalWindow.isVisible = false;
         if (modalWindow.onHide) {
             modalWindow.onHide();
@@ -51,22 +46,22 @@ export class ModalWindowService {
     }
 
     isVisible(id: string) {
-        return this._modalWindows.get(id).isVisible;
+        return this._modalWindows.has(id) && this._modalWindows.get(id).isVisible;
     }
 
     isHidden(id: string) {
         return !this.isVisible(id);
     }
 
-    /*onShow(id: string, onShow: Function) {
-        this._modalWindows.get(id).onShow = onShow;
+    onShow(id: string, onShow: Function) {
+        this._getOrCreate(id).onShow = onShow;
     }
 
     onHide(id: string, onHide: Function) {
-        this._modalWindows.get(id).onHide = onHide;
+        this._getOrCreate(id).onHide = onHide;
     }
 
-    removeOnShow(id: string) {
+    /*removeOnShow(id: string) {
         this._modalWindows.get(id).onShow = null;
     }
 
