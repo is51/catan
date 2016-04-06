@@ -3,6 +3,7 @@ import { Router } from 'angular2/router';
 
 import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
+import { AlertService } from 'app/shared/services/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 
@@ -20,7 +21,8 @@ export class JoinPublicGameButtonDirective {
     constructor(
         private _remote: RemoteService,
         private _authUser: AuthUserService,
-        private _router: Router) { }
+        private _router: Router,
+        private _alert: AlertService) { }
 
     onClick() {
         if (this._authUser.isAuthorized()) {
@@ -46,6 +48,6 @@ export class JoinPublicGameButtonDirective {
     private _joinPublicGame() {
         this._remote.request('game.joinPublic', {gameId: this.game.getId()})
             .then(() => this._router.navigate(['GamePage', {gameId: this.game.getId()}]))
-            .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+            .catch(data => this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 }

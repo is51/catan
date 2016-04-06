@@ -4,6 +4,7 @@ import { Router } from 'angular2/router';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
+import { AlertService } from 'app/shared/services/alert/alert.service';
 
 @Component({
     selector: 'ct-create-game-form',
@@ -23,7 +24,8 @@ export class CreateGameFormComponent implements OnInit {
         private _authUser: AuthUserService,
         private _remote: RemoteService,
         private _router: Router,
-        private _routeData: RouteDataService) { }
+        private _routeData: RouteDataService,
+        private _alert: AlertService) { }
 
     ngOnInit() {
         if (!this.data) {
@@ -42,7 +44,7 @@ export class CreateGameFormComponent implements OnInit {
     submit() {
         if (this._authUser.isAuthorized()) {
             if (!this.data.privateGame && this._authUser.isTypeGuest()) {
-                alert("Guest can't create public game. You should register. Registration from guest to regular user is NOT IMPLEMENTED");
+                this._alert.message("Guest can't create public game. You should register. Registration from guest to regular user is NOT IMPLEMENTED");
             } else {
                 this._createGame();
             }
@@ -84,7 +86,7 @@ export class CreateGameFormComponent implements OnInit {
             initialBuildingsSetId: this.data.initialBuildingsSetId
         })
             .then(data => this._router.navigate(['GamePage', {gameId: data.gameId}]))
-            .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+            .catch(data => this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 }
 

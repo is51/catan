@@ -2,6 +2,8 @@ import { Component, OnInit } from 'angular2/core';
 import { RouterLink } from 'angular2/router';
 
 import { GameService } from 'app/shared/services/game/game.service';
+import { AlertService } from 'app/shared/services/alert/alert.service';
+
 import { Game } from 'app/shared/domain/game';
 
 import { PlayersListComponent } from 'app/menu/shared/players-list/players-list.component';
@@ -23,7 +25,9 @@ export class GamesListComponent implements OnInit {
     typeOfGames: string;
     games: Game[] = null;
 
-    constructor(private _gameService: GameService) { }
+    constructor(
+        private _gameService: GameService,
+        private _alert: AlertService) { }
 
     ngOnInit() {
         this.update();
@@ -32,6 +36,6 @@ export class GamesListComponent implements OnInit {
     update() {
         this._gameService.findAllByType(this.typeOfGames)
             .then(games => this.games = games)
-            .catch(data => alert('Getting Games List Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+            .catch(data => this._alert.message('Getting Games List Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 }
