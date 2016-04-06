@@ -23,11 +23,17 @@ import { JoinGamePageComponent } from 'app/menu/join-game-page/join-game-page.co
 import { JoinPublicGamePageComponent } from 'app/menu/join-public-game-page/join-public-game-page.component';
 import { JoinPrivateGamePageComponent } from 'app/menu/join-private-game-page/join-private-game-page.component';
 import { GamePageComponent } from 'app/menu/game-page/game-page.component';
+import { AlertComponent } from 'app/shared/alert/alert.component';
 
 @Component({
     selector: 'ct-app',
-    template: '<router-outlet></router-outlet>',
-    directives: [RouterOutlet],
+    template: `
+        <router-outlet></router-outlet>
+        <ct-alert></ct-alert>`,
+    directives: [
+        RouterOutlet,
+        AlertComponent
+    ],
     providers: [
         HTTP_PROVIDERS,
 
