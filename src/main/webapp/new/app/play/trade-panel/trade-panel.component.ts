@@ -1,6 +1,6 @@
 import { Component } from 'angular2/core';
 
-import { ActionService } from 'app/play/shared/services/action.service';
+import { ExecuteActionsService } from 'app/play/shared/services/execute-actions.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 
 import { Game } from 'app/shared/domain/game';
@@ -43,14 +43,14 @@ export class TradePanelComponent {
     };
 
     constructor(
-        private _action: ActionService,
+        private _actions: ExecuteActionsService,
         private _modalWindow: ModalWindowService) { }
 
     showTradePort() {
         this.isVisibleTradePortPanel = true;
         this.isVisibleTradePlayersPanel = false;
 
-        this._action.execute('TRADE_PORT', this.game)
+        this._actions.execute('TRADE_PORT', this.game)
             .then(() => {
                 this._modalWindow.hide(PANEL_ID);
             })
@@ -65,7 +65,7 @@ export class TradePanelComponent {
         this.isVisibleTradePortPanel = false;
         this.isVisibleTradePlayersPanel = true;
 
-        this._action.execute('TRADE_PLAYERS', this.game)
+        this._actions.execute('TRADE_PLAYERS', this.game)
             .then(() => {
                 this._modalWindow.hide(PANEL_ID);
             })

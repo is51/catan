@@ -2,7 +2,7 @@ import { Component } from 'angular2/core';
 
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
-import { ActionService } from 'app/play/shared/services/action.service';
+import { ExecuteActionsService } from 'app/play/shared/services/execute-actions.service';
 
 import { Game } from 'app/shared/domain/game';
 
@@ -29,7 +29,7 @@ export class CardsPanelComponent {
     constructor(
         private _authUser: AuthUserService,
         private _modalWindow: ModalWindowService,
-        private _action: ActionService) { }
+        private _actions: ExecuteActionsService) { }
 
     isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
@@ -41,22 +41,22 @@ export class CardsPanelComponent {
 
     useCardYearOfPlenty() {
         this._modalWindow.hide("CARDS_PANEL");
-        this._action.execute('USE_CARD_YEAR_OF_PLENTY', this.game);
+        this._actions.execute('USE_CARD_YEAR_OF_PLENTY', this.game);
     }
 
     useCardMonopoly() {
         this._modalWindow.hide("CARDS_PANEL");
-        this._action.execute('USE_CARD_MONOPOLY', this.game);
+        this._actions.execute('USE_CARD_MONOPOLY', this.game);
     }
 
     useCardRoadBuilding() {
         this._modalWindow.hide("CARDS_PANEL");
-        this._action.execute('USE_CARD_ROAD_BUILDING', this.game);
+        this._actions.execute('USE_CARD_ROAD_BUILDING', this.game);
     }
 
     useCardKnight() {
         this._modalWindow.hide("CARDS_PANEL");
-        this._action.execute('USE_CARD_KNIGHT', this.game);
+        this._actions.execute('USE_CARD_KNIGHT', this.game);
     }
 
 }

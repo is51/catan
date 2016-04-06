@@ -8,7 +8,7 @@ import { GameService } from 'app/shared/services/game/game.service';
 import { Game } from 'app/shared/domain/game';
 
 @Injectable()
-export class ActionService {
+export class ExecuteActionsService {
     constructor (
         private _play: PlayService,
         private _gameService: GameService,

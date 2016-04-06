@@ -2,7 +2,7 @@ import { Component } from 'angular2/core';
 
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
-import { ActionService } from 'app/play/shared/services/action.service';
+import { ExecuteActionsService } from 'app/play/shared/services/execute-actions.service';
 
 import { Game } from 'app/shared/domain/game';
 import { ModalWindowDirective } from 'app/shared/modal-window/modal-window.directive';
@@ -28,7 +28,7 @@ export class BuyPanelComponent {
     constructor(
         private _authUser: AuthUserService,
         private _modalWindow: ModalWindowService,
-        private _action: ActionService) { }
+        private _actions: ExecuteActionsService) { }
 
     isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
@@ -36,21 +36,21 @@ export class BuyPanelComponent {
 
     buildSettlement() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.execute('BUILD_SETTLEMENT', this.game);
+        this._actions.execute('BUILD_SETTLEMENT', this.game);
     }
 
     buildCity() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.execute('BUILD_CITY', this.game);
+        this._actions.execute('BUILD_CITY', this.game);
     }
 
     buildRoad() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.execute('BUILD_ROAD', this.game);
+        this._actions.execute('BUILD_ROAD', this.game);
     }
 
     buyCard() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.execute('BUY_CARD', this.game);
+        this._actions.execute('BUY_CARD', this.game);
     }
 }

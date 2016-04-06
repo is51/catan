@@ -1,7 +1,7 @@
 import { Component } from 'angular2/core';
 
 import { PlayService } from 'app/play/shared/services/play.service';
-import { ActionService } from 'app/play/shared/services/action.service';
+import { ExecuteActionsService } from 'app/play/shared/services/execute-actions.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { GameService } from 'app/shared/services/game/game.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
@@ -20,10 +20,8 @@ export class ActionsPanelComponent {
 
     constructor(
         private _authUser: AuthUserService,
-        private _play: PlayService,
-        private _gameService: GameService,
         private _modalWindow: ModalWindowService,
-        private _action: ActionService) { }
+        private _actions: ExecuteActionsService) { }
 
     isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
@@ -34,23 +32,23 @@ export class ActionsPanelComponent {
     }
 
     endTurn() {
-        this._action.execute('END_TURN', this.game);
+        this._actions.execute('END_TURN', this.game);
     }
 
     throwDice() {
-        this._action.execute('THROW_DICE', this.game);
+        this._actions.execute('THROW_DICE', this.game);
     }
 
     moveRobber() {
-        this._action.execute('MOVE_ROBBER', this.game);
+        this._actions.execute('MOVE_ROBBER', this.game);
     }
 
     choosePlayerToRob() {
-        this._action.execute('CHOOSE_PLAYER_TO_ROB', this.game);
+        this._actions.execute('CHOOSE_PLAYER_TO_ROB', this.game);
     }
 
     kickOffResources() {
-        this._action.execute('KICK_OFF_RESOURCES', this.game);
+        this._actions.execute('KICK_OFF_RESOURCES', this.game);
     }
 
     build() {
@@ -66,6 +64,6 @@ export class ActionsPanelComponent {
     }
 
     showTradeReplyPanel() {
-        this._action.execute('TRADE_REPLY');
+        this._actions.execute('TRADE_REPLY');
     }
 }

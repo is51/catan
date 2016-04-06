@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from 'angular2/core';
 import { PlayService } from './shared/services/play.service';
 import { SelectService } from './shared/services/select.service';
 import { MarkingService } from './shared/services/marking.service';
-import { ActionService } from './shared/services/action.service';
+import { ExecuteActionsService } from './shared/services/execute-actions.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { NotificationService } from 'app/shared/services/notification/notification.service';
 import { TemplatesService } from './shared/services/templates.service';
@@ -44,7 +44,7 @@ import { DiceComponent } from './dice/dice.component';
     providers: [
         PlayService,
         SelectService,
-        ActionService,
+        ExecuteActionsService,
         MarkingService,
         TemplatesService
     ],
@@ -60,7 +60,7 @@ export class PlayComponent implements OnInit, OnDestroy {
     constructor(
         private _notification: NotificationService,
         private _authUser: AuthUserService,
-        private _action: ActionService,
+        private _actions: ExecuteActionsService,
         private _templates: TemplatesService) { }
 
     ngOnInit() {
@@ -94,7 +94,7 @@ export class PlayComponent implements OnInit, OnDestroy {
 
     private _checkIfImmediateAndExecute() {
         if (this.availableActions.isImmediate) {
-            this._action.execute(this.availableActions.list[0].code, this.game);
+            this._actions.execute(this.availableActions.list[0].code, this.game);
         }
     }
 }
