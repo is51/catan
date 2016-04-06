@@ -38,9 +38,7 @@ export class ActionsPanelComponent {
     }
 
     throwDice() {
-        this._play.throwDice(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => alert('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        this._action.execute('THROW_DICE', this.game);
     }
 
     moveRobber() {

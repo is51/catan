@@ -78,14 +78,100 @@ export class ActionService {
                     }
                 });
         },
+        'BUY_CARD': (game: Game) => {
+            this._play.buyCard(game)
+                .then(data => {
+                    alert("Bought card: " + data.card); //TODO: why red?
+                    this._gameService.refresh(game);
+                })
+                .catch(data => alert('Buy Card error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        },
         'END_TURN': (game: Game) => {
             this._play.endTurn(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(data => alert('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        },
+        'THROW_DICE': (game: Game) => {
+            this._play.throwDice(game)
+                .then(() => this._gameService.refresh(game))
+                .catch(data => alert('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        },
+        'USE_CARD_KNIGHT': (game: Game) => {
+            this._play.useCardKnight(game)
+                .then(() => this._gameService.refresh(game))
+                .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        },
+        'USE_CARD_ROAD_BUILDING': (game: Game) => {
+            this._play.useCardRoadBuilding(game)
+                .then(data => {
+                    var count = data.roadsCount; //TODO: fix red?
+                    alert("Build " + count + " road" + ((count===1)?"":"s"));
+                    this._gameService.refresh(game);
+                })
+                .catch(data => {
+                    alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                });
+        },
+        'USE_CARD_MONOPOLY': (game: Game) => {
+            this._play.useCardMonopoly(game)
+                .then(data => {
+                    let count = data.resourcesCount; //TODO: fix red?
+                    if (count === 0) {
+                        alert("You received " + count + " resources because players don't have this type of resource");
+                    } else {
+                        alert("You received " + count + " resources");
+                    }
+
+                    this._gameService.refresh(game)
+                })
+                .catch(data => {
+                    if (data !== "CANCELED") {
+                        alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                    }
+                });
+        },
+        'USE_CARD_YEAR_OF_PLENTY': (game: Game) => {
+            this._play.useCardYearOfPlenty(game)
+                .then(() => this._gameService.refresh(game))
+                .catch(data => {
+                    if (data !== "CANCELED") {
+                        alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                    }
+                });
+        },
+        'TRADE_PORT': (game: Game) => {
+            return new Promise((resolve, reject) => {
+                this._play.tradePort(game)
+                    .then(() => {
+                        this._gameService.refresh(game);
+                        resolve();
+                    })
+                    .catch(data => {
+                        if (data !== "CANCELED") {
+                            alert('Trade Port error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                        }
+                        reject();
+                    });
+            });
+        },
+        'TRADE_PLAYERS': (game: Game) => {
+            return new Promise((resolve, reject) => {
+                this._play.tradePropose(game)
+                    .then(() => {
+                        this._gameService.refresh(game);
+                        resolve();
+                    })
+                    .catch(data => {
+                        if (data !== "CANCELED") {
+                            alert('Trade Players Propose error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                        }
+                        reject();
+                    });
+            });
         }
     };
 
     execute(code: string, game?: Game) { //TODO: try to use ES6 spread instead "game?: Game"
-        this._ACTIONS[code](game);
+        return this._ACTIONS[code](game);
     }
 }

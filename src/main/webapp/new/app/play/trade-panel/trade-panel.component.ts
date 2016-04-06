@@ -1,7 +1,6 @@
 import { Component } from 'angular2/core';
 
-import { PlayService } from 'app/play/shared/services/play.service';
-import { GameService } from 'app/shared/services/game/game.service';
+import { ActionService } from 'app/play/shared/services/action.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 
 import { Game } from 'app/shared/domain/game';
@@ -44,23 +43,18 @@ export class TradePanelComponent {
     };
 
     constructor(
-        private _play: PlayService,
-        private _gameService: GameService,
+        private _action: ActionService,
         private _modalWindow: ModalWindowService) { }
 
     showTradePort() {
         this.isVisibleTradePortPanel = true;
         this.isVisibleTradePlayersPanel = false;
 
-        this._play.tradePort(this.game)
+        this._action.execute('TRADE_PORT', this.game)
             .then(() => {
-                this._gameService.refresh(this.game);
                 this._modalWindow.hide(PANEL_ID);
             })
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert('Trade Port error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
-                }
+            .catch(() => {
                 if (!this.isVisibleTradePlayersPanel) {
                     this._modalWindow.hide(PANEL_ID);
                 }
@@ -71,15 +65,11 @@ export class TradePanelComponent {
         this.isVisibleTradePortPanel = false;
         this.isVisibleTradePlayersPanel = true;
 
-        this._play.tradePropose(this.game)
+        this._action.execute('TRADE_PLAYERS', this.game)
             .then(() => {
-                this._gameService.refresh(this.game);
                 this._modalWindow.hide(PANEL_ID);
             })
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert('Trade Players Propose error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
-                }
+            .catch(() => {
                 if (!this.isVisibleTradePortPanel) {
                     this._modalWindow.hide(PANEL_ID);
                 }
