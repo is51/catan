@@ -1,21 +1,12 @@
-import { Component, OnInit } from 'angular2/core';
-
-import { AlertService } from 'app/shared/alert/alert.service';
+import { Component } from 'angular2/core';
 
 @Component({
     selector: 'ct-alert',
-    template: ''
+    templateUrl: 'app/shared/alert/alert.component.html',
+    styleUrls: ['app/shared/alert/alert.component.css']
 })
 
-export class AlertComponent implements OnInit {
-
-    constructor(private _alert: AlertService) { }
-
-    ngOnInit() {
-        this._alert.onMessage((text) => this._createWindow(text));
-    }
-
-    private _createWindow(text: string) {
-        alert(text);
-    }
+export class AlertComponent {
+    text: string = '';
+    close: Function = () => {};
 }
