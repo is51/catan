@@ -3,7 +3,7 @@ import { RouteParams, Router } from 'angular2/router';
 
 import { NotificationService } from 'app/shared/services/notification/notification.service';
 import { GameService } from 'app/shared/services/game/game.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 

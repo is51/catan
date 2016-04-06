@@ -11,7 +11,7 @@ import { ModalWindowService } from 'app/shared/modal-window/modal-window.service
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
 import { NotificationService } from 'app/shared/services/notification/notification.service';
 import { ApplicationActiveService } from 'app/shared/services/application-active/application-active.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { StartPageComponent } from 'app/menu/start-page/start-page.component';
 import { LoginPageComponent } from 'app/menu/login-page/login-page.component';

@@ -3,7 +3,7 @@ import { Directive } from 'angular2/core';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { GameService } from 'app/shared/services/game/game.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 

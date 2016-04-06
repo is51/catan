@@ -4,7 +4,7 @@ import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 import { PlayService } from './play.service';
 import { GameService } from 'app/shared/services/game/game.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 

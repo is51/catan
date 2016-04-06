@@ -3,7 +3,7 @@ import { Router } from 'angular2/router';
 
 import { AuthService } from 'app/shared/services/auth/auth.service';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-register-form',

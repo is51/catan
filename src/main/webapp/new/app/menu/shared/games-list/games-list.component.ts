@@ -2,7 +2,7 @@ import { Component, OnInit } from 'angular2/core';
 import { RouterLink } from 'angular2/router';
 
 import { GameService } from 'app/shared/services/game/game.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 

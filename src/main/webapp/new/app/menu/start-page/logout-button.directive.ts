@@ -1,6 +1,6 @@
 import { Directive } from 'angular2/core';
 import { AuthService } from 'app/shared/services/auth/auth.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Directive({
     selector: '[ct-logout-button]',

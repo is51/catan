@@ -3,7 +3,7 @@ import { Router } from 'angular2/router';
 
 import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 

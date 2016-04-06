@@ -2,7 +2,7 @@ import { Component } from 'angular2/core';
 import { Router } from 'angular2/router';
 
 import { AuthService } from 'app/shared/services/auth/auth.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-login-form',

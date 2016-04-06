@@ -4,7 +4,7 @@ import { Router } from 'angular2/router';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-create-game-form',

@@ -1,7 +1,7 @@
 import { Component } from 'angular2/core';
 
 import { AuthService } from 'app/shared/services/auth/auth.service';
-import { AlertService } from 'app/shared/services/alert/alert.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-register-guest-form',
