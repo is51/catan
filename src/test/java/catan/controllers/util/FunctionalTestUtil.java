@@ -1,7 +1,8 @@
 package catan.controllers.util;
 
-import static com.jayway.restassured.RestAssured.given;
 import com.jayway.restassured.response.Response;
+
+import static com.jayway.restassured.RestAssured.given;
 
 public abstract class FunctionalTestUtil {
     // TODO: remove checking of statusCode in each method. (Needs to be approved)

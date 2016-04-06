@@ -8,9 +8,11 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @ComponentScan({"catan"})
+@EnableScheduling
 @EnableAutoConfiguration(exclude=ErrorMvcAutoConfiguration.class)
 public class ApplicationConfig extends SpringBootServletInitializer {
 

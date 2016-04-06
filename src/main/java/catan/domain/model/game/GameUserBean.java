@@ -212,20 +212,22 @@ public class GameUserBean {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GameUserBean)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         GameUserBean that = (GameUserBean) o;
 
         if (colorId != that.colorId) return false;
-        if (!user.equals(that.user)) return false;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
 
-        return true;
+        return game != null ? game.equals(that.game) : that.game == null;
+
     }
 
     @Override
     public int hashCode() {
-        int result = user.hashCode();
+        int result = user != null ? user.hashCode() : 0;
         result = 31 * result + colorId;
+        result = 31 * result + (game != null ? game.hashCode() : 0);
 
         return result;
     }
