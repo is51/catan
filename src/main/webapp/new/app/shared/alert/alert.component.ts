@@ -10,3 +10,5 @@ export class AlertComponent {
     text: string = '';
     close: Function = () => {};
 }
+
+//TODO: split text on lines and display lines via *ngFor
