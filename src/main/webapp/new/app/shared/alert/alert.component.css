@@ -10,11 +10,17 @@
 }
 
 .window {
-    position: absolute;
-    top: 20%;
-    left: 10%;
-    width: 80%;
-    height: 60%;
-    background: #fff;
     z-index: 1100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.window > g {
+    pointer-events: all;
+}
+
+.button {
+    cursor: pointer;
 }
