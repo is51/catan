@@ -39,12 +39,12 @@
 </div>
 
 
-<button (click)="showTradeReplyPanel()" *ngIf="isActionEnabled('TRADE_REPLY')">
+<button (click)="showTradeReplyPanel()" *ngIf="isActionEnabled('TRADE_REPLY') && !isTradeReplyPanelVisible()">
     <span class="glyphicon glyphicon-retweet"></span><br>
     Reply
 </button>
 
-<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES')">
+<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isKickOffResourcesPanelVisible()">
     <span class="glyphicon glyphicon-download-alt"></span><br>
     Kick res
 </button>

@@ -31,6 +31,14 @@ export class ActionsPanelComponent {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabledGroup(groupCode);
     }
 
+    isTradeReplyPanelVisible() {
+        return this._modalWindow.isVisible('TRADE_REPLY_PANEL');
+    }
+
+    isKickOffResourcesPanelVisible() {
+        return this._modalWindow.isVisible('KICK_OFF_RESOURCES');
+    }
+
     endTurn() {
         this._actions.execute('END_TURN', this.game);
     }
