@@ -78,7 +78,7 @@ export class AvailableActions {
     }
 }
 
-interface AvailableAction {
+export interface AvailableAction {
     code: string;
     params;
     notify: boolean;

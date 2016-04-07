@@ -1,6 +1,7 @@
 import { Component } from 'angular2/core';
 
 import { PlayService } from 'app/play/shared/services/play.service';
+import { ExecuteActionsService } from 'app/play/shared/services/execute-actions.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { GameService } from 'app/shared/services/game/game.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
@@ -19,9 +20,8 @@ export class ActionsPanelComponent {
 
     constructor(
         private _authUser: AuthUserService,
-        private _play: PlayService,
-        private _gameService: GameService,
-        private _modalWindow: ModalWindowService) { }
+        private _modalWindow: ModalWindowService,
+        private _actions: ExecuteActionsService) { }
 
     isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
@@ -32,45 +32,23 @@ export class ActionsPanelComponent {
     }
 
     endTurn() {
-        this._play.endTurn(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => alert('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        this._actions.execute('END_TURN', this.game);
     }
 
     throwDice() {
-        this._play.throwDice(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => alert('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        this._actions.execute('THROW_DICE', this.game);
     }
 
     moveRobber() {
-        this._play.moveRobber(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert("Move robber error!");
-                }
-            });
+        this._actions.execute('MOVE_ROBBER', this.game);
     }
 
     choosePlayerToRob() {
-        this._play.choosePlayerToRob(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert("Choose Player To Rob error!");
-                }
-            });
+        this._actions.execute('CHOOSE_PLAYER_TO_ROB', this.game);
     }
 
     kickOffResources() {
-        this._play.kickOffResources(this.game)
-            .then(() => this._gameService.refresh(this.game))
-            .catch(data => {
-                if (data !== "CANCELED") {
-                    alert("Kick Off Resources error!");
-                }
-            });
+        this._actions.execute('KICK_OFF_RESOURCES', this.game);
     }
 
     build() {
@@ -86,6 +64,6 @@ export class ActionsPanelComponent {
     }
 
     showTradeReplyPanel() {
-        this._modalWindow.show("TRADE_REPLY_PANEL");
+        this._actions.execute('TRADE_REPLY');
     }
 }

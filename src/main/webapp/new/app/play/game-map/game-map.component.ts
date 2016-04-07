@@ -83,9 +83,16 @@ export class GameMapComponent implements OnInit {
     }
 
     private _subscribeOnMarkingChanging() {
-        this._marking.onUpdate('hexes', () => this._drawMapMarkingService.updateByType(this._canvas, 'hexes', 'hex'));
-        this._marking.onUpdate('nodes', () => this._drawMapMarkingService.updateByType(this._canvas, 'nodes', 'node'));
-        this._marking.onUpdate('edges', () => this._drawMapMarkingService.updateByType(this._canvas, 'edges', 'edge'));
+        let types = [
+            ['hexes', 'hex'],
+            ['nodes', 'node'],
+            ['edges', 'edge']
+        ];
+
+        types.forEach(type => {
+            this._drawMapMarkingService.updateByType(this._canvas, type[0], type[1]);
+            this._marking.onUpdate(type[0], () => this._drawMapMarkingService.updateByType(this._canvas, type[0], type[1]));
+        });
     }
 
     private _subscribeOnDiceThrowing() {

@@ -118,7 +118,7 @@ export class TradeReplyPanelComponent implements DoCheck {
     }
 
     private _checkIfOfferIsActive() {
-        if (this._modalWindow.isRegistered(PANEL_ID) && this._modalWindow.isVisible(PANEL_ID) && this.currentPlayer) {
+        if (this._modalWindow.isVisible(PANEL_ID) && this.currentPlayer) {
             let offerId = (this.currentPlayer.availableActions.isEnabled('TRADE_REPLY'))
                 ? this.currentPlayer.availableActions.getParams('TRADE_REPLY').offerId
                 : null;
