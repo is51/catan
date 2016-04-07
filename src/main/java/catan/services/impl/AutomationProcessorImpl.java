@@ -214,6 +214,14 @@ public class AutomationProcessorImpl implements AutomationProcessor {
                 return;
             }
 
+            if (action.getCode().equals(MOVE_ROBBER.name())) {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("hexId", action.getParams().getHexIds().get(0).toString());
+
+                playService.processAction(MOVE_ROBBER, user, gameId, params);
+                return;
+            }
+
             if (action.getCode().equals(BUILD_CITY.name()) && action.getParams().getNodeIds().size() > 0) {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("nodeId", action.getParams().getNodeIds().get(0).toString());
