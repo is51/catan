@@ -1,5 +1,7 @@
 import { Component } from 'angular2/core';
 
+const MAX_LINE_LENGTH = 23;
+
 @Component({
     selector: 'ct-alert',
     templateUrl: 'app/shared/alert/alert.component.html',
@@ -7,8 +9,35 @@ import { Component } from 'angular2/core';
 })
 
 export class AlertComponent {
-    text: string = '';
+    lines: string[] = <string[]>[];
     close: Function = () => {};
-}
 
-//TODO: split text on lines and display lines via *ngFor
+    setText(text: string) {
+        this.lines = this._split(text);
+    }
+
+    private _split(text: string) {
+        let lines = <string[]>[];
+        let words = text.split(' ');
+
+        let currentLine = '';
+        while (words.length) {
+            let word = words.shift();
+
+            if (currentLine === '') {
+                currentLine = word;
+            } else {
+                let newPotentialLine = currentLine + ' ' + word;
+                if (newPotentialLine.length <= MAX_LINE_LENGTH) {
+                    currentLine += ' ' + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+        }
+        lines.push(currentLine);
+
+        return lines;
+    }
+}

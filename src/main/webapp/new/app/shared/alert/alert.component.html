@@ -19,7 +19,7 @@
             <rect filter="url(#dropshadow-window)" x="0" y="0" width="480" height="240" fill="#ffffff" rx="14" ry="14" />
 
             <text y="6" font-size="38" font-weight="bold" fill="#414141">
-                <tspan x="30" dy="50">{{text}}</tspan>
+                <tspan *ngFor="#line of lines" x="30" dy="50">{{line}}</tspan>
             </text>
 
             <g class="button" (click)="close()" transform="translate(388, 158)">

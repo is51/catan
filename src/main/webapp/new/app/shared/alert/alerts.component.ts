@@ -24,7 +24,7 @@ export class AlertsComponent implements OnInit {
     private _createWindow(text: string) {
         this._loader.loadIntoLocation(AlertComponent, this._element, 'alerts')
             .then((res) => {
-                res.instance.text = text;
+                res.instance.setText(text);
                 res.instance.close = () => res.dispose();
             });
     }
