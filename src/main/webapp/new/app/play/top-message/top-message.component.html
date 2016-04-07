@@ -1,10 +1,10 @@
-<svg width="100%" height="100%" preserveAspectRatio="xMaxYMax meet" viewBox="0 0 800 600">
+<svg width="100%" height="100%" preserveAspectRatio="xMidYMin meet" [attr.viewBox]="'0 0 '+boxMaxWidth+' 600'">
 
     <defs>
         <filter id="dropshadow-top-message">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
             <feComponentTransfer>
-                <feFuncA type="linear" slope="0.15"/>
+                <feFuncA type="linear" slope="0.3"/>
             </feComponentTransfer>
             <feMerge>
                 <feMergeNode/>
@@ -13,9 +13,10 @@
         </filter>
     </defs>
 
-    <g *ngIf="text" transform="translate(0, 0)">
+    <g *ngIf="text" transform="translate(0, 15)">
 
-        <text x="10" y="20" fill="#000000">{{text}}</text>
+        <rect fill="#ffffff" fill-opacity="0.7" [attr.width]="boxWidth" height="55" [attr.x]="(boxMaxWidth-boxWidth)/2" y="0" rx="10" ry="10" filter="url(#dropshadow-top-message)" />
+        <text x="350" y="40" fill="#333333" font-size="33" text-anchor="middle">{{text}}</text>
 
     </g>
 
