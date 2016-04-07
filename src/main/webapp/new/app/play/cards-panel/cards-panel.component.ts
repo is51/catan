@@ -40,23 +40,31 @@ export class CardsPanelComponent {
     }
 
     useCardYearOfPlenty() {
-        this._modalWindow.hide("CARDS_PANEL");
-        this._actions.execute('USE_CARD_YEAR_OF_PLENTY', this.game);
+        if (this.isActionEnabled('USE_CARD_YEAR_OF_PLENTY')) {
+            this._modalWindow.hide("CARDS_PANEL");
+            this._actions.execute('USE_CARD_YEAR_OF_PLENTY', this.game);
+        }
     }
 
     useCardMonopoly() {
-        this._modalWindow.hide("CARDS_PANEL");
-        this._actions.execute('USE_CARD_MONOPOLY', this.game);
+        if (this.isActionEnabled('USE_CARD_MONOPOLY')) {
+            this._modalWindow.hide("CARDS_PANEL");
+            this._actions.execute('USE_CARD_MONOPOLY', this.game);
+        }
     }
 
     useCardRoadBuilding() {
-        this._modalWindow.hide("CARDS_PANEL");
-        this._actions.execute('USE_CARD_ROAD_BUILDING', this.game);
+        if (this.isActionEnabled('USE_CARD_ROAD_BUILDING')) {
+            this._modalWindow.hide("CARDS_PANEL");
+            this._actions.execute('USE_CARD_ROAD_BUILDING', this.game);
+        }
     }
 
     useCardKnight() {
-        this._modalWindow.hide("CARDS_PANEL");
-        this._actions.execute('USE_CARD_KNIGHT', this.game);
+        if (this.isActionEnabled('USE_CARD_KNIGHT')) {
+            this._modalWindow.hide("CARDS_PANEL");
+            this._actions.execute('USE_CARD_KNIGHT', this.game);
+        }
     }
 
 }
