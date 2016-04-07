@@ -52,8 +52,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 });
 
             }, () => {
-                this._alert.message('Getting Game Details Error');
-                this._router.navigate(['StartPage']);
+                this._alert.message('Getting Game Details Error')
+                    .then(() => this._router.navigate(['StartPage']));
             });
     }
 
