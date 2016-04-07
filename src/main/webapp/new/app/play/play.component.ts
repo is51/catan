@@ -25,6 +25,8 @@ import { KickOffResourcesPanelComponent } from './kick-off-resources-panel/kick-
 import { DiceComponent } from './dice/dice.component';
 import { TopMessageComponent } from './top-message/top-message.component';
 
+//TODO: revise pointer-events of all map elements (set 'none' most of it)
+
 @Component({
     selector: 'ct-play',
     templateUrl: 'app/play/play.component.html',

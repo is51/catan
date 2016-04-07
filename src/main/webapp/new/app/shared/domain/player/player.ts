@@ -63,8 +63,8 @@ export class Player {
             this.availableActions = undefined;
         }
 
-        if (!this.displayedMessage && params.displayedMessage) {
-            this.triggerDisplayedMessageShow(this.displayedMessage);
+        if (params.displayedMessage && (!this.displayedMessage || this.displayedMessage !== params.displayedMessage)) {
+            this.triggerDisplayedMessageShow(params.displayedMessage);
         } else if (this.displayedMessage && !params.displayedMessage) {
             this.triggerDisplayedMessageHide();
         }
