@@ -2,12 +2,12 @@ import { Injectable } from 'angular2/core';
 
 @Injectable()
 export class AlertService {
-    private _onMessage: Function;
+    private _onMessage: Function = (text: string, resolve: Function) => {};
 
     message(text: string) {
-        if (this._onMessage) {
-            this._onMessage(text);
-        }
+        return new Promise((resolve) => {
+            this._onMessage(text, resolve);
+        });
     }
 
     onMessage(onMessage: Function) {
