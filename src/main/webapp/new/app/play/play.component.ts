@@ -23,6 +23,7 @@ import { CardYearOfPlentyChooseResourcesPanelComponent } from './card-year-of-pl
 import { CardMonopolyChooseResourcePanelComponent } from './card-monopoly-choose-resource-panel/card-monopoly-choose-resource-panel.component';
 import { KickOffResourcesPanelComponent } from './kick-off-resources-panel/kick-off-resources-panel.component';
 import { DiceComponent } from './dice/dice.component';
+import { TopMessageComponent } from './top-message/top-message.component';
 
 @Component({
     selector: 'ct-play',
@@ -39,7 +40,8 @@ import { DiceComponent } from './dice/dice.component';
         CardYearOfPlentyChooseResourcesPanelComponent,
         CardMonopolyChooseResourcePanelComponent,
         KickOffResourcesPanelComponent,
-        DiceComponent
+        DiceComponent,
+        TopMessageComponent
     ],
     providers: [
         PlayService,

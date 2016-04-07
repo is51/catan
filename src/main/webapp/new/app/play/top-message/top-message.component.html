@@ -1,0 +1,22 @@
+<svg width="100%" height="100%" preserveAspectRatio="xMaxYMax meet" viewBox="0 0 800 600">
+
+    <defs>
+        <filter id="dropshadow-top-message">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.15"/>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+
+    <g *ngIf="text" transform="translate(0, 0)">
+
+        <text x="10" y="20" fill="#000000">{{text}}</text>
+
+    </g>
+
+</svg>
