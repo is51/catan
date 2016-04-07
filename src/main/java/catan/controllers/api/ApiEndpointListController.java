@@ -14,6 +14,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -193,7 +196,10 @@ public class ApiEndpointListController {
     }
 
     private String getTextFromFile(String fileName) throws IOException {
-        String result;BufferedReader br = new BufferedReader(new FileReader("src/main/java/catan/controllers/api/" + fileName));
+        InputStream is = getClass().getResourceAsStream("/api/" + fileName);
+        Reader reader = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(reader);
+        String result;
 
         try {
             StringBuilder sb = new StringBuilder();
