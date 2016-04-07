@@ -1,5 +1,7 @@
 package catan.controllers.management;
 
+import catan.domain.exception.AuthenticationException;
+import catan.services.AuthenticationService;
 import catan.services.ManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,15 +17,18 @@ public class PlayerAutomationController {
 
     @Autowired
     private ManagementService managementService;
+    @Autowired
+    AuthenticationService authenticationService;
 
     @RequestMapping(value = "start",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void startAutomatePlayerLifeCycle(@RequestParam("secretKey") String secretKey,
                                        @RequestParam("gameId") String gameId,
-                                       @RequestParam("userName") String userName) {
-        //TODO: authenticate
-        managementService.startAutomatePlayerLifeCycle(secretKey, gameId, userName);
+                                       @RequestParam("userName") String userName,
+                                       @RequestParam("botName") String botName) throws AuthenticationException {
+        authenticationService.authenticateAdminBySecretKey(secretKey);
+        managementService.startAutomatePlayerLifeCycle(secretKey, gameId, userName, botName);
     }
 
     @RequestMapping(value = "stop",
@@ -31,8 +36,8 @@ public class PlayerAutomationController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void stopAutomatePlayerLifeCycle(@RequestParam("secretKey") String secretKey,
                                        @RequestParam("gameId") String gameId,
-                                       @RequestParam("userName") String userName) {
-        //TODO: authenticate
+                                       @RequestParam("userName") String userName) throws AuthenticationException {
+        authenticationService.authenticateAdminBySecretKey(secretKey);
         managementService.stopAutomatePlayerLifeCycle(secretKey, gameId, userName);
     }
 }

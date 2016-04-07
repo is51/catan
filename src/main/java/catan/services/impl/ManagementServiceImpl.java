@@ -6,7 +6,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.services.ManagementService;
-import catan.services.ScheduledProcessor;
+import catan.services.AutomationProcessor;
 import catan.services.util.game.GameUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,16 +23,16 @@ public class ManagementServiceImpl implements ManagementService {
     @Autowired
     private GameUtil gameUtil;
     @Autowired
-    private ScheduledProcessor scheduledProcessor;
+    private AutomationProcessor automationProcessor;
 
     @Override
-    public void startAutomatePlayerLifeCycle(String secretKey, String gameId, String userName) {
+    public void startAutomatePlayerLifeCycle(String secretKey, String gameId, String userName, String botName) {
         try {
             UserBean user = userDao.getUserByUsername(userName);
             GameBean game = gameDao.getGameByGameId(Integer.valueOf(gameId));
             GameUserBean player = gameUtil.getGameUserJoinedToGame(user, game);
 
-            scheduledProcessor.getAutomatedPlayers().add(player);
+            automationProcessor.getAutomatedPlayers().put(player, botName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,7 +45,7 @@ public class ManagementServiceImpl implements ManagementService {
             GameBean game = gameDao.getGameByGameId(Integer.valueOf(gameId));
             GameUserBean player = gameUtil.getGameUserJoinedToGame(user, game);
 
-            scheduledProcessor.getAutomatedPlayers().remove(player);
+            automationProcessor.getAutomatedPlayers().remove(player);
         } catch (Exception e) {
             e.printStackTrace();
         }
