@@ -93,7 +93,7 @@ public class UserBean {
     }
 
     public ResourceBundle getMsgs() {
-        Locale currentLocale = new Locale(language, country);
+        Locale currentLocale = new Locale(language == null ? "en" : language, country == null ? "US" : country);
         return ResourceBundle.getBundle("i18n.library", currentLocale);
     }
 
