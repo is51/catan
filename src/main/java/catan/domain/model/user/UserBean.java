@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 @Entity
 @Table(name = "CT_USER")
@@ -25,6 +27,12 @@ public class UserBean {
     @Column(name = "GUEST", nullable = false)
     private boolean guest;
 
+    @Column(name = "LANGUAGE")
+    private String language;
+
+    @Column(name = "COUNTRY")
+    private String country;
+
     public UserBean() {
     }
 
@@ -32,6 +40,8 @@ public class UserBean {
         this.username = username;
         this.password = password;
         this.guest = guest;
+        this.language = "en";
+        this.country = "US";
     }
 
     public int getId() {
@@ -64,6 +74,27 @@ public class UserBean {
 
     public void setGuest(boolean guest) {
         this.guest = guest;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public ResourceBundle getMsgs() {
+        Locale currentLocale = new Locale(language, country);
+        return ResourceBundle.getBundle("i18n.library", currentLocale);
     }
 
     @Override

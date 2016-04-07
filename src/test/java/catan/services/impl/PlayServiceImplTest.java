@@ -47,10 +47,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -102,11 +104,11 @@ public class PlayServiceImplTest {
     private GameUserBean gameUser2;
     private GameUserBean gameUser3;
     private GameUserBean gameUser4;
+    private ResourceBundle messages;
 
     private RandomValueGeneratorMock rvg = new RandomValueGeneratorMock();
 
     private static final Gson GSON = new Gson();
-
 
     @Before
     public void setUp() throws GameException {
@@ -133,6 +135,9 @@ public class PlayServiceImplTest {
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
+
+        Locale currentLocale = new Locale("en", "US");
+        messages = ResourceBundle.getBundle("i18n.library", currentLocale);
     }
 
     @After
@@ -3293,7 +3298,7 @@ public class PlayServiceImplTest {
     }
     
     private void allowUserKickOffResources(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, MainStageUtil.NOTIFY_MESSAGE_KICK_OFF_RESOURCE));
+        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, messages.getString("notify_msg_kick_off_resources")));
     }
 
     private void allowUserToMoveRobber(GameUserBean user) {
@@ -3317,7 +3322,7 @@ public class PlayServiceImplTest {
     }
 
     private void allowUserToThrowDice(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE, true, MainStageUtil.NOTIFY_MESSAGE_THROW_DICE));
+        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE, true, messages.getString("notify_msg_throw_dice")));
     }
 
     private void allowUserToBuildCity(GameUserBean user) {

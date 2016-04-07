@@ -43,6 +43,9 @@ public class GameUserBean {
     @Column(name = "AVAILABLE_TRADE_REPLY", unique = false)
     private Boolean availableTradeReply;
 
+    @Column(name = "DISPLAYED_MESSAGE")
+    private String displayedMessage;
+
     @Embedded
     private Achievements achievements;
 
@@ -156,6 +159,14 @@ public class GameUserBean {
 
     public void setAvailableTradeReply(Boolean availableTradeReply) {
         this.availableTradeReply = availableTradeReply;
+    }
+
+    public String getDisplayedMessage() {
+        return displayedMessage;
+    }
+
+    public void setDisplayedMessage(String displayedMessage) {
+        this.displayedMessage = displayedMessage;
     }
 
     public Achievements getAchievements() {
