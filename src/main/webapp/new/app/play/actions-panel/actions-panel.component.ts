@@ -39,14 +39,6 @@ export class ActionsPanelComponent {
         this._actions.execute('THROW_DICE', this.game);
     }
 
-    moveRobber() {
-        this._actions.execute('MOVE_ROBBER', this.game);
-    }
-
-    choosePlayerToRob() {
-        this._actions.execute('CHOOSE_PLAYER_TO_ROB', this.game);
-    }
-
     kickOffResources() {
         this._actions.execute('KICK_OFF_RESOURCES', this.game);
     }
