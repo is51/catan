@@ -38,10 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -106,6 +108,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void doAction(GameUserActionCode action, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
+        clearUsersMessages(game);
         Resources usersResources = gameUser.getResources();
         switch (action) {
             case BUILD_ROAD:
@@ -121,7 +124,7 @@ public class PlayServiceImpl implements PlayService {
                 endTurn(gameUser, game);
                 break;
             case THROW_DICE:
-                throwDice(game);
+                throwDice(gameUser);
                 break;
             case BUY_CARD:
                 buyCard(gameUser, game, usersResources, returnedParams);
@@ -145,7 +148,7 @@ public class PlayServiceImpl implements PlayService {
                 choosePlayerToRob(gameUser, game, usersResources, params.get("gameUserId"));
                 break;
             case KICK_OFF_RESOURCES:
-                kickOffResources(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                kickOffResources(gameUser, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
             case TRADE_PORT:
                 tradeResourcesInPort(gameUser, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
@@ -156,6 +159,12 @@ public class PlayServiceImpl implements PlayService {
             case TRADE_REPLY:
                 tradeReply(gameUser, game, usersResources, params.get("tradeReply"), params.get("offerId"));
                 break;
+        }
+    }
+
+    private void clearUsersMessages(GameBean game) {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            gameUser.setDisplayedMessage(null);
         }
     }
 
@@ -236,17 +245,18 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void throwDice(GameBean game) {
+    private void throwDice(GameUserBean gameUser) {
         Integer diceFirstValue = randomUtil.getRandomDiceNumber();
         Integer diceSecondValue = randomUtil.getRandomDiceNumber();
         log.info("Current dice value is " + (diceFirstValue + diceSecondValue) + " (First dice: " + diceFirstValue + ", Second dice: " + diceSecondValue + ")");
 
+        GameBean game = gameUser.getGame();
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
             log.debug("Robber activity is started, checking if players should kick-off resources");
-            checkIfPlayersShouldKickOffResources(game);
+            checkIfPlayersShouldKickOffResources(gameUser);
         } else {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
             log.debug("Producing resources form hexes with current dice value:" + (hexesWithCurrentDiceValue.isEmpty() ? "" : "\n\t\t") + hexesWithCurrentDiceValue.toString());
@@ -319,6 +329,7 @@ public class PlayServiceImpl implements PlayService {
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.KNIGHT);
 
         game.setRobberShouldBeMovedMandatory(true);
+        updateMoveRobberDisplayedMessage(gameUser);
         game.setDevelopmentCardUsed(true);
 
         achievementsUtil.increaseTotalUsedKnightsByOne(gameUser);
@@ -342,6 +353,7 @@ public class PlayServiceImpl implements PlayService {
         }
         if (playersToRobQuantity > 1) {
             game.setChoosePlayerToRobMandatory(true);
+            updateChoosePlayerToRobDisplayedMessage(gameUser);
         }
     }
 
@@ -398,7 +410,7 @@ public class PlayServiceImpl implements PlayService {
         return gameUserId;
     }
 
-    private void kickOffResources(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+    private void kickOffResources(GameUserBean gameUser, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
 
         int usersBrickQuantity = userResources.getBrick();
         int usersWoodQuantity = userResources.getWood();
@@ -423,7 +435,7 @@ public class PlayServiceImpl implements PlayService {
         userResources.setStone(usersStoneQuantity - stoneQuantityToKickOff);
 
         gameUser.setKickingOffResourcesMandatory(false);
-        checkRobberShouldBeMovedMandatory(game);
+        checkRobberShouldBeMovedMandatory(gameUser.getGame());
     }
 
     private void tradeResourcesInPort(GameUserBean gameUser, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
@@ -582,12 +594,19 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void checkRobberShouldBeMovedMandatory(GameBean game) {
+        List<String> userNamesToKickOffRes = new ArrayList<String>();
         for (GameUserBean gameUserIterated : game.getGameUsers()) {
             if (gameUserIterated.isKickingOffResourcesMandatory()) {
-                return;
+                userNamesToKickOffRes.add(gameUserIterated.getUser().getUsername());
             }
         }
+
+        if (userNamesToKickOffRes.size() > 0) {
+            updateWaitingForKickOffResDisplayedMessage(game.fetchActiveGameUser(), userNamesToKickOffRes);
+            return;
+        }
         game.setRobberShouldBeMovedMandatory(true);
+        updateMoveRobberDisplayedMessage(game.fetchActiveGameUser());
     }
 
     private void validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(int sumOfUsersResources, int sumOfResourcesKickingOff) throws PlayException {
@@ -646,18 +665,22 @@ public class PlayServiceImpl implements PlayService {
     }
 
 
-    private void checkIfPlayersShouldKickOffResources(GameBean game) {
-        boolean noOneNeedsToKickOfResources = true;
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getAchievements().getTotalResources() > 7) {
-                gameUser.setKickingOffResourcesMandatory(true);
-                noOneNeedsToKickOfResources = false;
+    private void checkIfPlayersShouldKickOffResources(GameUserBean gameUser) {
+        GameBean game = gameUser.getGame();
+        List<String> userNamesToKickOffRes = new ArrayList<String>();
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            if (gameUserIterated.getAchievements().getTotalResources() > 7) {
+                gameUserIterated.setKickingOffResourcesMandatory(true);
+                userNamesToKickOffRes.add(gameUserIterated.getUser().getUsername());
             }
         }
 
-        if (noOneNeedsToKickOfResources) {
-            game.setRobberShouldBeMovedMandatory(true);
+        if (userNamesToKickOffRes.size() > 0) {
+            updateWaitingForKickOffResDisplayedMessage(gameUser, userNamesToKickOffRes);
+            return;
         }
+        game.setRobberShouldBeMovedMandatory(true);
+        updateMoveRobberDisplayedMessage(gameUser);
     }
 
     private void changeRobbedHex(GameBean game, HexBean hexToRob) {
@@ -668,6 +691,31 @@ public class PlayServiceImpl implements PlayService {
             }
         }
         hexToRob.setRobbed(true);
+    }
+
+    private void updateMoveRobberDisplayedMessage(GameUserBean gameUser) {
+        Object[] argsForMsgPattern = {gameUser.getUser().getUsername()};
+        String msgToShow = getMessagePattern(gameUser, "help_msg_move_robber").format(argsForMsgPattern);
+        gameUser.setDisplayedMessage(msgToShow);
+    }
+
+    private void updateChoosePlayerToRobDisplayedMessage(GameUserBean gameUser) {
+        Object[] argsForMsgPattern = {gameUser.getUser().getUsername()};
+        String msgToShow = getMessagePattern(gameUser, "help_msg_choose_player_to_rob").format(argsForMsgPattern);
+        gameUser.setDisplayedMessage(msgToShow);
+    }
+
+    private void updateWaitingForKickOffResDisplayedMessage(GameUserBean gameUser, List<String> waitingList) {
+        if (!gameUser.isKickingOffResourcesMandatory()) {
+            Object[] argsForMsgPattern = {String.join(", ", waitingList), waitingList.size()};
+            String msgToShow = getMessagePattern(gameUser, "help_msg_wait_for_kicking_off_res").format(argsForMsgPattern);
+            gameUser.setDisplayedMessage(msgToShow);
+        }
+    }
+
+    private MessageFormat getMessagePattern(GameUserBean gameUser, String key) {
+        ResourceBundle messagesBundle = gameUser.getUser().getMsgs();
+        return new MessageFormat(messagesBundle.getString(key));
     }
 
     private void validateHexCouldBeRobbed(HexBean hexToRob) throws PlayException {

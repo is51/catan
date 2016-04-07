@@ -18,6 +18,7 @@ public class GameUserDetails {
     private AvailableActionsDetails availableActions;
     private ResourcesDetails resources;
     private DevelopmentCardsDetails developmentCards;
+    private String displayedMessage;
 
     //TODO: move all GSON methods to util class
     private static final Gson GSON = new Gson();
@@ -44,6 +45,7 @@ public class GameUserDetails {
             this.availableActions = GSON.fromJson(gameUserBean.getAvailableActions(), AvailableActionsDetails.class);
             this.resources = new ResourcesDetails(gameUserBean.getResources());
             this.developmentCards = new DevelopmentCardsDetails(gameUserBean.getDevelopmentCards());
+            this.displayedMessage = gameUserBean.getDisplayedMessage();
         }
     }
 
@@ -117,5 +119,13 @@ public class GameUserDetails {
 
     public void setDevelopmentCards(DevelopmentCardsDetails developmentCards) {
         this.developmentCards = developmentCards;
+    }
+
+    public String getDisplayedMessage() {
+        return displayedMessage;
+    }
+
+    public void setDisplayedMessage(String displayedMessage) {
+        this.displayedMessage = displayedMessage;
     }
 }
