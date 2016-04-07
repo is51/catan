@@ -11,9 +11,11 @@ const MAX_LINE_LENGTH = 23;
 export class AlertComponent {
     lines: string[] = <string[]>[];
     close: Function = () => {};
+    moreThan2Lines: boolean = false;
 
     setText(text: string) {
         this.lines = this._split(text);
+        this.moreThan2Lines = this.lines.length > 2;
     }
 
     private _split(text: string) {
