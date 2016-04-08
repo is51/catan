@@ -6,13 +6,10 @@ import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
-import catan.domain.transfer.output.game.actions.AvailableActionsDetails;
-import catan.services.PlayService;
-import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static catan.domain.model.game.types.GameUserActionCode.BUILD_CITY;
@@ -30,20 +27,19 @@ import static catan.domain.model.game.types.GameUserActionCode.TRADE_REPLY;
 @Service("smartBot")
 public class SmartBot extends AbstractBot {
 
-
     @Override
     String getBotName() {
         return "SMART_BOT";
     }
 
     @Override
-    void processActions(GameUserBean player, UserBean user, String gameId,
-                                  ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                                  ActionDetails kickOffResourcesAction, ActionDetails throwDiceAction,
-                                  ActionDetails buildCityAction, ActionDetails buildSettlementAction,
-                                  ActionDetails buildRoadAction, ActionDetails buyCardAction,
-                                  ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                                  ActionDetails endTurnAction) throws PlayException, GameException {
+    void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
+                               ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
+                               ActionDetails kickOffResourcesAction, ActionDetails throwDiceAction,
+                               ActionDetails buildCityAction, ActionDetails buildSettlementAction,
+                               ActionDetails buildRoadAction, ActionDetails buyCardAction,
+                               ActionDetails tradePortAction, ActionDetails tradeReplyAction,
+                               ActionDetails endTurnAction) throws PlayException, GameException {
 
         if (moveRobberAction != null) {
             moveRobber(user, gameId, moveRobberAction);
@@ -65,17 +61,17 @@ public class SmartBot extends AbstractBot {
             return;
         }
 
-        if (buildCityAction != null && buildCityAction.getParams().getNodeIds().size() > 0) {
+        if (buildCityAction != null) {
             buildCity(user, gameId, buildCityAction);
             return;
         }
 
-        if (buildSettlementAction != null && buildSettlementAction.getParams().getNodeIds().size() > 0) {
+        if (buildSettlementAction != null) {
             buildSettlement(user, gameId, buildSettlementAction);
             return;
         }
 
-        if (buildRoadAction != null && buildRoadAction.getParams().getEdgeIds().size() > 0) {
+        if (buildRoadAction != null) {
             buildRoad(user, gameId, buildRoadAction);
             return;
         }
@@ -111,28 +107,32 @@ public class SmartBot extends AbstractBot {
 
     private void buildRoad(UserBean user, String gameId, ActionDetails buildRoadAction) throws PlayException, GameException {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("edgeId", buildRoadAction.getParams().getEdgeIds().get(0).toString());
+        List<Integer> edgeIds = buildRoadAction.getParams().getEdgeIds();
+        params.put("edgeId", edgeIds.get((int) (Math.random() * edgeIds.size())).toString());
 
         playService.processAction(BUILD_ROAD, user, gameId, params);
     }
 
     private void buildSettlement(UserBean user, String gameId, ActionDetails buildSettlementAction) throws PlayException, GameException {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("nodeId", buildSettlementAction.getParams().getNodeIds().get(0).toString());
+        List<Integer> nodeIds = buildSettlementAction.getParams().getNodeIds();
+        params.put("nodeId", nodeIds.get((int) (Math.random() * nodeIds.size())).toString());
 
         playService.processAction(BUILD_SETTLEMENT, user, gameId, params);
     }
 
     private void buildCity(UserBean user, String gameId, ActionDetails buildCityAction) throws PlayException, GameException {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("nodeId", buildCityAction.getParams().getNodeIds().get(0).toString());
+        List<Integer> nodeIds = buildCityAction.getParams().getNodeIds();
+        params.put("nodeId", nodeIds.get((int) (Math.random() * nodeIds.size())).toString());
 
         playService.processAction(BUILD_CITY, user, gameId, params);
     }
 
     private void moveRobber(UserBean user, String gameId, ActionDetails moveRobberAction) throws PlayException, GameException {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("hexId", moveRobberAction.getParams().getHexIds().get(0).toString());
+        List<Integer> hexIds = moveRobberAction.getParams().getHexIds();
+        params.put("hexId", hexIds.get((int) (Math.random() * hexIds.size())).toString());
 
         playService.processAction(MOVE_ROBBER, user, gameId, params);
     }
@@ -173,8 +173,10 @@ public class SmartBot extends AbstractBot {
 
     private void choosePlayerToRob(GameUserBean player, UserBean user, String gameId, ActionDetails choosePlayerToRobAction) throws PlayException, GameException {
         String gameUserId = "";
+        List<Integer> nodeIds = choosePlayerToRobAction.getParams().getNodeIds();
+        Integer nodeAbsoluteIdToRobPlayer = nodeIds.get((int) (Math.random() * nodeIds.size()));
         for (NodeBean nodeBean : player.getGame().getNodes()) {
-            if (choosePlayerToRobAction.getParams().getNodeIds().get(0).equals(nodeBean.getAbsoluteId())) {
+            if (nodeAbsoluteIdToRobPlayer.equals(nodeBean.getAbsoluteId())) {
                 gameUserId = nodeBean.getBuilding().getBuildingOwner().getGameUserId().toString();
                 break;
             }

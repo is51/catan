@@ -29,13 +29,13 @@ abstract class AbstractBot {
 
     abstract String getBotName();
 
-    abstract void processActions(GameUserBean player, UserBean user, String gameId,
-                                           ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                                           ActionDetails kickOffResourcesAction, ActionDetails throwDiceAction,
-                                           ActionDetails buildCityAction, ActionDetails buildSettlementAction,
-                                           ActionDetails buildRoadAction, ActionDetails buyCardAction,
-                                           ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                                           ActionDetails endTurnAction) throws PlayException, GameException;
+    abstract void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
+                                        ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
+                                        ActionDetails kickOffResourcesAction, ActionDetails throwDiceAction,
+                                        ActionDetails buildCityAction, ActionDetails buildSettlementAction,
+                                        ActionDetails buildRoadAction, ActionDetails buyCardAction,
+                                        ActionDetails tradePortAction, ActionDetails tradeReplyAction,
+                                        ActionDetails endTurnAction) throws PlayException, GameException;
 
     void automatePlayersActions(GameUserBean player) throws PlayException, GameException {
         AvailableActionsDetails availableActions = getAvailableActions(player);
@@ -92,7 +92,7 @@ abstract class AbstractBot {
         UserBean user = player.getUser();
 
 
-        processActions(player, user, gameId,
+        processActionsInOrder(player, user, gameId,
                 moveRobberAction, choosePlayerToRobAction, kickOffResourcesAction, throwDiceAction, buildCityAction,
                 buildSettlementAction, buildRoadAction, buyCardAction, tradePortAction, tradeReplyAction, endTurnAction);
     }
