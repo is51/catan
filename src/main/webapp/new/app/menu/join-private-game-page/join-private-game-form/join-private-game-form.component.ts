@@ -5,6 +5,7 @@ import { AuthService } from 'app/shared/services/auth/auth.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-join-private-game-form',
@@ -19,7 +20,8 @@ export class JoinPrivateGameFormComponent {
         private _remote: RemoteService,
         private _authUser: AuthUserService,
         private _router: Router,
-        private _routeData: RouteDataService) { }
+        private _routeData: RouteDataService,
+        private _alert: AlertService) { }
 
     ngOnInit() {
         if (!this.data) {
@@ -53,7 +55,7 @@ export class JoinPrivateGameFormComponent {
     private _joinPrivateGame() {
         this._remote.request('game.joinPrivate', {'privateCode': this.data.privateCode})
             .then(data => this._router.navigate(['GamePage', {gameId: data.gameId}]))
-            .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+            .catch(data => this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 
     private _goJoinPrivateGamePage() {
