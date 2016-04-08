@@ -707,7 +707,15 @@ public class PlayServiceImpl implements PlayService {
 
     private void updateWaitingForKickOffResDisplayedMessage(GameUserBean gameUser, List<String> waitingList) {
         if (!gameUser.isKickingOffResourcesMandatory()) {
-            Object[] argsForMsgPattern = {String.join(", ", waitingList), waitingList.size()};
+            String waitingListString = "";
+            for (String userName : waitingList) {
+                if (!waitingListString.equals("")) {
+                    waitingListString = waitingListString + ", " + userName;
+                } else {
+                    waitingListString = waitingListString + userName;
+                }
+            }
+            Object[] argsForMsgPattern = {waitingListString, waitingList.size()};
             String msgToShow = getMessagePattern(gameUser, "help_msg_wait_for_kicking_off_res").format(argsForMsgPattern);
             gameUser.setDisplayedMessage(msgToShow);
         }
