@@ -2,8 +2,10 @@ package catan.services.impl;
 
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
+import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,21 @@ import static catan.domain.model.game.types.GameUserActionCode.TRADE_REPLY;
 
 @Service("smartBot")
 public class SmartBot extends AbstractBot {
+    static Map<Integer, Double> hexProbabilities = new HashMap<Integer, Double>();
+
+    static {
+        hexProbabilities.put(2, (1d / 36));
+        hexProbabilities.put(3, (2d / 36));
+        hexProbabilities.put(4, (3d / 36));
+        hexProbabilities.put(5, (4d / 36));
+        hexProbabilities.put(6, (5d / 36));
+        hexProbabilities.put(7, (6d / 36));
+        hexProbabilities.put(8, (5d / 36));
+        hexProbabilities.put(9, (4d / 36));
+        hexProbabilities.put(10, (3d / 36));
+        hexProbabilities.put(11, (2d / 36));
+        hexProbabilities.put(12, (1d / 36));
+    }
 
     @Override
     String getBotName() {
@@ -42,7 +59,7 @@ public class SmartBot extends AbstractBot {
                                ActionDetails endTurnAction) throws PlayException, GameException {
 
         if (moveRobberAction != null) {
-            moveRobber(user, gameId, moveRobberAction);
+            moveRobber(player, user, gameId, moveRobberAction);
             return;
         }
 
@@ -62,12 +79,12 @@ public class SmartBot extends AbstractBot {
         }
 
         if (buildCityAction != null) {
-            buildCity(user, gameId, buildCityAction);
+            buildCity(player, user, gameId, buildCityAction);
             return;
         }
 
         if (buildSettlementAction != null) {
-            buildSettlement(user, gameId, buildSettlementAction);
+            buildSettlement(player, user, gameId, buildSettlementAction);
             return;
         }
 
@@ -113,26 +130,33 @@ public class SmartBot extends AbstractBot {
         playService.processAction(BUILD_ROAD, user, gameId, params);
     }
 
-    private void buildSettlement(UserBean user, String gameId, ActionDetails buildSettlementAction) throws PlayException, GameException {
-        Map<String, String> params = new HashMap<String, String>();
-        List<Integer> nodeIds = buildSettlementAction.getParams().getNodeIds();
-        params.put("nodeId", nodeIds.get((int) (Math.random() * nodeIds.size())).toString());
+    private void buildSettlement(GameUserBean player, UserBean user, String gameId, ActionDetails buildSettlementAction) throws PlayException, GameException {
+        List<Integer> nodeIdsToBuildSettlement = buildSettlementAction.getParams().getNodeIds();
+        int nodeIdWithNeighbourHexMaxProbability = getNodeIdWithNeighbourHexMaxProbability(player, nodeIdsToBuildSettlement);
 
-        playService.processAction(BUILD_SETTLEMENT, user, gameId, params);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeId", String.valueOf(nodeIdWithNeighbourHexMaxProbability));
+
+        GameUserActionCode buildSettlementActionCode = BUILD_SETTLEMENT;
+        playService.processAction(buildSettlementActionCode, user, gameId, params);
     }
 
-    private void buildCity(UserBean user, String gameId, ActionDetails buildCityAction) throws PlayException, GameException {
+    private void buildCity(GameUserBean player, UserBean user, String gameId, ActionDetails buildCityAction) throws PlayException, GameException {
+        List<Integer> nodeIdsToBuildCity = buildCityAction.getParams().getNodeIds();
+        int nodeIdWithNeighbourHexMaxProbability = getNodeIdWithNeighbourHexMaxProbability(player, nodeIdsToBuildCity);
+
         Map<String, String> params = new HashMap<String, String>();
-        List<Integer> nodeIds = buildCityAction.getParams().getNodeIds();
-        params.put("nodeId", nodeIds.get((int) (Math.random() * nodeIds.size())).toString());
+        params.put("nodeId", String.valueOf(nodeIdWithNeighbourHexMaxProbability));
 
         playService.processAction(BUILD_CITY, user, gameId, params);
     }
 
-    private void moveRobber(UserBean user, String gameId, ActionDetails moveRobberAction) throws PlayException, GameException {
+    private void moveRobber(GameUserBean player, UserBean user, String gameId, ActionDetails moveRobberAction) throws PlayException, GameException {
+        List<Integer> hexIdsToMoveRob = moveRobberAction.getParams().getHexIds();
+        int hexIdWithMaxProbability = getHexIdWithMaxProbability(player, hexIdsToMoveRob);
+
         Map<String, String> params = new HashMap<String, String>();
-        List<Integer> hexIds = moveRobberAction.getParams().getHexIds();
-        params.put("hexId", hexIds.get((int) (Math.random() * hexIds.size())).toString());
+        params.put("hexId", String.valueOf(hexIdWithMaxProbability));
 
         playService.processAction(MOVE_ROBBER, user, gameId, params);
     }
@@ -291,6 +315,49 @@ public class SmartBot extends AbstractBot {
 
         playService.processAction(TRADE_PORT, user, gameId, params);
         return true;
+    }
+
+
+    private static int getHexIdWithMaxProbability(GameUserBean player, List<Integer> hexIdsToMoveRob) {
+        int hexIdWithMaxProbability = 0;
+        double maxProbability = 0;
+
+        for (HexBean hex : player.getGame().getHexes()) {
+            double hexDiceProbability = hexProbabilities.get(hex.getDice());
+            for (Integer hexId : hexIdsToMoveRob) {
+                if(hexId.equals(hex.getId()) && maxProbability <= hexDiceProbability){
+                    hexIdWithMaxProbability = hexId;
+                    maxProbability = hexDiceProbability;
+                }
+            }
+        }
+
+        return hexIdWithMaxProbability;
+    }
+
+    private static int getNodeIdWithNeighbourHexMaxProbability(GameUserBean player, List<Integer> nodeIdsToBuild) {
+        Map<Integer, Double> sumNodeProbabilities = new HashMap<Integer, Double>();
+        for (Integer nodeId : nodeIdsToBuild) {
+            double sumProbability = 0d;
+            for (NodeBean node : player.getGame().getNodes()) {
+                if (nodeId.equals(node.getId())) {
+                    for (HexBean hexAtNode : node.getHexes().listAllNotNullItems()) {
+                        sumProbability += hexProbabilities.get(hexAtNode.getDice());
+                    }
+
+                }
+            }
+
+            sumNodeProbabilities.put(nodeId, sumProbability);
+        }
+
+        int nodeIdWithMaxProbability = 0;
+        for (Integer currentNodeId : sumNodeProbabilities.keySet()) {
+            if (sumNodeProbabilities.get(nodeIdWithMaxProbability) <= sumNodeProbabilities.get(currentNodeId)) {
+                nodeIdWithMaxProbability = currentNodeId;
+            }
+        }
+        return nodeIdWithMaxProbability;
     }
 
 }
