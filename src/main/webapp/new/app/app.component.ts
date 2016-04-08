@@ -11,6 +11,7 @@ import { ModalWindowService } from 'app/shared/modal-window/modal-window.service
 import { RouteDataService } from 'app/shared/services/route-data/route-data.service';
 import { NotificationService } from 'app/shared/services/notification/notification.service';
 import { ApplicationActiveService } from 'app/shared/services/application-active/application-active.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { StartPageComponent } from 'app/menu/start-page/start-page.component';
 import { LoginPageComponent } from 'app/menu/login-page/login-page.component';
@@ -22,11 +23,17 @@ import { JoinGamePageComponent } from 'app/menu/join-game-page/join-game-page.co
 import { JoinPublicGamePageComponent } from 'app/menu/join-public-game-page/join-public-game-page.component';
 import { JoinPrivateGamePageComponent } from 'app/menu/join-private-game-page/join-private-game-page.component';
 import { GamePageComponent } from 'app/menu/game-page/game-page.component';
+import { AlertsComponent } from 'app/shared/alert/alerts.component';
 
 @Component({
     selector: 'ct-app',
-    template: '<router-outlet></router-outlet>',
-    directives: [RouterOutlet],
+    template: `
+        <router-outlet></router-outlet>
+        <ct-alerts></ct-alerts>`,
+    directives: [
+        RouterOutlet,
+        AlertsComponent
+    ],
     providers: [
         HTTP_PROVIDERS,
 
@@ -38,7 +45,8 @@ import { GamePageComponent } from 'app/menu/game-page/game-page.component';
         ModalWindowService,
         RouteDataService,
         NotificationService,
-        ApplicationActiveService
+        ApplicationActiveService,
+        AlertService
     ]
 })
 

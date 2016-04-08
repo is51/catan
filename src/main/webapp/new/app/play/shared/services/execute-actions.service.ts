@@ -4,6 +4,7 @@ import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 import { PlayService } from './play.service';
 import { GameService } from 'app/shared/services/game/game.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 
@@ -12,7 +13,8 @@ export class ExecuteActionsService {
     constructor (
         private _play: PlayService,
         private _gameService: GameService,
-        private _modalWindow: ModalWindowService) { }
+        private _modalWindow: ModalWindowService,
+        private _alert: AlertService) { }
 
     private _ACTIONS = {
         'TRADE_REPLY': () => {
@@ -23,7 +25,7 @@ export class ExecuteActionsService {
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
                     if (data !== "CANCELED") {
-                        alert("Kick Off Resources error!");
+                        this._alert.message("Kick Off Resources error!");
                     }
                 });
         },
@@ -32,7 +34,7 @@ export class ExecuteActionsService {
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
                     if (data !== "CANCELED") {
-                        alert("Move robber error!");
+                        this._alert.message("Move robber error!");
                     }
                 });
         },
@@ -41,7 +43,7 @@ export class ExecuteActionsService {
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
                     if (data !== "CANCELED") {
-                        alert("Choose Player To Rob error!");
+                        this._alert.message("Choose Player To Rob error!");
                     }
                 });
         },
@@ -50,9 +52,9 @@ export class ExecuteActionsService {
                 .then(() => this._gameService.refresh(game))
                 .catch(errorCode => {
                     if (errorCode === "NO_AVAILABLE_PLACES") {
-                        alert("NO_AVAILABLE_PLACES");
+                        this._alert.message("NO_AVAILABLE_PLACES");
                     } else if (errorCode !== "CANCELED") {
-                        alert("Build road error!");
+                        this._alert.message("Build road error!");
                     }
                 });
         },
@@ -61,9 +63,9 @@ export class ExecuteActionsService {
                 .then(() => this._gameService.refresh(game))
                 .catch(errorCode => {
                     if (errorCode === "NO_AVAILABLE_PLACES") {
-                        alert("NO_AVAILABLE_PLACES");
+                        this._alert.message("NO_AVAILABLE_PLACES");
                     } else if (errorCode !== "CANCELED") {
-                        alert("Build road error!");
+                        this._alert.message("Build road error!");
                     }
                 });
         },
@@ -72,44 +74,44 @@ export class ExecuteActionsService {
                 .then(() => this._gameService.refresh(game))
                 .catch(errorCode => {
                     if (errorCode === "NO_AVAILABLE_PLACES") {
-                        alert("NO_AVAILABLE_PLACES");
+                        this._alert.message("NO_AVAILABLE_PLACES");
                     } else if (errorCode !== "CANCELED") {
-                        alert("Build road error!");
+                        this._alert.message("Build road error!");
                     }
                 });
         },
         'BUY_CARD': (game: Game) => {
             this._play.buyCard(game)
                 .then(data => {
-                    alert("Bought card: " + data.card); //TODO: why red?
+                    this._alert.message("Bought card: " + data.card); //TODO: why red?
                     this._gameService.refresh(game);
                 })
-                .catch(data => alert('Buy Card error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+                .catch(data => this._alert.message('Buy Card error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         },
         'END_TURN': (game: Game) => {
             this._play.endTurn(game)
                 .then(() => this._gameService.refresh(game))
-                .catch(data => alert('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+                .catch(data => this._alert.message('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         },
         'THROW_DICE': (game: Game) => {
             this._play.throwDice(game)
                 .then(() => this._gameService.refresh(game))
-                .catch(data => alert('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+                .catch(data => this._alert.message('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         },
         'USE_CARD_KNIGHT': (game: Game) => {
             this._play.useCardKnight(game)
                 .then(() => this._gameService.refresh(game))
-                .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+                .catch(data => this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         },
         'USE_CARD_ROAD_BUILDING': (game: Game) => {
             this._play.useCardRoadBuilding(game)
                 .then(data => {
                     var count = data.roadsCount; //TODO: fix red?
-                    alert("Build " + count + " road" + ((count===1)?"":"s"));
+                    this._alert.message("Build " + count + " road" + ((count===1)?"":"s"));
                     this._gameService.refresh(game);
                 })
                 .catch(data => {
-                    alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                    this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                 });
         },
         'USE_CARD_MONOPOLY': (game: Game) => {
@@ -117,16 +119,16 @@ export class ExecuteActionsService {
                 .then(data => {
                     let count = data.resourcesCount; //TODO: fix red?
                     if (count === 0) {
-                        alert("You received " + count + " resources because players don't have this type of resource");
+                        this._alert.message("You received " + count + " resources because players don't have this type of resource");
                     } else {
-                        alert("You received " + count + " resources");
+                        this._alert.message("You received " + count + " resources");
                     }
 
                     this._gameService.refresh(game)
                 })
                 .catch(data => {
                     if (data !== "CANCELED") {
-                        alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                        this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                     }
                 });
         },
@@ -135,7 +137,7 @@ export class ExecuteActionsService {
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
                     if (data !== "CANCELED") {
-                        alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                        this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                     }
                 });
         },
@@ -148,7 +150,7 @@ export class ExecuteActionsService {
                     })
                     .catch(data => {
                         if (data !== "CANCELED") {
-                            alert('Trade Port error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                            this._alert.message('Trade Port error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                         }
                         reject();
                     });
@@ -163,7 +165,7 @@ export class ExecuteActionsService {
                     })
                     .catch(data => {
                         if (data !== "CANCELED") {
-                            alert('Trade Players Propose error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                            this._alert.message('Trade Players Propose error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                         }
                         reject();
                     });

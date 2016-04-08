@@ -3,12 +3,13 @@ import { ApplicationActiveService } from 'app/shared/services/application-active
 
 declare var Notification: any;
 
-const ICONS_PATH = 'app/shared/services/notification/images/';
+const ICONS_PATH = 'resources/notification/';
 const ICONS = {
     DEFAULT: ICONS_PATH + 'default.png',
     THROW_DICE: ICONS_PATH + 'throw-dice.png',
     TRADE_REPLY: ICONS_PATH + 'trade-reply.png',
-    KICK_OFF_RESOURCES: ICONS_PATH + 'kick-off-resources.png'
+    KICK_OFF_RESOURCES: ICONS_PATH + 'kick-off-resources.png',
+    GAME_IS_STARTED: ICONS_PATH + 'game-is-started.png'
 };
 
 @Injectable()

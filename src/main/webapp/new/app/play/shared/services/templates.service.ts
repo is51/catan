@@ -8,6 +8,26 @@ const TEMPLATES_PATH = '/new/resources/templates/'; // Depends on #rootpath
 const TEMPLATES_SUFFIX = '.template.xml';
 const TEMPLATES = [
     'hex-bg',
+
+    'hex-bg-edge-top-right',
+    'hex-bg-edge-top-left',
+    'hex-bg-edge-bottom-right',
+    'hex-bg-edge-bottom-left',
+    'hex-bg-edge-left',
+    'hex-bg-edge-right',
+
+    'hex-bg-node-bottom',
+    'hex-bg-node-bottom-right',
+    'hex-bg-node-bottom-left',
+    'hex-bg-node-top',
+    'hex-bg-node-top-right',
+    'hex-bg-node-top-left',
+
+    'hex-bg-node-right-top',
+    'hex-bg-node-right-bottom',
+    'hex-bg-node-left-top',
+    'hex-bg-node-left-bottom',
+
     'hex-dice',
     'hex-brick',
     'hex-wood',
@@ -36,7 +56,10 @@ const TEMPLATES = [
     'road-vertical',
     'road-horizontal',
     'blank-edge-vertical',
-    'blank-edge-horizontal'
+    'blank-edge-horizontal',
+
+    'clouds',
+    'map-bottom'
 ];
 
 @Injectable()
