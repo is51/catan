@@ -11,11 +11,9 @@ const MAX_LINE_LENGTH = 23;
 export class AlertComponent {
     lines: string[] = <string[]>[];
     close: Function = () => {};
-    moreThan2Lines: boolean = false;
 
     setText(text: string) {
         this.lines = this._split(text);
-        this.moreThan2Lines = this.lines.length > 2;
     }
 
     private _split(text: string) {
@@ -29,9 +27,9 @@ export class AlertComponent {
             if (currentLine === '') {
                 currentLine = word;
             } else {
-                let newPotentialLine = currentLine + ' ' + word;
-                if (newPotentialLine.length <= MAX_LINE_LENGTH) {
-                    currentLine += ' ' + word;
+                let currentLineNewValue = currentLine + ' ' + word;
+                if (currentLineNewValue.length <= MAX_LINE_LENGTH) {
+                    currentLine = currentLineNewValue;
                 } else {
                     lines.push(currentLine);
                     currentLine = word;
@@ -41,5 +39,9 @@ export class AlertComponent {
         lines.push(currentLine);
 
         return lines;
+    }
+
+    moreThan2Lines() {
+        return this.lines.length > 2;
     }
 }
