@@ -1,5 +1,7 @@
 import { Component } from 'angular2/core';
+
 import { AuthService } from 'app/shared/services/auth/auth.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-register-guest-form',
@@ -15,7 +17,8 @@ export class RegisterGuestFormComponent {
     };
 
     constructor(
-        private _auth: AuthService) { }
+        private _auth: AuthService,
+        private _alert: AlertService) { }
 
     submit() {
         this._auth.registerAndLoginGuest(this.data.username)
@@ -24,7 +27,7 @@ export class RegisterGuestFormComponent {
                     this.onRegister();
                 }
             })
-            .catch(data => alert('Registration guest error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+            .catch(data => this._alert.message('Registration guest error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 }
 

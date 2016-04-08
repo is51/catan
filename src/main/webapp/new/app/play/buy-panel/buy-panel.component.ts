@@ -2,9 +2,7 @@ import { Component } from 'angular2/core';
 
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
-import { PlayService } from 'app/play/shared/services/play.service';
-import { ActionService } from 'app/play/shared/services/action.service';
-import { GameService } from 'app/shared/services/game/game.service';
+import { ExecuteActionsService } from 'app/play/shared/services/execute-actions.service';
 
 import { Game } from 'app/shared/domain/game';
 import { ModalWindowDirective } from 'app/shared/modal-window/modal-window.directive';
@@ -30,9 +28,7 @@ export class BuyPanelComponent {
     constructor(
         private _authUser: AuthUserService,
         private _modalWindow: ModalWindowService,
-        private _play: PlayService,
-        private _gameService: GameService,
-        private _action: ActionService) { }
+        private _actions: ExecuteActionsService) { }
 
     isActionEnabled(actionCode: string) {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabled(actionCode);
@@ -40,26 +36,21 @@ export class BuyPanelComponent {
 
     buildSettlement() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.run('BUILD_SETTLEMENT', this.game);
+        this._actions.execute('BUILD_SETTLEMENT', this.game);
     }
 
     buildCity() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.run('BUILD_CITY', this.game);
+        this._actions.execute('BUILD_CITY', this.game);
     }
 
     buildRoad() {
         this._modalWindow.hide("BUY_PANEL");
-        this._action.run('BUILD_ROAD', this.game);
+        this._actions.execute('BUILD_ROAD', this.game);
     }
 
     buyCard() {
         this._modalWindow.hide("BUY_PANEL");
-        this._play.buyCard(this.game)
-            .then(data => {
-                alert("Bought card: " + data.card); //TODO: why red?
-                this._gameService.refresh(this.game);
-            })
-            .catch(data => alert('Buy Card error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+        this._actions.execute('BUY_CARD', this.game);
     }
 }
