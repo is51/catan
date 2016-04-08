@@ -1,6 +1,8 @@
 import { Injectable } from 'angular2/core';
 import { BrowserDomAdapter } from "angular2/src/platform/browser/browser_adapter";
 
+//TODO: compare with http://blog.wearecolony.com/a-year-without-jquery/
+
 @Injectable()
 export class DomHelper {
 

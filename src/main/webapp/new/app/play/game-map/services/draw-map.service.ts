@@ -96,26 +96,32 @@ export class DrawMapService {
             yMax: null
         };
 
+        this.drawMapBottom(canvas);
+
         this.drawPorts(canvas, map);
 
         map.hexes.forEach(hex => {
             let coords = this._helper.getHexCoords(hex, HEX_WIDTH, HEX_HEIGHT);
             actualSize = this._updateActualSize(actualSize, coords.x, coords.y, HEX_HEIGHT, HEX_HEIGHT);
-            this.drawHex(canvas, coords, hex);
+            let hexElement = this.drawHex(canvas, coords, hex);
+            hex.onUpdate(() => this.updateHex(canvas, hexElement, hex));
         });
 
         map.edges.forEach(edge => {
             let coords = this._helper.getEdgeCoords(edge, HEX_WIDTH, HEX_HEIGHT);
-            this.drawEdge(canvas, game, coords, edge);
+            let edgeElement = this.drawEdge(canvas, game, coords, edge);
+            edge.onUpdate(() => this.updateEdge(edgeElement, game, edge));
         });
 
         map.nodes.forEach(node => {
             let coords = this._helper.getNodeCoords(node, HEX_WIDTH, HEX_HEIGHT);
-            this.drawNode(canvas, game, coords, node);
+            let nodeElement = this.drawNode(canvas, game, coords, node);
+            node.onUpdate(() => this.updateNode(nodeElement, game, node));
         });
 
         this.drawRobber(canvas, map);
 
+        this.drawClouds(canvas);
 
         this._setViewBox(canvas, actualSize);
     }
@@ -163,6 +169,16 @@ export class DrawMapService {
         this._dom.setAttribute(canvas, 'viewBox', offsetX + ' ' + offsetY + ' ' + width + ' ' + height);
     }
 
+    drawMapBottom(canvas: Element) {
+        //TODO: Map Bottom is hardcoded for default map
+        let group = this._dom.createElementNS(NS, 'g');
+        this._dom.setAttribute(group, 'class', 'map-bottom');
+        this._dom.appendChild(canvas, group);
+        this._dom.setInnerHTML(group,
+            this._templates.get('map-bottom')
+        );
+    }
+
     drawHex(canvas: Element, coords: Point, hex: Hex) {
         let group = this._dom.createElementNS(NS, 'g');
         this._dom.setAttribute(group, 'transform', 'translate(' + coords.x + ',' + coords.y + ')');
@@ -170,27 +186,79 @@ export class DrawMapService {
         this._dom.setAttribute(group, 'hex-id', <string>hex.id);
         this._dom.appendChild(canvas, group);
 
+        this._dom.setInnerHTML(group, this._getHexHTML(hex))
+
+        return group;
+    }
+
+    private _getHexHTML(hex: Hex) {
+        let html = this._templates.get('hex-bg');
+
+        if (!hex.edges.bottomLeft.isJoint()) {
+            html += this._templates.get('hex-bg-edge-bottom-left');
+        }
+        if (!hex.edges.bottomRight.isJoint()) {
+            html += this._templates.get('hex-bg-edge-bottom-right');
+        }
+        if (!hex.edges.left.isJoint()) {
+            html += this._templates.get('hex-bg-edge-left');
+        }
+        if (!hex.edges.right.isJoint()) {
+            html += this._templates.get('hex-bg-edge-right');
+        }
+        if (!hex.edges.topLeft.isJoint()) {
+            html += this._templates.get('hex-bg-edge-top-left');
+        }
+        if (!hex.edges.topRight.isJoint()) {
+            html += this._templates.get('hex-bg-edge-top-right');
+        }
+
+        if (!hex.nodes.top.isJoint()) {
+            html += this._templates.get('hex-bg-node-top');
+        }
+        if (!hex.nodes.bottom.isJoint()) {
+            html += this._templates.get('hex-bg-node-bottom');
+        }
+        if (!hex.nodes.topRight.isJoint()) {
+            html += this._templates.get('hex-bg-node-top-right');
+            html += this._templates.get('hex-bg-node-right-top');
+        }
+        if (!hex.nodes.topLeft.isJoint()) {
+            html += this._templates.get('hex-bg-node-top-left');
+            html += this._templates.get('hex-bg-node-left-top');
+        }
+        if (!hex.nodes.bottomRight.isJoint()) {
+            html += this._templates.get('hex-bg-node-bottom-right');
+            html += this._templates.get('hex-bg-node-right-bottom');
+        }
+        if (!hex.nodes.bottomLeft.isJoint()) {
+            html += this._templates.get('hex-bg-node-bottom-left');
+            html += this._templates.get('hex-bg-node-left-bottom');
+        }
+
+        if (!hex.nodes.bottomRight.hexes.bottom && hex.nodes.bottomRight.hexes.topRight) {
+            html += this._templates.get('hex-bg-node-bottom-right');
+        }
+        if (!hex.nodes.topRight.hexes.top && hex.nodes.topRight.hexes.bottomRight) {
+            html += this._templates.get('hex-bg-node-top-right');
+        }
+
         let resourceTypeStr = hex.getTypeToString().toLowerCase();
 
-        this._dom.setInnerHTML(group,
-            this._templates.get('hex-bg') +
-            this._templates.get('hex-' + resourceTypeStr) +
-            ((hex.dice)
-                ? this._templates.get('hex-dice', Object.assign({
-                    number: (hex.dice)?hex.dice:'',
-                    resourceType: resourceTypeStr,
-                }, DICE_COLORS[resourceTypeStr]))
+        html += this._templates.get('hex-' + resourceTypeStr);
 
-                : '' )
-        );
+        if (hex.dice) {
+            html += this._templates.get('hex-dice', Object.assign({
+                number: (hex.dice)?hex.dice:'',
+                resourceType: resourceTypeStr,
+            }, DICE_COLORS[resourceTypeStr]))
+        }
 
-        hex.onUpdate(() => this.updateHex(canvas, group, hex));
+        return html;
     }
 
     updateHex(canvas: Element, element: Element, hex: Hex) {
-        // Updatable properties of HEX:
-        // 1. hex.robbed
-        // --
+        // Only hex.robbed can be updated
 
         let hexDice = this._dom.querySelector(element, '.dice');
 
@@ -238,13 +306,11 @@ export class DrawMapService {
             this.drawEmptyNode(group, new Point(0, 0));
         }
 
-        node.onUpdate(() => this.updateNode(group, game, node));
+        return group;
     }
 
     updateNode(element: Element, game: Game, node: Node) {
-        // Updatable properties of NODE:
-        // 1. node.building
-        // --
+        // Only node.building can be updated
 
         this._dom.clearNodes(element);
 
@@ -309,13 +375,11 @@ export class DrawMapService {
             this.drawEmptyEdge(group, new Point(0, 0), edge.orientation);
         }
 
-        edge.onUpdate(() => this.updateEdge(group, game, edge));
+        return group;
     }
 
     updateEdge(element: Element, game: Game, edge: Edge) {
-        // Updatable properties of EDGE:
-        // 1. edge.building
-        // --
+        // Only edge.building can be updated
 
         this._dom.clearNodes(element);
 
@@ -390,6 +454,16 @@ export class DrawMapService {
                 })
             );
         });
+    }
+
+    drawClouds(canvas: Element) {
+        //TODO: Clouds are hardcoded for default map
+        let group = this._dom.createElementNS(NS, 'g');
+        this._dom.setAttribute(group, 'class', 'clouds');
+        this._dom.appendChild(canvas, group);
+        this._dom.setInnerHTML(group,
+            this._templates.get('clouds')
+        );
     }
 
 }

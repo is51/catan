@@ -80,6 +80,17 @@ export class Edge {
         return null;
     }
 
+    isJoint() {
+        let hexesCount = 0;
+        for (let i in this.hexes) {
+            hexesCount++;
+            if (hexesCount > 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //TODO: try to replace with Subscribable
     onUpdate(onUpdate: Function) {
         this._onUpdate = onUpdate;
