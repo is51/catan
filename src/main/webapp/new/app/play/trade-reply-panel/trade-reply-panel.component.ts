@@ -4,6 +4,7 @@ import { PlayService } from 'app/play/shared/services/play.service';
 import { GameService } from 'app/shared/services/game/game.service';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 import { Resources } from 'app/shared/domain/player/resources';
@@ -44,7 +45,8 @@ export class TradeReplyPanelComponent implements DoCheck {
         private _authUser: AuthUserService,
         private _play: PlayService,
         private _gameService: GameService,
-        private _modalWindow: ModalWindowService) { }
+        private _modalWindow: ModalWindowService,
+        private _alert: AlertService) { }
 
     private _init() {
         this.currentPlayer = this.game.getCurrentPlayer(this._authUser.get());
@@ -78,7 +80,7 @@ export class TradeReplyPanelComponent implements DoCheck {
                 this._gameService.refresh(this.game);
             })
             .catch(data => {
-                alert('Trade Propose Accept error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                this._alert.message('Trade Propose Accept error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                 if (data.errorCode === "OFFER_ALREADY_ACCEPTED") {
                     this._modalWindow.hide(PANEL_ID);
                     this._gameService.refresh(this.game);
@@ -97,7 +99,7 @@ export class TradeReplyPanelComponent implements DoCheck {
                     this._modalWindow.hide(PANEL_ID);
                     this._gameService.refresh(this.game);
                 } else {
-                    alert('Trade Propose Decline error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                    this._alert.message('Trade Propose Decline error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                 }
             });
     }
