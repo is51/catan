@@ -3,6 +3,7 @@ import { Router } from 'angular2/router';
 
 import { AuthService } from 'app/shared/services/auth/auth.service';
 import { RemoteService } from 'app/shared/services/remote/remote.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-register-form',
@@ -21,7 +22,8 @@ export class RegisterFormComponent {
     constructor(
         private _auth: AuthService,
         private _remote: RemoteService,
-        private _router: Router) { }
+        private _router: Router,
+        private _alert: AlertService) { }
 
     submit() {
         this._remote.request('auth.register', {
@@ -37,11 +39,11 @@ export class RegisterFormComponent {
                             this._router.navigate(['StartPage']);
                         }
                     }, (data) => {
-                        alert('Login error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                        this._alert.message('Login error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                     });
 
             }, (data) => {
-                alert('Registration error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                this._alert.message('Registration error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
             });
     }
 }
