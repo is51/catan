@@ -96,6 +96,8 @@ export class DrawMapService {
             yMax: null
         };
 
+        this.drawMapBottom(canvas);
+
         this.drawPorts(canvas, map);
 
         map.hexes.forEach(hex => {
@@ -119,6 +121,7 @@ export class DrawMapService {
 
         this.drawRobber(canvas, map);
 
+        this.drawClouds(canvas);
 
         this._setViewBox(canvas, actualSize);
     }
@@ -164,6 +167,16 @@ export class DrawMapService {
         let offsetY = actualSize.yMin - additionalHeight / 2.5;
 
         this._dom.setAttribute(canvas, 'viewBox', offsetX + ' ' + offsetY + ' ' + width + ' ' + height);
+    }
+
+    drawMapBottom(canvas: Element) {
+        //TODO: Map Bottom is hardcoded for default map
+        let group = this._dom.createElementNS(NS, 'g');
+        this._dom.setAttribute(group, 'class', 'map-bottom');
+        this._dom.appendChild(canvas, group);
+        this._dom.setInnerHTML(group,
+            this._templates.get('map-bottom')
+        );
     }
 
     drawHex(canvas: Element, coords: Point, hex: Hex) {
@@ -441,6 +454,16 @@ export class DrawMapService {
                 })
             );
         });
+    }
+
+    drawClouds(canvas: Element) {
+        //TODO: Clouds are hardcoded for default map
+        let group = this._dom.createElementNS(NS, 'g');
+        this._dom.setAttribute(group, 'class', 'clouds');
+        this._dom.appendChild(canvas, group);
+        this._dom.setInnerHTML(group,
+            this._templates.get('clouds')
+        );
     }
 
 }
