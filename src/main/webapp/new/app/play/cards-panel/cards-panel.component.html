@@ -16,10 +16,9 @@
                     </feMerge>
                 </filter>
 
-                <!-- TODO: set different colors for different players -->
                 <linearGradient id="gradient-count" x1="0" y1="0" x2="1" y2="1">
-                    <stop  offset="0" style="stop-color:#d26953"/>
-                    <stop  offset="1" style="stop-color:#e19583"/>
+                    <stop  offset="0" [attr.stop-color]="gradientCountColor1"/>
+                    <stop  offset="1" [attr.stop-color]="gradientCountColor2"/>
                 </linearGradient>
 
                 <linearGradient id="gradient-count-zero" x1="0" y1="0" x2="1" y2="1">
@@ -30,7 +29,7 @@
 
             <g>
                 <g transform="translate(0, 120)" font-weight="bold" text-anchor="middle">
-                    <g (click)="useCardKnight()" transform="translate(0, 0)" class="button" [class.zero]="!isActionEnabled('USE_CARD_KNIGHT')">
+                    <g (click)="useCardKnight()" transform="translate(0, 0)" class="button" [class.disabled]="!isActionEnabled('USE_CARD_KNIGHT')">
                         <rect filter="url(#dropshadow-window)" x="0" y="0" width="160" height="260" fill="#ffffff" rx="14" ry="14" />
 
                         <g class="icon" transform="translate(0, -19)">
@@ -53,7 +52,7 @@
                         <circle class="count-bg" cx="80" cy="207" r="25"/>
                         <text x="80" y="219.3" fill="#ffffff" font-size="36">{{cards().knight}}</text>
                     </g>
-                    <g (click)="useCardRoadBuilding()" transform="translate(180, 0)" class="button" [class.zero]="!isActionEnabled('USE_CARD_ROAD_BUILDING')">
+                    <g (click)="useCardRoadBuilding()" transform="translate(180, 0)" class="button" [class.disabled]="!isActionEnabled('USE_CARD_ROAD_BUILDING')">
                         <rect filter="url(#dropshadow-window)" x="0" y="0" width="160" height="260" fill="#ffffff" rx="14" ry="14" />
 
                         <g class="icon" transform="translate(79, 65)">
@@ -75,7 +74,7 @@
                         <circle class="count-bg" cx="80" cy="207" r="25" fill="url(#gradient-count)"/>
                         <text x="80" y="219.3" fill="#ffffff" font-size="36">{{cards().roadBuilding}}</text>
                     </g>
-                    <g (click)="useCardMonopoly()" transform="translate(360, 0)" class="button" [class.zero]="!isActionEnabled('USE_CARD_MONOPOLY')">
+                    <g (click)="useCardMonopoly()" transform="translate(360, 0)" class="button" [class.disabled]="!isActionEnabled('USE_CARD_MONOPOLY')">
                         <rect filter="url(#dropshadow-window)" x="0" y="0" width="160" height="260" fill="#ffffff" rx="14" ry="14" />
 
                         <g class="icon" transform="translate(36.5, 21)">
@@ -88,7 +87,7 @@
                         <circle class="count-bg" cx="80" cy="207" r="25" fill="url(#gradient-count)"/>
                         <text x="80" y="219.3" fill="#ffffff" font-size="36">{{cards().monopoly}}</text>
                     </g>
-                    <g (click)="useCardYearOfPlenty()" transform="translate(540, 0)" class="button" [class.zero]="!isActionEnabled('USE_CARD_YEAR_OF_PLENTY')">
+                    <g (click)="useCardYearOfPlenty()" transform="translate(540, 0)" class="button" [class.disabled]="!isActionEnabled('USE_CARD_YEAR_OF_PLENTY')">
                         <rect filter="url(#dropshadow-window)" x="0" y="0" width="160" height="260" fill="#ffffff" rx="14" ry="14" />
 
                         <g class="icon" transform="translate(34, 19)">
@@ -108,7 +107,7 @@
                         <circle class="count-bg" cx="80" cy="207" r="25" fill="url(#gradient-count)"/>
                         <text x="80" y="219.3" fill="#ffffff" font-size="36">{{cards().yearOfPlenty}}</text>
                     </g>
-                    <g transform="translate(720, 0)" [class.zero]="cards().victoryPoint===0">
+                    <g transform="translate(720, 0)" [class.disabled]="cards().victoryPoint===0">
                         <rect filter="url(#dropshadow-window)" x="0" y="0" width="160" height="260" fill="#ffffff" rx="14" ry="14" />
 
                         <g class="icon" transform="translate(32.5, 15)">

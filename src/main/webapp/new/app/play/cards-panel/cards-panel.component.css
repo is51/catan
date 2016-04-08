@@ -19,7 +19,7 @@
     pointer-events: all;
 }
 
-.content svg .button:not(.zero) {
+.content svg .button:not(.disabled) {
     cursor: pointer;
 }
 
@@ -31,14 +31,14 @@
     fill: url(#gradient-count);
 }
 
-.content svg .zero .icon {
+.content svg .disabled .icon {
     opacity: 0.5;
 }
 
-.content svg .zero .name {
+.content svg .disabled .name {
     fill: #adadad;
 }
 
-.content svg .zero .count-bg {
+.content svg .disabled .count-bg {
     fill: url(#gradient-count-zero);
 }
