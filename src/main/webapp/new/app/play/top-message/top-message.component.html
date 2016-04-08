@@ -1,4 +1,4 @@
-<svg width="100%" height="100%" preserveAspectRatio="xMidYMin meet" [attr.viewBox]="'0 0 '+boxMaxWidth+' 600'">
+<svg width="100%" height="100%" preserveAspectRatio="xMidYMin meet" [attr.viewBox]="'0 0 '+viewBoxWidth+' 600'">
 
     <defs>
         <filter id="dropshadow-top-message">
@@ -15,8 +15,8 @@
 
     <g *ngIf="text" transform="translate(0, 15)">
 
-        <rect fill="#ffffff" fill-opacity="0.7" [attr.width]="boxWidth" height="55" [attr.x]="(boxMaxWidth-boxWidth)/2" y="0" rx="10" ry="10" filter="url(#dropshadow-top-message)" />
-        <text x="350" y="40" fill="#333333" font-size="33" text-anchor="middle">{{text}}</text>
+        <rect fill="#ffffff" fill-opacity="0.7" [attr.width]="messageBoxWidth" height="48" [attr.x]="(viewBoxWidth-messageBoxWidth)/2" y="0" rx="10" ry="10" filter="url(#dropshadow-top-message)" />
+        <text x="350" y="34" fill="#333333" font-size="28" text-anchor="middle">{{text}}</text>
 
     </g>
 
