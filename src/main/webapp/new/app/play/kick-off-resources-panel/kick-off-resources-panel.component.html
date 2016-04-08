@@ -1,6 +1,6 @@
 <ct-modal-window [modalWindowId]="modalWindowId">
 
-    <div class="ct-modal-window-bg" ct-modal-window-close [modalWindowId]="modalWindowId"></div>
+    <div class="ct-modal-window-bg" (click)="close()"></div>
     <div class="ct-modal-window-content content">
 
         <ct-choose-resources *ngIf="isModalWindowVisible()" [game]="game" [type]="modalWindowId"></ct-choose-resources>
