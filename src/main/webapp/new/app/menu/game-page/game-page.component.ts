@@ -3,6 +3,7 @@ import { RouteParams, Router } from 'angular2/router';
 
 import { NotificationService } from 'app/shared/services/notification/notification.service';
 import { GameService } from 'app/shared/services/game/game.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 import { Game } from 'app/shared/domain/game';
 
@@ -29,7 +30,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private _gameService: GameService,
         private _routeParams: RouteParams,
         private _router: Router,
-        private _notification: NotificationService) {
+        private _notification: NotificationService,
+        private _alert: AlertService) {
 
         this._gameId = +this._routeParams.get('gameId');
     }
@@ -44,15 +46,24 @@ export class GamePageComponent implements OnInit, OnDestroy {
             .then(game => {
                 this.game = game;
 
+                this._subscribeOnGameStarting();
+
                 this._gameService.startRefreshing(this.game, GAME_UPDATE_DELAY, null, () => {
-                    alert('Getting Game Details Error. Probably there is a connection problem');
+                    this._alert.message('Getting Game Details Error. Probably there is a connection problem');
                     return false;
                 });
 
             }, () => {
-                alert('Getting Game Details Error');
-                this._router.navigate(['StartPage']);
+                this._alert.message('Getting Game Details Error')
+                    .then(() => this._router.navigate(['StartPage']));
             });
+    }
+
+    private _subscribeOnGameStarting() {
+        this.game.onStartPlaying(() => {
+            //TODO: revise this temp notification (probably it will be done using log)
+            this._notification.notifyGlobal('Game is started!', 'GAME_IS_STARTED');
+        });
     }
 
     ngOnDestroy() {

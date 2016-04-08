@@ -12,8 +12,8 @@ import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 export class TopMessageComponent implements OnInit, OnDestroy {
     game: Game;
     text: string = null;
-    boxWidth: number = 0;
-    boxMaxWidth: number = 700;
+    messageBoxWidth: number = 0;
+    viewBoxWidth: number = 700;
 
     constructor(private _authUser: AuthUserService) { }
 
@@ -32,10 +32,7 @@ export class TopMessageComponent implements OnInit, OnDestroy {
 
     private _show(text: string) {
         this.text = text;
-        this.boxWidth = text.length * 20;
-        if (this.boxWidth > this.boxMaxWidth) {
-            this.boxWidth = this.boxMaxWidth;
-        }
+        this.messageBoxWidth = text.length * 14 + 10;
     }
 
     private _hide() {

@@ -1,6 +1,8 @@
 import { Component } from 'angular2/core';
 import { Router } from 'angular2/router';
+
 import { AuthService } from 'app/shared/services/auth/auth.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
     selector: 'ct-login-form',
@@ -18,7 +20,8 @@ export class LoginFormComponent {
 
     constructor(
         private _auth: AuthService,
-        private _router: Router) { }
+        private _router: Router,
+        private _alert: AlertService) { }
 
     submit() {
         this._auth.login(this.data.username, this.data.password)
@@ -29,7 +32,7 @@ export class LoginFormComponent {
                     this._router.navigate(['StartPage']);
                 }
             })
-            .catch(data => alert('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+            .catch(data => this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
     }
 }
 
