@@ -108,7 +108,6 @@ public class PlayServiceImpl implements PlayService {
     }
 
     private void doAction(GameUserActionCode action, GameUserBean gameUser, GameBean game, Map<String, String> params, Map<String, String> returnedParams) throws PlayException, GameException {
-        clearUsersMessages(game);
         Resources usersResources = gameUser.getResources();
         switch (action) {
             case BUILD_ROAD:
@@ -343,6 +342,7 @@ public class PlayServiceImpl implements PlayService {
         changeRobbedHex(game, hexToRob);
         log.info("Hex {} successfully robbed", hexAbsoluteId);
         game.setRobberShouldBeMovedMandatory(false);
+        clearUsersMessages(game);
 
         List<GameUserBean> playersAtHex = new ArrayList<GameUserBean>(hexToRob.fetchGameUsersWithBuildingsAtNodes());
         playersAtHex.remove(gameUser);
@@ -379,6 +379,7 @@ public class PlayServiceImpl implements PlayService {
             currentUsersResources.updateResourceQuantity(stolenResourceType, obtainedResourceQuantity + 1);
         }
         game.setChoosePlayerToRobMandatory(false);
+        clearUsersMessages(game);
     }
 
     private void validateGameUserCouldBeRobbed(GameUserBean gameUser, GameBean game, GameUserBean robbedGameUser) throws PlayException {

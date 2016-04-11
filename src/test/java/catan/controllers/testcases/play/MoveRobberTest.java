@@ -14,6 +14,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static catan.domain.model.dashboard.types.HexType.BRICK;
@@ -200,7 +201,9 @@ public class MoveRobberTest extends PlayTestUtil {
 
     @Test
     public void should_successfully_move_robber_to_hex_with_3_buildings_and_steal_1_resource_from_chosen_player_when_he_has_2_different_resources() {
-        playPreparationStage()
+        playPreparationStage();
+        Map<Integer, String> userNamesByMoveOrder = scenario.getUserNamesByMoveOrder();
+        scenario
                 .nextRandomDiceValues(asList(1, 1))
                 .THROW_DICE(1)
                 .END_TURN(1)
@@ -218,6 +221,10 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
 
                 .END_TURN(3)
+
+                .getGameDetails(1)
+                .gameUser(1).doesntHaveDisplayedMessage()
+
                 .nextRandomDiceValues(asList(4, 3)) //Robbers action
                 .THROW_DICE(1);
 
@@ -227,6 +234,7 @@ public class MoveRobberTest extends PlayTestUtil {
 
         scenario
                 .gameUser(1).hasAvailableAction("MOVE_ROBBER").withParameters("hexIds=" + hexIds)
+                .gameUser(1).hasDisplayedMessage(userNamesByMoveOrder.get(1) + ", move the robber to a new hex on the map")
 
                 .MOVE_ROBBER(1).toCoordinates(0, -2).successfully()
 
@@ -242,6 +250,7 @@ public class MoveRobberTest extends PlayTestUtil {
         scenario
                 .getGameDetails(1)
                 .gameUser(1).hasAvailableAction("CHOOSE_PLAYER_TO_ROB").withParameters("nodeIds=" + nodeIds)
+                .gameUser(1).hasDisplayedMessage(userNamesByMoveOrder.get(1) + ", choose player whom you want to rob")
 
                 .nextRandomStolenResources(asList(BRICK))   //Resource to steal
                 .CHOOSE_PLAYER_TO_ROB(1).stealResourceFromPlayer(2).successfully()
@@ -251,6 +260,7 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).hasAvailableAction("END_TURN")
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                 .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
+                .gameUser(1).doesntHaveDisplayedMessage()
 
                 .getGameDetails(2)
                 .gameUser(2).resourcesQuantityChangedBy(-1, 0, 0, 0, 0)
