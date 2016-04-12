@@ -13,11 +13,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import static catan.domain.model.dashboard.types.HexType.BRICK;
 import static catan.domain.model.dashboard.types.HexType.EMPTY;
 import static catan.domain.model.dashboard.types.HexType.SHEEP;

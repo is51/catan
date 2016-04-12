@@ -14,7 +14,6 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static catan.domain.model.dashboard.types.HexType.BRICK;
