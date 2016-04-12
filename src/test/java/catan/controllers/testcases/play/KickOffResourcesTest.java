@@ -84,12 +84,15 @@ public class KickOffResourcesTest extends PlayTestUtil {
                 .getGameDetails(1)
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                     .gameUser(1).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
+                    .gameUser(1).doesntHaveDisplayedMessage()
 
                 .getGameDetails(2)
                     .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
+                    .gameUser(2).doesntHaveDisplayedMessage()
 
                 .getGameDetails(3)
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
+                    .gameUser(3).doesntHaveDisplayedMessage()
 
                 .startTrackResourcesQuantity()
                 .KICK_OFF_RESOURCES(1, 2, 3, 0, 0, 2).successfully()
@@ -98,14 +101,18 @@ public class KickOffResourcesTest extends PlayTestUtil {
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
                     .gameUser(1).resourcesQuantityChangedBy(-2, -3, 0, 0, -2)
+                    .gameUser(1).hasDisplayedMessage("Wait until " + scenario.getUserNamesByMoveOrder().get(2) + " drop resources")
 
                 .getGameDetails(2)
                     .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
                     .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(2).doesntHaveDisplayedMessage()
+                    .gameUser(1).doesntHaveDisplayedMessage()
 
                 .getGameDetails(3)
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
                     .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(3).doesntHaveDisplayedMessage()
 
                 .KICK_OFF_RESOURCES(2, 5, 0, 0, 0, 0).successfully()
 
@@ -113,14 +120,18 @@ public class KickOffResourcesTest extends PlayTestUtil {
                     .gameUser(1).hasAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
                     .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).hasDisplayedMessage(scenario.getUserNamesByMoveOrder().get(1) + ", move the robber to a new hex on the map")
 
                 .getGameDetails(2)
                     .gameUser(2).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
                     .gameUser(2).resourcesQuantityChangedBy(-5, 0, 0, 0, 0)
+                    .gameUser(2).doesntHaveDisplayedMessage()
+                    .gameUser(1).doesntHaveDisplayedMessage()
 
                 .getGameDetails(3)
                     .gameUser(3).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
-                    .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                    .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(3).doesntHaveDisplayedMessage();
     }
 
     @Test

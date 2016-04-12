@@ -77,10 +77,40 @@ public class PreparationStageTest extends PlayTestUtil {
         }
     }
 
-    private void checkAvailableActionsAndBuildDuringOneMove(String[] userTokens, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, int nodeIdToBuild, String nodeBuildingAction, int edgeIdToBuild) {
+    private void checkDisplayedMessage(String[] userTokens, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, String message) {
+        viewGame(userTokens[activeUserNumber], gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + activeUserNumber + "].displayedMessage", equalTo(message));
+
+        viewGame(userTokens[notActiveUserNumber1], gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + notActiveUserNumber1 + "].displayedMessage", nullValue());
+
+        viewGame(userTokens[notActiveUserNumber2], gameId)
+                .then()
+                .statusCode(200)
+                .body("gameUsers[" + notActiveUserNumber2 + "].displayedMessage", nullValue());
+    }
+
+    private void checkIfThereIsNoDisplayedMessage(String[] userTokens, int gameId) {
+        for (int i = 0; i < 3; i++) {
+            viewGame(userTokens[i], gameId)
+                    .then()
+                    .statusCode(200)
+                    .body("gameUsers[" + i + "].displayedMessage", nullValue());
+        }
+    }
+
+    private void checkAvailableActionsAndBuildDuringOneMove(String[] userTokens, String activeUserName, int numberOfBuilding, int gameId, int activeUserNumber, int notActiveUserNumber1, int notActiveUserNumber2, int nodeIdToBuild, String nodeBuildingAction, int edgeIdToBuild) {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, nodeBuildingAction);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
+        String message = activeUserName + ", build "
+                + (numberOfBuilding == 1 ? "your first " : (numberOfBuilding == 2 ? "your second " : ""))
+                + (nodeBuildingAction.equals("BUILD_SETTLEMENT") ? "office" : "business centre");
+        checkDisplayedMessage(userTokens, gameId, activeUserNumber, notActiveUserNumber1, notActiveUserNumber2, message);
 
         if (nodeBuildingAction.equals("BUILD_SETTLEMENT")) {
             buildSettlement(userTokens[activeUserNumber], gameId, nodeIdToBuild);
@@ -91,12 +121,16 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, "BUILD_ROAD");
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
+        message = activeUserName + ", build network near your "
+                + (nodeBuildingAction.equals("BUILD_SETTLEMENT") ? "office" : "business centre");
+        checkDisplayedMessage(userTokens, gameId, activeUserNumber, notActiveUserNumber1, notActiveUserNumber2, message);
 
         buildRoad(userTokens[activeUserNumber], gameId, edgeIdToBuild);
 
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, "END_TURN");
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
+        checkIfThereIsNoDisplayedMessage(userTokens, gameId);
 
         endTurn(userTokens[activeUserNumber], gameId);
     }
@@ -150,6 +184,7 @@ public class PreparationStageTest extends PlayTestUtil {
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
         String[] userTokens = {userToken1, userToken2, userToken3};
+        String[] userNames = {USER_NAME_1, USER_NAME_2, USER_NAME_3};
 
         int gameId = createNewGame(userToken1, false, 12, 1).path("gameId");
 
@@ -208,11 +243,11 @@ public class PreparationStageTest extends PlayTestUtil {
         int edgeId2ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.rightId");
 
         // First player moves #1
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[firstGameUserNumber], 1, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
         // Second player moves #1
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[secondGameUserNumber], 1, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
         // Third player moves #1
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[thirdGameUserNumber], 1, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
 
 
         // Third player moves #2
@@ -236,6 +271,10 @@ public class PreparationStageTest extends PlayTestUtil {
                 .then()
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
+
+        // check if message is correct
+        String message = userNames[thirdGameUserNumber] + ", build your second office";
+        checkDisplayedMessage(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, message);
 
         // should_successfully_build_settlement_on_empty_node
         buildSettlement(userTokens[thirdGameUserNumber], gameId, nodeId2ToBuildForThirdUser)
@@ -284,6 +323,10 @@ public class PreparationStageTest extends PlayTestUtil {
                 .statusCode(400)
                 .body("errorCode", equalTo("ERROR"));
 
+        // check if message is correct
+        message = userNames[thirdGameUserNumber] + ", build network near your office";
+        checkDisplayedMessage(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, message);
+
         // should_successfully_build_road_on_empty_edge_if_has_neighbour_road_that_belongs_to_this_player
         buildRoad(userTokens[thirdGameUserNumber], gameId, edgeId2ToBuildForThirdUser)
                 .then()
@@ -295,6 +338,9 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("building", notNullValue())
                 .body("building.ownerGameUserId", is(thirdGameUserId))
                 .body("building.built", equalTo("ROAD"));
+
+        // check if message is correct
+        checkIfThereIsNoDisplayedMessage(userTokens, gameId);
 
         // should_successfully_end_turn
         endTurn(userTokens[thirdGameUserNumber], gameId)
@@ -318,12 +364,15 @@ public class PreparationStageTest extends PlayTestUtil {
 
 
         // Second player moves #2
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId2ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[secondGameUserNumber], 2, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId2ToBuildForSecondUser);
         // First player moves #2
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId2ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[firstGameUserNumber], 2, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId2ToBuildForFirstUser);
 
 
         // MAIN STAGE
+
+        // check if message is correct
+        checkIfThereIsNoDisplayedMessage(userTokens, gameId);
 
         // check currentMove after the preparation stage ending
         viewGame(userToken1, gameId)
@@ -359,6 +408,7 @@ public class PreparationStageTest extends PlayTestUtil {
         String userToken2 = loginUser(USER_NAME_2, USER_PASSWORD_2);
         String userToken3 = loginUser(USER_NAME_3, USER_PASSWORD_3);
         String[] userTokens = {userToken1, userToken2, userToken3};
+        String[] userNames = {USER_NAME_1, USER_NAME_2, USER_NAME_3};
 
         int gameId = createNewGame(userToken1, false, 12, 2).path("gameId");
 
@@ -411,25 +461,25 @@ public class PreparationStageTest extends PlayTestUtil {
         int edgeId3ToBuildForThirdUser = viewGame(userToken1, gameId).path("map.hexes[10].edgesIds.bottomLeftId");
 
         // First player moves #1
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[firstGameUserNumber], 1, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId1ToBuildForFirstUser);
         // Second player moves #1
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[secondGameUserNumber], 1, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId1ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId1ToBuildForSecondUser);
         // Third player moves #1
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[thirdGameUserNumber], 1, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId1ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId1ToBuildForThirdUser);
 
         // Third player moves #2
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId2ToBuildForThirdUser, "BUILD_CITY", edgeId2ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[thirdGameUserNumber], 1, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId2ToBuildForThirdUser, "BUILD_CITY", edgeId2ToBuildForThirdUser);
         // Second player moves #2
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_CITY", edgeId2ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[secondGameUserNumber], 1, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForSecondUser, "BUILD_CITY", edgeId2ToBuildForSecondUser);
         // First player moves #2
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_CITY", edgeId2ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[firstGameUserNumber], 1, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId2ToBuildForFirstUser, "BUILD_CITY", edgeId2ToBuildForFirstUser);
 
         // First player moves #3
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId3ToBuildForFirstUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[firstGameUserNumber], 2, gameId, firstGameUserNumber, secondGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForFirstUser, "BUILD_SETTLEMENT", edgeId3ToBuildForFirstUser);
         // Second player moves #3
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId3ToBuildForSecondUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[secondGameUserNumber], 2, gameId, secondGameUserNumber, firstGameUserNumber, thirdGameUserNumber, nodeId3ToBuildForSecondUser, "BUILD_SETTLEMENT", edgeId3ToBuildForSecondUser);
         // Third player moves #3
-        checkAvailableActionsAndBuildDuringOneMove(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId3ToBuildForThirdUser);
+        checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[thirdGameUserNumber], 2, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId3ToBuildForThirdUser);
 
         given()
                 .port(SERVER_PORT)
