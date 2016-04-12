@@ -31,6 +31,7 @@ import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
+import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.random.RandomUtil;
@@ -93,6 +94,8 @@ public class PlayServiceImplTest {
     private PreparationStageUtil preparationStageUtil;
     @InjectMocks
     private MainStageUtil mainStageUtil;
+    @InjectMocks
+    private MessagesUtil messagesUtil;
 
     private GameBean game;
     private HexBean hex_0_0;
@@ -124,6 +127,7 @@ public class PlayServiceImplTest {
         playService.setActionParamsUtil(actionParamsUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
         playService.setMainStageUtil(mainStageUtil);
+        playService.setMessagesUtil(messagesUtil);
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
@@ -131,8 +135,10 @@ public class PlayServiceImplTest {
         cardUtil.setRandomUtil(randomUtil);
 
         mainStageUtil.setActionParamsUtil(actionParamsUtil);
+        mainStageUtil.setMessagesUtil(messagesUtil);
 
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);
+        preparationStageUtil.setMessagesUtil(messagesUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }

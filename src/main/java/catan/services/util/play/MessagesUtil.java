@@ -81,7 +81,7 @@ public class MessagesUtil {
 
     private Object[] getArgsForBuildRoadMsgPattern(GameUserBean gameUser) {
         //arguments: {2 - if user should build network near business centre, 1 - near office; username}
-        return new Object[] {(getTypeOfBuildingWithoutRoadsInPreparation(gameUser).equals("CITY") ? 2 : 1), gameUser.getUser().getUsername()};
+        return new Object[] {("CITY".equals(getTypeOfBuildingWithoutRoadsInPreparation(gameUser)) ? 2 : 1), gameUser.getUser().getUsername()};
     }
 
     private Object[] getArgsForMoveRobberMsgPattern(GameUserBean gameUser) {
