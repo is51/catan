@@ -31,6 +31,7 @@ public class PreparationStageUtil {
     private static final Gson GSON = new Gson();
 
     private ActionParamsUtil actionParamsUtil;
+    private MessagesUtil messagesUtil;
 
     public List<List<GameUserActionCode>> toInitialBuildingsSetFromJson(String initialBuildingsSetJson) {
         return GSON.fromJson(initialBuildingsSetJson, new TypeToken<List<List<GameUserActionCode>>>() {
@@ -120,35 +121,29 @@ public class PreparationStageUtil {
             if (gameUser.getMoveOrder() == game.getCurrentMove()) {
                 GameUserActionCode actionCode = getCurrentActionCode(game);
                 Action actionToAdd;
-                String msgToShow;
-                String username = gameUser.getUser().getUsername();
                 switch (actionCode) {
                     case BUILD_SETTLEMENT:
                         ActionOnNodeParams buildSettlementParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
                         actionToAdd = new Action(actionCode, buildSettlementParams);
-                        Object[] argsForBuildSettlementPattern = {gameUser.getBuildingsCount().getSettlements(), username};
-                        msgToShow = getMessagePattern(gameUser, "help_msg_build_settlement").format(argsForBuildSettlementPattern);
+                        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_build_settlement");
                         break;
                     case BUILD_CITY:
                         ActionOnNodeParams buildCityParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
                         actionToAdd = new Action(actionCode, buildCityParams);
-                        Object[] argsForBuildCityPattern = {gameUser.getBuildingsCount().getCities(), username};
-                        msgToShow = getMessagePattern(gameUser, "help_msg_build_city").format(argsForBuildCityPattern);
+                        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_build_city");
                         break;
                     case BUILD_ROAD:
                         ActionOnEdgeParams buildRoadParams = new ActionOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
                         actionToAdd = new Action(actionCode, buildRoadParams);
-                        Object[] argsForBuildRoadPattern = {(getFirstActionCodeInCurrentCycle(game).equals("BUILD_CITY") ? 2 : 1), username};
-                        msgToShow = getMessagePattern(gameUser, "help_msg_build_road").format(argsForBuildRoadPattern);
+                        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_build_road");
                         break;
                     default:
                         actionToAdd = new Action(actionCode);
-                        msgToShow = null;
+                        gameUser.setDisplayedMessage(null);
                         break;
                 }
                 actionsList.add(actionToAdd);
                 isMandatory = true;
-                gameUser.setDisplayedMessage(msgToShow);
             }
 
             AvailableActions availableActions = new AvailableActions();
@@ -158,11 +153,6 @@ public class PreparationStageUtil {
             String availableActionsString = GSON.toJson(availableActions, AvailableActions.class);
             gameUser.setAvailableActions(availableActionsString);
         }
-    }
-
-    private MessageFormat getMessagePattern(GameUserBean gameUser, String key) {
-        ResourceBundle messagesBundle = gameUser.getUser().getMsgs();
-        return new MessageFormat(messagesBundle.getString(key));
     }
 
     private boolean isLastCycle(Integer preparationCycle, int preparationCyclesQuantity) {
@@ -237,5 +227,10 @@ public class PreparationStageUtil {
     @Autowired
     public void setActionParamsUtil(ActionParamsUtil actionParamsUtil) {
         this.actionParamsUtil = actionParamsUtil;
+    }
+
+    @Autowired
+    public void setMessagesUtil(MessagesUtil messagesUtil) {
+        this.messagesUtil = messagesUtil;
     }
 }

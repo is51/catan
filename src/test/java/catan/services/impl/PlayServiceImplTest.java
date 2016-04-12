@@ -47,12 +47,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -104,11 +102,13 @@ public class PlayServiceImplTest {
     private GameUserBean gameUser2;
     private GameUserBean gameUser3;
     private GameUserBean gameUser4;
-    private ResourceBundle messages;
 
     private RandomValueGeneratorMock rvg = new RandomValueGeneratorMock();
 
     private static final Gson GSON = new Gson();
+
+    public static final String NOTIFY_MESSAGE_KICK_OFF_RESOURCES = "You are robbed!";
+    public static final String NOTIFY_MESSAGE_THROW_DICE = "Your turn!";
 
     @Before
     public void setUp() throws GameException {
@@ -135,9 +135,6 @@ public class PlayServiceImplTest {
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
-
-        Locale currentLocale = new Locale("en", "US");
-        messages = ResourceBundle.getBundle("i18n.library", currentLocale);
     }
 
     @After
@@ -3298,7 +3295,7 @@ public class PlayServiceImplTest {
     }
     
     private void allowUserKickOffResources(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, messages.getString("notify_msg_kick_off_resources")));
+        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, NOTIFY_MESSAGE_KICK_OFF_RESOURCES));
     }
 
     private void allowUserToMoveRobber(GameUserBean user) {
@@ -3322,7 +3319,7 @@ public class PlayServiceImplTest {
     }
 
     private void allowUserToThrowDice(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE, true, messages.getString("notify_msg_throw_dice")));
+        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE, true, NOTIFY_MESSAGE_THROW_DICE));
     }
 
     private void allowUserToBuildCity(GameUserBean user) {
@@ -3349,10 +3346,10 @@ public class PlayServiceImplTest {
         // GIVEN
         game = new GameBean();
 
-        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1, false);
-        UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false);
-        UserBean user3 = new UserBean(USER_NAME3, PASSWORD3, false);
-        UserBean user4 = new UserBean(USER_NAME4, PASSWORD4, false);
+        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1, false, "en", "US");
+        UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false, "en", "US");
+        UserBean user3 = new UserBean(USER_NAME3, PASSWORD3, false, "en", "US");
+        UserBean user4 = new UserBean(USER_NAME4, PASSWORD4, false, "en", "US");
 
         gameUser1 = new GameUserBean(user1, 1, game);
         gameUser2 = new GameUserBean(user2, 2, game);

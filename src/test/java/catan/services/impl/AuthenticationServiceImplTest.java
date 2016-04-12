@@ -27,7 +27,7 @@ public class AuthenticationServiceImplTest {
         try {
             // GIVEN
             String token = "token1";
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false, "en", "US");
             user.setId((int) System.currentTimeMillis());
 
             when(userDao.getUserByToken(token)).thenReturn(user);

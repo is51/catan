@@ -36,12 +36,12 @@ public class UserBean {
     public UserBean() {
     }
 
-    public UserBean(String username, String password, boolean guest) {
+    public UserBean(String username, String password, boolean guest, String language, String country) {
         this.username = username;
         this.password = password;
         this.guest = guest;
-        this.language = "en";
-        this.country = "US";
+        this.language = language;
+        this.country = country;
     }
 
     public int getId() {

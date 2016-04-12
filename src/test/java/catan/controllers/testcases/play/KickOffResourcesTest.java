@@ -82,9 +82,7 @@ public class KickOffResourcesTest extends PlayTestUtil {
 
     @Test
     public void should_successfully_kick_off_resources_by_users() {
-        playPreparationStageAndGiveResources();
-        Map<Integer, String> userNamesByMoveOrder = scenario.getUserNamesByMoveOrder();
-        scenario
+        playPreparationStageAndGiveResources()
                 .nextRandomDiceValues(asList(4, 3))
                 .THROW_DICE(1)
 
@@ -108,7 +106,7 @@ public class KickOffResourcesTest extends PlayTestUtil {
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
                     .gameUser(1).resourcesQuantityChangedBy(-2, -3, 0, 0, -2)
-                    .gameUser(1).hasDisplayedMessage("Wait until " + userNamesByMoveOrder.get(2) + " drop resources")
+                    .gameUser(1).hasDisplayedMessage("Wait until " + scenario.getUserNamesByMoveOrder().get(2) + " drop resources")
 
                 .getGameDetails(2)
                     .gameUser(2).hasAvailableAction("KICK_OFF_RESOURCES").withNotification(NOTIFY_MESSAGE_KICK_OFF_RESOURCES)
@@ -127,7 +125,7 @@ public class KickOffResourcesTest extends PlayTestUtil {
                     .gameUser(1).hasAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
                     .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                    .gameUser(1).hasDisplayedMessage(userNamesByMoveOrder.get(1) + ", move the robber to a new hex on the map")
+                    .gameUser(1).hasDisplayedMessage(scenario.getUserNamesByMoveOrder().get(1) + ", move the robber to a new hex on the map")
 
                 .getGameDetails(2)
                     .gameUser(2).doesntHaveAvailableAction("KICK_OFF_RESOURCES")
