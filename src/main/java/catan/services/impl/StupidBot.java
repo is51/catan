@@ -31,11 +31,13 @@ public class StupidBot extends AbstractBot {
     @Override
     void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
                                ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                               ActionDetails kickOffResourcesAction, ActionDetails throwDiceAction,
+                               ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
+                               ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
+                               ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
                                ActionDetails buildCityAction, ActionDetails buildSettlementAction,
                                ActionDetails buildRoadAction, ActionDetails buyCardAction,
                                ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                               ActionDetails endTurnAction) throws PlayException, GameException {
+                               ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
         if (endTurnAction != null) {
             playService.processAction(END_TURN, user, gameId);
             return;

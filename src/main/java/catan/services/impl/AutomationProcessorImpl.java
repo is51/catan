@@ -23,8 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static catan.domain.model.game.types.GameUserActionCode.BUILD_CITY;
 import static catan.domain.model.game.types.GameUserActionCode.BUILD_ROAD;
@@ -43,17 +45,11 @@ import static catan.domain.model.game.types.GameUserActionCode.TRADE_REPLY;
 public class AutomationProcessorImpl implements AutomationProcessor {
     private Logger log = LoggerFactory.getLogger(AutomationProcessor.class);
 
-    @Autowired
-    private GameDao gameDao;
-    @Autowired
-    private GameUtil gameUtil;
-    @Autowired
-    private PlayUtil playUtil;
+    private Map<GameUserBean, String> automatedPlayers = new HashMap<GameUserBean, String>();
+    private Set<Integer> gamesWithCardsAreOver = new HashSet<Integer>();
 
     @Autowired
     private List<AbstractBot> bots = new ArrayList<AbstractBot>();
-
-    private Map<GameUserBean, String> automatedPlayers = new HashMap<GameUserBean, String>();
 
     @Override
     @Scheduled(fixedDelay = 6000)
@@ -61,29 +57,20 @@ public class AutomationProcessorImpl implements AutomationProcessor {
         for (GameUserBean oldStatePlayer : automatedPlayers.keySet()) {
             try {
                 String playersBotTypeName = automatedPlayers.get(oldStatePlayer).toUpperCase();
-                GameUserBean player = refreshPlayerFields(oldStatePlayer);
 
                 for (AbstractBot bot : bots) {
                     if(bot.getBotName().equals(playersBotTypeName)){
-                        bot.automatePlayersActions(player);
+                        boolean cardsAreOver = gamesWithCardsAreOver.contains(oldStatePlayer.getGame().getGameId());
+                        bot.automatePlayersActions(oldStatePlayer, cardsAreOver);
                     }
                 }
             } catch (Exception e) {
+                if(e instanceof PlayException && ((PlayException)e).getErrorCode().equals("CARDS_ARE_OVER")){
+                    gamesWithCardsAreOver.add(oldStatePlayer.getGame().getGameId());
+                }
                 log.error("Automate action was not performed for player " + oldStatePlayer.getUser().getUsername(), e);
             }
         }
-    }
-
-    private GameUserBean refreshPlayerFields(GameUserBean oldStatePlayer) {
-        GameBean game = gameDao.getGameByGameId(oldStatePlayer.getGame().getGameId());
-        GameUserBean refreshedPlayer = null;
-        for (GameUserBean gameUserBean : game.getGameUsers()) {
-            if (gameUserBean.getGameUserId().equals(oldStatePlayer.getGameUserId())) {
-                refreshedPlayer = gameUserBean;
-            }
-        }
-        assert refreshedPlayer != null;
-        return refreshedPlayer;
     }
 
     @Override
