@@ -1,6 +1,7 @@
 package catan.services.util.play;
 
 import catan.domain.exception.GameException;
+import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.AvailableActions;
@@ -40,7 +41,8 @@ public class PlayUtil {
         }
     }
 
-    public void finishGameIfTargetVictoryPointsReached(GameUserBean gameUser, GameBean game) {
+    public void finishGameIfTargetVictoryPointsReached(GameUserBean gameUser) {
+        GameBean game = gameUser.getGame();
         if (gameUser.getMoveOrder() == game.getCurrentMove()) {
             int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
             if (realVictoryPoints >= game.getTargetVictoryPoints()) {
@@ -78,6 +80,16 @@ public class PlayUtil {
 
         int displayVictoryPoints = settlementsCount + citiesCount * 2 + (isBiggestArmyOwner ? 2 : 0) + (isLongestWayOwner ? 2 : 0);
         gameUser.getAchievements().setDisplayVictoryPoints(displayVictoryPoints);
+    }
+
+    public void changeRobbedHex(HexBean hexToRob) {
+        for (HexBean hex : hexToRob.getGame().getHexes()) {
+            if (hex.isRobbed()) {
+                hex.setRobbed(false);
+                break;
+            }
+        }
+        hexToRob.setRobbed(true);
     }
 
     @Autowired

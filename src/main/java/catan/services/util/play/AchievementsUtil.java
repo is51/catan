@@ -18,7 +18,7 @@ public class AchievementsUtil {
 
     public void updateLongestWayLength(GameBean game, GameUserBean gameUser) {
         int maxWayLength = 0;
-        for (EdgeBean edge : game.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
+        for (EdgeBean edge : gameUser.fetchEdgesWithBuildingsBelongsToGameUser()) {
             maxWayLength = calculateMaxWayLength(gameUser, maxWayLength, new ArrayList<Integer>(), new ArrayList<Integer>(), edge, 0);
         }
         gameUser.getAchievements().setLongestWayLength(maxWayLength);
@@ -105,13 +105,17 @@ public class AchievementsUtil {
             }
         }
 
-        game.setLongestWayOwner(newLongestWayOwner);
+        if (newLongestWayOwner != null) {
+            newLongestWayOwner.assignLongestWayOwner();
+        } else {
+            game.setLongestWayOwner(null);
+        }
     }
 
-    public void updateBiggestArmyOwner(GameUserBean gameUser, GameBean game) {
+    public void updateBiggestArmyOwner(GameUserBean gameUser) {
         int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
-        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, game)) {
-            game.setBiggestArmyOwner(gameUser);
+        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, gameUser.getGame())) {
+            gameUser.assignBiggestArmyOwner();
         }
     }
 

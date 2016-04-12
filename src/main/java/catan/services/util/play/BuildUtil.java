@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static catan.services.impl.PlayServiceImpl.ERROR_CODE_ERROR;
+import static catan.services.util.play.ValidationUtil.ERROR_CODE_ERROR;
 
 @Component
 public class BuildUtil {

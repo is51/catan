@@ -92,6 +92,10 @@ public class GameUtil {
         }.getType());
     }
 
+    public GameBean getGameById(String gameIdString) throws GameException {
+        return getGameById(gameIdString, ERROR_CODE_ERROR);
+    }
+
     public GameBean getGameById(String gameIdString, String errorCodeToReturnIfNotFound) throws GameException {
         int gameId;
         try {

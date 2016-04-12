@@ -445,26 +445,6 @@ public class GameBean {
         return hexesWithDiceNumber;
     }
 
-    public List<EdgeBean> fetchEdgesWithBuildingsBelongsToGameUser(GameUserBean gameUser) {
-        List<EdgeBean> edgesWithBuildingsBelongsToGameUser = new ArrayList<EdgeBean>();
-        for (EdgeBean edge : this.edges) {
-            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
-                edgesWithBuildingsBelongsToGameUser.add(edge);
-            }
-        }
-
-        return edgesWithBuildingsBelongsToGameUser;
-    }
-
-    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoadInMainStage(GameUserBean gameUser) {
-        Set<EdgeBean> edges = new HashSet<EdgeBean>();
-        for (EdgeBean edge : this.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
-            edges.addAll(edge.fetchNeighborEdgesAccessibleForBuildingRoad(gameUser));
-        }
-
-        return edges;
-    }
-
     public Integer calculateDiceSumValue() {
         if (this.diceFirstValue == null || this.diceSecondValue == null) {
             return null;

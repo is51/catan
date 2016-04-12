@@ -34,6 +34,7 @@ import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
+import catan.services.util.play.ValidationUtil;
 import catan.services.util.random.RandomUtil;
 import catan.services.util.random.RandomValueGeneratorMock;
 import com.google.gson.Gson;
@@ -96,6 +97,8 @@ public class PlayServiceImplTest {
     private MainStageUtil mainStageUtil;
     @InjectMocks
     private MessagesUtil messagesUtil;
+    @InjectMocks
+    private ValidationUtil validationUtil;
 
     private GameBean game;
     private HexBean hex_0_0;
@@ -128,6 +131,9 @@ public class PlayServiceImplTest {
         playService.setPreparationStageUtil(preparationStageUtil);
         playService.setMainStageUtil(mainStageUtil);
         playService.setMessagesUtil(messagesUtil);
+        playService.setValidationUtil(validationUtil);
+
+        validationUtil.setPlayUtil(playUtil);
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
@@ -175,10 +181,10 @@ public class PlayServiceImplTest {
 
             // WHEN
             playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
-            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("playException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -193,10 +199,10 @@ public class PlayServiceImplTest {
 
             // WHEN
             playService.processAction(GameUserActionCode.END_TURN, gameUser1.getUser(), "1", new HashMap<String, String>());
-            fail("playException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("playException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -262,10 +268,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "16");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -285,10 +291,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "7");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -341,10 +347,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "7");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -365,10 +371,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "7");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -386,10 +392,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "7");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("GameException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -405,10 +411,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "14");
 
             playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -426,10 +432,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -447,10 +453,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "4");
 
             playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -493,10 +499,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
-            fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("GameException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -535,10 +541,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -577,10 +583,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -600,10 +606,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "7");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -623,10 +629,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -641,10 +647,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "7");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -659,10 +665,10 @@ public class PlayServiceImplTest {
             params.put("edgeId", "7");
 
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -696,10 +702,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "14");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -717,10 +723,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -738,10 +744,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -759,10 +765,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "4");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -780,10 +786,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "4");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but was thrown: " + e);
         }
@@ -800,10 +806,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("GameException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("GameException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -822,10 +828,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -844,10 +850,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -889,10 +895,10 @@ public class PlayServiceImplTest {
             params.put("nodeId", "3");
 
             playService.processAction(GameUserActionCode.BUILD_CITY, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1042,7 +1048,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1096,7 +1102,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1138,7 +1144,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1176,7 +1182,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1214,10 +1220,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.THROW_DICE, gameUser1.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1241,10 +1247,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.THROW_DICE, gameUser2.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1324,7 +1330,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1367,7 +1373,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1410,7 +1416,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1449,7 +1455,7 @@ public class PlayServiceImplTest {
             fail("Exception should be thrown should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1578,10 +1584,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1601,10 +1607,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.BUY_CARD, gameUser2.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1629,7 +1635,7 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
             assertEquals(CardUtil.CARDS_ARE_OVER_ERROR, e.getErrorCode());
@@ -1779,10 +1785,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1805,10 +1811,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_YEAR_OF_PLENTY, gameUser2.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1953,10 +1959,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_MONOPOLY, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -1978,10 +1984,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_MONOPOLY, gameUser2.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2111,10 +2117,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser1.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2133,10 +2139,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.USE_CARD_ROAD_BUILDING, gameUser2.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2167,10 +2173,10 @@ public class PlayServiceImplTest {
         try {
             params.put("edgeId", "5");
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
@@ -2217,10 +2223,10 @@ public class PlayServiceImplTest {
         try {
             params.put("edgeId", "6");
             playService.processAction(GameUserActionCode.BUILD_ROAD, gameUser1.getUser(), "1", params);
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
@@ -2290,10 +2296,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.BUY_CARD, gameUser1.getUser(), "1");
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2342,10 +2348,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2368,10 +2374,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown, but get: " + e);
         }
@@ -2394,10 +2400,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2421,10 +2427,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2572,10 +2578,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.CHOOSE_PLAYER_TO_ROB, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2610,10 +2616,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.CHOOSE_PLAYER_TO_ROB, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2645,10 +2651,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.CHOOSE_PLAYER_TO_ROB, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
-        } catch (GameException e) {
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
+        } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2680,10 +2686,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.CHOOSE_PLAYER_TO_ROB, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (GameException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2714,10 +2720,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.MOVE_ROBBER, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2834,10 +2840,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2866,10 +2872,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2898,10 +2904,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.KICK_OFF_RESOURCES, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2962,10 +2968,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -2994,10 +3000,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -3026,10 +3032,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -3058,10 +3064,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_PROPOSE, gameUser1.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.ERROR_CODE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         }
@@ -3186,10 +3192,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser3.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.OFFER_ALREADY_ACCEPTED_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.OFFER_ALREADY_ACCEPTED_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.OFFER_ALREADY_ACCEPTED_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.OFFER_ALREADY_ACCEPTED_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
@@ -3246,10 +3252,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
@@ -3287,10 +3293,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + ValidationUtil.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
+            assertEquals(ValidationUtil.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
