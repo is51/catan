@@ -29,6 +29,7 @@ import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
+import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.random.RandomUtil;
@@ -65,6 +66,7 @@ public class PlayServiceImpl implements PlayService {
     private ActionParamsUtil actionParamsUtil;
     private PreparationStageUtil preparationStageUtil;
     private MainStageUtil mainStageUtil;
+    private MessagesUtil messagesUtil;
 
     private ConcurrentMap<Long, Long> locks = new ConcurrentHashMap<Long, Long>();
 
@@ -121,7 +123,7 @@ public class PlayServiceImpl implements PlayService {
                 endTurn(gameUser, game);
                 break;
             case THROW_DICE:
-                throwDice(game);
+                throwDice(gameUser);
                 break;
             case BUY_CARD:
                 buyCard(gameUser, game, usersResources, returnedParams);
@@ -145,7 +147,7 @@ public class PlayServiceImpl implements PlayService {
                 choosePlayerToRob(gameUser, game, usersResources, params.get("gameUserId"));
                 break;
             case KICK_OFF_RESOURCES:
-                kickOffResources(gameUser, game, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
+                kickOffResources(gameUser, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
                 break;
             case TRADE_PORT:
                 tradeResourcesInPort(gameUser, usersResources, params.get("brick"), params.get("wood"), params.get("sheep"), params.get("wheat"), params.get("stone"));
@@ -236,17 +238,18 @@ public class PlayServiceImpl implements PlayService {
         }
     }
 
-    private void throwDice(GameBean game) {
+    private void throwDice(GameUserBean gameUser) {
         Integer diceFirstValue = randomUtil.getRandomDiceNumber();
         Integer diceSecondValue = randomUtil.getRandomDiceNumber();
         log.info("Current dice value is " + (diceFirstValue + diceSecondValue) + " (First dice: " + diceFirstValue + ", Second dice: " + diceSecondValue + ")");
 
+        GameBean game = gameUser.getGame();
         game.setDiceFirstValue(diceFirstValue);
         game.setDiceSecondValue(diceSecondValue);
         game.setDiceThrown(true);
         if (isRobbersActivity(diceFirstValue, diceSecondValue)) {
             log.debug("Robber activity is started, checking if players should kick-off resources");
-            checkIfPlayersShouldKickOffResources(game);
+            checkIfPlayersShouldKickOffResources(gameUser);
         } else {
             List<HexBean> hexesWithCurrentDiceValue = game.fetchHexesWithCurrentDiceValue();
             log.debug("Producing resources form hexes with current dice value:" + (hexesWithCurrentDiceValue.isEmpty() ? "" : "\n\t\t") + hexesWithCurrentDiceValue.toString());
@@ -319,6 +322,7 @@ public class PlayServiceImpl implements PlayService {
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.KNIGHT);
 
         game.setRobberShouldBeMovedMandatory(true);
+        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_move_robber");
         game.setDevelopmentCardUsed(true);
 
         achievementsUtil.increaseTotalUsedKnightsByOne(gameUser);
@@ -332,6 +336,7 @@ public class PlayServiceImpl implements PlayService {
         changeRobbedHex(game, hexToRob);
         log.info("Hex {} successfully robbed", hexAbsoluteId);
         game.setRobberShouldBeMovedMandatory(false);
+        messagesUtil.clearUsersMsgs(game);
 
         List<GameUserBean> playersAtHex = new ArrayList<GameUserBean>(hexToRob.fetchGameUsersWithBuildingsAtNodes());
         playersAtHex.remove(gameUser);
@@ -342,6 +347,7 @@ public class PlayServiceImpl implements PlayService {
         }
         if (playersToRobQuantity > 1) {
             game.setChoosePlayerToRobMandatory(true);
+            messagesUtil.updateDisplayedMessage(gameUser, "help_msg_choose_player_to_rob");
         }
     }
 
@@ -367,6 +373,7 @@ public class PlayServiceImpl implements PlayService {
             currentUsersResources.updateResourceQuantity(stolenResourceType, obtainedResourceQuantity + 1);
         }
         game.setChoosePlayerToRobMandatory(false);
+        messagesUtil.clearUsersMsgs(game);
     }
 
     private void validateGameUserCouldBeRobbed(GameUserBean gameUser, GameBean game, GameUserBean robbedGameUser) throws PlayException {
@@ -398,7 +405,7 @@ public class PlayServiceImpl implements PlayService {
         return gameUserId;
     }
 
-    private void kickOffResources(GameUserBean gameUser, GameBean game, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
+    private void kickOffResources(GameUserBean gameUser, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
 
         int usersBrickQuantity = userResources.getBrick();
         int usersWoodQuantity = userResources.getWood();
@@ -423,7 +430,7 @@ public class PlayServiceImpl implements PlayService {
         userResources.setStone(usersStoneQuantity - stoneQuantityToKickOff);
 
         gameUser.setKickingOffResourcesMandatory(false);
-        checkRobberShouldBeMovedMandatory(game);
+        checkRobberShouldBeMovedMandatory(gameUser.getGame());
     }
 
     private void tradeResourcesInPort(GameUserBean gameUser, Resources userResources, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
@@ -584,10 +591,12 @@ public class PlayServiceImpl implements PlayService {
     private void checkRobberShouldBeMovedMandatory(GameBean game) {
         for (GameUserBean gameUserIterated : game.getGameUsers()) {
             if (gameUserIterated.isKickingOffResourcesMandatory()) {
+                messagesUtil.updateDisplayedMessage(game.fetchActiveGameUser(), "help_msg_wait_for_kicking_off_res");
                 return;
             }
         }
         game.setRobberShouldBeMovedMandatory(true);
+        messagesUtil.updateDisplayedMessage(game.fetchActiveGameUser(), "help_msg_move_robber");
     }
 
     private void validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(int sumOfUsersResources, int sumOfResourcesKickingOff) throws PlayException {
@@ -646,18 +655,22 @@ public class PlayServiceImpl implements PlayService {
     }
 
 
-    private void checkIfPlayersShouldKickOffResources(GameBean game) {
-        boolean noOneNeedsToKickOfResources = true;
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (gameUser.getAchievements().getTotalResources() > 7) {
-                gameUser.setKickingOffResourcesMandatory(true);
-                noOneNeedsToKickOfResources = false;
+    private void checkIfPlayersShouldKickOffResources(GameUserBean gameUser) {
+        GameBean game = gameUser.getGame();
+        boolean shouldResourcesBeKickedOff = false;
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            if (gameUserIterated.getAchievements().getTotalResources() > 7) {
+                gameUserIterated.setKickingOffResourcesMandatory(true);
+                shouldResourcesBeKickedOff = true;
             }
         }
 
-        if (noOneNeedsToKickOfResources) {
-            game.setRobberShouldBeMovedMandatory(true);
+        if (shouldResourcesBeKickedOff) {
+            messagesUtil.updateDisplayedMessage(gameUser, "help_msg_wait_for_kicking_off_res");
+            return;
         }
+        game.setRobberShouldBeMovedMandatory(true);
+        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_move_robber");
     }
 
     private void changeRobbedHex(GameBean game, HexBean hexToRob) {
@@ -806,5 +819,10 @@ public class PlayServiceImpl implements PlayService {
     @Autowired
     public void setMainStageUtil(MainStageUtil mainStageUtil) {
         this.mainStageUtil = mainStageUtil;
+    }
+
+    @Autowired
+    public void setMessagesUtil(MessagesUtil messagesUtil) {
+        this.messagesUtil = messagesUtil;
     }
 }
