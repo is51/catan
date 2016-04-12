@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -291,14 +292,14 @@ public class SmartBot extends AbstractBot {
     private static void calculateRoadsFromNodeToNode(GameUserBean player,
                                                      NodeBean sourceNode,
                                                      NodeBean destinationNode,
-                                                     List<ArrayList<EdgeBean>> ways,
+                                                     List<LinkedList<EdgeBean>> ways,
                                                      List<EdgeBean> path) {
         if (path == null) {
-            path = new ArrayList<EdgeBean>();
+            path = new LinkedList<EdgeBean>();
         }
 
         if (sourceNode.equals(destinationNode)) {
-            ways.add(new ArrayList<EdgeBean>(path));
+            ways.add(new LinkedList<EdgeBean>(path));
             return;
         } else if (path.size() > 10) {
             return;
