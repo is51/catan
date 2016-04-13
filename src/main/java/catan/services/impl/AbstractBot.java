@@ -1,7 +1,9 @@
 package catan.services.impl;
 
+import catan.dao.GameDao;
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
+import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
@@ -21,8 +23,15 @@ import static catan.domain.model.game.types.GameUserActionCode.MOVE_ROBBER;
 import static catan.domain.model.game.types.GameUserActionCode.THROW_DICE;
 import static catan.domain.model.game.types.GameUserActionCode.TRADE_PORT;
 import static catan.domain.model.game.types.GameUserActionCode.TRADE_REPLY;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_KNIGHT;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_MONOPOLY;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_ROAD_BUILDING;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_YEAR_OF_PLENTY;
 
 abstract class AbstractBot {
+
+    @Autowired
+    private GameDao gameDao;
 
     @Autowired
     PlayService playService;
@@ -31,18 +40,40 @@ abstract class AbstractBot {
 
     abstract void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
                                         ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                                        ActionDetails kickOffResourcesAction, ActionDetails throwDiceAction,
+                                        ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
+                                        ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
+                                        ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
                                         ActionDetails buildCityAction, ActionDetails buildSettlementAction,
                                         ActionDetails buildRoadAction, ActionDetails buyCardAction,
                                         ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                                        ActionDetails endTurnAction) throws PlayException, GameException;
+                                        ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException;
 
-    void automatePlayersActions(GameUserBean player) throws PlayException, GameException {
+
+
+    private GameUserBean refreshPlayerFields(GameUserBean oldStatePlayer) {
+        GameBean game = gameDao.getGameByGameId(oldStatePlayer.getGame().getGameId());
+        GameUserBean refreshedPlayer = null;
+        for (GameUserBean gameUserBean : game.getGameUsers()) {
+            if (gameUserBean.getGameUserId().equals(oldStatePlayer.getGameUserId())) {
+                refreshedPlayer = gameUserBean;
+            }
+        }
+        assert refreshedPlayer != null;
+        return refreshedPlayer;
+    }
+
+    void automatePlayersActions(GameUserBean oldStatePlayer, boolean cardsAreOver) throws PlayException, GameException {
+        GameUserBean player = refreshPlayerFields(oldStatePlayer);
+
         AvailableActionsDetails availableActions = getAvailableActions(player);
 
         ActionDetails moveRobberAction = null;
         ActionDetails choosePlayerToRobAction = null;
         ActionDetails kickOffResourcesAction = null;
+        ActionDetails useCardKnightAction = null;
+        ActionDetails useCardRoadBuildingAction = null;
+        ActionDetails useCardYearOfPlentyAction = null;
+        ActionDetails useCardMonopolyAction = null;
         ActionDetails throwDiceAction = null;
         ActionDetails buildCityAction = null;
         ActionDetails buildSettlementAction = null;
@@ -61,6 +92,18 @@ abstract class AbstractBot {
             }
             if (action.getCode().equals(KICK_OFF_RESOURCES.name())) {
                 kickOffResourcesAction = action;
+            }
+            if (action.getCode().equals(USE_CARD_KNIGHT.name())) {
+                useCardKnightAction = action;
+            }
+            if (action.getCode().equals(USE_CARD_ROAD_BUILDING.name())) {
+                useCardRoadBuildingAction = action;
+            }
+            if (action.getCode().equals(USE_CARD_YEAR_OF_PLENTY.name())) {
+                useCardYearOfPlentyAction = action;
+            }
+            if (action.getCode().equals(USE_CARD_MONOPOLY.name())) {
+                useCardMonopolyAction = action;
             }
             if (action.getCode().equals(THROW_DICE.name())) {
                 throwDiceAction = action;
@@ -91,10 +134,23 @@ abstract class AbstractBot {
         String gameId = String.valueOf(player.getGame().getGameId());
         UserBean user = player.getUser();
 
-
         processActionsInOrder(player, user, gameId,
-                moveRobberAction, choosePlayerToRobAction, kickOffResourcesAction, throwDiceAction, buildCityAction,
-                buildSettlementAction, buildRoadAction, buyCardAction, tradePortAction, tradeReplyAction, endTurnAction);
+                moveRobberAction,
+                choosePlayerToRobAction,
+                kickOffResourcesAction,
+                useCardKnightAction,
+                useCardRoadBuildingAction,
+                useCardYearOfPlentyAction,
+                useCardMonopolyAction,
+                throwDiceAction,
+                buildCityAction,
+                buildSettlementAction,
+                buildRoadAction,
+                buyCardAction,
+                tradePortAction,
+                tradeReplyAction,
+                endTurnAction,
+                cardsAreOver);
     }
 
     private AvailableActionsDetails getAvailableActions(GameUserBean player) {

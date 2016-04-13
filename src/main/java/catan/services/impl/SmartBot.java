@@ -2,17 +2,24 @@ package catan.services.impl;
 
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
+import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.NodeBuiltType;
+import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static catan.domain.model.game.types.GameUserActionCode.BUILD_CITY;
 import static catan.domain.model.game.types.GameUserActionCode.BUILD_ROAD;
@@ -25,6 +32,10 @@ import static catan.domain.model.game.types.GameUserActionCode.MOVE_ROBBER;
 import static catan.domain.model.game.types.GameUserActionCode.THROW_DICE;
 import static catan.domain.model.game.types.GameUserActionCode.TRADE_PORT;
 import static catan.domain.model.game.types.GameUserActionCode.TRADE_REPLY;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_KNIGHT;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_MONOPOLY;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_ROAD_BUILDING;
+import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_YEAR_OF_PLENTY;
 
 @Service("smartBot")
 public class SmartBot extends AbstractBot {
@@ -36,7 +47,7 @@ public class SmartBot extends AbstractBot {
         hexProbabilities.put(4, (3d / 36));
         hexProbabilities.put(5, (4d / 36));
         hexProbabilities.put(6, (5d / 36));
-        hexProbabilities.put(7, (6d / 36));
+        hexProbabilities.put(7, (0d));
         hexProbabilities.put(8, (5d / 36));
         hexProbabilities.put(9, (4d / 36));
         hexProbabilities.put(10, (3d / 36));
@@ -52,11 +63,13 @@ public class SmartBot extends AbstractBot {
     @Override
     void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
                                ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                               ActionDetails kickOffResourcesAction, ActionDetails throwDiceAction,
+                               ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
+                               ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
+                               ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
                                ActionDetails buildCityAction, ActionDetails buildSettlementAction,
                                ActionDetails buildRoadAction, ActionDetails buyCardAction,
                                ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                               ActionDetails endTurnAction) throws PlayException, GameException {
+                               ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
 
         if (moveRobberAction != null) {
             moveRobber(player, user, gameId, moveRobberAction);
@@ -69,11 +82,44 @@ public class SmartBot extends AbstractBot {
         }
 
         if (kickOffResourcesAction != null) {
+            //TODO: kickoff not needed resources
             kickOffResources(player, user, gameId);
             return;
         }
 
+        if (useCardKnightAction != null) {
+            boolean cardUsed = useCardKnight(player, user, gameId);
+            if (cardUsed) {
+                return;
+            }
+        }
+
+        if (useCardRoadBuildingAction != null) {
+            //TODO: use useCardRoadBuilding if possible
+            boolean cardUsed = useCardRoadBuilding(user, gameId);
+            if (cardUsed) {
+                return;
+            }
+        }
+
+        if (useCardYearOfPlentyAction != null) {
+            //TODO: use useCardYearOfPlenty if possible
+            boolean cardUsed = useCardYearOfPlenty(user, gameId);
+            if (cardUsed) {
+                return;
+            }
+        }
+
+        if (useCardMonopolyAction != null) {
+            //TODO: use useCardMonopoly if possible
+            boolean cardUsed = useCardMonopoly(user, gameId);
+            if (cardUsed) {
+                return;
+            }
+        }
+
         if (throwDiceAction != null) {
+            //TODO: use knight if possible
             throwDice(user, gameId);
             return;
         }
@@ -89,16 +135,19 @@ public class SmartBot extends AbstractBot {
         }
 
         if (buildRoadAction != null) {
+            //TODO: calculate best road
             buildRoad(user, gameId, buildRoadAction);
             return;
         }
 
-        if (buyCardAction != null) {
+        if (buyCardAction != null && !cardsAreOver) {
+            //TODO: Buy card if needed
             buyCard(user, gameId);
             return;
         }
 
         if (tradePortAction != null) {
+            //TODO: trade required resources
             boolean tradeSuccessful = tradePort(player, gameId, user, tradePortAction);
             if (tradeSuccessful) {
                 return;
@@ -106,6 +155,7 @@ public class SmartBot extends AbstractBot {
         }
 
         if (tradeReplyAction != null) {
+            //TODO: Accept trade if it is useful for player
             tradeReply(user, gameId, tradeReplyAction);
             return;
         }
@@ -118,7 +168,66 @@ public class SmartBot extends AbstractBot {
 
     }
 
-    private void buyCard(UserBean user, String gameId) throws PlayException, GameException {
+    private boolean useCardMonopoly(UserBean user, String gameId) throws PlayException, GameException {
+        try {
+            playService.processAction(USE_CARD_MONOPOLY, user, gameId);
+            return true;
+        } catch (PlayException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean useCardYearOfPlenty(UserBean user, String gameId) throws GameException {
+        try {
+            playService.processAction(USE_CARD_YEAR_OF_PLENTY, user, gameId);
+            return true;
+        } catch (PlayException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean useCardRoadBuilding(UserBean user, String gameId) throws GameException {
+        try {
+            playService.processAction(USE_CARD_ROAD_BUILDING, user, gameId);
+            return true;
+        } catch (PlayException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private boolean useCardKnight(GameUserBean player, UserBean user, String gameId) throws GameException {
+        GameBean game = player.getGame();
+        boolean shouldUseKnightCard = false;
+        for (HexBean hex : game.getHexes()) {
+            if (!hex.isRobbed()) {
+                continue;
+            }
+
+            for (NodeBean node : hex.getNodes().listAllNotNullItems()) {
+                if (node.hasBuildingBelongsToUser(player)) {
+                    shouldUseKnightCard = true;
+                }
+            }
+
+        }
+
+        if (shouldUseKnightCard || player.getDevelopmentCards().getKnight() > 1) {
+            try {
+                playService.processAction(USE_CARD_KNIGHT, user, gameId);
+                return true;
+            } catch (PlayException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    private void buyCard(UserBean user, String gameId) throws GameException, PlayException {
         playService.processAction(BUY_CARD, user, gameId);
     }
 
@@ -130,6 +239,99 @@ public class SmartBot extends AbstractBot {
         playService.processAction(BUILD_ROAD, user, gameId, params);
     }
 
+    private static EdgeBean calculateNextNeccesaryRoad(GameUserBean player) {
+        List<NodeBean> possibleBeginRoadNodes = findNodesAvailableToStartBuildRoad(player);
+        for (NodeBean possibleBeginRoadNode : possibleBeginRoadNodes) {
+            for (NodeBean possiblePlaceForBuilding : player.getGame().getNodes()) {
+                //TODO: calculate statement
+                boolean nodeHasNeighbourBuilding = false;
+                if (possiblePlaceForBuilding.getBuilding() != null || nodeHasNeighbourBuilding) {
+                    continue;
+                }
+
+                //TODO: calculateRoadsFromNodeToNode(player, possibleBeginRoadNode, possiblePlaceForBuilding, ways, null);
+//                List<EdgeBean> minLengthOne = waysOne.get(0);
+//                for (ArrayList<EdgeBean> currentLength : waysOne) {
+//                    if (minLengthOne.size() > currentLength.size()) {
+//                        minLengthOne = currentLength;
+//                    }
+//                }
+                //TODO: save result to some map
+            }
+        }
+
+        //TODO: choose the best way to best settlement and select road
+
+        return null;
+    }
+
+    private static List<NodeBean> findNodesAvailableToStartBuildRoad(GameUserBean player) {
+        List<NodeBean> nodesAvailableToStartBuildRoad = new ArrayList<NodeBean>();
+        for (NodeBean node : player.getGame().getNodes()) {
+            if (!node.hasBuildingBelongsToUser(player) && !node.hasNeighbourRoadBelongsToGameUser(player)) {
+                continue;
+            }
+
+            boolean hasEmptyEdgeToBuildRoad = false;
+            for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
+                if (edge.getBuilding() != null) {
+                    continue;
+                }
+
+                hasEmptyEdgeToBuildRoad = true;
+            }
+
+            if (hasEmptyEdgeToBuildRoad) {
+                nodesAvailableToStartBuildRoad.add(node);
+            }
+        }
+
+        return nodesAvailableToStartBuildRoad;
+    }
+
+    private static void calculateRoadsFromNodeToNode(GameUserBean player,
+                                                     NodeBean sourceNode,
+                                                     NodeBean destinationNode,
+                                                     List<LinkedList<EdgeBean>> ways,
+                                                     List<EdgeBean> path) {
+        if (path == null) {
+            path = new LinkedList<EdgeBean>();
+        }
+
+        if (sourceNode.equals(destinationNode)) {
+            ways.add(new LinkedList<EdgeBean>(path));
+            return;
+        } else if (path.size() > 10) {
+            return;
+        }
+
+        for (EdgeBean possibleRoadPlace : sourceNode.getEdges().listAllNotNullItems()) {
+            if (path.contains(possibleRoadPlace)) {
+                continue;
+            }
+
+            NodeBean oppositeToSourceNode = getOppositeNode(possibleRoadPlace, sourceNode);
+
+            path.add(possibleRoadPlace);
+            calculateRoadsFromNodeToNode(player, oppositeToSourceNode, destinationNode, ways, path);
+            path.remove(possibleRoadPlace);
+        }
+    }
+
+
+    private static NodeBean getOppositeNode(EdgeBean edge, NodeBean currentNode) {
+        for (NodeBean nodeBean : edge.getNodes().listAllNotNullItems()) {
+            if (nodeBean.equals(currentNode)) {
+                continue;
+            }
+
+            return nodeBean;
+        }
+
+        return null;
+    }
+
+    // add method canBuild that return how many roads required to build settlement
     private void buildSettlement(GameUserBean player, UserBean user, String gameId, ActionDetails buildSettlementAction) throws PlayException, GameException {
         List<Integer> nodeIdsToBuildSettlement = buildSettlementAction.getParams().getNodeIds();
         int nodeIdWithNeighbourHexMaxProbability = getNodeIdWithNeighbourHexMaxProbability(player, nodeIdsToBuildSettlement);
@@ -168,7 +370,8 @@ public class SmartBot extends AbstractBot {
                 player.getResources().getWheat() +
                 player.getResources().getStone();
         Integer halfSum = sum / 2;
-        //brick=0, wood=2, sheep=1, wheat=4, stone=1}
+
+        //TODO: take resources in correct order, not just starting from brick
         Integer brick = player.getResources().getBrick() >= halfSum
                 ? halfSum
                 : player.getResources().getBrick();
@@ -196,15 +399,18 @@ public class SmartBot extends AbstractBot {
     }
 
     private void choosePlayerToRob(GameUserBean player, UserBean user, String gameId, ActionDetails choosePlayerToRobAction) throws PlayException, GameException {
-        String gameUserId = "";
-        List<Integer> nodeIds = choosePlayerToRobAction.getParams().getNodeIds();
-        Integer nodeAbsoluteIdToRobPlayer = nodeIds.get((int) (Math.random() * nodeIds.size()));
-        for (NodeBean nodeBean : player.getGame().getNodes()) {
-            if (nodeAbsoluteIdToRobPlayer.equals(nodeBean.getAbsoluteId())) {
-                gameUserId = nodeBean.getBuilding().getBuildingOwner().getGameUserId().toString();
-                break;
+        List<Integer> availableNodeIds = choosePlayerToRobAction.getParams().getNodeIds();
+        Set<GameUserBean> playersToRob = new HashSet<GameUserBean>();
+        for (NodeBean node : player.getGame().getNodes()) {
+            for (Integer availableNodeId : availableNodeIds) {
+                if (availableNodeId.equals(node.getAbsoluteId())) {
+                    playersToRob.add(node.getBuilding().getBuildingOwner());
+                }
             }
         }
+
+        GameUserBean playerToRob = choosePlayerToRob(player, playersToRob);
+        String gameUserId = playerToRob.getGameUserId().toString();
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("gameUserId", gameUserId);
@@ -270,20 +476,20 @@ public class SmartBot extends AbstractBot {
             return false;
         }
 
-        if (player.getResources().getBrick() == 0) {
-            buy.put("brick", sumSell);
-            sumBuy += sumSell;
-        } else if (player.getResources().getWood() == 0) {
-            buy.put("wood", sumSell);
-            sumBuy += sumSell;
-        } else if (player.getResources().getSheep() == 0) {
-            buy.put("sheep", sumSell);
+        if (player.getResources().getStone() == 0) {
+            buy.put("stone", sumSell);
             sumBuy += sumSell;
         } else if (player.getResources().getWheat() == 0) {
             buy.put("wheat", sumSell);
             sumBuy += sumSell;
-        } else if (player.getResources().getStone() == 0) {
-            buy.put("stone", sumSell);
+        } else if (player.getResources().getSheep() == 0) {
+            buy.put("sheep", sumSell);
+            sumBuy += sumSell;
+        } else if (player.getResources().getWood() == 0) {
+            buy.put("wood", sumSell);
+            sumBuy += sumSell;
+        } else if (player.getResources().getBrick() == 0) {
+            buy.put("brick", sumSell);
             sumBuy += sumSell;
         }
 
@@ -318,16 +524,59 @@ public class SmartBot extends AbstractBot {
     }
 
 
+    private static GameUserBean choosePlayerToRob(GameUserBean player, Set<GameUserBean> gameUsers) {
+        GameUserBean playerToRob = null;
+        for (GameUserBean opponent : gameUsers) {
+            if (opponent.getGameUserId().equals(player.getGameUserId())) {
+                continue;
+            }
+
+            if (playerToRob == null
+                    || playerToRob.getAchievements().getDisplayVictoryPoints() < opponent.getAchievements().getDisplayVictoryPoints()
+                    || (playerToRob.getAchievements().getDisplayVictoryPoints() == opponent.getAchievements().getDisplayVictoryPoints()
+                    && playerToRob.getAchievements().getTotalResources() * 3
+                    + playerToRob.getAchievements().getLongestWayLength() * 2
+                    + playerToRob.getAchievements().getTotalUsedKnights() * 2
+                    + playerToRob.getAchievements().getTotalCards() < opponent.getAchievements().getTotalResources() * 3
+                    + opponent.getAchievements().getLongestWayLength() * 2
+                    + opponent.getAchievements().getTotalUsedKnights() * 2
+                    + opponent.getAchievements().getTotalCards())) {
+                playerToRob = opponent;
+            }
+        }
+        return playerToRob;
+    }
+
     private static int getHexIdWithMaxProbability(GameUserBean player, List<Integer> hexIdsToMoveRob) {
         int hexIdWithMaxProbability = 0;
         double maxProbability = 0;
 
+        GameUserBean playerToRob = choosePlayerToRob(player, player.getGame().getGameUsers());
+
         for (HexBean hex : player.getGame().getHexes()) {
-            double hexDiceProbability = hexProbabilities.get(hex.getDice());
+            double hexDiceResourceSumProbability = 0;
+
+            if (hex.getDice() == null || hex.getDice() == 7) {
+                continue;
+            }
+
+            boolean ignoreCurrentHex = true;
+            for (NodeBean nodeAtHex : hex.getNodes().listAllNotNullItems()) {
+                if (nodeAtHex.hasBuildingBelongsToUser(playerToRob)) {
+                    ignoreCurrentHex = false;
+                    int resourceQuantityMultiplier = nodeAtHex.getBuilding().getBuilt().equals(NodeBuiltType.SETTLEMENT) ? 1 : 2;
+                    hexDiceResourceSumProbability += hexProbabilities.get(hex.getDice()) * resourceQuantityMultiplier;
+                }
+            }
+            //TODO: ignore hex, if player has building close to this hex
+            if (ignoreCurrentHex) {
+                continue;
+            }
+
             for (Integer hexId : hexIdsToMoveRob) {
-                if(hexId.equals(hex.getId()) && maxProbability <= hexDiceProbability){
+                if (hexId.equals(hex.getAbsoluteId()) && maxProbability <= hexDiceResourceSumProbability) {
                     hexIdWithMaxProbability = hexId;
-                    maxProbability = hexDiceProbability;
+                    maxProbability = hexDiceResourceSumProbability;
                 }
             }
         }
@@ -337,26 +586,33 @@ public class SmartBot extends AbstractBot {
 
     private static int getNodeIdWithNeighbourHexMaxProbability(GameUserBean player, List<Integer> nodeIdsToBuild) {
         Map<Integer, Double> sumNodeProbabilities = new HashMap<Integer, Double>();
+
         for (Integer nodeId : nodeIdsToBuild) {
             double sumProbability = 0d;
             for (NodeBean node : player.getGame().getNodes()) {
-                if (nodeId.equals(node.getId())) {
+                if (nodeId.equals(node.getAbsoluteId())) {
                     for (HexBean hexAtNode : node.getHexes().listAllNotNullItems()) {
+                        if (hexAtNode.getDice() == null || hexAtNode.getDice() == 7) {
+                            continue;
+                        }
+
                         sumProbability += hexProbabilities.get(hexAtNode.getDice());
                     }
 
+                    break;
                 }
             }
 
             sumNodeProbabilities.put(nodeId, sumProbability);
         }
 
-        int nodeIdWithMaxProbability = 0;
+        int nodeIdWithMaxProbability = -1;
         for (Integer currentNodeId : sumNodeProbabilities.keySet()) {
-            if (sumNodeProbabilities.get(nodeIdWithMaxProbability) <= sumNodeProbabilities.get(currentNodeId)) {
+            if (nodeIdWithMaxProbability == -1 || sumNodeProbabilities.get(nodeIdWithMaxProbability) <= sumNodeProbabilities.get(currentNodeId)) {
                 nodeIdWithMaxProbability = currentNodeId;
             }
         }
+
         return nodeIdWithMaxProbability;
     }
 
