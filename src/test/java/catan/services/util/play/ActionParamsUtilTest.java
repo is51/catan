@@ -46,26 +46,26 @@ public class ActionParamsUtilTest {
         game.setStage(GameStage.MAIN);
 
         HexBean hexBean1 = new HexBean();
-        hexBean1.setId(1);
+        hexBean1.setAbsoluteId(1);
         hexBean1.setResourceType(HexType.BRICK);
         hexBean1.setCoordinates(new Coordinates(1, 0));
         hexBean1.setGame(game);
 
         HexBean hexBean2 = new HexBean();
-        hexBean2.setId(2);
+        hexBean2.setAbsoluteId(2);
         hexBean2.setResourceType(HexType.STONE);
         hexBean2.setCoordinates(new Coordinates(1, 1));
         hexBean2.setGame(game);
 
         HexBean robbedHex = new HexBean();
-        robbedHex.setId(3);
+        robbedHex.setAbsoluteId(3);
         robbedHex.setRobbed(true);
         robbedHex.setResourceType(HexType.SHEEP);
         robbedHex.setCoordinates(new Coordinates(0, 1));
         robbedHex.setGame(game);
 
         HexBean emptyHex = new HexBean();
-        emptyHex.setId(4);
+        emptyHex.setAbsoluteId(4);
         emptyHex.setResourceType(HexType.EMPTY);
         emptyHex.setCoordinates(new Coordinates(1, 1));
         emptyHex.setGame(game);
