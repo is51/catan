@@ -1,44 +1,50 @@
-<button (click)="throwDice()" [disabled]="!isActionEnabled('THROW_DICE')">
-    <span class="glyphicon glyphicon-th-large"></span><br>
-    Throw
-</button>
+<!-- Before dice is thrown -->
+<div *ngIf="isActionEnabled('THROW_DICE')">
 
-<button (click)="build()" [disabled]="!isActionGroupEnabled('BUILD')">
-    <span class="glyphicon glyphicon-shopping-cart"></span><br>
-    Buy
-</button>
+    <button (click)="throwDice()">
+        <span class="glyphicon glyphicon-th-large"></span><br>
+        Throw
+    </button>
 
-<button (click)="showCards()">
-    <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
-    Cards
-</button>
+    <button (click)="showCards()" [disabled]="!isActionEnabled('USE_CARD_KNIGHT')">
+        <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
+        Cards
+    </button>
 
-<button (click)="showTradePanel()" [disabled]="!isActionGroupEnabled('TRADE')" *ngIf="!isActionEnabled('TRADE_REPLY')">
-    <span class="glyphicon glyphicon-retweet"></span><br>
-    Trade
-</button>
+</div>
 
-<button (click)="showTradeReplyPanel()" [disabled]="!isActionEnabled('TRADE_REPLY')" *ngIf="isActionEnabled('TRADE_REPLY')">
+<!-- After dice is thrown -->
+<div *ngIf="isActionEnabled('END_TURN')">
+
+    <button (click)="build()">
+        <span class="glyphicon glyphicon-shopping-cart"></span><br>
+        Buy
+    </button>
+
+    <button (click)="showCards()">
+        <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
+        Cards
+    </button>
+
+    <button (click)="showTradePanel()">
+        <span class="glyphicon glyphicon-retweet"></span><br>
+        Trade
+    </button>
+
+    <button (click)="endTurn()">
+        <span class="glyphicon glyphicon-hourglass"></span><br>
+        End turn
+    </button>
+
+</div>
+
+
+<button (click)="showTradeReplyPanel()" *ngIf="isActionEnabled('TRADE_REPLY') && !isTradeReplyPanelVisible()">
     <span class="glyphicon glyphicon-retweet"></span><br>
     Reply
 </button>
 
-<button (click)="moveRobber()" [disabled]="!isActionEnabled('MOVE_ROBBER')" *ngIf="isActionEnabled('MOVE_ROBBER')">
-    <span class="glyphicon glyphicon-fire"></span><br>
-    Move rob
-</button>
-
-<button (click)="choosePlayerToRob()" [disabled]="!isActionEnabled('CHOOSE_PLAYER_TO_ROB')" *ngIf="isActionEnabled('CHOOSE_PLAYER_TO_ROB')">
-    <span class="glyphicon glyphicon-map-marker"></span><br>
-    Choose
-</button>
-
-<button (click)="kickOffResources()" [disabled]="!isActionEnabled('KICK_OFF_RESOURCES')" *ngIf="isActionEnabled('KICK_OFF_RESOURCES')">
+<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isKickOffResourcesPanelVisible()">
     <span class="glyphicon glyphicon-download-alt"></span><br>
     Kick res
-</button>
-
-<button (click)="endTurn()" [disabled]="!isActionEnabled('END_TURN')">
-    <span class="glyphicon glyphicon-hourglass"></span><br>
-    End turn
 </button>
