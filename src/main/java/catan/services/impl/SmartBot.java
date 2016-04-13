@@ -136,7 +136,7 @@ public class SmartBot extends AbstractBot {
 
         if (buildRoadAction != null) {
             //TODO: calculate best road
-            buildRoad(user, gameId, buildRoadAction);
+            buildRoad(player, user, gameId, buildRoadAction);
             return;
         }
 
@@ -231,41 +231,108 @@ public class SmartBot extends AbstractBot {
         playService.processAction(BUY_CARD, user, gameId);
     }
 
-    private void buildRoad(UserBean user, String gameId, ActionDetails buildRoadAction) throws PlayException, GameException {
-        Map<String, String> params = new HashMap<String, String>();
+    private void buildRoad(GameUserBean player, UserBean user, String gameId, ActionDetails buildRoadAction) throws PlayException, GameException {
+        //TODO: don't build road if have place for settlement
         List<Integer> edgeIds = buildRoadAction.getParams().getEdgeIds();
-        params.put("edgeId", edgeIds.get((int) (Math.random() * edgeIds.size())).toString());
+        EdgeBean edgeToBuildRoad = calculateNextNeccesaryRoad(player, 3, edgeIds);
+
+        String edgeId = edgeToBuildRoad != null
+                ? edgeToBuildRoad.getAbsoluteId().toString()
+                : edgeIds.get((int) (Math.random() * edgeIds.size())).toString();
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("edgeId", edgeId);
 
         playService.processAction(BUILD_ROAD, user, gameId, params);
     }
 
-    private static EdgeBean calculateNextNeccesaryRoad(GameUserBean player) {
-        List<NodeBean> possibleBeginRoadNodes = findNodesAvailableToStartBuildRoad(player);
+    private static EdgeBean calculateNextNeccesaryRoad(GameUserBean player, int limitRoadLengthToNextBuilding, List<Integer> possibleEdgeIds) {
+        Map<Double, LinkedList<EdgeBean>> nodeProbabilitiesOfRoadDestinations = new HashMap<Double, LinkedList<EdgeBean>>();
+
+        List<NodeBean> possibleBeginRoadNodes = findNodesAvailableToStartBuildRoad(player, possibleEdgeIds);
         for (NodeBean possibleBeginRoadNode : possibleBeginRoadNodes) {
             for (NodeBean possiblePlaceForBuilding : player.getGame().getNodes()) {
-                //TODO: calculate statement
-                boolean nodeHasNeighbourBuilding = false;
-                if (possiblePlaceForBuilding.getBuilding() != null || nodeHasNeighbourBuilding) {
+                if (possiblePlaceForBuilding.getBuilding() != null || isNodeHasNeighbourBuilding(possiblePlaceForBuilding)) {
+                    //current possiblePlaceForBuilding is not valid for building
                     continue;
                 }
 
-                //TODO: calculateRoadsFromNodeToNode(player, possibleBeginRoadNode, possiblePlaceForBuilding, ways, null);
-//                List<EdgeBean> minLengthOne = waysOne.get(0);
-//                for (ArrayList<EdgeBean> currentLength : waysOne) {
-//                    if (minLengthOne.size() > currentLength.size()) {
-//                        minLengthOne = currentLength;
-//                    }
-//                }
-                //TODO: save result to some map
+                if(possiblePlaceForBuilding.equals(possibleBeginRoadNode)){
+                   continue;
+                }
+
+                List<LinkedList<EdgeBean>> ways = new ArrayList<LinkedList<EdgeBean>>();
+                calculateRoadsFromNodeToNode(player, possibleBeginRoadNode, possiblePlaceForBuilding, ways, null);
+                if(ways.size() == 0){
+                   //not possible to build road of minimum length (10 hardcoded)
+                   continue;
+                }
+
+                LinkedList<EdgeBean> minLengthWay = ways.get(0);//Default before cycle
+                for (LinkedList<EdgeBean> currentLength : ways) {
+                    if (minLengthWay.size() > currentLength.size()) {
+                        minLengthWay = currentLength;
+                    }
+                }
+
+                if(minLengthWay.size() <= limitRoadLengthToNextBuilding){
+                    double sumProbabilityForPossiblePlaceForBuilding = calculateSumProbabilityForNode(possiblePlaceForBuilding);
+                    //TODO: nodeProbabilitiesOfRoadDestinations.get(sumProbabilityForPossiblePlaceForBuilding) put only if minLengthWay less than existing value in map - need to make 'double' key have the same value
+                    nodeProbabilitiesOfRoadDestinations.put(sumProbabilityForPossiblePlaceForBuilding, minLengthWay);
+                }
             }
         }
 
-        //TODO: choose the best way to best settlement and select road
 
-        return null;
+        int minLength = 1000;
+        Map<Double, LinkedList<EdgeBean>> nodeProbabilitiesOfMinLengthRoadDestinations = new HashMap<Double, LinkedList<EdgeBean>>();
+        for (Map.Entry<Double, LinkedList<EdgeBean>> nodeProbabilityOfRoadDestination : nodeProbabilitiesOfRoadDestinations.entrySet()) {
+            Double probability = nodeProbabilityOfRoadDestination.getKey();
+            LinkedList<EdgeBean> pathToDestination = nodeProbabilityOfRoadDestination.getValue();
+
+            if(pathToDestination.size() < minLength){
+                minLength = pathToDestination.size();
+                nodeProbabilitiesOfMinLengthRoadDestinations.clear();
+                nodeProbabilitiesOfMinLengthRoadDestinations.put(probability, pathToDestination);
+            } else if(pathToDestination.size() == minLength){
+                nodeProbabilitiesOfMinLengthRoadDestinations.put(probability, pathToDestination);
+            }
+        }
+
+        double maxProbability = 0;
+        LinkedList<EdgeBean> bestWay = null;
+        for (Double probability : nodeProbabilitiesOfMinLengthRoadDestinations.keySet()) {
+            if(probability > maxProbability){
+                maxProbability = probability;
+                bestWay = nodeProbabilitiesOfMinLengthRoadDestinations.get(probability);
+            }
+        }
+
+
+        //TODO: check best way calculation
+        return bestWay == null || bestWay.size() == 0
+                ? null
+                : bestWay.get(0);
     }
 
-    private static List<NodeBean> findNodesAvailableToStartBuildRoad(GameUserBean player) {
+    private static boolean isNodeHasNeighbourBuilding(NodeBean possiblePlaceForBuilding) {
+        boolean nodeHasNeighbourBuilding = false;
+        for (EdgeBean edgeOfPossiblePlaceForBuilding : possiblePlaceForBuilding.getEdges().listAllNotNullItems()) {
+            for (NodeBean oppositeNode : edgeOfPossiblePlaceForBuilding.getNodes().listAllNotNullItems()) {
+                if (!oppositeNode.equals(possiblePlaceForBuilding) && oppositeNode.getBuilding() != null) {
+                    nodeHasNeighbourBuilding = true;
+                    break;
+                }
+            }
+
+            if (nodeHasNeighbourBuilding) {
+                break;
+            }
+        }
+        return nodeHasNeighbourBuilding;
+    }
+
+    private static List<NodeBean> findNodesAvailableToStartBuildRoad(GameUserBean player, List<Integer> possibleEdgeIds) {
         List<NodeBean> nodesAvailableToStartBuildRoad = new ArrayList<NodeBean>();
         for (NodeBean node : player.getGame().getNodes()) {
             if (!node.hasBuildingBelongsToUser(player) && !node.hasNeighbourRoadBelongsToGameUser(player)) {
@@ -274,7 +341,7 @@ public class SmartBot extends AbstractBot {
 
             boolean hasEmptyEdgeToBuildRoad = false;
             for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
-                if (edge.getBuilding() != null) {
+                if (edge.getBuilding() != null || !possibleEdgeIds.contains(edge.getAbsoluteId())) {
                     continue;
                 }
 
@@ -306,7 +373,7 @@ public class SmartBot extends AbstractBot {
         }
 
         for (EdgeBean possibleRoadPlace : sourceNode.getEdges().listAllNotNullItems()) {
-            if (path.contains(possibleRoadPlace)) {
+            if (path.contains(possibleRoadPlace) || possibleRoadPlace.getBuilding() != null) {
                 continue;
             }
 
@@ -588,32 +655,45 @@ public class SmartBot extends AbstractBot {
         Map<Integer, Double> sumNodeProbabilities = new HashMap<Integer, Double>();
 
         for (Integer nodeId : nodeIdsToBuild) {
-            double sumProbability = 0d;
-            for (NodeBean node : player.getGame().getNodes()) {
-                if (nodeId.equals(node.getAbsoluteId())) {
-                    for (HexBean hexAtNode : node.getHexes().listAllNotNullItems()) {
-                        if (hexAtNode.getDice() == null || hexAtNode.getDice() == 7) {
-                            continue;
-                        }
+            NodeBean nodeToCalculate = getNodeById(nodeId, player.getGame().getNodes());
+            assert nodeToCalculate != null;
 
-                        sumProbability += hexProbabilities.get(hexAtNode.getDice());
-                    }
-
-                    break;
-                }
-            }
-
+            double sumProbability = calculateSumProbabilityForNode(nodeToCalculate);
             sumNodeProbabilities.put(nodeId, sumProbability);
         }
 
         int nodeIdWithMaxProbability = -1;
         for (Integer currentNodeId : sumNodeProbabilities.keySet()) {
-            if (nodeIdWithMaxProbability == -1 || sumNodeProbabilities.get(nodeIdWithMaxProbability) <= sumNodeProbabilities.get(currentNodeId)) {
+            if (nodeIdWithMaxProbability == -1 ||
+                    sumNodeProbabilities.get(nodeIdWithMaxProbability) <= sumNodeProbabilities.get(currentNodeId)) {
                 nodeIdWithMaxProbability = currentNodeId;
             }
         }
 
         return nodeIdWithMaxProbability;
+    }
+
+    private static double calculateSumProbabilityForNode(NodeBean nodeToCalculate) {
+        double sumProbability = 0d;
+        for (HexBean hexAtNode : nodeToCalculate.getHexes().listAllNotNullItems()) {
+            if (hexAtNode.getDice() == null || hexAtNode.getDice() == 7) {
+                continue;
+            }
+
+            sumProbability += hexProbabilities.get(hexAtNode.getDice());
+        }
+
+        return sumProbability;
+    }
+
+    private static NodeBean getNodeById(Integer nodeId, Set<NodeBean> nodes) {
+        for (NodeBean node : nodes) {
+            if (nodeId.equals(node.getAbsoluteId())) {
+                return node;
+            }
+        }
+
+        return null;
     }
 
 }
