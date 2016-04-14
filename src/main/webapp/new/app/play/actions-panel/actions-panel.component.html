@@ -48,3 +48,8 @@
     <span class="glyphicon glyphicon-download-alt"></span><br>
     Kick res
 </button>
+
+<button (click)="showGameResults()" *ngIf="game.isFinished() && !isGameResultsVisible()">
+    <span class="glyphicon glyphicon-th-list"></span><br>
+    Results
+</button>

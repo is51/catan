@@ -35,6 +35,10 @@ export class ActionsPanelComponent {
         return this._modalWindow.isVisible('TRADE_REPLY_PANEL');
     }
 
+    isGameResultsVisible() {
+        return this._modalWindow.isVisible('GAME_RESULTS');
+    }
+
     isExecuting(actionCode: string) {
         return this._actions.isExecuting(actionCode);
     }
@@ -65,5 +69,9 @@ export class ActionsPanelComponent {
 
     showTradeReplyPanel() {
         this._actions.execute('TRADE_REPLY');
+    }
+
+    showGameResults() {
+        this._modalWindow.show("GAME_RESULTS");
     }
 }
