@@ -23,12 +23,18 @@ export class ExecuteActionsService {
             this._modalWindow.show("TRADE_REPLY_PANEL");
         },
         'KICK_OFF_RESOURCES': (code: string, game: Game) => {
+            this._executingActions.add(code);
             this._play.kickOffResources(game)
-                .then(() => this._gameService.refresh(game))
+                .then(() => {
+                    this._gameService.refresh(game)
+                        .then(() => this._executingActions.delete(code))
+                        .catch(() => this._executingActions.delete(code));
+                })
                 .catch(data => {
                     if (data !== "CANCELED") {
                         this._alert.message("Kick Off Resources error!");
                     }
+                    this._executingActions.delete(code);
                 });
         },
         'MOVE_ROBBER': (code: string, game: Game) => {
@@ -95,8 +101,8 @@ export class ExecuteActionsService {
             this._play.endTurn(game)
                 .then(() => {
                     this._gameService.refresh(game)
-                        .then(()=>this._executingActions.delete(code))
-                        .catch(()=>this._executingActions.delete(code));
+                        .then(() => this._executingActions.delete(code))
+                        .catch(() => this._executingActions.delete(code));
                 })
                 .catch(data => {
                     this._alert.message('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));

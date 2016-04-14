@@ -44,7 +44,7 @@
     Reply
 </button>
 
-<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isKickOffResourcesPanelVisible()">
+<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isExecuting('KICK_OFF_RESOURCES')">
     <span class="glyphicon glyphicon-download-alt"></span><br>
     Kick res
 </button>
