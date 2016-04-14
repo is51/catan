@@ -1,14 +1,11 @@
 import { Component } from 'angular2/core';
 
-import { PlayService } from 'app/play/shared/services/play.service';
 import { SelectService } from 'app/play/shared/services/select.service';
-import { GameService } from 'app/shared/services/game/game.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 
 import { Game } from 'app/shared/domain/game';
 
 import { ModalWindowDirective } from 'app/shared/modal-window/modal-window.directive';
-import { ModalWindowCloseDirective } from 'app/shared/modal-window/modal-window-close.directive';
 import { ChooseResourcesComponent } from 'app/play/shared/choose-resources/choose-resources.component';
 
 const PANEL_ID = 'KICK_OFF_RESOURCES';
@@ -22,7 +19,6 @@ const PANEL_ID = 'KICK_OFF_RESOURCES';
     ],
     directives: [
         ModalWindowDirective,
-        ModalWindowCloseDirective,
         ChooseResourcesComponent
     ],
     inputs: ['game']
