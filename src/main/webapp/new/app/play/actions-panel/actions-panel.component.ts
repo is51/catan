@@ -35,8 +35,8 @@ export class ActionsPanelComponent {
         return this._modalWindow.isVisible('TRADE_REPLY_PANEL');
     }
 
-    isKickOffResourcesPanelVisible() {
-        return this._modalWindow.isVisible('KICK_OFF_RESOURCES');
+    isExecuting(actionCode: string) {
+        return this._actions.isExecuting(actionCode);
     }
 
     endTurn() {

@@ -14,7 +14,7 @@
 </div>
 
 <!-- After dice is thrown -->
-<div *ngIf="isActionEnabled('END_TURN')">
+<div *ngIf="isActionEnabled('END_TURN') && !isExecuting('END_TURN')">
 
     <button (click)="build()">
         <span class="glyphicon glyphicon-shopping-cart"></span><br>
@@ -44,7 +44,7 @@
     Reply
 </button>
 
-<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isKickOffResourcesPanelVisible()">
+<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isExecuting('KICK_OFF_RESOURCES')">
     <span class="glyphicon glyphicon-download-alt"></span><br>
     Kick res
 </button>
