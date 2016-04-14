@@ -31,6 +31,7 @@ import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
+import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.random.RandomUtil;
@@ -93,6 +94,8 @@ public class PlayServiceImplTest {
     private PreparationStageUtil preparationStageUtil;
     @InjectMocks
     private MainStageUtil mainStageUtil;
+    @InjectMocks
+    private MessagesUtil messagesUtil;
 
     private GameBean game;
     private HexBean hex_0_0;
@@ -107,6 +110,8 @@ public class PlayServiceImplTest {
 
     private static final Gson GSON = new Gson();
 
+    public static final String NOTIFY_MESSAGE_KICK_OFF_RESOURCES = "You are robbed!";
+    public static final String NOTIFY_MESSAGE_THROW_DICE = "Your turn!";
 
     @Before
     public void setUp() throws GameException {
@@ -122,6 +127,7 @@ public class PlayServiceImplTest {
         playService.setActionParamsUtil(actionParamsUtil);
         playService.setPreparationStageUtil(preparationStageUtil);
         playService.setMainStageUtil(mainStageUtil);
+        playService.setMessagesUtil(messagesUtil);
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
@@ -129,8 +135,10 @@ public class PlayServiceImplTest {
         cardUtil.setRandomUtil(randomUtil);
 
         mainStageUtil.setActionParamsUtil(actionParamsUtil);
+        mainStageUtil.setMessagesUtil(messagesUtil);
 
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);
+        preparationStageUtil.setMessagesUtil(messagesUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
@@ -3293,7 +3301,7 @@ public class PlayServiceImplTest {
     }
     
     private void allowUserKickOffResources(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, MainStageUtil.NOTIFY_MESSAGE_KICK_OFF_RESOURCE));
+        allowUserAction(user, new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, NOTIFY_MESSAGE_KICK_OFF_RESOURCES));
     }
 
     private void allowUserToMoveRobber(GameUserBean user) {
@@ -3317,7 +3325,7 @@ public class PlayServiceImplTest {
     }
 
     private void allowUserToThrowDice(GameUserBean user) {
-        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE, true, MainStageUtil.NOTIFY_MESSAGE_THROW_DICE));
+        allowUserAction(user, new Action(GameUserActionCode.THROW_DICE, true, NOTIFY_MESSAGE_THROW_DICE));
     }
 
     private void allowUserToBuildCity(GameUserBean user) {
@@ -3344,10 +3352,10 @@ public class PlayServiceImplTest {
         // GIVEN
         game = new GameBean();
 
-        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1, false);
-        UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false);
-        UserBean user3 = new UserBean(USER_NAME3, PASSWORD3, false);
-        UserBean user4 = new UserBean(USER_NAME4, PASSWORD4, false);
+        UserBean user1 = new UserBean(USER_NAME1, PASSWORD1, false, "en", "US");
+        UserBean user2 = new UserBean(USER_NAME2, PASSWORD2, false, "en", "US");
+        UserBean user3 = new UserBean(USER_NAME3, PASSWORD3, false, "en", "US");
+        UserBean user4 = new UserBean(USER_NAME4, PASSWORD4, false, "en", "US");
 
         gameUser1 = new GameUserBean(user1, 1, game);
         gameUser2 = new GameUserBean(user2, 2, game);

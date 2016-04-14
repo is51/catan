@@ -25,13 +25,21 @@ public class UserBean {
     @Column(name = "GUEST", nullable = false)
     private boolean guest;
 
+    @Column(name = "LANGUAGE")
+    private String language;
+
+    @Column(name = "COUNTRY")
+    private String country;
+
     public UserBean() {
     }
 
-    public UserBean(String username, String password, boolean guest) {
+    public UserBean(String username, String password, boolean guest, String language, String country) {
         this.username = username;
         this.password = password;
         this.guest = guest;
+        this.language = language;
+        this.country = country;
     }
 
     public int getId() {
@@ -64,6 +72,22 @@ public class UserBean {
 
     public void setGuest(boolean guest) {
         this.guest = guest;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     @Override
