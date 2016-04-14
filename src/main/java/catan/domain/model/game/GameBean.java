@@ -419,6 +419,15 @@ public class GameBean {
         this.nodes = nodes;
     }
 
+    public GameUserBean fetchActiveGameUser() {
+        for (GameUserBean gameUser : getGameUsers()) {
+            if (this.currentMove == gameUser.getMoveOrder()) {
+                return gameUser;
+            }
+        }
+        return null;
+    }
+
     public List<HexBean> fetchHexesWithCurrentDiceValue() {
         List<HexBean> hexesWithDiceNumber = new ArrayList<HexBean>();
 

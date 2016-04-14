@@ -43,6 +43,16 @@ public class GameUserValidator {
         return scenario;
     }*/
 
+    public Scenario hasDisplayedMessage(String message) {
+        check("displayedMessage", equalTo(message));
+        return scenario;
+    }
+
+    public Scenario doesntHaveDisplayedMessage() {
+        check("displayedMessage", nullValue());
+        return scenario;
+    }
+
     public Scenario hasLongestWayLength(int length) {
         check("achievements.longestWayLength", is(length));
         return scenario;

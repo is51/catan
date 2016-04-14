@@ -28,14 +28,12 @@ import java.util.List;
 
 @Component
 public class MainStageUtil {
-    public static final String NOTIFY_MESSAGE_THROW_DICE = "Your turn!";
-    public static final String NOTIFY_MESSAGE_TRADE_REPLY = "Trade proposition!";
-    public static final String NOTIFY_MESSAGE_KICK_OFF_RESOURCE = "You are robbed!";
     private Logger log = LoggerFactory.getLogger(MainStageUtil.class);
 
     private static final Gson GSON = new Gson();
 
     private ActionParamsUtil actionParamsUtil;
+    private MessagesUtil messagesUtil;
 
     public void updateNextMove(GameBean game) {
         Integer nextMoveNumber = game.getCurrentMove().equals(game.getGameUsers().size())
@@ -112,7 +110,7 @@ public class MainStageUtil {
     private void allowKickingOffResourcesMandatory(GameUserBean gameUser, GameBean game, List<Action> actionsList) {
         if (gameNotFinished(game)
                 && gameUser.isKickingOffResourcesMandatory()) {
-            actionsList.add(new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, NOTIFY_MESSAGE_KICK_OFF_RESOURCE));
+            actionsList.add(new Action(GameUserActionCode.KICK_OFF_RESOURCES, true, messagesUtil.getMsgs(gameUser).getString("notify_msg_kick_off_resources")));
         }
     }
 
@@ -149,7 +147,7 @@ public class MainStageUtil {
                 && game.getTradeProposal() != null
                 && game.getTradeProposal().getOfferId() != null) {
             TradingParams tradingParams = new TradingParams(game.getTradeProposal());
-            actionsList.add(new Action(GameUserActionCode.TRADE_REPLY, tradingParams, true, NOTIFY_MESSAGE_TRADE_REPLY));
+            actionsList.add(new Action(GameUserActionCode.TRADE_REPLY, tradingParams, true, messagesUtil.getMsgs(gameUser).getString("notify_msg_trade_reply")));
         }
     }
 
@@ -157,7 +155,7 @@ public class MainStageUtil {
         if (gameNotFinished(game)
                 && isCurrentUsersMove(gameUser, game)
                 && !game.isDiceThrown()) {
-            actionsList.add(new Action(GameUserActionCode.THROW_DICE, true, NOTIFY_MESSAGE_THROW_DICE));
+            actionsList.add(new Action(GameUserActionCode.THROW_DICE, true, messagesUtil.getMsgs(gameUser).getString("notify_msg_throw_dice")));
         }
     }
 
@@ -308,5 +306,10 @@ public class MainStageUtil {
     @Autowired
     public void setActionParamsUtil(ActionParamsUtil actionParamsUtil) {
         this.actionParamsUtil = actionParamsUtil;
+    }
+
+    @Autowired
+    public void setMessagesUtil(MessagesUtil messagesUtil) {
+        this.messagesUtil = messagesUtil;
     }
 }

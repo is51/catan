@@ -42,7 +42,7 @@ public class UserServiceImplTest {
     @Test
     public void loginUserSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false, "en", "US");
         user.setId((int) System.currentTimeMillis());
 
         when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
@@ -61,7 +61,7 @@ public class UserServiceImplTest {
     @Test
     public void loginGuestSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, null, true);
+        UserBean user = new UserBean(USER_NAME1, null, true, "en", "US");
         user.setId((int) System.currentTimeMillis());
 
         when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
@@ -80,7 +80,7 @@ public class UserServiceImplTest {
     @Test
     public void loginGeneratesNewTokenSuccessful() throws UserException {
         // GIVEN
-        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
+        UserBean user = new UserBean(USER_NAME1, PASSWORD1, false, "en", "US");
         user.setId((int) System.currentTimeMillis());
 
         when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
@@ -147,7 +147,7 @@ public class UserServiceImplTest {
     public void loginErrorWhenPasswordDoesNotMatch() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false, "en", "US");
             user.setId((int) System.currentTimeMillis());
 
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
@@ -167,7 +167,7 @@ public class UserServiceImplTest {
     public void loginUserErrorWhenUserIsGuest() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(USER_NAME1, null, true);
+            UserBean user = new UserBean(USER_NAME1, null, true, "en", "US");
             user.setId((int) System.currentTimeMillis());
 
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
@@ -269,7 +269,7 @@ public class UserServiceImplTest {
     public void registerErrorWhenUserWithSuchUsernameAlreadyExists() throws UserException {
         try {
             // GIVEN
-            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false);
+            UserBean user = new UserBean(USER_NAME1, PASSWORD1, false, "en", "US");
             user.setId((int) System.currentTimeMillis());
 
             when(userDao.getUserByUsername(USER_NAME1)).thenReturn(user);
