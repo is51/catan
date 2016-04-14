@@ -14,7 +14,7 @@
 </div>
 
 <!-- After dice is thrown -->
-<div *ngIf="isActionEnabled('END_TURN')">
+<div *ngIf="isActionEnabled('END_TURN') && !isExecuting('END_TURN')">
 
     <button (click)="build()">
         <span class="glyphicon glyphicon-shopping-cart"></span><br>

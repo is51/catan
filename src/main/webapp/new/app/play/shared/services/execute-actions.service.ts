@@ -16,11 +16,13 @@ export class ExecuteActionsService {
         private _modalWindow: ModalWindowService,
         private _alert: AlertService) { }
 
+    private _executingActions: Set<string> = new Set<string>();
+
     private _ACTIONS = {
         'TRADE_REPLY': () => {
             this._modalWindow.show("TRADE_REPLY_PANEL");
         },
-        'KICK_OFF_RESOURCES': (game: Game) => {
+        'KICK_OFF_RESOURCES': (code: string, game: Game) => {
             this._play.kickOffResources(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
@@ -29,7 +31,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'MOVE_ROBBER': (game: Game) => {
+        'MOVE_ROBBER': (code: string, game: Game) => {
             this._play.moveRobber(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
@@ -38,7 +40,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'CHOOSE_PLAYER_TO_ROB': (game: Game) => {
+        'CHOOSE_PLAYER_TO_ROB': (code: string, game: Game) => {
             this._play.choosePlayerToRob(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
@@ -47,7 +49,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'BUILD_SETTLEMENT': (game: Game) => {
+        'BUILD_SETTLEMENT': (code: string, game: Game) => {
             this._play.buildSettlement(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(errorCode => {
@@ -58,7 +60,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'BUILD_CITY': (game: Game) => {
+        'BUILD_CITY': (code: string, game: Game) => {
             this._play.buildCity(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(errorCode => {
@@ -69,7 +71,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'BUILD_ROAD': (game: Game) => {
+        'BUILD_ROAD': (code: string, game: Game) => {
             this._play.buildRoad(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(errorCode => {
@@ -80,7 +82,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'BUY_CARD': (game: Game) => {
+        'BUY_CARD': (code: string, game: Game) => {
             this._play.buyCard(game)
                 .then(data => {
                     this._alert.message("Bought card: " + data.card); //TODO: why red?
@@ -88,22 +90,30 @@ export class ExecuteActionsService {
                 })
                 .catch(data => this._alert.message('Buy Card error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         },
-        'END_TURN': (game: Game) => {
+        'END_TURN': (code: string, game: Game) => {
+            this._executingActions.add(code);
             this._play.endTurn(game)
-                .then(() => this._gameService.refresh(game))
-                .catch(data => this._alert.message('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
+                .then(() => {
+                    this._gameService.refresh(game)
+                        .then(()=>this._executingActions.delete(code))
+                        .catch(()=>this._executingActions.delete(code));
+                })
+                .catch(data => {
+                    this._alert.message('End turn error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
+                    this._executingActions.delete(code);
+                });
         },
-        'THROW_DICE': (game: Game) => {
+        'THROW_DICE': (code: string, game: Game) => {
             this._play.throwDice(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(data => this._alert.message('Throw Dice error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         },
-        'USE_CARD_KNIGHT': (game: Game) => {
+        'USE_CARD_KNIGHT': (code: string, game: Game) => {
             this._play.useCardKnight(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(data => this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown')));
         },
-        'USE_CARD_ROAD_BUILDING': (game: Game) => {
+        'USE_CARD_ROAD_BUILDING': (code: string, game: Game) => {
             this._play.useCardRoadBuilding(game)
                 .then(data => {
                     var count = data.roadsCount; //TODO: fix red?
@@ -114,7 +124,7 @@ export class ExecuteActionsService {
                     this._alert.message('Error: ' + ((data.errorCode) ? data.errorCode : 'unknown'));
                 });
         },
-        'USE_CARD_MONOPOLY': (game: Game) => {
+        'USE_CARD_MONOPOLY': (code: string, game: Game) => {
             this._play.useCardMonopoly(game)
                 .then(data => {
                     let count = data.resourcesCount; //TODO: fix red?
@@ -132,7 +142,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'USE_CARD_YEAR_OF_PLENTY': (game: Game) => {
+        'USE_CARD_YEAR_OF_PLENTY': (code: string, game: Game) => {
             this._play.useCardYearOfPlenty(game)
                 .then(() => this._gameService.refresh(game))
                 .catch(data => {
@@ -141,7 +151,7 @@ export class ExecuteActionsService {
                     }
                 });
         },
-        'TRADE_PORT': (game: Game) => {
+        'TRADE_PORT': (code: string, game: Game) => {
             return new Promise((resolve, reject) => {
                 this._play.tradePort(game)
                     .then(() => {
@@ -156,7 +166,7 @@ export class ExecuteActionsService {
                     });
             });
         },
-        'TRADE_PLAYERS': (game: Game) => {
+        'TRADE_PLAYERS': (code: string, game: Game) => {
             return new Promise((resolve, reject) => {
                 this._play.tradePropose(game)
                     .then(() => {
@@ -174,6 +184,15 @@ export class ExecuteActionsService {
     };
 
     execute(code: string, game?: Game) { //TODO: try to use ES6 spread instead "game?: Game"
-        return this._ACTIONS[code](game);
+        return this._ACTIONS[code](code, game);
     }
+
+    isExecuting(code: string) {
+        return this._executingActions.has(code);
+    }
+
+    //TODO: It does make sense once all actions are executed with flag isExecuting
+    /*isSomeActionExecuting() {
+        return this._executingActions.size > 0;
+    }*/
 }
