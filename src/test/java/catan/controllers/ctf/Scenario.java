@@ -28,6 +28,7 @@ public class Scenario {
     Map<String, String> userTokensByName = new HashMap<String, String>();
     Map<Integer, String> tokensByMoveOrder = new HashMap<Integer, String>();
     Map<Integer, Integer> gameUserIdsByMoveOrder = new HashMap<Integer, Integer>();
+    Map<Integer, String> userNamesByMoveOrder = new HashMap<Integer, String>();
     Map<String, Integer> usersResources = new HashMap<String, Integer>();
     Map<String, Integer> usersCards = new HashMap<String, Integer>();
     ValidatableResponse currentGameDetails = null;
@@ -44,6 +45,7 @@ public class Scenario {
         this.userTokensByName = scenario.userTokensByName;
         this.tokensByMoveOrder = scenario.tokensByMoveOrder;
         this.gameUserIdsByMoveOrder = scenario.gameUserIdsByMoveOrder;
+        this.userNamesByMoveOrder = scenario.userNamesByMoveOrder;
         this.usersResources = scenario.usersResources;
         this.usersCards = scenario.usersCards;
         this.currentGameDetails = scenario.currentGameDetails;
@@ -83,6 +85,10 @@ public class Scenario {
         }
 
         return allHexIds;
+    }
+
+    public Map<Integer, String> getUserNamesByMoveOrder() {
+        return this.userNamesByMoveOrder;
     }
 
     public Scenario registerUser(String username, String password) {
@@ -139,6 +145,7 @@ public class Scenario {
             String tokenOfUserWithCurrentMoveOrder = userTokensByName.get(userNameWithCurrentMoveOrder);
             tokensByMoveOrder.put(currentMoveOrder, tokenOfUserWithCurrentMoveOrder);
             gameUserIdsByMoveOrder.put(currentMoveOrder, gameUserIdOfPlayerWithCurrentMoveOrder);
+            userNamesByMoveOrder.put(currentMoveOrder, userNameWithCurrentMoveOrder);
         }
     }
 

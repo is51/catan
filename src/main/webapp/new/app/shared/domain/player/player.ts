@@ -15,6 +15,11 @@ export class Player {
 
     availableActions: AvailableActions;
 
+    displayedMessage: string;
+
+    private _onShowDisplayedMessage: Function;
+    private _onHideDisplayedMessage: Function;
+
     constructor(params) {
         this.id = params.id;
         this.colorId = params.colorId;
@@ -28,6 +33,11 @@ export class Player {
 
         if (params.availableActions) {
             this.availableActions = new AvailableActions(params.availableActions);
+        }
+
+        if (params.displayedMessage) {
+            this.displayedMessage = params.displayedMessage;
+            this.triggerDisplayedMessageShow(this.displayedMessage);
         }
     }
 
@@ -51,6 +61,33 @@ export class Player {
             }
         } else {
             this.availableActions = undefined;
+        }
+
+        if (params.displayedMessage && (!this.displayedMessage || this.displayedMessage !== params.displayedMessage)) {
+            this.triggerDisplayedMessageShow(params.displayedMessage);
+        } else if (this.displayedMessage && !params.displayedMessage) {
+            this.triggerDisplayedMessageHide();
+        }
+        this.displayedMessage = params.displayedMessage;
+    }
+
+    //TODO: try to replace with Subscribable (it's used in game-page.component)
+    onDisplayedMessageUpdate(onShowDisplayedMessage: Function, onHideDisplayedMessage: Function) {
+        this._onShowDisplayedMessage = onShowDisplayedMessage;
+        this._onHideDisplayedMessage = onHideDisplayedMessage;
+    }
+    cancelOnDisplayedMessageUpdate() {
+        this._onShowDisplayedMessage = undefined;
+        this._onHideDisplayedMessage = undefined;
+    }
+    triggerDisplayedMessageShow(text: string) {
+        if (this._onShowDisplayedMessage) {
+            this._onShowDisplayedMessage(text);
+        }
+    }
+    triggerDisplayedMessageHide() {
+        if (this._onHideDisplayedMessage) {
+            this._onHideDisplayedMessage();
         }
     }
 }

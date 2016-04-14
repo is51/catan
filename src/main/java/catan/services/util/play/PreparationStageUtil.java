@@ -29,6 +29,7 @@ public class PreparationStageUtil {
     private static final Gson GSON = new Gson();
 
     private ActionParamsUtil actionParamsUtil;
+    private MessagesUtil messagesUtil;
 
     public List<List<GameUserActionCode>> toInitialBuildingsSetFromJson(String initialBuildingsSetJson) {
         return GSON.fromJson(initialBuildingsSetJson, new TypeToken<List<List<GameUserActionCode>>>() {
@@ -122,17 +123,21 @@ public class PreparationStageUtil {
                     case BUILD_SETTLEMENT:
                         ActionOnNodeParams buildSettlementParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildSettlementParams(gameUser));
                         actionToAdd = new Action(actionCode, buildSettlementParams);
+                        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_build_settlement");
                         break;
                     case BUILD_CITY:
                         ActionOnNodeParams buildCityParams = new ActionOnNodeParams(actionParamsUtil.calculateBuildCityParams(gameUser));
                         actionToAdd = new Action(actionCode, buildCityParams);
+                        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_build_city");
                         break;
                     case BUILD_ROAD:
                         ActionOnEdgeParams buildRoadParams = new ActionOnEdgeParams(actionParamsUtil.calculateBuildRoadParams(gameUser));
                         actionToAdd = new Action(actionCode, buildRoadParams);
+                        messagesUtil.updateDisplayedMessage(gameUser, "help_msg_build_road");
                         break;
                     default:
                         actionToAdd = new Action(actionCode);
+                        gameUser.setDisplayedMessage(null);
                         break;
                 }
                 actionsList.add(actionToAdd);
@@ -177,6 +182,13 @@ public class PreparationStageUtil {
         return initialBuildingsSet.get(indexOfCurrentCycle).get(indexOfCurrentBuildingNumberInCycle);
     }
 
+    private String getFirstActionCodeInCurrentCycle(GameBean game) {
+        List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+        int indexOfCurrentCycle = game.getPreparationCycle() - 1;
+
+        return initialBuildingsSet.get(indexOfCurrentCycle).get(0).toString();
+    }
+
     public void distributeResourcesForLastBuilding(NodeBean nodeToBuildOn) {
         GameBean game = nodeToBuildOn.getGame();
         List<List<GameUserActionCode>> initialBuildingsSet = toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
@@ -213,5 +225,10 @@ public class PreparationStageUtil {
     @Autowired
     public void setActionParamsUtil(ActionParamsUtil actionParamsUtil) {
         this.actionParamsUtil = actionParamsUtil;
+    }
+
+    @Autowired
+    public void setMessagesUtil(MessagesUtil messagesUtil) {
+        this.messagesUtil = messagesUtil;
     }
 }

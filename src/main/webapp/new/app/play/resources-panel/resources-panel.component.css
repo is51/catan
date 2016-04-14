@@ -10,7 +10,7 @@ svg > g {
     pointer-events: all;
 }
 
-svg .shadow {
+svg .shadow { /* TODO: can be removed here and in html */
     pointer-events: none;
 }
 
