@@ -1,6 +1,7 @@
 import { Component } from 'angular2/core';
 
 import { PlayService } from 'app/play/shared/services/play.service';
+import { SelectService } from 'app/play/shared/services/select.service';
 import { GameService } from 'app/shared/services/game/game.service';
 import { ModalWindowService } from 'app/shared/modal-window/modal-window.service';
 
@@ -31,9 +32,15 @@ export class KickOffResourcesPanelComponent {
     game: Game;
     modalWindowId: string = PANEL_ID;
 
-    constructor(private _modalWindow: ModalWindowService) { }
+    constructor(
+        private _modalWindow: ModalWindowService,
+        private _select: SelectService) { }
 
     isModalWindowVisible() {
         return this._modalWindow.isVisible(this.modalWindowId);
+    }
+
+    cancel() {
+        this._select.cancelRequestSelection(PANEL_ID);
     }
 }
