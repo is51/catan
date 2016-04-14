@@ -135,9 +135,10 @@ public class SmartBot extends AbstractBot {
         }
 
         if (buildRoadAction != null) {
-            //TODO: calculate best road
-            buildRoad(player, user, gameId, buildRoadAction);
-            return;
+            boolean roadBuilt = buildRoad(player, user, gameId, buildRoadAction);
+            if (roadBuilt) {
+                return;
+            }
         }
 
         if (buyCardAction != null && !cardsAreOver) {
@@ -231,10 +232,21 @@ public class SmartBot extends AbstractBot {
         playService.processAction(BUY_CARD, user, gameId);
     }
 
-    private void buildRoad(GameUserBean player, UserBean user, String gameId, ActionDetails buildRoadAction) throws PlayException, GameException {
-        //TODO: don't build road if have place for settlement
+    private boolean buildRoad(GameUserBean player, UserBean user, String gameId, ActionDetails buildRoadAction) throws PlayException, GameException {
+        for (EdgeBean possibleRoad : player.getGame().getEdges()) {
+            if (possibleRoad.getBuilding() == null || !possibleRoad.getBuilding().getBuildingOwner().equals(player)) {
+                continue;
+            }
+
+            for (NodeBean possiblePlaceForBuilding : possibleRoad.getNodes().listAllNotNullItems()) {
+                if (!isNodeHasNeighbourBuilding(possiblePlaceForBuilding)) {
+                    return false;
+                }
+            }
+        }
+
         List<Integer> edgeIds = buildRoadAction.getParams().getEdgeIds();
-        EdgeBean edgeToBuildRoad = calculateNextNeccesaryRoad(player, 3, edgeIds);
+        EdgeBean edgeToBuildRoad = calculateNextNecessaryRoad(player, 2, edgeIds);
 
         String edgeId = edgeToBuildRoad != null
                 ? edgeToBuildRoad.getAbsoluteId().toString()
@@ -244,9 +256,10 @@ public class SmartBot extends AbstractBot {
         params.put("edgeId", edgeId);
 
         playService.processAction(BUILD_ROAD, user, gameId, params);
+        return true;
     }
 
-    private static EdgeBean calculateNextNeccesaryRoad(GameUserBean player, int limitRoadLengthToNextBuilding, List<Integer> possibleEdgeIds) {
+    private static EdgeBean calculateNextNecessaryRoad(GameUserBean player, int limitRoadLengthToNextBuilding, List<Integer> possibleEdgeIds) {
         Map<Double, LinkedList<EdgeBean>> nodeProbabilitiesOfRoadDestinations = new HashMap<Double, LinkedList<EdgeBean>>();
 
         List<NodeBean> possibleBeginRoadNodes = findNodesAvailableToStartBuildRoad(player, possibleEdgeIds);
@@ -257,15 +270,15 @@ public class SmartBot extends AbstractBot {
                     continue;
                 }
 
-                if(possiblePlaceForBuilding.equals(possibleBeginRoadNode)){
-                   continue;
+                if (possiblePlaceForBuilding.equals(possibleBeginRoadNode)) {
+                    continue;
                 }
 
                 List<LinkedList<EdgeBean>> ways = new ArrayList<LinkedList<EdgeBean>>();
                 calculateRoadsFromNodeToNode(player, possibleBeginRoadNode, possiblePlaceForBuilding, ways, null);
-                if(ways.size() == 0){
-                   //not possible to build road of minimum length (10 hardcoded)
-                   continue;
+                if (ways.size() == 0) {
+                    //not possible to build road of minimum length (10 hardcoded)
+                    continue;
                 }
 
                 LinkedList<EdgeBean> minLengthWay = ways.get(0);//Default before cycle
@@ -275,7 +288,7 @@ public class SmartBot extends AbstractBot {
                     }
                 }
 
-                if(minLengthWay.size() <= limitRoadLengthToNextBuilding){
+                if (minLengthWay.size() <= limitRoadLengthToNextBuilding) {
                     double sumProbabilityForPossiblePlaceForBuilding = calculateSumProbabilityForNode(possiblePlaceForBuilding);
                     //TODO: nodeProbabilitiesOfRoadDestinations.get(sumProbabilityForPossiblePlaceForBuilding) put only if minLengthWay less than existing value in map - need to make 'double' key have the same value
                     nodeProbabilitiesOfRoadDestinations.put(sumProbabilityForPossiblePlaceForBuilding, minLengthWay);
@@ -290,11 +303,11 @@ public class SmartBot extends AbstractBot {
             Double probability = nodeProbabilityOfRoadDestination.getKey();
             LinkedList<EdgeBean> pathToDestination = nodeProbabilityOfRoadDestination.getValue();
 
-            if(pathToDestination.size() < minLength){
+            if (pathToDestination.size() < minLength) {
                 minLength = pathToDestination.size();
                 nodeProbabilitiesOfMinLengthRoadDestinations.clear();
                 nodeProbabilitiesOfMinLengthRoadDestinations.put(probability, pathToDestination);
-            } else if(pathToDestination.size() == minLength){
+            } else if (pathToDestination.size() == minLength) {
                 nodeProbabilitiesOfMinLengthRoadDestinations.put(probability, pathToDestination);
             }
         }
@@ -302,7 +315,7 @@ public class SmartBot extends AbstractBot {
         double maxProbability = 0;
         LinkedList<EdgeBean> bestWay = null;
         for (Double probability : nodeProbabilitiesOfMinLengthRoadDestinations.keySet()) {
-            if(probability > maxProbability){
+            if (probability > maxProbability) {
                 maxProbability = probability;
                 bestWay = nodeProbabilitiesOfMinLengthRoadDestinations.get(probability);
             }
