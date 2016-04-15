@@ -1,4 +1,4 @@
-package catan.services.impl;
+package catan.services.impl.bots.stupid;
 
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
@@ -6,6 +6,7 @@ import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
+import catan.services.impl.bots.AbstractBot;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -24,20 +25,20 @@ public class StupidBot extends AbstractBot {
 
 
     @Override
-    String getBotName() {
+    public String getBotName() {
         return "STUPID_BOT";
     }
 
     @Override
-    void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
-                               ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                               ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
-                               ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
-                               ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
-                               ActionDetails buildCityAction, ActionDetails buildSettlementAction,
-                               ActionDetails buildRoadAction, ActionDetails buyCardAction,
-                               ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                               ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
+    public void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
+                                      ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
+                                      ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
+                                      ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
+                                      ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
+                                      ActionDetails buildCityAction, ActionDetails buildSettlementAction,
+                                      ActionDetails buildRoadAction, ActionDetails buyCardAction,
+                                      ActionDetails tradePortAction, ActionDetails tradeReplyAction,
+                                      ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
         if (endTurnAction != null) {
             playService.processAction(END_TURN, user, gameId);
             return;

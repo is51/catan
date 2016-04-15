@@ -1,4 +1,4 @@
-package catan.services.impl;
+package catan.services.impl.bots.alex;
 
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
@@ -10,6 +10,7 @@ import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
+import catan.services.impl.bots.AbstractBot;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,37 +21,22 @@ import static catan.domain.model.game.types.GameUserActionCode.*;
 
 @Service("alexBot")
 public class AlexBot extends AbstractBot {
-    static Map<Integer, Double> hexProbabilities = new HashMap<Integer, Double>();
-
-    static {
-        hexProbabilities.put(2, (1d / 36));
-        hexProbabilities.put(3, (2d / 36));
-        hexProbabilities.put(4, (3d / 36));
-        hexProbabilities.put(5, (4d / 36));
-        hexProbabilities.put(6, (5d / 36));
-        hexProbabilities.put(7, (6d / 36));
-        hexProbabilities.put(8, (5d / 36));
-        hexProbabilities.put(9, (4d / 36));
-        hexProbabilities.put(10, (3d / 36));
-        hexProbabilities.put(11, (2d / 36));
-        hexProbabilities.put(12, (1d / 36));
-    }
 
     @Override
-    String getBotName() {
+    public String getBotName() {
         return "ALEX_BOT";
     }
 
     @Override
-    void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
-                               ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                               ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
-                               ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
-                               ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
-                               ActionDetails buildCityAction, ActionDetails buildSettlementAction,
-                               ActionDetails buildRoadAction, ActionDetails buyCardAction,
-                               ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                               ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
+    public void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
+                                      ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
+                                      ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
+                                      ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
+                                      ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
+                                      ActionDetails buildCityAction, ActionDetails buildSettlementAction,
+                                      ActionDetails buildRoadAction, ActionDetails buyCardAction,
+                                      ActionDetails tradePortAction, ActionDetails tradeReplyAction,
+                                      ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
 
         GameBean game = player.getGame();
 

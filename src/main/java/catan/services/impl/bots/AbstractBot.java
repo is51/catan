@@ -1,4 +1,4 @@
-package catan.services.impl;
+package catan.services.impl.bots;
 
 import catan.dao.GameDao;
 import catan.domain.exception.GameException;
@@ -11,6 +11,9 @@ import catan.domain.transfer.output.game.actions.AvailableActionsDetails;
 import catan.services.PlayService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static catan.domain.model.game.types.GameUserActionCode.BUILD_CITY;
 import static catan.domain.model.game.types.GameUserActionCode.BUILD_ROAD;
@@ -28,17 +31,32 @@ import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_MONOPOLY
 import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_ROAD_BUILDING;
 import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_YEAR_OF_PLENTY;
 
-abstract class AbstractBot {
+public abstract class AbstractBot {
+    public static Map<Integer, Double> hexProbabilities = new HashMap<Integer, Double>();
+
+    static {
+        hexProbabilities.put(2, (1d / 36));
+        hexProbabilities.put(3, (2d / 36));
+        hexProbabilities.put(4, (3d / 36));
+        hexProbabilities.put(5, (4d / 36));
+        hexProbabilities.put(6, (5d / 36));
+        hexProbabilities.put(7, (0d));
+        hexProbabilities.put(8, (5d / 36));
+        hexProbabilities.put(9, (4d / 36));
+        hexProbabilities.put(10, (3d / 36));
+        hexProbabilities.put(11, (2d / 36));
+        hexProbabilities.put(12, (1d / 36));
+    }
 
     @Autowired
     private GameDao gameDao;
 
     @Autowired
-    PlayService playService;
+    protected PlayService playService;
 
-    abstract String getBotName();
+    public abstract String getBotName();
 
-    abstract void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
+    public abstract void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
                                         ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
                                         ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
                                         ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
@@ -48,24 +66,10 @@ abstract class AbstractBot {
                                         ActionDetails tradePortAction, ActionDetails tradeReplyAction,
                                         ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException;
 
-
-
-    private GameUserBean refreshPlayerFields(GameUserBean oldStatePlayer) {
-        GameBean game = gameDao.getGameByGameId(oldStatePlayer.getGame().getGameId());
-        GameUserBean refreshedPlayer = null;
-        for (GameUserBean gameUserBean : game.getGameUsers()) {
-            if (gameUserBean.getGameUserId().equals(oldStatePlayer.getGameUserId())) {
-                refreshedPlayer = gameUserBean;
-            }
-        }
-        assert refreshedPlayer != null;
-        return refreshedPlayer;
-    }
-
-    void automatePlayersActions(GameUserBean oldStatePlayer, boolean cardsAreOver) throws PlayException, GameException {
+    public void automatePlayersActions(GameUserBean oldStatePlayer, boolean cardsAreOver) throws PlayException, GameException {
         GameUserBean player = refreshPlayerFields(oldStatePlayer);
 
-        AvailableActionsDetails availableActions = getAvailableActions(player);
+        AvailableActionsDetails availableActions = parseAvailableActions(player);
 
         ActionDetails moveRobberAction = null;
         ActionDetails choosePlayerToRobAction = null;
@@ -153,7 +157,19 @@ abstract class AbstractBot {
                 cardsAreOver);
     }
 
-    private AvailableActionsDetails getAvailableActions(GameUserBean player) {
+    private GameUserBean refreshPlayerFields(GameUserBean oldStatePlayer) {
+        GameBean game = gameDao.getGameByGameId(oldStatePlayer.getGame().getGameId());
+        GameUserBean refreshedPlayer = null;
+        for (GameUserBean gameUserBean : game.getGameUsers()) {
+            if (gameUserBean.getGameUserId().equals(oldStatePlayer.getGameUserId())) {
+                refreshedPlayer = gameUserBean;
+            }
+        }
+        assert refreshedPlayer != null;
+        return refreshedPlayer;
+    }
+
+    private AvailableActionsDetails parseAvailableActions(GameUserBean player) {
         String availableActionsJson = player.getAvailableActions();
         return new Gson().fromJson(availableActionsJson, AvailableActionsDetails.class);
     }
