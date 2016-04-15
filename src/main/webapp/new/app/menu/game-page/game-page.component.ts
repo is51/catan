@@ -9,7 +9,6 @@ import { Game } from 'app/shared/domain/game';
 
 import { PlayComponent } from 'app/play/play.component';
 import { GameRoomComponent } from './game-room/game-room.component';
-import { GameResultsComponent } from './game-results/game-results.component';
 
 const GAME_UPDATE_DELAY = 4000;
 
@@ -17,8 +16,7 @@ const GAME_UPDATE_DELAY = 4000;
     templateUrl: 'app/menu/game-page/game-page.component.html',
     directives: [
         PlayComponent,
-        GameRoomComponent,
-        GameResultsComponent
+        GameRoomComponent
     ]
 })
 
