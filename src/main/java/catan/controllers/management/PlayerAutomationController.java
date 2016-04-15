@@ -28,7 +28,7 @@ public class PlayerAutomationController {
                                        @RequestParam("userName") String userName,
                                        @RequestParam("botName") String botName) throws AuthenticationException {
         authenticationService.authenticateAdminBySecretKey(secretKey);
-        managementService.startAutomatePlayerLifeCycle(secretKey, gameId, userName, botName);
+        managementService.startAutomatePlayerLifeCycle(gameId, userName, botName);
     }
 
     @RequestMapping(value = "stop",
@@ -38,6 +38,6 @@ public class PlayerAutomationController {
                                        @RequestParam("gameId") String gameId,
                                        @RequestParam("userName") String userName) throws AuthenticationException {
         authenticationService.authenticateAdminBySecretKey(secretKey);
-        managementService.stopAutomatePlayerLifeCycle(secretKey, gameId, userName);
+        managementService.stopAutomatePlayerLifeCycle(gameId, userName);
     }
 }

@@ -513,6 +513,30 @@ public class GameBean {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GameBean gameBean = (GameBean) o;
+
+        if (privateGame != gameBean.privateGame) return false;
+        if (creator != null ? !creator.equals(gameBean.creator) : gameBean.creator != null) return false;
+        if (privateCode != null ? !privateCode.equals(gameBean.privateCode) : gameBean.privateCode != null)
+            return false;
+        return dateCreated != null ? dateCreated.equals(gameBean.dateCreated) : gameBean.dateCreated == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = creator != null ? creator.hashCode() : 0;
+        result = 31 * result + (privateGame ? 1 : 0);
+        result = 31 * result + (privateCode != null ? privateCode.hashCode() : 0);
+        result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[ ");
