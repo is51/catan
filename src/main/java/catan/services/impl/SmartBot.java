@@ -11,6 +11,9 @@ import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
+import catan.services.PlayService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,6 +42,8 @@ import static catan.domain.model.game.types.GameUserActionCode.USE_CARD_YEAR_OF_
 
 @Service("smartBot")
 public class SmartBot extends AbstractBot {
+    private Logger log = LoggerFactory.getLogger(SmartBot.class);
+
     static Map<Integer, Double> hexProbabilities = new HashMap<Integer, Double>();
 
     static {
@@ -70,99 +75,122 @@ public class SmartBot extends AbstractBot {
                                ActionDetails buildRoadAction, ActionDetails buyCardAction,
                                ActionDetails tradePortAction, ActionDetails tradeReplyAction,
                                ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
+        log.debug("{}: check available actions for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
 
         if (moveRobberAction != null) {
+            log.debug("{}: move robber, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             moveRobber(player, user, gameId, moveRobberAction);
             return;
         }
 
         if (choosePlayerToRobAction != null) {
+            log.debug("{}: choose player to rob, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             choosePlayerToRob(player, user, gameId, choosePlayerToRobAction);
             return;
         }
 
         if (kickOffResourcesAction != null) {
             //TODO: kickoff not needed resources
+            log.debug("{}: kick off resources, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             kickOffResources(player, user, gameId);
             return;
         }
 
         if (useCardKnightAction != null) {
+            log.debug("{}: try use card KNIGHT, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             boolean cardUsed = useCardKnight(player, user, gameId);
             if (cardUsed) {
                 return;
             }
+            log.debug("{}: card KNIGHT was not used, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
+
         }
 
         if (useCardRoadBuildingAction != null) {
+            log.debug("{}: try use card ROAD_BUILDING, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             //TODO: use useCardRoadBuilding if possible
             boolean cardUsed = useCardRoadBuilding(user, gameId);
             if (cardUsed) {
                 return;
             }
+            log.debug("{}: card ROAD_BUILDING was not used, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
         }
 
         if (useCardYearOfPlentyAction != null) {
+            log.debug("{}: try use card YEAR_OF_PLENTY, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             //TODO: use useCardYearOfPlenty if possible
             boolean cardUsed = useCardYearOfPlenty(user, gameId);
             if (cardUsed) {
                 return;
             }
+            log.debug("{}: card YEAR_OF_PLENTY was not used, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
         }
 
         if (useCardMonopolyAction != null) {
+            log.debug("{}: try use card MONOPOLY, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             //TODO: use useCardMonopoly if possible
             boolean cardUsed = useCardMonopoly(user, gameId);
             if (cardUsed) {
                 return;
             }
+            log.debug("{}: card MONOPOLY was not used, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
         }
 
         if (throwDiceAction != null) {
+            log.debug("{}: throw dice, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             //TODO: use knight if possible
             throwDice(user, gameId);
             return;
         }
 
         if (buildCityAction != null) {
+            log.debug("{}: build city, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             buildCity(player, user, gameId, buildCityAction);
             return;
         }
 
         if (buildSettlementAction != null) {
+            log.debug("{}: build settlement, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             buildSettlement(player, user, gameId, buildSettlementAction);
             return;
         }
 
         if (buildRoadAction != null) {
+            log.debug("{}: try build road, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             boolean roadBuilt = buildRoad(player, user, gameId, buildRoadAction);
             if (roadBuilt) {
                 return;
             }
+            log.debug("{}: road was not build, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
         }
 
         if (buyCardAction != null && !cardsAreOver) {
             //TODO: Buy card if needed
+            log.debug("{}: buy card, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             buyCard(user, gameId);
             return;
         }
 
         if (tradePortAction != null) {
+            log.debug("{}: try trade with port, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             //TODO: trade required resources
             boolean tradeSuccessful = tradePort(player, gameId, user, tradePortAction);
             if (tradeSuccessful) {
                 return;
             }
+            log.debug("{}: trade was not performed, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
         }
 
         if (tradeReplyAction != null) {
             //TODO: Accept trade if it is useful for player
+            log.debug("{}: trade reply, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             tradeReply(user, gameId, tradeReplyAction);
             return;
         }
 
 
         if (endTurnAction != null) {
+            log.debug("{}: end turn, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
             endTurn(user, gameId);
             return;
         }
@@ -233,16 +261,11 @@ public class SmartBot extends AbstractBot {
     }
 
     private boolean buildRoad(GameUserBean player, UserBean user, String gameId, ActionDetails buildRoadAction) throws PlayException, GameException {
-        for (EdgeBean possibleRoad : player.getGame().getEdges()) {
-            if (possibleRoad.getBuilding() == null || !possibleRoad.getBuilding().getBuildingOwner().equals(player)) {
-                continue;
-            }
-
-            for (NodeBean possiblePlaceForBuilding : possibleRoad.getNodes().listAllNotNullItems()) {
-                if (!isNodeHasNeighbourBuilding(possiblePlaceForBuilding)) {
-                    return false;
-                }
-            }
+        log.debug("{}: end turn, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
+        if(isHasPlaceForNextBuilding(player)){
+            log.debug("{}: player already has place for next building, skip build road to save resources, for player {} in game {}",
+                    getBotName(), player.getUser(), player.getGame().getGameId());
+            return false;
         }
 
         List<Integer> edgeIds = buildRoadAction.getParams().getEdgeIds();
@@ -257,6 +280,26 @@ public class SmartBot extends AbstractBot {
 
         playService.processAction(BUILD_ROAD, user, gameId, params);
         return true;
+    }
+
+    private boolean isHasPlaceForNextBuilding(GameUserBean player) {
+        for (EdgeBean possibleRoad : player.getGame().getEdges()) {
+            if (possibleRoad.getBuilding() == null || !possibleRoad.getBuilding().getBuildingOwner().equals(player)) {
+                continue;
+            }
+
+            for (NodeBean possiblePlaceForBuilding : possibleRoad.getNodes().listAllNotNullItems()) {
+                if(possiblePlaceForBuilding.getBuilding() != null){
+                    continue;
+                }
+
+                if (possiblePlaceForBuilding.getBuilding() == null && !isNodeHasNeighbourBuilding(possiblePlaceForBuilding)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static EdgeBean calculateNextNecessaryRoad(GameUserBean player, int limitRoadLengthToNextBuilding, List<Integer> possibleEdgeIds) {

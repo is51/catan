@@ -77,4 +77,15 @@ public class AutomationProcessorImpl implements AutomationProcessor {
     public Map<GameUserBean, String> getAutomatedPlayers() {
         return automatedPlayers;
     }
+
+    @Override
+    public List<String> getAvailableBotNames() {
+        List<String> botNames = new ArrayList<String>();
+        for (AbstractBot bot : bots) {
+            botNames.add(bot.getBotName());
+        }
+
+        return botNames;
+    }
 }
+
