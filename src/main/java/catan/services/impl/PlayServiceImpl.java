@@ -86,7 +86,7 @@ public class PlayServiceImpl implements PlayService {
 
                 doAction(action, gameUser, params, returnedParams);
 
-                playUtil.updateAchievements(game);
+                achievementsUtil.updateAchievements(game);
                 playUtil.finishGameIfTargetVictoryPointsReached(gameUser);
                 playUtil.updateAvailableActionsForAllUsers(game);
 
@@ -199,7 +199,7 @@ public class PlayServiceImpl implements PlayService {
         GameBean game = gameUser.getGame();
 
         playUtil.setDiceValues(diceFirstValue, diceSecondValue, game);
-        playUtil.activateRobberIfNeeded(game);
+        robberUtil.activateRobberIfNeeded(game);
         playUtil.produceResourcesFromActiveDiceHexes(game);
     }
 
@@ -281,7 +281,7 @@ public class PlayServiceImpl implements PlayService {
         HexBean hexToRob = robberUtil.toValidHex(game, hexAbsoluteId);
         robberUtil.validateHexCouldBeRobbed(hexToRob);
 
-        playUtil.changeRobbedHex(hexToRob);
+        robberUtil.changeRobbedHex(hexToRob);
         game.setRobberShouldBeMovedMandatory(false);
         MessagesUtil.clearUsersMsgs(game);
 

@@ -15,6 +15,46 @@ public class RobberUtil {
 
     public static final String ERROR_CODE_ERROR = "ERROR";
 
+    public void activateRobberIfNeeded(GameBean game) {
+        if (isRobbersActivity(game)) {
+            log.debug("Robber activity is started, checking if players should kick-off resources");
+            checkIfPlayersShouldKickOffResources(game);
+        }
+    }
+
+    public void changeRobbedHex(HexBean hexToRob) {
+        for (HexBean hex : hexToRob.getGame().getHexes()) {
+            if (hex.isRobbed()) {
+                hex.setRobbed(false);
+                break;
+            }
+        }
+        hexToRob.setRobbed(true);
+        log.info("Hex {} successfully robbed", hexToRob.getAbsoluteId());
+    }
+
+    private boolean isRobbersActivity(GameBean game) {
+        return game.getDiceFirstValue() + game.getDiceSecondValue() == 7;
+    }
+
+    private void checkIfPlayersShouldKickOffResources(GameBean game) {
+        GameUserBean gameUser = game.fetchActiveGameUser();
+        boolean shouldResourcesBeKickedOff = false;
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            if (gameUserIterated.getAchievements().getTotalResources() > 7) {
+                gameUserIterated.setKickingOffResourcesMandatory(true);
+                shouldResourcesBeKickedOff = true;
+            }
+        }
+
+        if (shouldResourcesBeKickedOff) {
+            MessagesUtil.updateDisplayedMsg(gameUser, "help_msg_wait_for_kicking_off_res");
+            return;
+        }
+        game.setRobberShouldBeMovedMandatory(true);
+        MessagesUtil.updateDisplayedMsg(gameUser, "help_msg_move_robber");
+    }
+
     public void checkRobberShouldBeMovedMandatory(GameBean game) {
         for (GameUserBean gameUserIterated : game.getGameUsers()) {
             if (gameUserIterated.isKickingOffResourcesMandatory()) {

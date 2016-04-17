@@ -150,13 +150,6 @@ public class PlayUtil {
         log.info("Current dice value is " + (diceFirstValue + diceSecondValue) + " (First dice: " + diceFirstValue + ", Second dice: " + diceSecondValue + ")");
     }
 
-    public void activateRobberIfNeeded(GameBean game) {
-        if (isRobbersActivity(game)) {
-            log.debug("Robber activity is started, checking if players should kick-off resources");
-            checkIfPlayersShouldKickOffResources(game);
-        }
-    }
-
     public void updateGameStage(GameBean game) {
         if (GameStage.PREPARATION.equals(game.getStage()) && shouldChangeGameStageToMain(game)) {
             game.setStage(GameStage.MAIN);
@@ -185,70 +178,6 @@ public class PlayUtil {
                 game.setStatus(GameStatus.FINISHED);
             }
         }
-    }
-
-    public void updateAchievements(GameBean game) throws GameException {
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (game.getCurrentMove().equals(gameUser.getMoveOrder())) {
-                updateTotalDevCards(gameUser);
-            }
-            updateVictoryPoints(gameUser, game);
-            updateTotalResources(gameUser);
-        }
-    }
-
-    private boolean isRobbersActivity(GameBean game) {
-        return game.getDiceFirstValue() + game.getDiceSecondValue() == 7;
-    }
-
-    private void checkIfPlayersShouldKickOffResources(GameBean game) {
-        GameUserBean gameUser = game.fetchActiveGameUser();
-        boolean shouldResourcesBeKickedOff = false;
-        for (GameUserBean gameUserIterated : game.getGameUsers()) {
-            if (gameUserIterated.getAchievements().getTotalResources() > 7) {
-                gameUserIterated.setKickingOffResourcesMandatory(true);
-                shouldResourcesBeKickedOff = true;
-            }
-        }
-
-        if (shouldResourcesBeKickedOff) {
-            MessagesUtil.updateDisplayedMsg(gameUser, "help_msg_wait_for_kicking_off_res");
-            return;
-        }
-        game.setRobberShouldBeMovedMandatory(true);
-        MessagesUtil.updateDisplayedMsg(gameUser, "help_msg_move_robber");
-    }
-
-    private void updateTotalDevCards(GameUserBean gameUser) {
-        int totalCards = gameUser.getDevelopmentCards().calculateSum();
-        gameUser.getAchievements().setTotalCards(totalCards);
-    }
-
-    private void updateTotalResources(GameUserBean gameUser) {
-        int totalResources = gameUser.getResources().calculateSum();
-        gameUser.getAchievements().setTotalResources(totalResources);
-    }
-
-    private void updateVictoryPoints(GameUserBean gameUser, GameBean game) throws GameException {
-
-        int settlementsCount = gameUser.getBuildingsCount().getSettlements();
-        int citiesCount = gameUser.getBuildingsCount().getCities();
-        boolean isBiggestArmyOwner = gameUser.equals(game.getBiggestArmyOwner());
-        boolean isLongestWayOwner = gameUser.equals(game.getLongestWayOwner());
-
-        int displayVictoryPoints = settlementsCount + citiesCount * 2 + (isBiggestArmyOwner ? 2 : 0) + (isLongestWayOwner ? 2 : 0);
-        gameUser.getAchievements().setDisplayVictoryPoints(displayVictoryPoints);
-    }
-
-    public void changeRobbedHex(HexBean hexToRob) {
-        for (HexBean hex : hexToRob.getGame().getHexes()) {
-            if (hex.isRobbed()) {
-                hex.setRobbed(false);
-                break;
-            }
-        }
-        hexToRob.setRobbed(true);
-        log.info("Hex {} successfully robbed", hexToRob.getAbsoluteId());
     }
 
     public void validateGameIdNotEmpty(String gameId) throws GameException {

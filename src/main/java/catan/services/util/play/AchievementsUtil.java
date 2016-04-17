@@ -1,5 +1,6 @@
 package catan.services.util.play;
 
+import catan.domain.exception.GameException;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.Achievements;
@@ -13,6 +14,37 @@ import java.util.List;
 
 @Component
 public class AchievementsUtil {
+
+    public void updateAchievements(GameBean game) throws GameException {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (game.getCurrentMove().equals(gameUser.getMoveOrder())) {
+                updateTotalDevCards(gameUser);
+            }
+            updateVictoryPoints(gameUser, game);
+            updateTotalResources(gameUser);
+        }
+    }
+
+    private void updateTotalDevCards(GameUserBean gameUser) {
+        int totalCards = gameUser.getDevelopmentCards().calculateSum();
+        gameUser.getAchievements().setTotalCards(totalCards);
+    }
+
+    private void updateTotalResources(GameUserBean gameUser) {
+        int totalResources = gameUser.getResources().calculateSum();
+        gameUser.getAchievements().setTotalResources(totalResources);
+    }
+
+    private void updateVictoryPoints(GameUserBean gameUser, GameBean game) throws GameException {
+
+        int settlementsCount = gameUser.getBuildingsCount().getSettlements();
+        int citiesCount = gameUser.getBuildingsCount().getCities();
+        boolean isBiggestArmyOwner = gameUser.equals(game.getBiggestArmyOwner());
+        boolean isLongestWayOwner = gameUser.equals(game.getLongestWayOwner());
+
+        int displayVictoryPoints = settlementsCount + citiesCount * 2 + (isBiggestArmyOwner ? 2 : 0) + (isLongestWayOwner ? 2 : 0);
+        gameUser.getAchievements().setDisplayVictoryPoints(displayVictoryPoints);
+    }
 
     public void updateLongestWayLengthIfInterrupted(NodeBean nodeWithBuilding) {
         if (!GameStage.MAIN.equals(nodeWithBuilding.getGame().getStage())) {
