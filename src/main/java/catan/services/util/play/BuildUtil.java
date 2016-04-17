@@ -8,6 +8,7 @@ import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.EdgeBuiltType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
+import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.services.impl.GameServiceImpl;
@@ -23,22 +24,23 @@ import static catan.services.util.play.ValidationUtil.ERROR_CODE_ERROR;
 public class BuildUtil {
     private Logger log = LoggerFactory.getLogger(BuildUtil.class);
 
-    public void buildRoadOnEdge(GameUserBean gameUserBean, EdgeBean edgeToBuildOn) throws GameException {
+    public void buildRoadOnEdge(EdgeBean edgeToBuildOn) throws GameException {
         Building<EdgeBuiltType> building = new Building<EdgeBuiltType>();
         building.setBuilt(EdgeBuiltType.ROAD);
-        building.setBuildingOwner(gameUserBean);
+        building.setBuildingOwner(edgeToBuildOn.getGame().fetchActiveGameUser());
 
         edgeToBuildOn.setBuilding(building);
     }
 
-    public void buildOnNode(GameUserBean gameUserBean, NodeBean nodeToBuildOn, NodeBuiltType nodeBuiltType) throws GameException {
+    public void buildOnNode(NodeBean nodeToBuildOn, NodeBuiltType nodeBuiltType) throws GameException {
+        GameUserBean gameUser = nodeToBuildOn.getGame().fetchActiveGameUser();
         Building<NodeBuiltType> building = new Building<NodeBuiltType>();
         building.setBuilt(nodeBuiltType);
-        building.setBuildingOwner(gameUserBean);
+        building.setBuildingOwner(gameUser);
 
         nodeToBuildOn.setBuilding(building);
 
-        updateBuildingsCount(nodeBuiltType, gameUserBean);
+        updateBuildingsCount(nodeBuiltType, gameUser);
     }
 
     private void updateBuildingsCount(NodeBuiltType nodeBuiltType, GameUserBean gameUserBean) {
@@ -47,7 +49,7 @@ public class BuildUtil {
                 gameUserBean.getBuildingsCount().setSettlements(gameUserBean.getBuildingsCount().getSettlements() + 1);
                 break;
             case CITY:
-                if (gameUserBean.getGame().getStage().equals(GameStage.MAIN)) {
+                if (GameStage.MAIN.equals(gameUserBean.getGame().getStage())) {
                     gameUserBean.getBuildingsCount().setSettlements(gameUserBean.getBuildingsCount().getSettlements() - 1);
                 }
 
@@ -80,14 +82,16 @@ public class BuildUtil {
         return mapElementToBuildOn;
     }
 
-    public void validateUserCanBuildRoadOnEdge(GameUserBean gameUser, EdgeBean edgeToBuildOn, GameStage gameStage) throws PlayException {
+    public void validateUserCanBuildRoadOnEdge(EdgeBean edgeToBuildOn) throws PlayException {
+        GameBean game = edgeToBuildOn.getGame();
+        GameUserBean gameUser = game.fetchActiveGameUser();
         if (edgeToBuildOn.getBuilding() != null) {
             log.debug("Cannot build road on this edge as it already has building on it");
             throw new PlayException(ERROR_CODE_ERROR);
         }
 
         for (NodeBean node : edgeToBuildOn.getNodes().listAllNotNullItems()) {
-            if (GameStage.PREPARATION.equals(gameStage)) {
+            if (GameStage.PREPARATION.equals(game.getStage())) {
                 if (node.hasBuildingBelongsToUser(gameUser) && !node.hasNeighbourRoadBelongsToGameUser(gameUser)) {
                     return;
                 }
@@ -109,16 +113,17 @@ public class BuildUtil {
         throw new PlayException(ERROR_CODE_ERROR);
     }
 
-    public void validateUserCanBuildSettlementOnNode(GameUserBean gameUser, GameStage gameStage, NodeBean nodeToBuildOn) throws PlayException {
-        if (gameStage.equals(GameStage.PREPARATION)) {
+    public void validateUserCanBuildSettlementOnNode(NodeBean nodeToBuildOn) throws PlayException {
+        if (GameStage.PREPARATION.equals(nodeToBuildOn.getGame().getStage())) {
             validateNodeIsEmpty(nodeToBuildOn);
             validateNoBuildingsCloseToNode(nodeToBuildOn);
             return;
         }
-        validateNodeCouldBeUsedForBuildingSettlementByGameUserInMainStage(gameUser, nodeToBuildOn);
+        validateNodeCouldBeUsedForBuildingSettlementByGameUserInMainStage(nodeToBuildOn);
     }
 
-    public void validateUserCanBuildCityOnNode(GameUserBean gameUser, GameStage gameStage, NodeBean nodeToBuildOn) throws GameException, PlayException {
+    public void validateUserCanBuildCityOnNode(NodeBean nodeToBuildOn) throws GameException, PlayException {
+        GameStage gameStage = nodeToBuildOn.getGame().getStage();
         switch (gameStage) {
             case PREPARATION:
                 validateNodeIsEmpty(nodeToBuildOn);
@@ -136,7 +141,7 @@ public class BuildUtil {
                 }
 
                 GameUserBean buildingOwner = nodeToBuildOn.getBuilding().getBuildingOwner();
-                if (!buildingOwner.equals(gameUser)) {
+                if (!buildingOwner.equals(nodeToBuildOn.getGame().fetchActiveGameUser())) {
                     log.debug("Cannot build city on this node as building on it doesn't belong to user");
                     throw new PlayException(ERROR_CODE_ERROR);
                 }
@@ -154,8 +159,8 @@ public class BuildUtil {
         }
     }
 
-    private void validateNodeCouldBeUsedForBuildingSettlementByGameUserInMainStage(GameUserBean gameUser, NodeBean nodeToBuildOn) throws PlayException {
-        if (!nodeToBuildOn.couldBeUsedForBuildingSettlementByGameUserInMainStage(gameUser)) {
+    private void validateNodeCouldBeUsedForBuildingSettlementByGameUserInMainStage(NodeBean nodeToBuildOn) throws PlayException {
+        if (!nodeToBuildOn.couldBeUsedForBuildingSettlementByGameUserInMainStage(nodeToBuildOn.getGame().fetchActiveGameUser())) {
             log.debug("Cannot build settlement on node");
             throw new PlayException(ERROR_CODE_ERROR);
         }

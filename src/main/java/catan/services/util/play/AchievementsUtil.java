@@ -5,8 +5,7 @@ import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.Achievements;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import catan.domain.model.game.types.GameStage;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,26 +13,29 @@ import java.util.List;
 
 @Component
 public class AchievementsUtil {
-    private Logger log = LoggerFactory.getLogger(AchievementsUtil.class);
 
-    public void updateLongestWayLength(GameBean game, GameUserBean gameUser) {
+    public void updateLongestWayLengthIfInterrupted(NodeBean nodeWithBuilding) {
+        if (!GameStage.MAIN.equals(nodeWithBuilding.getGame().getStage())) {
+            return;
+        }
+        GameUserBean gameUserToUpdateLongestWayLength = fetchGameUserWhoseWayWasInterrupted(nodeWithBuilding);
+        if (gameUserToUpdateLongestWayLength != null) {
+            updateLongestWayLength(gameUserToUpdateLongestWayLength);
+        }
+    }
+
+    public void updateLongestWayLength(GameUserBean gameUser) {
         int maxWayLength = 0;
         for (EdgeBean edge : gameUser.fetchEdgesWithBuildingsBelongsToGameUser()) {
             maxWayLength = calculateMaxWayLength(gameUser, maxWayLength, new ArrayList<Integer>(), new ArrayList<Integer>(), edge, 0);
         }
         gameUser.getAchievements().setLongestWayLength(maxWayLength);
-        updateLongestWayOwner(game);
+        updateLongestWayOwner(gameUser.getGame());
     }
 
-    public void updateLongestWayLengthIfInterrupted(GameBean game, GameUserBean gameUser, NodeBean nodeToBuildOn) {
-        GameUserBean gameUserToUpdateLongestWayLength = fetchGameUserWhoseWayWasInterrupted(nodeToBuildOn, gameUser);
-        if (gameUserToUpdateLongestWayLength != null) {
-            updateLongestWayLength(game, gameUserToUpdateLongestWayLength);
-        }
-    }
-
-    private GameUserBean fetchGameUserWhoseWayWasInterrupted(NodeBean node, GameUserBean gameUserWhoBuiltOnNode) {
+    private GameUserBean fetchGameUserWhoseWayWasInterrupted(NodeBean node) {
         GameUserBean gameUserWhoseWayCouldBeInterrupted = null;
+        GameUserBean gameUserWhoBuiltOnNode = node.getGame().fetchActiveGameUser();
         for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
             if (edge.getBuilding() == null || edge.getBuilding().getBuildingOwner().equals(gameUserWhoBuiltOnNode)) {
                 continue;

@@ -28,17 +28,16 @@ public class CardUtil {
 
     private RandomUtil randomUtil;
 
-    public DevelopmentCard chooseDevelopmentCard(DevelopmentCards availableDevelopmentCards) throws PlayException {
-        List<DevelopmentCard> availableDevelopmentCardsList = listAvailableDevCards(availableDevelopmentCards);
+    public DevelopmentCard chooseDevelopmentCard(GameBean game) throws PlayException {
+        List<DevelopmentCard> availableDevelopmentCardsList = listAvailableDevCards(game);
         validateThereAreAvailableCards(availableDevelopmentCardsList);
 
         return randomUtil.pullRandomDevelopmentCard(availableDevelopmentCardsList);
     }
 
-    public void giveDevelopmentCardToUser(GameUserBean gameUser, DevelopmentCards availableDevelopmentCards, DevelopmentCard chosenDevelopmentCard) {
-        DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
-        usersDevelopmentCards.increaseQuantityByOne(chosenDevelopmentCard);
-        availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
+    public void giveDevelopmentCardToUser(GameUserBean gameUser, DevelopmentCard chosenDevelopmentCard) {
+        gameUser.getDevelopmentCards().increaseQuantityByOne(chosenDevelopmentCard);
+        gameUser.getGame().getAvailableDevelopmentCards().decreaseQuantityByOne(chosenDevelopmentCard);
     }
 
     public void takeDevelopmentCardFromPlayer(GameUserBean gameUser, DevelopmentCard developmentCard) {
@@ -106,7 +105,8 @@ public class CardUtil {
         }
     }
 
-    private List<DevelopmentCard> listAvailableDevCards(DevelopmentCards availableDevelopmentCards) {
+    private List<DevelopmentCard> listAvailableDevCards(GameBean game) {
+        DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
         List<DevelopmentCard> availableDevelopmentCardsList = new ArrayList<DevelopmentCard>();
         for (DevelopmentCard developmentCard : DevelopmentCard.values()) {
             for (int i = 0; i < availableDevelopmentCards.quantityOf(developmentCard); i++) {

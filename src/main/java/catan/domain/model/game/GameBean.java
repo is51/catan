@@ -28,6 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -71,6 +72,9 @@ public class GameBean {
      */
     @Column(name = "PREPARATION_CYCLE", unique = false, nullable = true)
     private Integer preparationCycle;
+
+    @Transient
+    private Boolean updatePreparationCycle;
 
     @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
     private int minPlayers;
@@ -249,6 +253,14 @@ public class GameBean {
 
     public void setPreparationCycle(Integer preparationCycle) {
         this.preparationCycle = preparationCycle;
+    }
+
+    public Boolean isUpdatePreparationCycle() {
+        return updatePreparationCycle;
+    }
+
+    public void setUpdatePreparationCycle(Boolean updatePreparationCycle) {
+        this.updatePreparationCycle = updatePreparationCycle;
     }
 
     public int getMinPlayers() {
