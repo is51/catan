@@ -36,7 +36,7 @@ public class AlexBot extends AbstractBot {
                                       ActionDetails buildCityAction, ActionDetails buildSettlementAction,
                                       ActionDetails buildRoadAction, ActionDetails buyCardAction,
                                       ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                                      ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
+                                      ActionDetails endTurnAction, boolean isMandatory, boolean cardsAreOver) throws PlayException, GameException {
 
         GameBean game = player.getGame();
 

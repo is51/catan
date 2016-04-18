@@ -1,108 +1,182 @@
 package catan.services.impl.bots.smart.utils;
 
+import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
+import catan.domain.transfer.output.game.actions.ActionParamsDetails;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TradePortUtil extends SmartBotUtil {
-    public static Map<String, String> calculateTradePortResourceCombination(GameUserBean player, ActionDetails action) {
-        Map<String, String> tradeResourceDirections = new HashMap<String, String>();
+    private static final Map<HexType, String> emptyResourceCombination = new HashMap<HexType, String>();
 
-        Map<String, Integer> sell = new HashMap<String, Integer>();
-        Map<String, Integer> buy = new HashMap<String, Integer>();
-        Integer sumSell = 0;
-        Integer sumBuy = 0;
-
-        if (player.getResources().getBrick() >= action.getParams().getBrick()) {
-            int numberOrResourcesCanBuy = player.getResources().getBrick() / action.getParams().getBrick();
-            int buyBricks = action.getParams().getBrick() * numberOrResourcesCanBuy;
-            sell.put("brick", buyBricks);
-            sumSell += numberOrResourcesCanBuy;
-        }
-        if (player.getResources().getWood() >= action.getParams().getWood()) {
-            int numberOrResourcesCanBuy = player.getResources().getWood() / action.getParams().getWood();
-            int buyWood = action.getParams().getWood() * numberOrResourcesCanBuy;
-            sell.put("wood", buyWood);
-            sumSell += numberOrResourcesCanBuy;
-        }
-        if (player.getResources().getSheep() >= action.getParams().getSheep()) {
-            int numberOrResourcesCanBuy = player.getResources().getSheep() / action.getParams().getSheep();
-            int buySheep = action.getParams().getSheep() * numberOrResourcesCanBuy;
-            sell.put("sheep", buySheep);
-            sumSell += numberOrResourcesCanBuy;
-
-        }
-        if (player.getResources().getWheat() >= action.getParams().getWheat()) {
-            int numberOrResourcesCanBuy = player.getResources().getWheat() / action.getParams().getWheat();
-            int buyWheat = action.getParams().getWheat() * numberOrResourcesCanBuy;
-            sell.put("wheat", buyWheat);
-            sumSell += numberOrResourcesCanBuy;
-        }
-        if (player.getResources().getStone() >= action.getParams().getStone()) {
-            int numberOrResourcesCanBuy = player.getResources().getStone() / action.getParams().getStone();
-            int buyStone = action.getParams().getStone() * numberOrResourcesCanBuy;
-            sell.put("stone", buyStone);
-            sumSell += numberOrResourcesCanBuy;
+    public static Map<HexType, String> calculateTradePortResourceCombination(GameUserBean player, ActionDetails action, boolean cardsAreOver) {
+        if (noResourcesToSell(player, action.getParams())) {
+            return emptyResourceCombination;
         }
 
-        if (sumSell == 0) {
-            return tradeResourceDirections;
+        if(needResourcesForSettlement(player)){
+            return combinationIfNeedResourcesForSettlement(player, action.getParams());
+        } else if(needResourcesForCity(player)){
+            return combinationIfNeedResourcesForCity(player, action.getParams());
+        } else {
+            return combinationIfNeedToMakeLessResources(player, action.getParams(), cardsAreOver);
+        }
+    }
+
+    private static boolean noResourcesToSell(GameUserBean player, ActionParamsDetails params) {
+        return player.getResources().getBrick() < params.getBrick()
+                && player.getResources().getWood() < params.getWood()
+                && player.getResources().getSheep() < params.getSheep()
+                && player.getResources().getWheat() < params.getWheat()
+                && player.getResources().getStone() < params.getStone();
+    }
+
+    private static Map<HexType, String> combinationIfNeedResourcesForSettlement(GameUserBean player, ActionParamsDetails params) {
+        List<HexType> requiredResources = requiredResourcesForSettlement(player);
+        Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
+
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.STONE, 0, params.getStone(), player.getResources().getStone());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 1, params.getBrick(), player.getResources().getBrick());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WOOD, 1, params.getWood(), player.getResources().getWood());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.SHEEP, 1, params.getSheep(), player.getResources().getSheep());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WHEAT, 1, params.getWheat(), player.getResources().getBrick());
+
+        return tradeResourceCombination;
+    }
+
+
+    private static Map<HexType, String> combinationIfNeedResourcesForCity(GameUserBean player, ActionParamsDetails params) {
+        List<HexType> requiredResources = requiredResourcesForCity(player);
+        Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
+
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 0, params.getBrick(), player.getResources().getBrick());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WOOD, 0, params.getWood(), player.getResources().getWood());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.SHEEP, 0, params.getSheep(), player.getResources().getSheep());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WHEAT, 2, params.getWheat(), player.getResources().getWheat());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.STONE, 3, params.getStone(), player.getResources().getStone());
+
+        return tradeResourceCombination;
+    }
+
+    private static Map<HexType, String> combinationIfNeedToMakeLessResources(GameUserBean player, ActionParamsDetails params, boolean cardsAreOver) {
+        List<HexType> requiredResources = requiredResourcesForRoad(player);
+        Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
+
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.SHEEP, 0, params.getSheep(), player.getResources().getSheep());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WHEAT, 0, params.getWheat(), player.getResources().getWheat());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.STONE, 0, params.getStone(), player.getResources().getStone());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 1, params.getBrick(), player.getResources().getBrick());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WOOD, 1, params.getWood(), player.getResources().getWood());
+
+        return tradeResourceCombination;
+    }
+
+
+    private static void combinationForResource(List<HexType> requiredResources,
+                                               Map<HexType, String> tradeResourceCombination,
+                                               HexType resourceToSell,
+                                               int resourceLeftLimit,
+                                               Integer resourceToSellRatio,
+                                               int resourceToSellCurrentCount) {
+        if (resourceToSellCurrentCount >= (resourceToSellRatio + resourceLeftLimit)) {
+            int numberOrResourcesCanBuyForCurrentResource = resourceToSellCurrentCount / (resourceToSellRatio + resourceLeftLimit);
+            int numberOfResourcesToBuyForCurrentResource = numberOrResourcesCanBuyForCurrentResource <= requiredResources.size()
+                    ? numberOrResourcesCanBuyForCurrentResource
+                    : requiredResources.size();
+            int numberOfResourcesToSell = resourceToSellRatio * numberOfResourcesToBuyForCurrentResource;
+
+            tradeResourceCombination.put(resourceToSell, String.valueOf(-numberOfResourcesToSell));
+            for(int i = 0; i < numberOfResourcesToBuyForCurrentResource; i++){
+                if(tradeResourceCombination.get(requiredResources.get(i)) != null){
+                    Integer currentBuyValue = Integer.valueOf(tradeResourceCombination.get(requiredResources.get(i)));
+                    tradeResourceCombination.put(requiredResources.get(i), String.valueOf(currentBuyValue + 1));
+                } else {
+                    tradeResourceCombination.put(requiredResources.get(i), String.valueOf(1));
+                }
+            }
+
+            requiredResources.removeAll(tradeResourceCombination.keySet());
+        }
+    }
+
+    private static List<HexType> requiredResourcesForSettlement(GameUserBean player) {
+        List<HexType> requiredResources = new ArrayList<HexType>();
+        if(player.getResources().getBrick() == 0){
+            requiredResources.add(HexType.BRICK);
+        }
+        if(player.getResources().getWood() == 0){
+            requiredResources.add(HexType.WOOD);
+        }
+        if(player.getResources().getSheep() == 0){
+            requiredResources.add(HexType.SHEEP);
+        }
+        if(player.getResources().getWheat() == 0){
+            requiredResources.add(HexType.WHEAT);
         }
 
-        if (player.getResources().getStone() == 0) {
-            buy.put("stone", sumSell);
-            sumBuy += sumSell;
-        } else if (player.getResources().getWheat() == 0) {
-            buy.put("wheat", sumSell);
-            sumBuy += sumSell;
-        } else if (player.getResources().getSheep() == 0) {
-            buy.put("sheep", sumSell);
-            sumBuy += sumSell;
-        } else if (player.getResources().getWood() == 0) {
-            buy.put("wood", sumSell);
-            sumBuy += sumSell;
-        } else if (player.getResources().getBrick() == 0) {
-            buy.put("brick", sumSell);
-            sumBuy += sumSell;
-        }
+        return requiredResources;
+    }
 
-        if (!sumBuy.equals(sumSell)) {
-            if (!sell.keySet().contains("brick")) {
-                buy.put("brick", sumSell);
-                sumBuy += sumSell;
-            } else if (!sell.keySet().contains("wood")) {
-                buy.put("wood", sumSell);
-                sumBuy += sumSell;
-            } else if (!sell.keySet().contains("sheep")) {
-                buy.put("sheep", sumSell);
-                sumBuy += sumSell;
-            } else if (!sell.keySet().contains("wheat")) {
-                buy.put("wheat", sumSell);
-                sumBuy += sumSell;
-            } else if (!sell.keySet().contains("stone")) {
-                buy.put("stone", sumSell);
-                sumBuy += sumSell;
+    private static List<HexType> requiredResourcesForCity(GameUserBean player) {
+        List<HexType> requiredResources = new ArrayList<HexType>();
+        int wheatRequiredForCity = 2;
+        int stoneRequiredForCity = 3;
+
+        if(player.getResources().getWheat() < wheatRequiredForCity){
+            for(int i = 0; i < (wheatRequiredForCity - player.getResources().getWheat()); i++){
+                requiredResources.add(HexType.WHEAT);
             }
         }
 
-        tradeResourceDirections.put("brick", buy.get("brick") != null
-                ? buy.get("brick").toString()
-                : (sell.get("brick") != null ? "-" + sell.get("brick") : "0"));
-        tradeResourceDirections.put("wood", buy.get("wood") != null
-                ? buy.get("wood").toString()
-                : (sell.get("wood") != null ? "-" + sell.get("wood") : "0"));
-        tradeResourceDirections.put("sheep", buy.get("sheep") != null
-                ? buy.get("sheep").toString()
-                : (sell.get("sheep") != null ? "-" + sell.get("sheep") : "0"));
-        tradeResourceDirections.put("wheat", buy.get("wheat") != null
-                ? buy.get("wheat").toString()
-                : (sell.get("wheat") != null ? "-" + sell.get("wheat") : "0"));
-        tradeResourceDirections.put("stone", buy.get("stone") != null
-                ? buy.get("stone").toString()
-                : (sell.get("stone") != null ? "-" + sell.get("stone") : "0"));
+        if(player.getResources().getStone() < stoneRequiredForCity){
+            for(int i = 0; i < (stoneRequiredForCity - player.getResources().getStone()); i++) {
+                requiredResources.add(HexType.STONE);
+            }
+        }
 
-        return tradeResourceDirections;
+        return requiredResources;
+    }
+
+    private static List<HexType> requiredResourcesForRoad(GameUserBean player) {
+        List<HexType> requiredResources = new ArrayList<HexType>();
+        if(player.getResources().getBrick() == 0){
+            requiredResources.add(HexType.BRICK);
+        }
+        if(player.getResources().getWood() == 0){
+            requiredResources.add(HexType.WOOD);
+        }
+
+        return requiredResources;
+    }
+
+    private static boolean needResourcesForSettlement(GameUserBean player) {
+        for (NodeBean node : player.getGame().getNodes()) {
+            if(node.couldBeUsedForBuildingSettlementByGameUserInMainStage(player)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean needResourcesForCity(GameUserBean player) {
+        if((player.getBuildingsCount().getCities() < 3 && player.getBuildingsCount().getSettlements() < 4)
+                || requiredResourcesForCity(player).size() > 1){
+            return false;
+        }
+
+        for (NodeBean node : player.getGame().getNodes()) {
+            if(node.hasBuildingBelongsToUser(player) && node.getBuilding().getBuilt() == NodeBuiltType.SETTLEMENT){
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -13,12 +13,7 @@ public class ChoosePlayerToRobUtil extends SmartBotUtil {
         List<Integer> availableNodeIds = choosePlayerToRobAction.getParams().getNodeIds();
         Set<GameUserBean> playersToRob = new HashSet<GameUserBean>();
         for (NodeBean node : player.getGame().getNodes()) {
-            //TODO: replace cycle with 'contain' condition
-            for (Integer availableNodeId : availableNodeIds) {
-                if (!availableNodeId.equals(node.getAbsoluteId())) {
-                    continue;
-                }
-
+            if(node.getBuilding() != null && availableNodeIds.contains(node.getAbsoluteId())){
                 playersToRob.add(node.getBuilding().getBuildingOwner());
             }
         }

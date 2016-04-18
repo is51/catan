@@ -38,7 +38,7 @@ public class StupidBot extends AbstractBot {
                                       ActionDetails buildCityAction, ActionDetails buildSettlementAction,
                                       ActionDetails buildRoadAction, ActionDetails buyCardAction,
                                       ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                                      ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
+                                      ActionDetails endTurnAction, boolean isMandatory, boolean cardsAreOver) throws PlayException, GameException {
         if (endTurnAction != null) {
             playService.processAction(END_TURN, user, gameId);
             return;

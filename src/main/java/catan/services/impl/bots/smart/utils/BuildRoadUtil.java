@@ -3,6 +3,7 @@ package catan.services.impl.bots.smart.utils;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -130,7 +131,11 @@ public class BuildRoadUtil extends SmartBotUtil{
     private static List<NodeBean> findNodesAvailableToStartBuildRoad(GameUserBean player, List<Integer> possibleEdgeIds) {
         List<NodeBean> nodesAvailableToStartBuildRoad = new ArrayList<NodeBean>();
         for (NodeBean node : player.getGame().getNodes()) {
-            if (!node.hasBuildingBelongsToUser(player) && !node.hasNeighbourRoadBelongsToGameUser(player)) {
+            if ((player.getGame().getStage() == GameStage.PREPARATION
+                    && !node.hasBuildingBelongsToUser(player))
+                    || (player.getGame().getStage() == GameStage.MAIN
+                    && !node.hasBuildingBelongsToUser(player)
+                    && !node.hasNeighbourRoadBelongsToGameUser(player))) {
                 continue;
             }
 

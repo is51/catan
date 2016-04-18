@@ -57,14 +57,14 @@ public abstract class AbstractBot {
     public abstract String getBotName();
 
     public abstract void processActionsInOrder(GameUserBean player, UserBean user, String gameId,
-                                        ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
-                                        ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
-                                        ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
-                                        ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
-                                        ActionDetails buildCityAction, ActionDetails buildSettlementAction,
-                                        ActionDetails buildRoadAction, ActionDetails buyCardAction,
-                                        ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                                        ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException;
+                                               ActionDetails moveRobberAction, ActionDetails choosePlayerToRobAction,
+                                               ActionDetails kickOffResourcesAction, ActionDetails useCardKnightAction,
+                                               ActionDetails useCardRoadBuildingAction, ActionDetails useCardYearOfPlentyAction,
+                                               ActionDetails useCardMonopolyAction, ActionDetails throwDiceAction,
+                                               ActionDetails buildCityAction, ActionDetails buildSettlementAction,
+                                               ActionDetails buildRoadAction, ActionDetails buyCardAction,
+                                               ActionDetails tradePortAction, ActionDetails tradeReplyAction,
+                                               ActionDetails endTurnAction, boolean isMandatory, boolean cardsAreOver) throws PlayException, GameException;
 
     public void automatePlayersActions(GameUserBean oldStatePlayer, boolean cardsAreOver) throws PlayException, GameException {
         GameUserBean player = refreshPlayerFields(oldStatePlayer);
@@ -154,6 +154,7 @@ public abstract class AbstractBot {
                 tradePortAction,
                 tradeReplyAction,
                 endTurnAction,
+                availableActions.getIsMandatory(),
                 cardsAreOver);
     }
 

@@ -4,6 +4,7 @@ import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameUserActionCode;
@@ -59,7 +60,7 @@ public class SmartBot extends AbstractBot {
                                       ActionDetails buildCityAction, ActionDetails buildSettlementAction,
                                       ActionDetails buildRoadAction, ActionDetails buyCardAction,
                                       ActionDetails tradePortAction, ActionDetails tradeReplyAction,
-                                      ActionDetails endTurnAction, boolean cardsAreOver) throws PlayException, GameException {
+                                      ActionDetails endTurnAction, boolean isMandatory, boolean cardsAreOver) throws PlayException, GameException {
         String botName = getBotName();
         UserBean username = player.getUser();
 
@@ -78,7 +79,6 @@ public class SmartBot extends AbstractBot {
         }
 
         if (kickOffResourcesAction != null) {
-            //TODO: kickoff not needed resources
             log.debug("{}: kick off resources, for player {} in game {}", botName, username, gameId);
             kickOffResources(player, gameId);
             return;
@@ -145,7 +145,7 @@ public class SmartBot extends AbstractBot {
 
         if (buildRoadAction != null) {
             log.debug("{}: try build road, for player {} in game {}", botName, username, gameId);
-            boolean roadBuilt = buildRoad(player, gameId, buildRoadAction);
+            boolean roadBuilt = buildRoad(player, gameId, buildRoadAction, isMandatory);
             if (roadBuilt) {
                 return;
             }
@@ -162,7 +162,7 @@ public class SmartBot extends AbstractBot {
         if (tradePortAction != null) {
             log.debug("{}: try trade with port, for player {} in game {}", botName, username, gameId);
             //TODO: trade required resources
-            boolean tradeSuccessful = tradePort(player, gameId, tradePortAction);
+            boolean tradeSuccessful = tradePort(player, gameId, tradePortAction, cardsAreOver);
             if (tradeSuccessful) {
                 return;
             }
@@ -248,9 +248,9 @@ public class SmartBot extends AbstractBot {
         playService.processAction(BUY_CARD, player.getUser(), gameId);
     }
 
-    private boolean buildRoad(GameUserBean player, String gameId, ActionDetails buildRoadAction) throws PlayException, GameException {
-        log.debug("{}: end turn, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
-        if (BuildRoadUtil.hasPlaceForNextBuilding(player)) {
+    private boolean buildRoad(GameUserBean player, String gameId, ActionDetails buildRoadAction, boolean isMandatory) throws PlayException, GameException {
+        log.debug("{}: build road, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
+        if (!isMandatory && BuildRoadUtil.hasPlaceForNextBuilding(player)) {
             log.debug("{}: player already has place for next building, skip build road to save resources, for player {} in game {}",
                     getBotName(), player.getUser(), player.getGame().getGameId());
             return false;
@@ -298,14 +298,14 @@ public class SmartBot extends AbstractBot {
     }
 
     private void kickOffResources(GameUserBean player, String gameId) throws PlayException, GameException {
-        Map<String, String> resourcesKickOffCount = KickOffResourcesUtil.getResourcesToKickOff(player);
+        Map<HexType, String> resourcesKickOffCount = KickOffResourcesUtil.getResourcesToKickOff(player);
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("brick", resourcesKickOffCount.get("brick"));
-        params.put("wood", resourcesKickOffCount.get("wood"));
-        params.put("sheep", resourcesKickOffCount.get("sheep"));
-        params.put("wheat", resourcesKickOffCount.get("wheat"));
-        params.put("stone", resourcesKickOffCount.get("stone"));
+        params.put("brick", resourcesKickOffCount.get(HexType.BRICK) != null ? resourcesKickOffCount.get(HexType.BRICK) : "0");
+        params.put("wood", resourcesKickOffCount.get(HexType.WOOD) != null ? resourcesKickOffCount.get(HexType.WOOD) : "0");
+        params.put("sheep", resourcesKickOffCount.get(HexType.SHEEP) != null ? resourcesKickOffCount.get(HexType.SHEEP) : "0");
+        params.put("wheat", resourcesKickOffCount.get(HexType.WHEAT) != null ? resourcesKickOffCount.get(HexType.WHEAT) : "0");
+        params.put("stone", resourcesKickOffCount.get(HexType.STONE) != null ? resourcesKickOffCount.get(HexType.STONE) : "0");
 
         playService.processAction(KICK_OFF_RESOURCES, player.getUser(), gameId, params);
     }
@@ -335,18 +335,18 @@ public class SmartBot extends AbstractBot {
         playService.processAction(TRADE_REPLY, player.getUser(), gameId, params);
     }
 
-    private boolean tradePort(GameUserBean player, String gameId, ActionDetails action) throws PlayException, GameException {
-        Map<String, String> tradeResourceDirections = TradePortUtil.calculateTradePortResourceCombination(player, action);
-        if (tradeResourceDirections.isEmpty()) {
+    private boolean tradePort(GameUserBean player, String gameId, ActionDetails action, boolean cardsAreOver) throws PlayException, GameException {
+        Map<HexType, String> tradeResourceCombination = TradePortUtil.calculateTradePortResourceCombination(player, action, cardsAreOver);
+        if (tradeResourceCombination.isEmpty()) {
             return false;
         }
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("brick", tradeResourceDirections.get("brick"));
-        params.put("wood", tradeResourceDirections.get("wood"));
-        params.put("sheep", tradeResourceDirections.get("sheep"));
-        params.put("wheat", tradeResourceDirections.get("wheat"));
-        params.put("stone", tradeResourceDirections.get("stone"));
+        params.put("brick", tradeResourceCombination.get(HexType.BRICK) != null ? tradeResourceCombination.get(HexType.BRICK) : "0");
+        params.put("wood", tradeResourceCombination.get(HexType.WOOD) != null ? tradeResourceCombination.get(HexType.WOOD) : "0");
+        params.put("sheep", tradeResourceCombination.get(HexType.SHEEP) != null ? tradeResourceCombination.get(HexType.SHEEP) : "0");
+        params.put("wheat", tradeResourceCombination.get(HexType.WHEAT) != null ? tradeResourceCombination.get(HexType.WHEAT) : "0");
+        params.put("stone", tradeResourceCombination.get(HexType.STONE) != null ? tradeResourceCombination.get(HexType.STONE) : "0");
 
         playService.processAction(TRADE_PORT, player.getUser(), gameId, params);
         return true;
