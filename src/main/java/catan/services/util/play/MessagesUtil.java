@@ -70,18 +70,18 @@ public class MessagesUtil {
     }
 
     private Object[] getArgsForBuildSettlementMsgPattern(GameUserBean gameUser) {
-        //arguments: {number of already built offices; username}
-        return new Object[] {gameUser.getBuildingsCount().getSettlements(), gameUser.getUser().getUsername()};
+        //arguments: {username; number of already built offices}
+        return new Object[] {gameUser.getUser().getUsername(), gameUser.getBuildingsCount().getSettlements()};
     }
 
     private Object[] getArgsForBuildCityMsgPattern(GameUserBean gameUser) {
-        //arguments: {number of already built business centres; username}
-        return new Object[] {gameUser.getBuildingsCount().getCities(), gameUser.getUser().getUsername()};
+        //arguments: {username; number of already built business centres}
+        return new Object[] {gameUser.getUser().getUsername(), gameUser.getBuildingsCount().getCities()};
     }
 
     private Object[] getArgsForBuildRoadMsgPattern(GameUserBean gameUser) {
-        //arguments: {2 - if user should build network near business centre, 1 - near office; username}
-        return new Object[] {("CITY".equals(getTypeOfBuildingWithoutRoadsInPreparation(gameUser)) ? 2 : 1), gameUser.getUser().getUsername()};
+        //arguments: {username; building on node type 2 - if user should build network near business centre, 1 - near office; }
+        return new Object[] {gameUser.getUser().getUsername(), ("CITY".equals(getTypeOfBuildingWithoutRoadsInPreparation(gameUser)) ? 2 : 1), };
     }
 
     private Object[] getArgsForMoveRobberMsgPattern(GameUserBean gameUser) {
