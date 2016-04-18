@@ -15,7 +15,7 @@ public class GameLogDetails {
     public GameLogDetails(GameLogBean gameLog) {
         this.id = gameLog.getGameLogId();
         this.date = gameLog.getDate().getTime();
-        this.code = gameLog.getCode();
+        this.code = gameLog.getCode().name();
         this.message = gameLog.getMessage();
         this.displayedOnTop = gameLog.isDisplayedOnTop();
     }

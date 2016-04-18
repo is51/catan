@@ -1,5 +1,7 @@
 package catan.domain.model.game;
 
+import catan.domain.model.dashboard.types.LogCodeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,7 +30,7 @@ public class GameLogBean {
     private Date date;
 
     @Column(name = "CODE", nullable = false)
-    private String code;
+    private LogCodeType code;
 
     @Column(name = "MESSAGE", nullable = false)
     private String message;
@@ -39,7 +41,7 @@ public class GameLogBean {
     public GameLogBean() {
     }
 
-    public GameLogBean(GameUserBean gameUser, Date date, String code, String message, boolean displayedOnTop) {
+    public GameLogBean(GameUserBean gameUser, Date date, LogCodeType code, String message, boolean displayedOnTop) {
         this.gameUser = gameUser;
         this.date = date;
         this.code = code;
@@ -71,11 +73,11 @@ public class GameLogBean {
         this.date = date;
     }
 
-    public String getCode() {
+    public LogCodeType getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(LogCodeType code) {
         this.code = code;
     }
 
