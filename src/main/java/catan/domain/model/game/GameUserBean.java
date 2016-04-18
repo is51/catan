@@ -3,6 +3,7 @@ package catan.domain.model.game;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.user.UserBean;
+import catan.domain.transfer.output.game.GameLogDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -224,11 +225,12 @@ public class GameUserBean {
         this.gameLogs = gameLogs;
     }
 
-    public List<GameLogBean> fetchLastTenLogs() {
+    public List<GameLogDetails> getGameLogsDetails() {
         Iterator<GameLogBean> gameLogsIterator = this.gameLogs.iterator();
-        List<GameLogBean> gameLogs = new ArrayList<GameLogBean>();
+        List<GameLogDetails> gameLogs = new ArrayList<GameLogDetails>();
         for (int i = 0; i < 10 && gameLogsIterator.hasNext(); i++) {
-            gameLogs.add(gameLogsIterator.next());
+            GameLogDetails gameLogDetails = new GameLogDetails(gameLogsIterator.next());
+            gameLogs.add(gameLogDetails);
         }
 
         return gameLogs;
