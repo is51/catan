@@ -159,7 +159,9 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildRoadOnEdge(edgeToBuildOn);
         buildUtil.buildRoadOnEdge(edgeToBuildOn);
 
-        playUtil.updateUsersResources(edgeToBuildOn);
+        if (GameStage.MAIN.equals(game.getStage()) && game.getRoadsToBuildMandatory() == 0) {
+            game.fetchActiveGameUser().getResources().addResources(-1, -1, 0, 0, 0);
+        }
         playUtil.updateRoadsToBuildMandatory(game);
         achievementsUtil.updateLongestWayLength(gameUser);
     }
@@ -170,7 +172,10 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildSettlementOnNode(nodeToBuildOn);
         buildUtil.buildOnNode(nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
-        playUtil.updateUsersResources(nodeToBuildOn);
+        if (GameStage.MAIN.equals(game.getStage())) {
+            game.fetchActiveGameUser().getResources().addResources(-1, -1, -1, -1, 0);
+        }
+        playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
         achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
     }
 
@@ -180,7 +185,10 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.validateUserCanBuildCityOnNode(nodeToBuildOn);
         buildUtil.buildOnNode(nodeToBuildOn, NodeBuiltType.CITY);
 
-        playUtil.updateUsersResources(nodeToBuildOn);
+        if (GameStage.MAIN.equals(game.getStage())) {
+            game.fetchActiveGameUser().getResources().addResources(0, 0, 0, -2, -3);
+        }
+        playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
     }
 
     private void endTurn(GameUserBean gameUser) throws GameException {

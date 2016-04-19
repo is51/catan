@@ -2,10 +2,9 @@ package catan.services.util.play;
 
 import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
-import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
-import catan.domain.model.dashboard.types.NodeBuiltType;
+import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -65,23 +64,40 @@ public class PlayUtil {
         }
     }
 
-    public void updateUsersResources(NodeBean node) throws GameException {
-        GameBean game = node.getGame();
-        switch (game.getStage()) {
-            case PREPARATION:
-                preparationStageUtil.distributeResourcesForLastBuilding(node);
-                break;
-            case MAIN:
-                if (NodeBuiltType.SETTLEMENT.equals(node.getBuilding().getBuilt())) {
-                    game.fetchActiveGameUser().getResources().addResources(-1, -1, -1, -1, 0);
-                }
-                if (NodeBuiltType.CITY.equals(node.getBuilding().getBuilt())) {
-                    game.fetchActiveGameUser().getResources().addResources(0, 0, 0, -2, -3);
-                }
-                break;
-            default:
-                log.debug("Cannot recognize current game stage: {}", game.getStage());
-                throw new GameException(ERROR_CODE_ERROR);
+    public void distributeResourcesForLastBuildingInPreparation(NodeBean nodeToBuildOn) {
+        GameBean game = nodeToBuildOn.getGame();
+        if (!GameStage.PREPARATION.equals(game.getStage())) {
+            return;
+        }
+
+        List<List<GameUserActionCode>> initialBuildingsSet = preparationStageUtil.toInitialBuildingsSetFromJson(game.getInitialBuildingsSet());
+
+        if (game.getPreparationCycle() < initialBuildingsSet.size()) {
+            // Currently it is not last preparation cycle
+            return;
+        }
+
+        List<GameUserActionCode> buildingsInLastPreparationCycle = initialBuildingsSet.get(game.getPreparationCycle() - 1);
+
+        //find last distributable building in last cycle
+        Integer numberOfLastDistributableBuildingInLastCycle = buildingsInLastPreparationCycle.size();
+        while(buildingsInLastPreparationCycle.get(numberOfLastDistributableBuildingInLastCycle - 1).equals(GameUserActionCode.BUILD_ROAD)){
+            numberOfLastDistributableBuildingInLastCycle--;
+        }
+
+        if(!game.getCurrentCycleBuildingNumber().equals(numberOfLastDistributableBuildingInLastCycle)){
+            // User builds not last Settlement or City in last cycle, should not distribute resources from hexes
+            return;
+        }
+
+        log.debug("User builds last distributable building {} and will get resources from neighbour hexes", nodeToBuildOn.getBuilding().getBuilt());
+
+        for(HexBean sourceHex : nodeToBuildOn.getHexes().listAllNotNullItems()){
+            if(sourceHex.getResourceType().equals(HexType.EMPTY)){
+                continue;
+            }
+
+            ResourceUtil.produceResources(sourceHex, nodeToBuildOn.getBuilding(), log);
         }
     }
 
@@ -99,13 +115,6 @@ public class PlayUtil {
             for (NodeBean node : hex.fetchNodesWithBuildings()) {
                 ResourceUtil.produceResources(hex, node.getBuilding(), log);
             }
-        }
-    }
-
-    public void updateUsersResources(EdgeBean edge) {
-        GameBean game = edge.getGame();
-        if (GameStage.MAIN.equals(game.getStage()) && game.getRoadsToBuildMandatory() == 0) {
-            game.fetchActiveGameUser().getResources().addResources(-1, -1, 0, 0, 0);
         }
     }
 
@@ -167,7 +176,7 @@ public class PlayUtil {
     }
 
     private boolean shouldChangeGameStageToMain(GameBean game) {
-        return preparationStageUtil.isLastCycle(game) && preparationStageUtil.isEndOfCycle(game) && game.isUpdatePreparationCycle() != null && game.isUpdatePreparationCycle();
+        return preparationStageUtil.isLastCycle(game) && preparationStageUtil.isEndOfCycle(game) && game.isNeedToUpdatePreparationCycle();
     }
 
     public void finishGameIfTargetVictoryPointsReached(GameUserBean gameUser) {

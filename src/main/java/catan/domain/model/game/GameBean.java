@@ -74,7 +74,7 @@ public class GameBean {
     private Integer preparationCycle;
 
     @Transient
-    private Boolean updatePreparationCycle;
+    private boolean needToUpdatePreparationCycle = false;
 
     @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
     private int minPlayers;
@@ -255,12 +255,12 @@ public class GameBean {
         this.preparationCycle = preparationCycle;
     }
 
-    public Boolean isUpdatePreparationCycle() {
-        return updatePreparationCycle;
+    public boolean isNeedToUpdatePreparationCycle() {
+        return needToUpdatePreparationCycle;
     }
 
-    public void setUpdatePreparationCycle(Boolean updatePreparationCycle) {
-        this.updatePreparationCycle = updatePreparationCycle;
+    public void setNeedToUpdatePreparationCycle(boolean needToUpdatePreparationCycle) {
+        this.needToUpdatePreparationCycle = needToUpdatePreparationCycle;
     }
 
     public int getMinPlayers() {

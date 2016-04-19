@@ -97,8 +97,6 @@ public class PlayServiceImplTest {
     @InjectMocks
     private MainStageUtil mainStageUtil;
     @InjectMocks
-    private MessagesUtil messagesUtil;
-    @InjectMocks
     private TradeUtil tradeUtil;
     @InjectMocks
     private RobberUtil robberUtil;
@@ -142,7 +140,6 @@ public class PlayServiceImplTest {
         mainStageUtil.setActionParamsUtil(actionParamsUtil);
 
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);
-        preparationStageUtil.setMessagesUtil(messagesUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
