@@ -114,7 +114,7 @@ public class PlayServiceImpl implements PlayService {
                 buildRoad(gameUser, game, usersResources, params.get("edgeId"));
                 break;
             case BUILD_SETTLEMENT:
-                buildSettlement(gameUser, game, usersResources, params.get("nodeId"));
+                buildSettlement(gameUser, game, usersResources, params.get("nodeId"), returnedParams);
                 break;
             case BUILD_CITY:
                 buildCity(gameUser, game, usersResources, params.get("nodeId"));
@@ -182,7 +182,7 @@ public class PlayServiceImpl implements PlayService {
         achievementsUtil.updateLongestWayLength(game, gameUser);
     }
 
-    private void buildSettlement(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId) throws PlayException, GameException {
+    private void buildSettlement(GameUserBean gameUser, GameBean game, Resources usersResources, String nodeId, Map<String, String> returnedParams) throws PlayException, GameException {
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
         buildUtil.validateUserCanBuildSettlementOnNode(gameUser, game.getStage(), nodeToBuildOn);
         buildUtil.buildOnNode(gameUser, nodeToBuildOn, NodeBuiltType.SETTLEMENT);
