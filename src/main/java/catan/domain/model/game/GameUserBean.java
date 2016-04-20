@@ -1,5 +1,6 @@
 package catan.domain.model.game;
 
+import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.user.UserBean;
@@ -245,6 +246,34 @@ public class GameUserBean {
         }
 
         return portsAvailableForGameUser;
+    }
+
+    public List<EdgeBean> fetchEdgesWithBuildingsBelongsToGameUser() {
+        List<EdgeBean> edgesWithBuildingsBelongsToGameUser = new ArrayList<EdgeBean>();
+        for (EdgeBean edge : game.getEdges()) {
+            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(this)) {
+                edgesWithBuildingsBelongsToGameUser.add(edge);
+            }
+        }
+
+        return edgesWithBuildingsBelongsToGameUser;
+    }
+
+    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoadInMainStage() {
+        Set<EdgeBean> edges = new HashSet<EdgeBean>();
+        for (EdgeBean edge : this.fetchEdgesWithBuildingsBelongsToGameUser()) {
+            edges.addAll(edge.fetchNeighborEdgesAccessibleForBuildingRoad(this));
+        }
+
+        return edges;
+    }
+
+    public void assignBiggestArmyOwner() {
+        game.setBiggestArmyOwner(this);
+    }
+
+    public void assignLongestWayOwner() {
+        game.setLongestWayOwner(this);
     }
 
     @Override
