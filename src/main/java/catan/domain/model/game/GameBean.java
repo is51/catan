@@ -35,6 +35,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static catan.services.impl.PlayServiceImpl.BUILD_SETTLEMENT_COUNT_LIMIT_RATIO;
+
 @Entity
 @Table(name = "CT_GAME")
 public class GameBean {
@@ -429,6 +431,10 @@ public class GameBean {
 
     public void setNodes(Set<NodeBean> nodes) {
         this.nodes = nodes;
+    }
+
+    public int getSettlementCountLimit(){
+      return (int) (BUILD_SETTLEMENT_COUNT_LIMIT_RATIO * getHexes().size());
     }
 
     public GameUserBean fetchActiveGameUser() {

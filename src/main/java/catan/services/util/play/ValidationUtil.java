@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class ValidationUtil {
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final String OFFICES_LIMIT_IS_REACHED_ERROR = "OFFICES_LIMIT_IS_REACHED ";
 
     public static int toValidNumber(String numberString, Logger log) throws PlayException {
         try {
