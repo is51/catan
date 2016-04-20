@@ -53,13 +53,12 @@ public class ActionParamsUtil {
     }
 
     public List<Integer> calculateBuildRoadParams(GameUserBean gameUser) {
-        GameBean game = gameUser.getGame();
-        if (game.getStage().equals(PREPARATION)) {
+        if (gameUser.getGame().getStage().equals(PREPARATION)) {
             return fetchEdgeIdsToBuildOnInPreparationStage(gameUser);
         }
 
         List<Integer> edgeIdsToBuildOn = new ArrayList<Integer>();
-        for (EdgeBean edge : game.fetchEdgesAccessibleForBuildingRoadInMainStage(gameUser)) {
+        for (EdgeBean edge : gameUser.fetchEdgesAccessibleForBuildingRoadInMainStage()) {
             edgeIdsToBuildOn.add(edge.getAbsoluteId());
         }
 
