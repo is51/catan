@@ -160,7 +160,7 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.buildRoadOnEdge(edgeToBuildOn);
 
         if (GameStage.MAIN.equals(game.getStage()) && game.getRoadsToBuildMandatory() == 0) {
-            game.fetchActiveGameUser().getResources().addResources(-1, -1, 0, 0, 0);
+            gameUser.getResources().takeResources(1, 1, 0, 0, 0);
         }
         playUtil.updateRoadsToBuildMandatory(game);
         achievementsUtil.updateLongestWayLength(gameUser);
@@ -173,7 +173,7 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.buildOnNode(nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
         if (GameStage.MAIN.equals(game.getStage())) {
-            game.fetchActiveGameUser().getResources().addResources(-1, -1, -1, -1, 0);
+            gameUser.getResources().takeResources(1, 1, 1, 1, 0);
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
         achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
@@ -186,7 +186,7 @@ public class PlayServiceImpl implements PlayService {
         buildUtil.buildOnNode(nodeToBuildOn, NodeBuiltType.CITY);
 
         if (GameStage.MAIN.equals(game.getStage())) {
-            game.fetchActiveGameUser().getResources().addResources(0, 0, 0, -2, -3);
+            gameUser.getResources().takeResources(0, 0, 0, 2, 3);
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
     }
@@ -222,7 +222,7 @@ public class PlayServiceImpl implements PlayService {
         returnedParams.put("card", chosenDevelopmentCard.name());
 
         if (GameStage.MAIN.equals(game.getStage())) {
-            gameUser.getResources().addResources(0, 0, -1, -1, -1);
+            gameUser.getResources().takeResources(0, 0, 1, 1, 1);
         }
     }
 
