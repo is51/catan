@@ -24,6 +24,7 @@ import { CardMonopolyChooseResourcePanelComponent } from './card-monopoly-choose
 import { KickOffResourcesPanelComponent } from './kick-off-resources-panel/kick-off-resources-panel.component';
 import { DiceComponent } from './dice/dice.component';
 import { TopMessageComponent } from './top-message/top-message.component';
+import { GameResultsComponent } from './game-results/game-results.component';
 
 //TODO: revise pointer-events of all map elements (set 'none' most of it)
 
@@ -43,7 +44,8 @@ import { TopMessageComponent } from './top-message/top-message.component';
         CardMonopolyChooseResourcePanelComponent,
         KickOffResourcesPanelComponent,
         DiceComponent,
-        TopMessageComponent
+        TopMessageComponent,
+        GameResultsComponent
     ],
     providers: [
         PlayService,
