@@ -36,7 +36,7 @@ export class KickOffResourcesPanelComponent {
         return this._modalWindow.isVisible(this.modalWindowId);
     }
 
-    close() {
+    cancel() {
         this._select.cancelRequestSelection(PANEL_ID);
     }
 }
