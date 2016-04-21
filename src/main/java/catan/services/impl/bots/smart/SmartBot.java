@@ -18,6 +18,7 @@ import catan.services.impl.bots.smart.utils.ChoosePlayerToRobUtil;
 import catan.services.impl.bots.smart.utils.KickOffResourcesUtil;
 import catan.services.impl.bots.smart.utils.MoveRobberUtil;
 import catan.services.impl.bots.smart.utils.TradePortUtil;
+import catan.services.impl.bots.smart.utils.UseCardMonopolyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -96,7 +97,6 @@ public class SmartBot extends AbstractBot {
 
         if (useCardRoadBuildingAction != null) {
             log.debug("{}: try use card ROAD_BUILDING, for player {} in game {}", botName, username, gameId);
-            //TODO: use useCardRoadBuilding if possible
             boolean cardUsed = useCardRoadBuilding(player, gameId);
             if (cardUsed) {
                 return;
@@ -161,7 +161,6 @@ public class SmartBot extends AbstractBot {
 
         if (tradePortAction != null) {
             log.debug("{}: try trade with port, for player {} in game {}", botName, username, gameId);
-            //TODO: trade required resources
             boolean tradeSuccessful = tradePort(player, gameId, tradePortAction, cardsAreOver);
             if (tradeSuccessful) {
                 return;
@@ -187,7 +186,12 @@ public class SmartBot extends AbstractBot {
 
     private boolean useCardMonopoly(GameUserBean player, String gameId) throws PlayException, GameException {
         try {
-            playService.processAction(USE_CARD_MONOPOLY, player.getUser(), gameId);
+            String resource = UseCardMonopolyUtil.getRequiredResourceFromAllPlayers(player);
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("resource", resource);
+
+            playService.processAction(USE_CARD_MONOPOLY, player.getUser(), gameId, params);
             return true;
         } catch (PlayException e) {
             e.printStackTrace();

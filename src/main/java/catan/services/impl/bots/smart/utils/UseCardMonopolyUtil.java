@@ -12,29 +12,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TradePortUtil extends SmartBotUtil {
-    private static final Map<HexType, String> emptyResourceCombination = new HashMap<HexType, String>();
+public class UseCardMonopolyUtil extends SmartBotUtil {
+    public static String getRequiredResourceFromAllPlayers(GameUserBean player) {
 
-    public static Map<HexType, String> calculateTradePortResourceCombination(GameUserBean player, ActionDetails action, boolean cardsAreOver) {
-        if (noResourcesToSell(player, action.getParams())) {
-            return emptyResourceCombination;
-        }
-
+        return "stone";
+    }
+    public static Map<HexType, String> calculateTradePortResourceCombination(GameUserBean player, ActionDetails action) {
         if(needResourcesForSettlement(player)){
             return combinationIfNeedResourcesForSettlement(player, action.getParams());
         } else if(needResourcesForCity(player)){
             return combinationIfNeedResourcesForCity(player, action.getParams());
-        } else {  //TODO: split logic if we should sell road or card resources
-            return combinationIfNeedToMakeLessResources(player, action.getParams(), cardsAreOver);
+        } else if(needResourcesForRoad(player)){
+            return combinationIfNeedResourcesForRoad(player, action.getParams());
+        } else if(needResourcesForCard(player)){
+            return combinationIfNeedResourcesForCard(player, action.getParams());
+        } else {
+            return combinationIfNeedRareResource(player, action.getParams());
         }
     }
 
-    private static boolean noResourcesToSell(GameUserBean player, ActionParamsDetails params) {
-        return player.getResources().getBrick() < params.getBrick()
-                && player.getResources().getWood() < params.getWood()
-                && player.getResources().getSheep() < params.getSheep()
-                && player.getResources().getWheat() < params.getWheat()
-                && player.getResources().getStone() < params.getStone();
+    private static Map<HexType, String> combinationIfNeedRareResource(GameUserBean player, ActionParamsDetails params) {
+        return null;
+    }
+
+    private static Map<HexType, String> combinationIfNeedResourcesForCard(GameUserBean player, ActionParamsDetails params) {
+        return null;
+    }
+
+    private static Map<HexType, String> combinationIfNeedResourcesForRoad(GameUserBean player, ActionParamsDetails params) {
+        return null;
     }
 
     private static Map<HexType, String> combinationIfNeedResourcesForSettlement(GameUserBean player, ActionParamsDetails params) {
@@ -63,20 +69,6 @@ public class TradePortUtil extends SmartBotUtil {
 
         return tradeResourceCombination;
     }
-
-    private static Map<HexType, String> combinationIfNeedToMakeLessResources(GameUserBean player, ActionParamsDetails params, boolean cardsAreOver) {
-        List<HexType> requiredResources = requiredResourcesForRoad(player);
-        Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
-
-        combinationForResource(requiredResources, tradeResourceCombination, HexType.SHEEP, 0, params.getSheep(), player.getResources().getSheep());
-        combinationForResource(requiredResources, tradeResourceCombination, HexType.WHEAT, 0, params.getWheat(), player.getResources().getWheat());
-        combinationForResource(requiredResources, tradeResourceCombination, HexType.STONE, 0, params.getStone(), player.getResources().getStone());
-        combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 1, params.getBrick(), player.getResources().getBrick());
-        combinationForResource(requiredResources, tradeResourceCombination, HexType.WOOD, 1, params.getWood(), player.getResources().getWood());
-
-        return tradeResourceCombination;
-    }
-
 
     private static void combinationForResource(List<HexType> requiredResources,
                                                Map<HexType, String> tradeResourceCombination,
@@ -177,6 +169,14 @@ public class TradePortUtil extends SmartBotUtil {
             }
         }
 
+        return false;
+    }
+
+    private static boolean needResourcesForCard(GameUserBean player) {
+        return false;
+    }
+
+    private static boolean needResourcesForRoad(GameUserBean player) {
         return false;
     }
 }
