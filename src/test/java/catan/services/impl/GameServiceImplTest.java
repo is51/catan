@@ -77,7 +77,6 @@ public class GameServiceImplTest {
         randomUtil.setRvg(rvg);
 
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);
-        preparationStageUtil.setMessagesUtil(messagesUtil);
 
         playUtil.setPreparationStageUtil(preparationStageUtil);
 

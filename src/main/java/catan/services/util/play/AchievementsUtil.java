@@ -1,12 +1,12 @@
 package catan.services.util.play;
 
+import catan.domain.exception.GameException;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.game.Achievements;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import catan.domain.model.game.types.GameStage;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,26 +14,60 @@ import java.util.List;
 
 @Component
 public class AchievementsUtil {
-    private Logger log = LoggerFactory.getLogger(AchievementsUtil.class);
 
-    public void updateLongestWayLength(GameBean game, GameUserBean gameUser) {
+    public void updateAchievements(GameBean game) throws GameException {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            if (game.getCurrentMove().equals(gameUser.getMoveOrder())) {
+                updateTotalDevCards(gameUser);
+            }
+            updateVictoryPoints(gameUser, game);
+            updateTotalResources(gameUser);
+        }
+    }
+
+    private void updateTotalDevCards(GameUserBean gameUser) {
+        int totalCards = gameUser.getDevelopmentCards().calculateSum();
+        gameUser.getAchievements().setTotalCards(totalCards);
+    }
+
+    private void updateTotalResources(GameUserBean gameUser) {
+        int totalResources = gameUser.getResources().calculateSum();
+        gameUser.getAchievements().setTotalResources(totalResources);
+    }
+
+    private void updateVictoryPoints(GameUserBean gameUser, GameBean game) throws GameException {
+
+        int settlementsCount = gameUser.getBuildingsCount().getSettlements();
+        int citiesCount = gameUser.getBuildingsCount().getCities();
+        boolean isBiggestArmyOwner = gameUser.equals(game.getBiggestArmyOwner());
+        boolean isLongestWayOwner = gameUser.equals(game.getLongestWayOwner());
+
+        int displayVictoryPoints = settlementsCount + citiesCount * 2 + (isBiggestArmyOwner ? 2 : 0) + (isLongestWayOwner ? 2 : 0);
+        gameUser.getAchievements().setDisplayVictoryPoints(displayVictoryPoints);
+    }
+
+    public void updateLongestWayLengthIfInterrupted(NodeBean nodeWithBuilding) {
+        if (!GameStage.MAIN.equals(nodeWithBuilding.getGame().getStage())) {
+            return;
+        }
+        GameUserBean gameUserToUpdateLongestWayLength = fetchGameUserWhoseWayWasInterrupted(nodeWithBuilding);
+        if (gameUserToUpdateLongestWayLength != null) {
+            updateLongestWayLength(gameUserToUpdateLongestWayLength);
+        }
+    }
+
+    public void updateLongestWayLength(GameUserBean gameUser) {
         int maxWayLength = 0;
-        for (EdgeBean edge : game.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
+        for (EdgeBean edge : gameUser.fetchEdgesWithBuildingsBelongsToGameUser()) {
             maxWayLength = calculateMaxWayLength(gameUser, maxWayLength, new ArrayList<Integer>(), new ArrayList<Integer>(), edge, 0);
         }
         gameUser.getAchievements().setLongestWayLength(maxWayLength);
-        updateLongestWayOwner(game);
+        updateLongestWayOwner(gameUser.getGame());
     }
 
-    public void updateLongestWayLengthIfInterrupted(GameBean game, GameUserBean gameUser, NodeBean nodeToBuildOn) {
-        GameUserBean gameUserToUpdateLongestWayLength = fetchGameUserWhoseWayWasInterrupted(nodeToBuildOn, gameUser);
-        if (gameUserToUpdateLongestWayLength != null) {
-            updateLongestWayLength(game, gameUserToUpdateLongestWayLength);
-        }
-    }
-
-    private GameUserBean fetchGameUserWhoseWayWasInterrupted(NodeBean node, GameUserBean gameUserWhoBuiltOnNode) {
+    private GameUserBean fetchGameUserWhoseWayWasInterrupted(NodeBean node) {
         GameUserBean gameUserWhoseWayCouldBeInterrupted = null;
+        GameUserBean gameUserWhoBuiltOnNode = node.getGame().fetchActiveGameUser();
         for (EdgeBean edge : node.getEdges().listAllNotNullItems()) {
             if (edge.getBuilding() == null || edge.getBuilding().getBuildingOwner().equals(gameUserWhoBuiltOnNode)) {
                 continue;
@@ -105,13 +139,17 @@ public class AchievementsUtil {
             }
         }
 
-        game.setLongestWayOwner(newLongestWayOwner);
+        if (newLongestWayOwner != null) {
+            newLongestWayOwner.assignLongestWayOwner();
+        } else {
+            game.setLongestWayOwner(null);
+        }
     }
 
-    public void updateBiggestArmyOwner(GameUserBean gameUser, GameBean game) {
+    public void updateBiggestArmyOwner(GameUserBean gameUser) {
         int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
-        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, game)) {
-            game.setBiggestArmyOwner(gameUser);
+        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, gameUser.getGame())) {
+            gameUser.assignBiggestArmyOwner();
         }
     }
 

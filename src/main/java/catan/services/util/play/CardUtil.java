@@ -28,17 +28,16 @@ public class CardUtil {
 
     private RandomUtil randomUtil;
 
-    public DevelopmentCard chooseDevelopmentCard(DevelopmentCards availableDevelopmentCards) throws PlayException {
-        List<DevelopmentCard> availableDevelopmentCardsList = listAvailableDevCards(availableDevelopmentCards);
+    public DevelopmentCard chooseDevelopmentCard(GameBean game) throws PlayException {
+        List<DevelopmentCard> availableDevelopmentCardsList = listAvailableDevCards(game);
         validateThereAreAvailableCards(availableDevelopmentCardsList);
 
         return randomUtil.pullRandomDevelopmentCard(availableDevelopmentCardsList);
     }
 
-    public void giveDevelopmentCardToUser(GameUserBean gameUser, DevelopmentCards availableDevelopmentCards, DevelopmentCard chosenDevelopmentCard) {
-        DevelopmentCards usersDevelopmentCards = gameUser.getDevelopmentCards();
-        usersDevelopmentCards.increaseQuantityByOne(chosenDevelopmentCard);
-        availableDevelopmentCards.decreaseQuantityByOne(chosenDevelopmentCard);
+    public void giveDevelopmentCardToUser(GameUserBean gameUser, DevelopmentCard chosenDevelopmentCard) {
+        gameUser.getDevelopmentCards().increaseQuantityByOne(chosenDevelopmentCard);
+        gameUser.getGame().getAvailableDevelopmentCards().decreaseQuantityByOne(chosenDevelopmentCard);
     }
 
     public void takeDevelopmentCardFromPlayer(GameUserBean gameUser, DevelopmentCard developmentCard) {
@@ -53,12 +52,12 @@ public class CardUtil {
         userResources.updateResourceQuantity(secondResource, currentSecondResourceQuantity + 1);
     }
 
-    public Integer takeResourceFromRivalsAndGiveItAwayToPlayer(GameUserBean currentGameUser, GameBean game, HexType resource) {
+    public Integer takeResourceFromRivalsAndGiveItAwayToPlayer(GameUserBean currentGameUser, HexType resource) {
         Integer takenResourcesCount = 0;
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            if (!gameUser.equals(currentGameUser)) {
-                Integer usersResourceQuantity = gameUser.getResources().quantityOf(resource);
-                gameUser.getResources().updateResourceQuantity(resource, 0);
+        for (GameUserBean gameUserIterated : currentGameUser.getGame().getGameUsers()) {
+            if (!gameUserIterated.equals(currentGameUser)) {
+                Integer usersResourceQuantity = gameUserIterated.getResources().quantityOf(resource);
+                gameUserIterated.getResources().updateResourceQuantity(resource, 0);
                 takenResourcesCount += usersResourceQuantity;
             }
         }
@@ -70,8 +69,8 @@ public class CardUtil {
         return takenResourcesCount;
     }
 
-    public Integer defineRoadsQuantityToBuild(GameUserBean gameUser, GameBean game) throws PlayException {
-        List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(game.fetchEdgesAccessibleForBuildingRoadInMainStage(gameUser));
+    public Integer defineRoadsQuantityToBuild(GameUserBean gameUser) throws PlayException {
+        List<EdgeBean> availableEdges = new ArrayList<EdgeBean>(gameUser.fetchEdgesAccessibleForBuildingRoadInMainStage());
 
         if (availableEdges.isEmpty()) {
             log.debug("There are no available edges build road for current player");
@@ -92,8 +91,8 @@ public class CardUtil {
         }
     }
 
-    public void validateUserDidNotUsedCardsInCurrentTurn(GameBean game) throws PlayException {
-        if (game.isDevelopmentCardUsed()) {
+    public void validateUserDidNotUsedCardsInCurrentTurn(GameUserBean gameUser) throws PlayException {
+        if (gameUser.getGame().isDevelopmentCardUsed()) {
             log.debug("Cannot use card. It was already used in current turn");
             throw new PlayException(CARD_ALREADY_USED_IN_CURRENT_TURN_ERROR);
         }
@@ -106,7 +105,8 @@ public class CardUtil {
         }
     }
 
-    private List<DevelopmentCard> listAvailableDevCards(DevelopmentCards availableDevelopmentCards) {
+    private List<DevelopmentCard> listAvailableDevCards(GameBean game) {
+        DevelopmentCards availableDevelopmentCards = game.getAvailableDevelopmentCards();
         List<DevelopmentCard> availableDevelopmentCardsList = new ArrayList<DevelopmentCard>();
         for (DevelopmentCard developmentCard : DevelopmentCard.values()) {
             for (int i = 0; i < availableDevelopmentCards.quantityOf(developmentCard); i++) {
