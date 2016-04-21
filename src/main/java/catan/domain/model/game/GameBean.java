@@ -28,6 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -71,6 +72,9 @@ public class GameBean {
      */
     @Column(name = "PREPARATION_CYCLE", unique = false, nullable = true)
     private Integer preparationCycle;
+
+    @Transient
+    private boolean needToUpdatePreparationCycle = false;
 
     @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
     private int minPlayers;
@@ -249,6 +253,14 @@ public class GameBean {
 
     public void setPreparationCycle(Integer preparationCycle) {
         this.preparationCycle = preparationCycle;
+    }
+
+    public boolean isNeedToUpdatePreparationCycle() {
+        return needToUpdatePreparationCycle;
+    }
+
+    public void setNeedToUpdatePreparationCycle(boolean needToUpdatePreparationCycle) {
+        this.needToUpdatePreparationCycle = needToUpdatePreparationCycle;
     }
 
     public int getMinPlayers() {
@@ -443,26 +455,6 @@ public class GameBean {
         }
 
         return hexesWithDiceNumber;
-    }
-
-    public List<EdgeBean> fetchEdgesWithBuildingsBelongsToGameUser(GameUserBean gameUser) {
-        List<EdgeBean> edgesWithBuildingsBelongsToGameUser = new ArrayList<EdgeBean>();
-        for (EdgeBean edge : this.edges) {
-            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
-                edgesWithBuildingsBelongsToGameUser.add(edge);
-            }
-        }
-
-        return edgesWithBuildingsBelongsToGameUser;
-    }
-
-    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoadInMainStage(GameUserBean gameUser) {
-        Set<EdgeBean> edges = new HashSet<EdgeBean>();
-        for (EdgeBean edge : this.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
-            edges.addAll(edge.fetchNeighborEdgesAccessibleForBuildingRoad(gameUser));
-        }
-
-        return edges;
     }
 
     public Integer calculateDiceSumValue() {

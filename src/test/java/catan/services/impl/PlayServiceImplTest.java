@@ -34,6 +34,8 @@ import catan.services.util.play.MainStageUtil;
 import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
+import catan.services.util.play.RobberUtil;
+import catan.services.util.play.TradeUtil;
 import catan.services.util.random.RandomUtil;
 import catan.services.util.random.RandomValueGeneratorMock;
 import com.google.gson.Gson;
@@ -95,7 +97,9 @@ public class PlayServiceImplTest {
     @InjectMocks
     private MainStageUtil mainStageUtil;
     @InjectMocks
-    private MessagesUtil messagesUtil;
+    private TradeUtil tradeUtil;
+    @InjectMocks
+    private RobberUtil robberUtil;
 
     private GameBean game;
     private HexBean hex_0_0;
@@ -125,9 +129,8 @@ public class PlayServiceImplTest {
         playService.setCardUtil(cardUtil);
         playService.setAchievementsUtil(achievementsUtil);
         playService.setActionParamsUtil(actionParamsUtil);
-        playService.setPreparationStageUtil(preparationStageUtil);
-        playService.setMainStageUtil(mainStageUtil);
-        playService.setMessagesUtil(messagesUtil);
+        playService.setTradeUtil(tradeUtil);
+        playService.setRobberUtil(robberUtil);
 
         playUtil.setMainStageUtil(mainStageUtil);
         playUtil.setPreparationStageUtil(preparationStageUtil);
@@ -135,10 +138,8 @@ public class PlayServiceImplTest {
         cardUtil.setRandomUtil(randomUtil);
 
         mainStageUtil.setActionParamsUtil(actionParamsUtil);
-        mainStageUtil.setMessagesUtil(messagesUtil);
 
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);
-        preparationStageUtil.setMessagesUtil(messagesUtil);
 
         buildClearTriangleMapAndSetAlreadyPlayingGame();
     }
@@ -152,8 +153,7 @@ public class PlayServiceImplTest {
     public void shouldChangeCurrentMoveFromFirstPlayerToSecondWhenFirstPlayerEndsHisTurnCorrectly() throws GameException, PlayException {
         //GIVEN
         game.setCurrentMove(gameUser1.getMoveOrder());
-        game.setCurrentCycleBuildingNumber(null);
-        playUtil.updateAvailableActionsForAllUsers(game);
+        allowUserToEndTurn(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -206,8 +206,7 @@ public class PlayServiceImplTest {
     public void shouldPassWhenBuildingRoadNearOwnNeighbourCity() throws GameException, PlayException {
         //GIVEN
         hex_0_0.getNodes().getTopRight().setBuilding(new Building<NodeBuiltType>(NodeBuiltType.SETTLEMENT, gameUser1));
-        game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableActionsForAllUsers(game);
+        allowUserToBuildRoad(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -274,8 +273,7 @@ public class PlayServiceImplTest {
     @Test
     public void shouldFailWhenBuildRoadNotNearOwnNeighbourCityOrRoad() throws GameException {
         //GIVEN
-        game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableActionsForAllUsers(game);
+        allowUserToBuildRoad(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -354,8 +352,7 @@ public class PlayServiceImplTest {
     public void shouldFailWhenBuildRoadOnExistingRoad() throws GameException {
         //GIVEN
         hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
-        game.setCurrentCycleBuildingNumber(2);
-        playUtil.updateAvailableActionsForAllUsers(game);
+        allowUserToBuildRoad(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         try {
@@ -462,7 +459,9 @@ public class PlayServiceImplTest {
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
         hex_0_0.getEdges().getRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser2));
         hex_1_0.getEdges().getTopLeft().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
-
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 1, 1, 1, 0));
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         // WHEN
@@ -505,6 +504,7 @@ public class PlayServiceImplTest {
     @Test
     public void shouldPassWhenBuildingSettlementInPreparationStage() throws GameException, PlayException {
         // WHEN
+        allowUserToBuildSettlement(gameUser1);
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
         Map<String, String> params = new HashMap<String, String>();
@@ -547,6 +547,9 @@ public class PlayServiceImplTest {
     @Test
     public void shouldPassWhenBuildingSettlementInMainStage() throws GameException, PlayException {
         //GIVEN
+        game.setStage(GameStage.MAIN);
+        game.setDiceThrown(true);
+        gameUser1.setResources(new Resources(1, 1, 1, 1, 0));
         hex_0_0.getEdges().getTopRight().setBuilding(new Building<EdgeBuiltType>(EdgeBuiltType.ROAD, gameUser1));
         when(gameDao.getGameByGameId(1)).thenReturn(game);
 
@@ -2646,7 +2649,7 @@ public class PlayServiceImplTest {
             playService.processAction(GameUserActionCode.CHOOSE_PLAYER_TO_ROB, gameUser1.getUser(), "1", params);
 
             fail("PlayException with error code '" + PlayServiceImpl.ERROR_CODE_ERROR + "' should be thrown");
-        } catch (GameException e) {
+        } catch (PlayException e) {
             // THEN
             assertEquals(PlayServiceImpl.ERROR_CODE_ERROR, e.getErrorCode());
         } catch (Exception e) {
@@ -3186,10 +3189,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser3.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.OFFER_ALREADY_ACCEPTED_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + TradeUtil.OFFER_ALREADY_ACCEPTED_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.OFFER_ALREADY_ACCEPTED_ERROR, e.getErrorCode());
+            assertEquals(TradeUtil.OFFER_ALREADY_ACCEPTED_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
@@ -3246,10 +3249,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + TradeUtil.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
+            assertEquals(TradeUtil.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
@@ -3287,10 +3290,10 @@ public class PlayServiceImplTest {
             // WHEN
             playService.processAction(GameUserActionCode.TRADE_REPLY, gameUser2.getUser(), "1", params);
 
-            fail("PlayException with error code '" + PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
+            fail("PlayException with error code '" + TradeUtil.OFFER_IS_NOT_ACTIVE_ERROR + "' should be thrown");
         } catch (PlayException e) {
             // THEN
-            assertEquals(PlayServiceImpl.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
+            assertEquals(TradeUtil.OFFER_IS_NOT_ACTIVE_ERROR, e.getErrorCode());
         } catch (Exception e) {
             fail("No other exceptions should be thrown");
         } finally {
@@ -3334,6 +3337,14 @@ public class PlayServiceImplTest {
 
     private void allowUserToBuildSettlement(GameUserBean user) {
         allowUserAction(user, new Action(GameUserActionCode.BUILD_SETTLEMENT));
+    }
+
+    private void allowUserToEndTurn(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.END_TURN));
+    }
+
+    private void allowUserToBuildRoad(GameUserBean user) {
+        allowUserAction(user, new Action(GameUserActionCode.BUILD_ROAD));
     }
 
     private void allowUserAction(GameUserBean user, Action actionToAllow) {
@@ -3514,6 +3525,7 @@ public class PlayServiceImplTest {
         node_1_3.getHexes().setBottomRight(hex_1_0);
         node_1_3.getEdges().setTopLeft(edge_1_2);
         node_1_3.getEdges().setBottom(edge_1_3);
+        node_1_3.getEdges().setTopRight(edge_2_1);
 
         node_1_4.setId(4);
         node_1_4.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
@@ -3522,6 +3534,7 @@ public class PlayServiceImplTest {
         node_1_4.getHexes().setBottom(hex_0_1);
         node_1_4.getEdges().setTop(edge_1_3);
         node_1_4.getEdges().setBottomLeft(edge_1_4);
+        node_1_4.getEdges().setBottomRight(edge_2_5);
 
         node_1_5.setId(5);
         node_1_5.setOrientation(NodeOrientationType.SINGLE_TOP);
@@ -3529,6 +3542,7 @@ public class PlayServiceImplTest {
         node_1_5.getHexes().setBottomRight(hex_0_1);
         node_1_5.getEdges().setTopRight(edge_1_4);
         node_1_5.getEdges().setTopLeft(edge_1_5);
+        node_1_5.getEdges().setBottom(edge_3_6);
 
         node_1_6.setId(6);
         node_1_6.setOrientation(NodeOrientationType.SINGLE_BOTTOM);
@@ -3561,6 +3575,7 @@ public class PlayServiceImplTest {
         node_2_5.getHexes().setBottomLeft(hex_0_1);
         node_2_5.getEdges().setTopRight(edge_2_4);
         node_2_5.getEdges().setTopLeft(edge_2_5);
+        node_2_5.getEdges().setBottom(edge_3_3);
 
         // Nodes of Hex 0,1
         node_3_4.setId(11);
@@ -3656,33 +3671,31 @@ public class PlayServiceImplTest {
         edge_3_3.setId(12);
         edge_3_3.setOrientation(EdgeOrientationType.VERTICAL);
         edge_3_3.getHexes().setLeft(hex_0_1);
-        edge_3_3.getNodes().setTop(node_2_3);
-        edge_3_3.getNodes().setBottom(node_2_4);
+        edge_3_3.getNodes().setTop(node_2_5);
+        edge_3_3.getNodes().setBottom(node_3_4);
 
         edge_3_4.setId(13);
         edge_3_4.setOrientation(EdgeOrientationType.BOTTOM_LEFT);
         edge_3_4.getHexes().setTopLeft(hex_0_1);
-        edge_3_4.getNodes().setTopRight(node_2_4);
-        edge_3_4.getNodes().setBottomLeft(node_2_5);
+        edge_3_4.getNodes().setTopRight(node_3_4);
+        edge_3_4.getNodes().setBottomLeft(node_3_5);
 
         edge_3_5.setId(14);
         edge_3_5.setOrientation(EdgeOrientationType.BOTTOM_RIGHT);
         edge_3_5.getHexes().setTopRight(hex_0_1);
-        edge_3_5.getNodes().setBottomRight(node_2_5);
-        edge_3_5.getNodes().setTopLeft(node_1_4);
+        edge_3_5.getNodes().setBottomRight(node_3_5);
+        edge_3_5.getNodes().setTopLeft(node_3_6);
 
         edge_3_6.setId(15);
         edge_3_6.setOrientation(EdgeOrientationType.VERTICAL);
         edge_3_6.getHexes().setRight(hex_0_1);
-        edge_3_6.getNodes().setBottom(node_1_4);
-        edge_3_6.getNodes().setTop(node_1_3);
+        edge_3_6.getNodes().setBottom(node_3_6);
+        edge_3_6.getNodes().setTop(node_1_5);
 
         game.setGameId(1);
         game.setCreator(user1);
         game.setStatus(GameStatus.PLAYING);
         game.setStage(GameStage.PREPARATION);
-        game.setPreparationCycle(1);
-        game.setCurrentCycleBuildingNumber(1);
         game.setCurrentMove(1);
         game.setDateCreated(new Date());
         game.setDateStarted(new Date());
