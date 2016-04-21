@@ -36,6 +36,14 @@ public class Resources {
         this.stone = stone;
     }
 
+    public Resources(Resources resources) {
+        this.brick = resources.brick;
+        this.wood = resources.wood;
+        this.sheep = resources.sheep;
+        this.wheat = resources.wheat;
+        this.stone = resources.stone;
+    }
+
     public int getBrick() {
         return brick;
     }
@@ -131,6 +139,14 @@ public class Resources {
         this.sheep -= sheepToTake;
         this.wheat -= wheatToTake;
         this.stone -= stoneToTake;
+    }
+
+    public void takeResources(Resources resources) {
+        this.brick -= resources.brick;
+        this.wood -= resources.wood;
+        this.sheep -= resources.sheep;
+        this.wheat -= resources.wheat;
+        this.stone -= resources.stone;
     }
 
     @Override

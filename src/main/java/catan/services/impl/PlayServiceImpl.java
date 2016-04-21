@@ -8,6 +8,7 @@ import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.dashboard.types.LogCodeType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -208,7 +209,23 @@ public class PlayServiceImpl implements PlayService {
 
         playUtil.setDiceValues(diceFirstValue, diceSecondValue, game);
         robberUtil.activateRobberIfNeeded(game);
+
+        Map<GameUserBean, Resources> producedResourcesForGameUsers = new HashMap<GameUserBean, Resources>();
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            Resources gameUsersResBeforeProducingNewRes = new Resources(gameUserIterated.getResources());
+            producedResourcesForGameUsers.put(gameUserIterated, gameUsersResBeforeProducingNewRes);
+        }
+
         playUtil.produceResourcesFromActiveDiceHexes(game);
+
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            Resources producedResourcesForGameUser = new Resources(gameUserIterated.getResources());
+            Resources gameUsersResBeforeProducingNewRes = producedResourcesForGameUsers.get(gameUserIterated);
+            producedResourcesForGameUser.takeResources(gameUsersResBeforeProducingNewRes);
+            producedResourcesForGameUsers.put(gameUserIterated, producedResourcesForGameUser);
+        }
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.THROW_DICE, game, producedResourcesForGameUsers);
     }
 
     private void buyCard(GameUserBean gameUser, Map<String, String> returnedParams) throws PlayException, GameException {

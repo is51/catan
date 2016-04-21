@@ -2,12 +2,14 @@ package catan.services.util.game;
 
 import catan.dao.GameDao;
 import catan.domain.exception.GameException;
+import catan.domain.model.dashboard.types.LogCodeType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
+import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.random.RandomUtil;
 import com.google.gson.Gson;
@@ -223,6 +225,9 @@ public class GameUtil {
         game.setRoadsToBuildMandatory(0);
         game.setRobberShouldBeMovedMandatory(false);
         game.setDateStarted(new Date());
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.START_GAME, game);
+
         playUtil.updateAvailableActionsForAllUsers(game);
 
         gameDao.updateGame(game);
