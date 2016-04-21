@@ -1,3 +1,12 @@
+.content {
+    top: 5%;
+    left: 15%;
+    width: 70%;
+    height: 80%;
+    background: #fff;
+    text-align: center;
+}
+
 .badge {
     width: 30px;
 }
