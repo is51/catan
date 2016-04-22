@@ -35,9 +35,18 @@ public class MessagesUtil {
 
         switch (logCode) {
             case START_GAME:
-                setPatternNamesAndArgsStartGameToAllGameUsers(patternNames, argsForMsgPattern, game);
-                setTrueDisplayedOnTopLogToAllGameUsers(displayedOnTop, game);
+                setUserNameToPatternArgsForAllGameUsers(argsForMsgPattern, game);
+                setPatternNameForAllUsers(patternNames, game, "log_msg_start_game");
+                setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
                 break;
+            case END_TURN:
+                setUserNameToPatternArgsForAllGameUsers(argsForMsgPattern, game);
+                setPatternNameForAllUsers(patternNames, game, "log_msg_end_turn");
+                setSameDisplayedOnTopLogToAllGameUsers(false, displayedOnTop, game);
+            case FINISH_GAME:
+                setUserNameToPatternArgsForAllGameUsers(argsForMsgPattern, game);
+                setPatternNameForAllUsers(patternNames, game, "log_msg_finish_game");
+                setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
             default:
                 return;
         }
@@ -53,7 +62,7 @@ public class MessagesUtil {
         switch (logCode) {
             case THROW_DICE:
                 setPatternNamesAndArgsThrowDiceToAllGameUsers(patternNames, argsForMsgPattern, game, producedResourcesForGameUsers);
-                setTrueDisplayedOnTopLogToAllGameUsers(displayedOnTop, game);
+                setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
                 break;
             default:
                 return;
@@ -64,7 +73,7 @@ public class MessagesUtil {
 
     private static void addLogMsgForGameUsers(LogCodeType logCode, GameBean game, Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, Map<GameUserBean, Boolean> displayedOnTop) {
         for (GameUserBean gameUser : game.getGameUsers()) {
-            addLogMsgForGameUser(logCode, gameUser, patternNames. get(gameUser), argsForMsgPattern.get(gameUser), displayedOnTop.get(gameUser));
+            addLogMsgForGameUser(logCode, gameUser, patternNames.get(gameUser), argsForMsgPattern.get(gameUser), displayedOnTop.get(gameUser));
         }
     }
 
@@ -93,12 +102,17 @@ public class MessagesUtil {
         }
     }
 
-    private static void setPatternNamesAndArgsStartGameToAllGameUsers(Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, GameBean game) {
+    private static void setPatternNameForAllUsers(Map<GameUserBean, String> patternNames, GameBean game, String patternName) {
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            patternNames.put(gameUser, patternName);
+        }
+    }
+
+    private static void setUserNameToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameBean game) {
         GameUserBean activeGameUser = game.fetchActiveGameUser();
         String activeGameUserName = activeGameUser.getUser().getUsername();
         for (GameUserBean gameUser : game.getGameUsers()) {
             boolean isActiveGameUser = gameUser.equals(activeGameUser);
-            patternNames.put(gameUser, "log_msg_start_game");
             // {1 - if iterated game user is active, 2 - if not; username of active game user}
             argsForMsgPattern.put(gameUser, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName});
         }
@@ -156,9 +170,9 @@ public class MessagesUtil {
         }
     }
 
-    private static void setTrueDisplayedOnTopLogToAllGameUsers(Map<GameUserBean, Boolean> displayedOnTop, GameBean game) {
+    private static void setSameDisplayedOnTopLogToAllGameUsers(boolean valueToSet, Map<GameUserBean, Boolean> displayedOnTop, GameBean game) {
         for (GameUserBean gameUser : game.getGameUsers()) {
-            displayedOnTop.put(gameUser, true);
+            displayedOnTop.put(gameUser, valueToSet);
         }
     }
 

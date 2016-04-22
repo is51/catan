@@ -88,7 +88,7 @@ public class PlayServiceImpl implements PlayService {
                 doAction(action, gameUser, params, returnedParams);
 
                 achievementsUtil.updateAchievements(game);
-                playUtil.finishGameIfTargetVictoryPointsReached(gameUser);
+                playUtil.finishGameIfTargetVictoryPointsReached(game);
                 playUtil.updateAvailableActionsForAllUsers(game);
 
                 gameDao.updateGame(game);
@@ -200,6 +200,8 @@ public class PlayServiceImpl implements PlayService {
         playUtil.resetTradeReplies(game);
         playUtil.updateNextMove(game);
         playUtil.updateGameStage(game);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.END_TURN, game);
     }
 
     private void throwDice(GameUserBean gameUser) {

@@ -5,6 +5,7 @@ import catan.domain.exception.PlayException;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.dashboard.types.LogCodeType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.actions.Action;
@@ -179,13 +180,14 @@ public class PlayUtil {
         return preparationStageUtil.isLastCycle(game) && preparationStageUtil.isEndOfCycle(game) && game.isNeedToUpdatePreparationCycle();
     }
 
-    public void finishGameIfTargetVictoryPointsReached(GameUserBean gameUser) {
-        GameBean game = gameUser.getGame();
-        if (gameUser.getMoveOrder() == game.getCurrentMove()) {
-            int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
-            if (realVictoryPoints >= game.getTargetVictoryPoints()) {
-                game.setStatus(GameStatus.FINISHED);
-            }
+    public void finishGameIfTargetVictoryPointsReached(GameBean game) {
+        GameUserBean gameUser = game.fetchActiveGameUser();
+        int realVictoryPoints = gameUser.getDevelopmentCards().getVictoryPoint() + gameUser.getAchievements().getDisplayVictoryPoints();
+        if (realVictoryPoints >= game.getTargetVictoryPoints()) {
+            game.setStatus(GameStatus.FINISHED);
+            log.debug("Game {} finished. {} is the winner", game.getGameId(), gameUser);
+
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.FINISH_GAME, game);
         }
     }
 
