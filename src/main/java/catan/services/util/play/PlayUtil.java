@@ -187,7 +187,7 @@ public class PlayUtil {
             game.setStatus(GameStatus.FINISHED);
             log.debug("Game {} finished. {} is the winner", game.getGameId(), gameUser);
 
-            MessagesUtil.addLogMsgForGameUsers(LogCodeType.FINISH_GAME, game);
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.FINISH_GAME, gameUser);
         }
     }
 

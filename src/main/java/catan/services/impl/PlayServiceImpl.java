@@ -166,7 +166,7 @@ public class PlayServiceImpl implements PlayService {
         playUtil.updateRoadsToBuildMandatory(game);
         achievementsUtil.updateLongestWayLength(gameUser);
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_ROAD, game);
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_ROAD, gameUser);
     }
 
     private void buildSettlement(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
@@ -181,7 +181,7 @@ public class PlayServiceImpl implements PlayService {
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
         achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_SETTLEMENT, game);
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_SETTLEMENT, gameUser);
     }
 
     private void buildCity(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
@@ -195,7 +195,7 @@ public class PlayServiceImpl implements PlayService {
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_CITY, game);
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_CITY, gameUser);
     }
 
     private void endTurn(GameUserBean gameUser) throws GameException {
@@ -207,7 +207,7 @@ public class PlayServiceImpl implements PlayService {
         playUtil.updateNextMove(game);
         playUtil.updateGameStage(game);
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.END_TURN, game);
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.END_TURN, gameUser);
     }
 
     private void throwDice(GameUserBean gameUser) {
@@ -249,6 +249,8 @@ public class PlayServiceImpl implements PlayService {
         if (GameStage.MAIN.equals(game.getStage())) {
             gameUser.getResources().takeResources(0, 0, 1, 1, 1);
         }
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUY_CARD, gameUser, chosenDevelopmentCard);
     }
 
     private void useCardYearOfPlenty(GameUserBean gameUser, String firstResourceString, String secondResourceString) throws PlayException, GameException {
@@ -263,6 +265,8 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
         gameUser.getGame().setDevelopmentCardUsed(true);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_YEAR_OF_PLENTY, gameUser, firstResource, secondResource);
     }
 
     private void useCardMonopoly(GameUserBean gameUser, String resourceString, Map<String, String> returnedParams) throws PlayException, GameException {
@@ -278,6 +282,8 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.MONOPOLY);
         gameUser.getGame().setDevelopmentCardUsed(true);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_MONOPOLY, gameUser, takenResourcesCount, resource);
     }
 
     private void useCardRoadBuilding(GameUserBean gameUser, Map<String, String> returnedParams) throws PlayException, GameException {
@@ -293,6 +299,8 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_ROAD_BUILDING, gameUser);
     }
 
     private void useCardKnight(GameUserBean gameUser) throws PlayException, GameException {
@@ -307,6 +315,8 @@ public class PlayServiceImpl implements PlayService {
 
         achievementsUtil.increaseTotalUsedKnightsByOne(gameUser);
         achievementsUtil.updateBiggestArmyOwner(gameUser);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_KNIGHT, gameUser);
     }
 
     private void moveRobber(GameUserBean gameUser, String hexAbsoluteId) throws PlayException, GameException {
@@ -316,6 +326,8 @@ public class PlayServiceImpl implements PlayService {
 
         robberUtil.changeRobbedHex(hexToRob);
         game.setRobberShouldBeMovedMandatory(false);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.MOVE_ROBBER, gameUser);
         MessagesUtil.clearUsersMsgs(game);
 
         List<GameUserBean> playersAtHex = new ArrayList<GameUserBean>(hexToRob.fetchGameUsersWithBuildingsAtNodes());
@@ -338,7 +350,7 @@ public class PlayServiceImpl implements PlayService {
 
     private void choosePlayerToRob(GameUserBean robbedGameUser) throws PlayException, GameException {
         GameBean game = robbedGameUser.getGame();
-        Resources currentUsersResources = robbedGameUser.getGame().fetchActiveGameUser().getResources();
+        Resources activeUsersResources = game.fetchActiveGameUser().getResources();
         log.info("Robbing {}", robbedGameUser);
 
         robberUtil.validateGameUserCouldBeRobbed(robbedGameUser);
@@ -350,8 +362,10 @@ public class PlayServiceImpl implements PlayService {
 
             int stolenResourceQuantity = robbedUsersResources.quantityOf(stolenResourceType);
             robbedUsersResources.updateResourceQuantity(stolenResourceType, stolenResourceQuantity - 1);
-            int obtainedResourceQuantity = currentUsersResources.quantityOf(stolenResourceType);
-            currentUsersResources.updateResourceQuantity(stolenResourceType, obtainedResourceQuantity + 1);
+            int obtainedResourceQuantity = activeUsersResources.quantityOf(stolenResourceType);
+            activeUsersResources.updateResourceQuantity(stolenResourceType, obtainedResourceQuantity + 1);
+
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.STEAL_RESOURCE, robbedGameUser, stolenResourceType);
         }
         game.setChoosePlayerToRobMandatory(false);
         MessagesUtil.clearUsersMsgs(game);
@@ -365,24 +379,19 @@ public class PlayServiceImpl implements PlayService {
         int usersWheatQuantity = usersResources.getWheat();
         int usersStoneQuantity = usersResources.getStone();
 
-        int brickQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(brickString, usersBrickQuantity);
-        int woodQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(woodString, usersWoodQuantity);
-        int sheepQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(sheepString, usersSheepQuantity);
-        int wheatQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(wheatString, usersWheatQuantity);
-        int stoneQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(stoneString, usersStoneQuantity);
+        Resources resourcesToKickOff = new Resources(
+                robberUtil.toValidResourceQuantityToKickOff(brickString, usersBrickQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(woodString, usersWoodQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(sheepString, usersSheepQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(wheatString, usersWheatQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(stoneString, usersStoneQuantity));
 
-        int sumOfResourcesKickingOff = brickQuantityToKickOff + woodQuantityToKickOff + sheepQuantityToKickOff + wheatQuantityToKickOff + stoneQuantityToKickOff;
-        int sumOfUsersResources = gameUser.getAchievements().getTotalResources();
-        robberUtil.validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(sumOfUsersResources, sumOfResourcesKickingOff);
-
-        usersResources.setBrick(usersBrickQuantity - brickQuantityToKickOff);
-        usersResources.setWood(usersWoodQuantity - woodQuantityToKickOff);
-        usersResources.setSheep(usersSheepQuantity - sheepQuantityToKickOff);
-        usersResources.setWheat(usersWheatQuantity - wheatQuantityToKickOff);
-        usersResources.setStone(usersStoneQuantity - stoneQuantityToKickOff);
-
+        robberUtil.validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(usersResources.calculateSum(), resourcesToKickOff.calculateSum());
+        usersResources.takeResources(resourcesToKickOff);
         gameUser.setKickingOffResourcesMandatory(false);
         robberUtil.checkRobberShouldBeMovedMandatory(gameUser.getGame());
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.ROB_PLAYER, gameUser, resourcesToKickOff);
     }
 
     private void tradeResourcesInPort(GameUserBean gameUser, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {

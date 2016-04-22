@@ -22,5 +22,5 @@ public enum LogCodeType {
     TRADE_PORT,
     TRADE_PROPOSE,
     TRADE_ACCEPT,
-    TRADE_DECLINE;
+    TRADE_DECLINE
 }

@@ -226,7 +226,7 @@ public class GameUtil {
         game.setRobberShouldBeMovedMandatory(false);
         game.setDateStarted(new Date());
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.START_GAME, game);
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.START_GAME, game.fetchActiveGameUser());
 
         playUtil.updateAvailableActionsForAllUsers(game);
 
