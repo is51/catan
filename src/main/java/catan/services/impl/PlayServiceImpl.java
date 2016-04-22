@@ -165,6 +165,8 @@ public class PlayServiceImpl implements PlayService {
         }
         playUtil.updateRoadsToBuildMandatory(game);
         achievementsUtil.updateLongestWayLength(gameUser);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_ROAD, game);
     }
 
     private void buildSettlement(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
@@ -178,6 +180,8 @@ public class PlayServiceImpl implements PlayService {
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
         achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_SETTLEMENT, game);
     }
 
     private void buildCity(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
@@ -190,6 +194,8 @@ public class PlayServiceImpl implements PlayService {
             gameUser.getResources().takeResources(0, 0, 0, 2, 3);
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_CITY, game);
     }
 
     private void endTurn(GameUserBean gameUser) throws GameException {

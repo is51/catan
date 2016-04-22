@@ -47,6 +47,18 @@ public class MessagesUtil {
                 setUserNameToPatternArgsForAllGameUsers(argsForMsgPattern, game);
                 setPatternNameForAllUsers(patternNames, game, "log_msg_finish_game");
                 setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
+            case BUILD_SETTLEMENT:
+                setUserNameAndBuildingNameToPatternArgsForAllGameUsers(argsForMsgPattern, game, "building_office");
+                setPatternNameForAllUsers(patternNames, game, "log_msg_build_settlement");
+                setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
+            case BUILD_CITY:
+                setUserNameAndBuildingNameToPatternArgsForAllGameUsers(argsForMsgPattern, game, "building_business_centre");
+                setPatternNameForAllUsers(patternNames, game, "log_msg_build_city");
+                setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
+            case BUILD_ROAD:
+                setUserNameAndBuildingNameToPatternArgsForAllGameUsers(argsForMsgPattern, game, "building_network");
+                setPatternNameForAllUsers(patternNames, game, "log_msg_build_road");
+                setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
             default:
                 return;
         }
@@ -118,6 +130,17 @@ public class MessagesUtil {
         }
     }
 
+    private static void setUserNameAndBuildingNameToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameBean game, String buildingPatternName) {
+        GameUserBean activeGameUser = game.fetchActiveGameUser();
+        String activeGameUserName = activeGameUser.getUser().getUsername();
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            boolean isActiveGameUser = gameUser.equals(activeGameUser);
+            String buildingName = getMsgPattern(gameUser, buildingPatternName).format(new Object[] {1});
+            // {1 - if iterated game user is active, 2 - if not; username of active game user; building name}
+            argsForMsgPattern.put(gameUser, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName, buildingName});
+        }
+    }
+
     private static void setPatternNamesAndArgsThrowDiceToAllGameUsers(Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, GameBean game, Map<GameUserBean, Resources> producedResourcesForGameUsers) {
         GameUserBean activeGameUser = game.fetchActiveGameUser();
         String activeGameUserName = activeGameUser.getUser().getUsername();
@@ -173,6 +196,13 @@ public class MessagesUtil {
     private static void setSameDisplayedOnTopLogToAllGameUsers(boolean valueToSet, Map<GameUserBean, Boolean> displayedOnTop, GameBean game) {
         for (GameUserBean gameUser : game.getGameUsers()) {
             displayedOnTop.put(gameUser, valueToSet);
+        }
+    }
+
+    private static void setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(Map<GameUserBean, Boolean> displayedOnTop, GameBean game) {
+        GameUserBean activeGameUser = game.fetchActiveGameUser();
+        for (GameUserBean gameUser : game.getGameUsers()) {
+            displayedOnTop.put(gameUser, !gameUser.equals(activeGameUser));
         }
     }
 
