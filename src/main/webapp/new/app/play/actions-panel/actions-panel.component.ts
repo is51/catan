@@ -31,20 +31,24 @@ export class ActionsPanelComponent {
         return this.game.getCurrentPlayer(this._authUser.get()).availableActions.isEnabledGroup(groupCode);
     }
 
+    isTradeReplyPanelVisible() {
+        return this._modalWindow.isVisible('TRADE_REPLY_PANEL');
+    }
+
+    isGameResultsVisible() {
+        return this._modalWindow.isVisible('GAME_RESULTS');
+    }
+
+    isExecuting(actionCode: string) {
+        return this._actions.isExecuting(actionCode);
+    }
+
     endTurn() {
         this._actions.execute('END_TURN', this.game);
     }
 
     throwDice() {
         this._actions.execute('THROW_DICE', this.game);
-    }
-
-    moveRobber() {
-        this._actions.execute('MOVE_ROBBER', this.game);
-    }
-
-    choosePlayerToRob() {
-        this._actions.execute('CHOOSE_PLAYER_TO_ROB', this.game);
     }
 
     kickOffResources() {
@@ -65,5 +69,9 @@ export class ActionsPanelComponent {
 
     showTradeReplyPanel() {
         this._actions.execute('TRADE_REPLY');
+    }
+
+    showGameResults() {
+        this._modalWindow.show("GAME_RESULTS");
     }
 }

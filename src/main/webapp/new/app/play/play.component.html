@@ -30,4 +30,6 @@
 
     <ct-top-message [game]="game"></ct-top-message>
 
+    <ct-game-results *ngIf="game.isFinished()" [game]="game"></ct-game-results>
+
 </div>
