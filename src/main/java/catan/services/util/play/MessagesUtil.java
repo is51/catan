@@ -185,8 +185,7 @@ public class MessagesUtil {
         Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
         GameBean game = gameUser.getGame();
 
-        setArgsForPatternUseMonopolyForAllGameUsers(argsForMsgPattern, gameUser, quantityOfRes, stolenResourceType);
-        setPatternNameForAllUsers(patternNames, game, "log_msg_use_card_monopoly");
+        setPatternNamesArgsForPatternUseMonopolyForAllGameUsers(patternNames, argsForMsgPattern, gameUser, quantityOfRes, stolenResourceType);
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
 
         addLogMsgForGameUsers(logCode, game, patternNames, argsForMsgPattern, displayedOnTop);
@@ -296,19 +295,30 @@ public class MessagesUtil {
         }
     }
 
-    private static void setArgsForPatternUseMonopolyForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, int stolenResQuantity, HexType stolenResType) {
+    private static void setPatternNamesArgsForPatternUseMonopolyForAllGameUsers(Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, int stolenResQuantity, HexType stolenResType) {
         String gameUserName = gameUser.getUser().getUsername();
         for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
             boolean isRequiredGameUser = gameUserIterated.equals(gameUser);
-            String quantityAndTypeOfRes;
+            //String quantityAndTypeOfRes;
             if (isRequiredGameUser) {
-                String stolenResName = getMsgPattern(gameUserIterated, stolenResType.getPatternName()).format(new Object[] {stolenResQuantity});
-                quantityAndTypeOfRes = String.valueOf(stolenResQuantity) + " " + stolenResName;
+                if (stolenResQuantity == 0) {
+                    patternNames.put(gameUserIterated, "log_msg_use_card_monopoly_no_res");
+                    String stolenResName = getMsgPattern(gameUserIterated, stolenResType.getPatternName()).format(new Object[] {2});
+                    // {stolen res type}
+                    argsForMsgPattern.put(gameUserIterated, new Object[] {stolenResName});
+                } else {
+                    patternNames.put(gameUserIterated, "log_msg_use_card_monopoly_with_details");
+                    String stolenResName = getMsgPattern(gameUserIterated, stolenResType.getPatternName()).format(new Object[] {stolenResQuantity});
+                    String quantityAndTypeOfRes = String.valueOf(stolenResQuantity) + " " + stolenResName;
+                    // {stolen res quantity and type}
+                    argsForMsgPattern.put(gameUserIterated, new Object[] {quantityAndTypeOfRes});
+                }
             } else {
-                quantityAndTypeOfRes = getMsgPattern(gameUserIterated, stolenResType.getPatternName()).format(new Object[] {Double.POSITIVE_INFINITY});
+                patternNames.put(gameUserIterated, "log_msg_use_card_monopoly");
+                String stolenResName = getMsgPattern(gameUserIterated, stolenResType.getPatternName()).format(new Object[] {2});
+                // {username of required game user; stolen res type}
+                argsForMsgPattern.put(gameUserIterated, new Object[] {gameUserName, stolenResName});
             }
-            // {1 - if iterated game user is the same as required, 2 - if not; username of required game user; stolen res quantity and type}
-            argsForMsgPattern.put(gameUserIterated, new Object[] {(isRequiredGameUser ? 1 : 2), gameUserName, quantityAndTypeOfRes});
         }
     }
 
@@ -469,20 +479,22 @@ public class MessagesUtil {
 
     private static String resourcesToString(GameUserBean gameUser, Resources resources) {
         String resourcesList = "";
-        addResQuantityToList(gameUser, resources, resourcesList, HexType.BRICK);
-        addResQuantityToList(gameUser, resources, resourcesList, HexType.WOOD);
-        addResQuantityToList(gameUser, resources, resourcesList, HexType.SHEEP);
-        addResQuantityToList(gameUser, resources, resourcesList, HexType.WHEAT);
-        addResQuantityToList(gameUser, resources, resourcesList, HexType.STONE);
+        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.BRICK);
+        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.WOOD);
+        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.SHEEP);
+        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.WHEAT);
+        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.STONE);
         return resourcesList;
     }
 
-    private static void addResQuantityToList(GameUserBean gameUser, Resources producedRes, String resourcesList, HexType resType) {
+    private static String addResQuantityToList(GameUserBean gameUser, Resources producedRes, String resourcesList, HexType resType) {
         Integer producedResQuantity = producedRes.quantityOf(resType);
         if (producedResQuantity > 0) {
             resourcesList += resourcesList.equals("") ? "" : ", ";
-            resourcesList += String.valueOf(producedResQuantity) + getMsgPattern(gameUser, resType.getPatternName()).format(new Object[] {producedResQuantity});
+            resourcesList += String.valueOf(producedResQuantity) + " " + getMsgPattern(gameUser, resType.getPatternName()).format(new Object[] {producedResQuantity});
         }
+
+        return resourcesList;
     }
 
     private static void setSameDisplayedOnTopLogToAllGameUsers(boolean valueToSet, Map<GameUserBean, Boolean> displayedOnTop, GameBean game) {

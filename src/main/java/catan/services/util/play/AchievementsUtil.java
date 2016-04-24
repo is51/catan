@@ -140,12 +140,12 @@ public class AchievementsUtil {
             }
         }
 
-        if (newLongestWayOwner == null) {
+        if (newLongestWayOwner == null && currentLongestWayOwner != null) {
             game.setLongestWayOwner(null);
             MessagesUtil.addLogMsgForGameUsers(LogCodeType.INTERRUPTED_WIDEST_NETWORK, currentLongestWayOwner);
             return;
         }
-        if (!newLongestWayOwner.equals(currentLongestWayOwner)) {
+        if (newLongestWayOwner != null && !newLongestWayOwner.equals(currentLongestWayOwner)) {
             newLongestWayOwner.assignLongestWayOwner();
             MessagesUtil.addLogMsgForGameUsers(LogCodeType.NEW_WIDEST_NETWORK, newLongestWayOwner);
         }
