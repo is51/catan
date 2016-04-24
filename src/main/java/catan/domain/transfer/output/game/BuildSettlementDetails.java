@@ -1,24 +1,24 @@
 package catan.domain.transfer.output.game;
 
 public class BuildSettlementDetails {
-    private boolean isLimitReached;
+    private boolean limitReached;
 
     public BuildSettlementDetails() {
     }
 
-    public BuildSettlementDetails(String isLimitReached) {
-        this.isLimitReached = Boolean.valueOf(isLimitReached);
+    public BuildSettlementDetails(String limitReached) {
+        this.limitReached = Boolean.valueOf(limitReached);
     }
 
-    public BuildSettlementDetails(boolean isLimitReached) {
-        this.isLimitReached = isLimitReached;
+    public BuildSettlementDetails(boolean limitReached) {
+        this.limitReached = limitReached;
     }
 
     public boolean isLimitReached() {
-        return isLimitReached;
+        return limitReached;
     }
 
     public void setLimitReached(boolean limitReached) {
-        isLimitReached = limitReached;
+        this.limitReached = limitReached;
     }
 }
