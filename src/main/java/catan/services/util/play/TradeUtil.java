@@ -7,6 +7,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.TradeProposal;
+import catan.domain.model.game.actions.ResourcesParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,13 @@ public class TradeUtil {
     public static final String OFFER_ALREADY_ACCEPTED_ERROR = "OFFER_ALREADY_ACCEPTED";
     public static final String OFFER_IS_NOT_ACTIVE_ERROR = "OFFER_IS_NOT_ACTIVE";
 
-    public void validateTradeIsNotEmpty(int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
-        if (brick == 0 && wood == 0 && sheep == 0 && wheat == 0 && stone == 0) {
+    public void validateTradeIsNotEmpty(Resources resourcesToTrade) throws PlayException {
+
+        if (resourcesToTrade.getBrick() == 0
+                && resourcesToTrade.getWood() == 0
+                && resourcesToTrade.getSheep() == 0
+                && resourcesToTrade.getWheat() == 0
+                && resourcesToTrade.getStone() == 0) {
             log.error("Trading request is empty. All requested resources has zero quantity");
             throw new PlayException(ERROR_CODE_ERROR);
         }
@@ -40,14 +46,13 @@ public class TradeUtil {
         }
     }
 
-    public void validateUserHasRequestedResources(GameUserBean gameUser, int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
-        Resources userResources = gameUser.getResources();
-        if (userResources.getBrick() < brick
-                || userResources.getWood() < wood
-                || userResources.getSheep() < sheep
-                || userResources.getWheat() < wheat
-                || userResources.getStone() < stone) {
-            log.debug("User has not enough resources ({}) to accept trade proposal: [{}, {}, {}, {}, {}]", userResources, brick, wood, sheep, wheat, stone);
+    public void validateUserHasRequestedResources(Resources userResources, Resources resourcesToBuy) throws PlayException {
+        if (userResources.getBrick() < resourcesToBuy.getBrick()
+                || userResources.getWood() < resourcesToBuy.getWood()
+                || userResources.getSheep() < resourcesToBuy.getSheep()
+                || userResources.getWheat() < resourcesToBuy.getWheat()
+                || userResources.getStone() < resourcesToBuy.getStone()) {
+            log.debug("User has not enough resources ({}) to accept trade proposal. Required resources: {}]", userResources, resourcesToBuy);
             throw new PlayException(ERROR_CODE_ERROR);
         }
     }
@@ -74,7 +79,25 @@ public class TradeUtil {
         }
     }
 
-    public void validateTradeBalanceIsZero(int tradingBalance) throws PlayException {
+    public void validateTradeBalanceIsZero(Resources resourcesToTrade, ResourcesParams tradePortParams) throws PlayException {
+        int brickQuantityToTrade = resourcesToTrade.getBrick();
+        int woodQuantityToTrade = resourcesToTrade.getWood();
+        int sheepQuantityToTrade = resourcesToTrade.getSheep();
+        int wheatQuantityToTrade = resourcesToTrade.getWheat();
+        int stoneQuantityToTrade = resourcesToTrade.getStone();
+
+        int brickSellCoefficient = tradePortParams.getBrick();
+        int woodSellCoefficient = tradePortParams.getWood();
+        int sheepSellCoefficient = tradePortParams.getSheep();
+        int wheatSellCoefficient = tradePortParams.getWheat();
+        int stoneSellCoefficient = tradePortParams.getStone();
+
+        int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
+                + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
+                + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
+                + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
+                + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
+
         if (tradingBalance != 0) {
             log.error("Trade balance is not zero: {}. Wrong resources quantity to trade", tradingBalance);
             throw new PlayException(ERROR_CODE_ERROR);

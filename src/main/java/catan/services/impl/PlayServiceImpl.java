@@ -396,38 +396,33 @@ public class PlayServiceImpl implements PlayService {
 
     private void tradeResourcesInPort(GameUserBean gameUser, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
         Resources usersResources = gameUser.getResources();
-        int usersBrickQuantity = usersResources.getBrick();
-        int usersWoodQuantity = usersResources.getWood();
-        int usersSheepQuantity = usersResources.getSheep();
-        int usersWheatQuantity = usersResources.getWheat();
-        int usersStoneQuantity = usersResources.getStone();
 
-        ResourcesParams resourcesParams = actionParamsUtil.calculateTradePortParams(gameUser);
-        int brickSellCoefficient = resourcesParams.getBrick();
-        int woodSellCoefficient = resourcesParams.getWood();
-        int sheepSellCoefficient = resourcesParams.getSheep();
-        int wheatSellCoefficient = resourcesParams.getWheat();
-        int stoneSellCoefficient = resourcesParams.getStone();
+        ResourcesParams tradePortParams = actionParamsUtil.calculateTradePortParams(gameUser);
 
-        int brickQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(brickString, usersBrickQuantity, brickSellCoefficient);
-        int woodQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(woodString, usersWoodQuantity, woodSellCoefficient);
-        int sheepQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(sheepString, usersSheepQuantity, sheepSellCoefficient);
-        int wheatQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(wheatString, usersWheatQuantity, wheatSellCoefficient);
-        int stoneQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(stoneString, usersStoneQuantity, stoneSellCoefficient);
+        int brickToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(brickString, usersResources.getBrick(), tradePortParams.getBrick());
+        int woodToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(woodString, usersResources.getWood(), tradePortParams.getWood());
+        int sheepToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(sheepString, usersResources.getSheep(), tradePortParams.getSheep());
+        int wheatToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(wheatString, usersResources.getWheat(), tradePortParams.getWheat());
+        int stoneToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(stoneString, usersResources.getStone(), tradePortParams.getStone());
+        Resources resourcesToTrade = new Resources(brickToTrade, woodToTrade, sheepToTrade, wheatToTrade, stoneToTrade);
 
-        int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
-                + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
-                + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
-                + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
-                + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
-        tradeUtil.validateTradeBalanceIsZero(tradingBalance);
-        tradeUtil.validateTradeIsNotEmpty(brickQuantityToTrade, woodQuantityToTrade, sheepQuantityToTrade, wheatQuantityToTrade, stoneQuantityToTrade);
+        tradeUtil.validateTradeBalanceIsZero(resourcesToTrade, tradePortParams);
+        tradeUtil.validateTradeIsNotEmpty(resourcesToTrade);
 
-        usersResources.setBrick(usersBrickQuantity + brickQuantityToTrade);
-        usersResources.setWood(usersWoodQuantity + woodQuantityToTrade);
-        usersResources.setSheep(usersSheepQuantity + sheepQuantityToTrade);
-        usersResources.setWheat(usersWheatQuantity + wheatQuantityToTrade);
-        usersResources.setStone(usersStoneQuantity + stoneQuantityToTrade);
+        usersResources.addResources(resourcesToTrade);
+
+        Resources resourcesToBuy = new Resources((brickToTrade > 0 ? brickToTrade : 0),
+                                                 (woodToTrade > 0 ? woodToTrade : 0),
+                                                 (sheepToTrade > 0 ? sheepToTrade : 0),
+                                                 (wheatToTrade > 0 ? wheatToTrade : 0),
+                                                 (stoneToTrade > 0 ? stoneToTrade : 0));
+        Resources resourcesToSell = new Resources((brickToTrade < 0 ? -brickToTrade : 0),
+                                                  (woodToTrade < 0 ? -woodToTrade : 0),
+                                                  (sheepToTrade < 0 ? -sheepToTrade : 0),
+                                                  (wheatToTrade < 0 ? -wheatToTrade : 0),
+                                                  (stoneToTrade < 0 ? -stoneToTrade : 0));
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PORT, gameUser, resourcesToSell, resourcesToBuy);
     }
 
     private void proposeTrade(GameUserBean gameUser, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
@@ -449,6 +444,8 @@ public class PlayServiceImpl implements PlayService {
 
         Integer newOfferId = randomUtil.generateRandomOfferId(10000);
         game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone, newOfferId));
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PROPOSE, gameUser);
     }
 
     private void tradeReply(GameUserBean gameUser, String reply, String offerIdString) throws PlayException, GameException {
@@ -459,6 +456,10 @@ public class PlayServiceImpl implements PlayService {
         gameUser.setAvailableTradeReply(false);
 
         if (reply.equals("decline")) {
+            if (tradeProposal.getOfferId() != null) {
+                MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_DECLINE, gameUser);
+            }
+
             for (GameUserBean gameUserIterated : game.getGameUsers()) {
                 if (gameUserIterated.isAvailableTradeReply()) {
                     return;
@@ -469,15 +470,33 @@ public class PlayServiceImpl implements PlayService {
         if (reply.equals("accept")) {
             tradeUtil.validateOfferIsNotAcceptedBefore(tradeProposal);
 
-            int brick = tradeProposal.getBrick();
-            int wood = tradeProposal.getWood();
-            int sheep = tradeProposal.getSheep();
-            int wheat = tradeProposal.getWheat();
-            int stone = tradeProposal.getStone();
-            tradeUtil.validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
+            int brickToTrade = tradeProposal.getBrick();
+            int woodToTrade = tradeProposal.getWood();
+            int sheepToTrade = tradeProposal.getSheep();
+            int wheatToTrade = tradeProposal.getWheat();
+            int stoneToTrade = tradeProposal.getStone();
 
-            game.fetchActiveGameUser().getResources().addResources(brick, wood, sheep, wheat, stone);
-            gameUser.getResources().addResources(-brick, -wood, -sheep, -wheat, -stone);
+            Resources resourcesToBuy = new Resources((brickToTrade > 0 ? brickToTrade : 0),
+                                                     (woodToTrade > 0 ? woodToTrade : 0),
+                                                     (sheepToTrade > 0 ? sheepToTrade : 0),
+                                                     (wheatToTrade > 0 ? wheatToTrade : 0),
+                                                     (stoneToTrade > 0 ? stoneToTrade : 0));
+            Resources resourcesToSell = new Resources((brickToTrade < 0 ? -brickToTrade : 0),
+                                                      (woodToTrade < 0 ? -woodToTrade : 0),
+                                                      (sheepToTrade < 0 ? -sheepToTrade : 0),
+                                                      (wheatToTrade < 0 ? -wheatToTrade : 0),
+                                                      (stoneToTrade < 0 ? -stoneToTrade : 0));
+
+            Resources usersResourcesWhoAcceptTheTrade = gameUser.getResources();
+            tradeUtil.validateUserHasRequestedResources(usersResourcesWhoAcceptTheTrade, resourcesToBuy);
+
+            Resources activeUsersResources = game.fetchActiveGameUser().getResources();
+            activeUsersResources.addResources(resourcesToBuy);
+            activeUsersResources.takeResources(resourcesToSell);
+            usersResourcesWhoAcceptTheTrade.addResources(resourcesToSell);
+            usersResourcesWhoAcceptTheTrade.takeResources(resourcesToBuy);
+
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_ACCEPT, gameUser, resourcesToSell, resourcesToBuy);
         }
 
         tradeProposal.setOfferId(null);

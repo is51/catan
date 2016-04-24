@@ -133,6 +133,14 @@ public class Resources {
         this.stone += stoneToAdd;
     }
 
+    public void addResources(Resources resources) {
+        this.brick += resources.brick;
+        this.wood += resources.wood;
+        this.sheep += resources.sheep;
+        this.wheat += resources.wheat;
+        this.stone += resources.stone;
+    }
+
     public void takeResources(int brickToTake, int woodToTake, int sheepToTake, int wheatToTake, int stoneToTake) {
         this.brick -= brickToTake;
         this.wood -= woodToTake;

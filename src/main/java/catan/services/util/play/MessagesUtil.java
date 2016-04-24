@@ -56,19 +56,19 @@ public class MessagesUtil {
                 break;
 
             case BUILD_SETTLEMENT:
-                setUserNameAndBuildingNameToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, "building_office");
+                setArgsForBuildingPatternsForAllGameUsers(argsForMsgPattern, gameUser, "building_office");
                 setPatternNameForAllUsers(patternNames, game, "log_msg_build_settlement");
                 setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
                 break;
 
             case BUILD_CITY:
-                setUserNameAndBuildingNameToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, "building_business_centre");
+                setArgsForBuildingPatternsForAllGameUsers(argsForMsgPattern, gameUser, "building_business_centre");
                 setPatternNameForAllUsers(patternNames, game, "log_msg_build_city");
                 setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
                 break;
 
             case BUILD_ROAD:
-                setUserNameAndBuildingNameToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, "building_network");
+                setArgsForBuildingPatternsForAllGameUsers(argsForMsgPattern, gameUser, "building_network");
                 setPatternNameForAllUsers(patternNames, game, "log_msg_build_road");
                 setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
                 break;
@@ -107,6 +107,18 @@ public class MessagesUtil {
                 setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
                 break;
 
+            case TRADE_PROPOSE:
+                setUserNameToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser);
+                setPatternNameForAllUsers(patternNames, game, "log_msg_trade_propose");
+                setSameDisplayedOnTopLogToAllGameUsers(false, displayedOnTop, game);
+                break;
+
+            case TRADE_DECLINE:
+                setArgsForPatternTradeDeclineForAllGameUsers(argsForMsgPattern, gameUser);
+                setPatternNameForAllUsers(patternNames, game, "log_msg_trade_decline");
+                setTrueDisplayedOnTopLogToAllGameUsersButFalseForGameUserWhoMadeAction(displayedOnTop, gameUser);
+                break;
+
             default:
                 return;
         }
@@ -123,7 +135,7 @@ public class MessagesUtil {
         Map<GameUserBean, String> patternNames = new HashMap<GameUserBean, String>();
         Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
 
-        setPatternNamesAndArgsThrowDiceToAllGameUsers(patternNames, argsForMsgPattern, game, producedResourcesForGameUsers);
+        setPatternNamesAndArgsForPatternThrowDiceForAllGameUsers(patternNames, argsForMsgPattern, game, producedResourcesForGameUsers);
         setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
 
         addLogMsgForGameUsers(logCode, game, patternNames, argsForMsgPattern, displayedOnTop);
@@ -139,7 +151,7 @@ public class MessagesUtil {
         Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
         GameBean game = gameUser.getGame();
 
-        setUserNameAndKickedOffResToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, kickedOffResources);
+        setArgsForPatternRobPlayerForAllGameUsers(argsForMsgPattern, gameUser, kickedOffResources);
         setPatternNameForAllUsers(patternNames, game, "log_msg_rob_player");
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveAndThoseWhoMadeActionGameUsers(displayedOnTop, gameUser);
 
@@ -156,7 +168,7 @@ public class MessagesUtil {
         Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
         GameBean game = gameUser.getGame();
 
-        setUserNameAndStolenResTypeToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, stolenResourceType);
+        setArgsForPatternStealResourceForAllGameUsers(argsForMsgPattern, gameUser, stolenResourceType);
         setPatternNameForAllUsers(patternNames, game, "log_msg_steal_resource");
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
 
@@ -173,7 +185,7 @@ public class MessagesUtil {
         Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
         GameBean game = gameUser.getGame();
 
-        setUserNameAndStolenResQuantityAndTypeToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, quantityOfRes, stolenResourceType);
+        setArgsForPatternUseMonopolyForAllGameUsers(argsForMsgPattern, gameUser, quantityOfRes, stolenResourceType);
         setPatternNameForAllUsers(patternNames, game, "log_msg_use_card_monopoly");
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
 
@@ -190,7 +202,7 @@ public class MessagesUtil {
         Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
         GameBean game = gameUser.getGame();
 
-        setUserNameAndGottenResQuantityAndTypeToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, firstRes, secondRes);
+        setArgsForPatternUseYearOfPlentyForAllGameUsers(argsForMsgPattern, gameUser, firstRes, secondRes);
         setPatternNameForAllUsers(patternNames, game, "log_msg_use_card_year_of_plenty");
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
 
@@ -207,9 +219,33 @@ public class MessagesUtil {
         Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
         GameBean game = gameUser.getGame();
 
-        setUserNameAndBoughtCardToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser, developmentCard);
+        setArgsForPatternBuyCardForAllGameUsers(argsForMsgPattern, gameUser, developmentCard);
         setPatternNameForAllUsers(patternNames, game, "log_msg_buy_card");
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
+
+        addLogMsgForGameUsers(logCode, game, patternNames, argsForMsgPattern, displayedOnTop);
+    }
+
+    public static void addLogMsgForGameUsers(LogCodeType logCode, GameUserBean gameUser, Resources resourcesToSell, Resources resourcesToBuy) {
+        Map<GameUserBean, Object[]> argsForMsgPattern = new HashMap<GameUserBean, Object[]>();
+        Map<GameUserBean, String> patternNames = new HashMap<GameUserBean, String>();
+        Map<GameUserBean, Boolean> displayedOnTop = new HashMap<GameUserBean, Boolean>();
+        GameBean game = gameUser.getGame();
+
+        switch (logCode) {
+            case TRADE_PORT:
+                setArgsForPatternTradePortForAllGameUsers(patternNames, argsForMsgPattern, gameUser, resourcesToSell, resourcesToBuy);
+                setSameDisplayedOnTopLogToAllGameUsers(false, displayedOnTop, game);
+                break;
+
+            case TRADE_ACCEPT:
+                setArgsForPatternTradeAcceptForAllGameUsers(patternNames, argsForMsgPattern, gameUser, resourcesToSell, resourcesToBuy);
+                setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
+                break;
+
+            default:
+                return;
+        }
 
         addLogMsgForGameUsers(logCode, game, patternNames, argsForMsgPattern, displayedOnTop);
     }
@@ -260,7 +296,7 @@ public class MessagesUtil {
         }
     }
 
-    private static void setUserNameAndStolenResQuantityAndTypeToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, int stolenResQuantity, HexType stolenResType) {
+    private static void setArgsForPatternUseMonopolyForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, int stolenResQuantity, HexType stolenResType) {
         String gameUserName = gameUser.getUser().getUsername();
         for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
             boolean isRequiredGameUser = gameUserIterated.equals(gameUser);
@@ -275,7 +311,8 @@ public class MessagesUtil {
             argsForMsgPattern.put(gameUserIterated, new Object[] {(isRequiredGameUser ? 1 : 2), gameUserName, quantityAndTypeOfRes});
         }
     }
-    private static void setUserNameAndStolenResTypeToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, HexType stolenResType) {
+
+    private static void setArgsForPatternStealResourceForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, HexType stolenResType) {
         String robbedGameUserName = gameUser.getUser().getUsername();
         GameBean game = gameUser.getGame();
         GameUserBean activeGameUser = game.fetchActiveGameUser();
@@ -284,15 +321,15 @@ public class MessagesUtil {
             int choiceLimit = gameUserIterated.equals(gameUser)
                     ? 1
                     : (gameUserIterated.equals(activeGameUser)
-                    ? 2
-                    : 0);
+                        ? 2
+                        : 0);
             String stolenResName = getMsgPattern(gameUserIterated, stolenResType.getPatternName()).format(new Object[] {1});
             // {1 - if iterated game user is robbed, 2 - if active, 0 - other game user; username of robbed game user; stolen res name; username of active game user}
             argsForMsgPattern.put(gameUserIterated, new Object[] {choiceLimit, robbedGameUserName, stolenResName, activeGameUserName});
         }
     }
 
-    private static void setUserNameAndGottenResQuantityAndTypeToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, HexType firstRes, HexType secondRes) {
+    private static void setArgsForPatternUseYearOfPlentyForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, HexType firstRes, HexType secondRes) {
         String gameUserName = gameUser.getUser().getUsername();
         for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
             boolean isRequiredGameUser = gameUserIterated.equals(gameUser);
@@ -308,17 +345,17 @@ public class MessagesUtil {
         }
     }
 
-    private static void setUserNameAndBoughtCardToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, DevelopmentCard developmentCard) {
+    private static void setArgsForPatternBuyCardForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, DevelopmentCard developmentCard) {
         String gameUserName = gameUser.getUser().getUsername();
         for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
             boolean isRequiredGameUser = gameUserIterated.equals(gameUser);
-            String devCardName = getMsgs(gameUser).getString(developmentCard.getPatternName());
+            String devCardName = getMsgs(gameUserIterated).getString(developmentCard.getPatternName());
             // {1 - if iterated game user is the same as required, 2 - if not; username of required game user; dev card name}
             argsForMsgPattern.put(gameUserIterated, new Object[] {(isRequiredGameUser ? 1 : 2), gameUserName, devCardName});
         }
     }
 
-    private static void setUserNameAndBuildingNameToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, String buildingPatternName) {
+    private static void setArgsForBuildingPatternsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, String buildingPatternName) {
         String gameUserName = gameUser.getUser().getUsername();
         for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
             boolean isRequiredGameUser = gameUserIterated.equals(gameUser);
@@ -328,41 +365,105 @@ public class MessagesUtil {
         }
     }
 
-    private static void setUserNameAndKickedOffResToPatternArgsForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, Resources kickedOffRes) {
+    private static void setArgsForPatternRobPlayerForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, Resources kickedOffRes) {
         String gameUserName = gameUser.getUser().getUsername();
-        String resourcesList = resourcesToString(gameUser, kickedOffRes);
         for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
             boolean isRequiredGameUser = gameUserIterated.equals(gameUser);
+            String resourcesList = resourcesToString(gameUserIterated, kickedOffRes);
             // {1 - if iterated game user is the same as required, 2 - if not; username of required game user; list of kicked off resources}
             argsForMsgPattern.put(gameUserIterated, new Object[] {(isRequiredGameUser ? 1 : 2), gameUserName, resourcesList});
         }
     }
 
-    private static void setPatternNamesAndArgsThrowDiceToAllGameUsers(Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, GameBean game, Map<GameUserBean, Resources> producedResourcesForGameUsers) {
+    private static void setArgsForPatternTradePortForAllGameUsers(Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, Resources resourcesToSell, Resources resourcesToBuy) {
+        String gameUserName = gameUser.getUser().getUsername();
+        for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
+
+            if (gameUserIterated.equals(gameUser)) {
+                String soldResourcesList = resourcesToString(gameUserIterated, resourcesToSell);
+                String boughtResourcesList = resourcesToString(gameUserIterated, resourcesToBuy);
+                patternNames.put(gameUserIterated, "log_msg_trade_port_with_details");
+                // {list of resources to sell; list of resources to buy}
+                argsForMsgPattern.put(gameUserIterated, new Object[] {soldResourcesList, boughtResourcesList});
+
+            } else {
+                patternNames.put(gameUserIterated, "log_msg_trade_port");
+                // {username of active user}
+                argsForMsgPattern.put(gameUserIterated, new Object[] {gameUserName});
+            }
+        }
+    }
+
+    private static void setArgsForPatternTradeAcceptForAllGameUsers(Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, Resources resourcesToSell, Resources resourcesToBuy) {
+        GameBean game = gameUser.getGame();
+        GameUserBean activeTraderGameUser = game.fetchActiveGameUser();
+        String activeTraderGameUserName = activeTraderGameUser.getUser().getUsername();
+        String passiveTraderGameUserName = gameUser.getUser().getUsername();
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+
+            if (gameUserIterated.equals(gameUser)) {
+                String soldResourcesList = resourcesToString(gameUserIterated, resourcesToBuy);
+                String boughtResourcesList = resourcesToString(gameUserIterated, resourcesToSell);
+                patternNames.put(gameUserIterated, "log_msg_trade_accept_with_details");
+                // {list of resources to sell for passive; list of resources to buy for passive; username of active trader}
+                argsForMsgPattern.put(gameUserIterated, new Object[] {soldResourcesList, boughtResourcesList, activeTraderGameUserName});
+
+            } else if (gameUserIterated.equals(activeTraderGameUser)) {
+                String soldResourcesList = resourcesToString(gameUserIterated, resourcesToSell);
+                String boughtResourcesList = resourcesToString(gameUserIterated, resourcesToBuy);
+                patternNames.put(gameUserIterated, "log_msg_trade_accept_with_details");
+                // {list of resources to sell for active; list of resources to buy for active; username of passive trader}
+                argsForMsgPattern.put(gameUserIterated, new Object[] {soldResourcesList, boughtResourcesList, passiveTraderGameUserName});
+
+            } else {
+                patternNames.put(gameUserIterated, "log_msg_trade_accept");
+                // {username of active trader; username of passive trader}
+                argsForMsgPattern.put(gameUserIterated, new Object[] {activeTraderGameUserName, passiveTraderGameUserName});
+            }
+        }
+    }
+
+    private static void setArgsForPatternTradeDeclineForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser) {
+        GameBean game = gameUser.getGame();
+        GameUserBean activeTraderGameUser = game.fetchActiveGameUser();
+        String activeTraderGameUserName = activeTraderGameUser.getUser().getUsername();
+        String passiveTraderGameUserName = gameUser.getUser().getUsername();
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            int choiceLimit = gameUserIterated.equals(gameUser)
+                    ? 1
+                    : (gameUserIterated.equals(activeTraderGameUser)
+                        ? 2
+                        : 0);
+            // {1 - if iterated game user is passive trader, 2 - if active, 0 - other game user; username of passive trader game user; username of active trader game user}
+            argsForMsgPattern.put(gameUserIterated, new Object[] {choiceLimit, passiveTraderGameUserName, activeTraderGameUserName});
+        }
+    }
+
+    private static void setPatternNamesAndArgsForPatternThrowDiceForAllGameUsers(Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, GameBean game, Map<GameUserBean, Resources> producedResourcesForGameUsers) {
         GameUserBean activeGameUser = game.fetchActiveGameUser();
         String activeGameUserName = activeGameUser.getUser().getUsername();
         int diceSum = game.getDiceFirstValue() + game.getDiceSecondValue();
-        for (GameUserBean gameUser : game.getGameUsers()) {
-            boolean isActiveGameUser = gameUser.equals(activeGameUser);
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            boolean isActiveGameUser = gameUserIterated.equals(activeGameUser);
             if (diceSum == 7) {
-                patternNames.put(gameUser, "log_msg_throw_dice_and_robbers_activity");
+                patternNames.put(gameUserIterated, "log_msg_throw_dice_and_robbers_activity");
                 // {1 - if iterated game user is active, 2 - if not; username of active game user}
-                argsForMsgPattern.put(gameUser, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName});
+                argsForMsgPattern.put(gameUserIterated, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName});
                 continue;
             }
 
-            Resources producedRes = producedResourcesForGameUsers.get(gameUser);
+            Resources producedRes = producedResourcesForGameUsers.get(gameUserIterated);
             if (producedRes.calculateSum() == 0) {
-                patternNames.put(gameUser, "log_msg_throw_dice");
+                patternNames.put(gameUserIterated, "log_msg_throw_dice");
                 // {1 - if iterated game user is active, 2 - if not; username of active game user; dice value}
-                argsForMsgPattern.put(gameUser, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName, diceSum});
+                argsForMsgPattern.put(gameUserIterated, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName, diceSum});
                 continue;
             }
 
-            String resourcesList = resourcesToString(gameUser, producedRes);
-            patternNames.put(gameUser, "log_msg_throw_dice_and_got_resources");
+            String resourcesList = resourcesToString(gameUserIterated, producedRes);
+            patternNames.put(gameUserIterated, "log_msg_throw_dice_and_got_resources");
             // {1 - if iterated game user is active, 2 - if not; username of active game user; dice value; list of produced resources}
-            argsForMsgPattern.put(gameUser, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName, diceSum, resourcesList});
+            argsForMsgPattern.put(gameUserIterated, new Object[] {(isActiveGameUser ? 1 : 2), activeGameUserName, diceSum, resourcesList});
         }
     }
 
@@ -402,6 +503,13 @@ public class MessagesUtil {
         GameUserBean activeGameUser = game.fetchActiveGameUser();
         for (GameUserBean gameUserIterated : game.getGameUsers()) {
             displayedOnTop.put(gameUserIterated, (!gameUserIterated.equals(gameUser) && !gameUserIterated.equals(activeGameUser)));
+        }
+    }
+
+    private static void setTrueDisplayedOnTopLogToAllGameUsersButFalseForGameUserWhoMadeAction(Map<GameUserBean, Boolean> displayedOnTop, GameUserBean gameUser) {
+        GameBean game = gameUser.getGame();
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            displayedOnTop.put(gameUserIterated, !gameUserIterated.equals(gameUser));
         }
     }
 
