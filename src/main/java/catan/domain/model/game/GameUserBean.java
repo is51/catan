@@ -51,7 +51,7 @@ public class GameUserBean {
     @Column(name = "DISPLAYED_MESSAGE")
     private String displayedMessage;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "gameUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "gameUsers", cascade = CascadeType.ALL)
     @OrderBy("gameLogId DESC")
     private Set<GameLogBean> gameLogs = new HashSet<GameLogBean>();
 
