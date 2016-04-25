@@ -107,12 +107,6 @@ public class MessagesUtil {
                 setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
                 break;
 
-            case TRADE_PROPOSE:
-                setUserNameToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser);
-                setPatternNameForAllUsers(patternNames, game, "log_msg_trade_propose");
-                setSameDisplayedOnTopLogToAllGameUsers(false, displayedOnTop, game);
-                break;
-
             case TRADE_DECLINE:
                 setArgsForPatternTradeDeclineForAllGameUsers(argsForMsgPattern, gameUser);
                 setPatternNameForAllUsers(patternNames, game, "log_msg_trade_decline");
@@ -142,7 +136,7 @@ public class MessagesUtil {
     }
 
     public static void addLogMsgForGameUsers(LogCodeType logCode, GameUserBean gameUser, Resources kickedOffResources) {
-        if (!LogCodeType.ROB_PLAYER.equals(logCode)) {
+        if (!LogCodeType.DROP_RESOURCES.equals(logCode)) {
             return;
         }
 
@@ -152,7 +146,7 @@ public class MessagesUtil {
         GameBean game = gameUser.getGame();
 
         setArgsForPatternRobPlayerForAllGameUsers(argsForMsgPattern, gameUser, kickedOffResources);
-        setPatternNameForAllUsers(patternNames, game, "log_msg_rob_player");
+        setPatternNameForAllUsers(patternNames, game, "log_msg_drop_resources");
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveAndThoseWhoMadeActionGameUsers(displayedOnTop, gameUser);
 
         addLogMsgForGameUsers(logCode, game, patternNames, argsForMsgPattern, displayedOnTop);
@@ -240,6 +234,12 @@ public class MessagesUtil {
             case TRADE_ACCEPT:
                 setArgsForPatternTradeAcceptForAllGameUsers(patternNames, argsForMsgPattern, gameUser, resourcesToSell, resourcesToBuy);
                 setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
+                break;
+
+            case TRADE_PROPOSE:
+                setArgsForPatternTradeProposeForAllGameUsers(argsForMsgPattern, gameUser, resourcesToSell, resourcesToBuy);
+                setPatternNameForAllUsers(patternNames, game, "log_msg_trade_propose");
+                setSameDisplayedOnTopLogToAllGameUsers(false, displayedOnTop, game);
                 break;
 
             default:
@@ -430,6 +430,18 @@ public class MessagesUtil {
                 // {username of active trader; username of passive trader}
                 argsForMsgPattern.put(gameUserIterated, new Object[] {activeTraderGameUserName, passiveTraderGameUserName});
             }
+        }
+    }
+
+    private static void setArgsForPatternTradeProposeForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, Resources resourcesToSell, Resources resourcesToBuy) {
+        String gameUserName = gameUser.getUser().getUsername();
+        for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
+            boolean isActiveGameUser = gameUserIterated.equals(gameUser);
+            String sellResourcesList = resourcesToString(gameUserIterated, resourcesToSell);
+            String buyResourcesList = resourcesToString(gameUserIterated, resourcesToBuy);
+            // {list of resources to sell; list of resources to buy}
+            argsForMsgPattern.put(gameUserIterated, new Object[] {(isActiveGameUser ? 1 : 2), gameUserName, sellResourcesList, buyResourcesList});
+
         }
     }
 

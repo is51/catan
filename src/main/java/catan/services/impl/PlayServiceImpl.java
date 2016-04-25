@@ -394,7 +394,7 @@ public class PlayServiceImpl implements PlayService {
         gameUser.setKickingOffResourcesMandatory(false);
         robberUtil.checkRobberShouldBeMovedMandatory(gameUser.getGame());
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.ROB_PLAYER, gameUser, resourcesToKickOff);
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.DROP_RESOURCES, gameUser, resourcesToKickOff);
     }
 
     private void tradeResourcesInPort(GameUserBean gameUser, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
@@ -448,7 +448,18 @@ public class PlayServiceImpl implements PlayService {
         Integer newOfferId = randomUtil.generateRandomOfferId(10000);
         game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone, newOfferId));
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PROPOSE, gameUser);
+        Resources resourcesToBuy = new Resources((brick > 0 ? brick : 0),
+                                                 (wood > 0 ? wood : 0),
+                                                 (sheep > 0 ? sheep : 0),
+                                                 (wheat > 0 ? wheat : 0),
+                                                 (stone > 0 ? stone : 0));
+        Resources resourcesToSell = new Resources((brick < 0 ? -brick : 0),
+                                                  (wood < 0 ? -wood : 0),
+                                                  (sheep < 0 ? -sheep : 0),
+                                                  (wheat < 0 ? -wheat : 0),
+                                                  (stone < 0 ? -stone : 0));
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PROPOSE, gameUser, resourcesToSell, resourcesToBuy);
     }
 
     private void tradeReply(GameUserBean gameUser, String reply, String offerIdString) throws PlayException, GameException {
