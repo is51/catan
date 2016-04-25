@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from 'angular2/core';
 import { Game } from 'app/shared/domain/game';
 import { AuthUserService } from 'app/shared/services/auth/auth-user.service';
 
+const DISPLAYING_MESSAGES_INTERVAL = 2000;
+
 @Component({
     selector: 'ct-top-message',
     templateUrl: 'app/play/top-message/top-message.component.html',
@@ -15,6 +17,11 @@ export class TopMessageComponent implements OnInit, OnDestroy {
     messageBoxWidth: number = 0;
     viewBoxWidth: number = 700;
 
+    private _displayedMessage = null;
+
+    private _messagesQueue: string[] = <string[]>[];
+    private _isDisplayingCycleExecuting = false;
+
     constructor(private _authUser: AuthUserService) { }
 
     ngOnInit() {
@@ -25,9 +32,46 @@ export class TopMessageComponent implements OnInit, OnDestroy {
         }
 
         currentPlayer.onDisplayedMessageUpdate(
-                text => this._show(text),
-                () => this._hide()
+                text => {
+                    this._displayedMessage = text;
+                    if (!this._isDisplayingCycleExecuting) {
+                        this._show(this._displayedMessage);
+                    }
+                },
+                () => {
+                    this._displayedMessage = null;
+                    if (!this._isDisplayingCycleExecuting) {
+                        this._hide();
+                    }
+                }
             );
+
+        currentPlayer.onDisplayedLogUpdate(
+            newLogItems => {
+                newLogItems.forEach(item => this._addMessageToQueue(item.message));
+            }
+        );
+    }
+
+    private _addMessageToQueue(text: string) {
+        this._messagesQueue.push(text);
+        if (!this._isDisplayingCycleExecuting) {
+            this._executeDisplayingCycle();
+        }
+    }
+
+    private _executeDisplayingCycle() {
+        if (this._messagesQueue.length) {
+            this._isDisplayingCycleExecuting = true;
+            let message = this._messagesQueue.shift();
+            this._show(message);
+            setTimeout(() => this._executeDisplayingCycle(), DISPLAYING_MESSAGES_INTERVAL);
+        } else {
+            this._isDisplayingCycleExecuting = false;
+            if (this._displayedMessage) {
+                this._show(this._displayedMessage);
+            }
+        }
     }
 
     private _show(text: string) {
@@ -40,7 +84,8 @@ export class TopMessageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.game.getCurrentPlayer(this._authUser.get())
-            .cancelOnDisplayedMessageUpdate();
+        let currentPlayer = this.game.getCurrentPlayer(this._authUser.get());
+        currentPlayer.cancelOnDisplayedMessageUpdate();
+        currentPlayer.cancelOnDisplayedLogUpdate();
     }
 }
