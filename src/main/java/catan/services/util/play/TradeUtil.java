@@ -1,16 +1,15 @@
 package catan.services.util.play;
 
 import catan.domain.exception.PlayException;
-import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.TradeProposal;
 import catan.domain.model.game.actions.ResourcesParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 public class TradeUtil {
@@ -21,15 +20,13 @@ public class TradeUtil {
     public static final String OFFER_IS_NOT_ACTIVE_ERROR = "OFFER_IS_NOT_ACTIVE";
 
     public void validateTradeIsNotEmpty(Resources resourcesToTrade) throws PlayException {
-
-        if (resourcesToTrade.getBrick() == 0
-                && resourcesToTrade.getWood() == 0
-                && resourcesToTrade.getSheep() == 0
-                && resourcesToTrade.getWheat() == 0
-                && resourcesToTrade.getStone() == 0) {
-            log.error("Trading request is empty. All requested resources has zero quantity");
-            throw new PlayException(ERROR_CODE_ERROR);
+        for (int resQuantity : resourcesToTrade.resourcesToMap().values()) {
+            if (resQuantity != 0) {
+                return;
+            }
         }
+        log.error("Trading request is empty. All requested resources has zero quantity");
+        throw new PlayException(ERROR_CODE_ERROR);
     }
 
     public void validateThereIsNoNewOffers(Integer offerId, TradeProposal tradeProposal) throws PlayException {
@@ -47,13 +44,13 @@ public class TradeUtil {
     }
 
     public void validateUserHasRequestedResources(Resources userResources, Resources resourcesToBuy) throws PlayException {
-        if (userResources.getBrick() < resourcesToBuy.getBrick()
-                || userResources.getWood() < resourcesToBuy.getWood()
-                || userResources.getSheep() < resourcesToBuy.getSheep()
-                || userResources.getWheat() < resourcesToBuy.getWheat()
-                || userResources.getStone() < resourcesToBuy.getStone()) {
-            log.debug("User has not enough resources ({}) to accept trade proposal. Required resources: {}]", userResources, resourcesToBuy);
-            throw new PlayException(ERROR_CODE_ERROR);
+        Map<HexType, Integer> userResourcesMap = userResources.resourcesToMap();
+        Map<HexType, Integer> resourcesToBuyMap = resourcesToBuy.resourcesToMap();
+        for (HexType hexType : userResourcesMap.keySet()) {
+            if (userResourcesMap.get(hexType) < resourcesToBuyMap.get(hexType)) {
+                log.debug("User has not enough resources ({}) to accept trade proposal. Required resources: {}]", userResources, resourcesToBuy);
+                throw new PlayException(ERROR_CODE_ERROR);
+            }
         }
     }
 
@@ -80,23 +77,12 @@ public class TradeUtil {
     }
 
     public void validateTradeBalanceIsZero(Resources resourcesToTrade, ResourcesParams tradePortParams) throws PlayException {
-        int brickQuantityToTrade = resourcesToTrade.getBrick();
-        int woodQuantityToTrade = resourcesToTrade.getWood();
-        int sheepQuantityToTrade = resourcesToTrade.getSheep();
-        int wheatQuantityToTrade = resourcesToTrade.getWheat();
-        int stoneQuantityToTrade = resourcesToTrade.getStone();
-
-        int brickSellCoefficient = tradePortParams.getBrick();
-        int woodSellCoefficient = tradePortParams.getWood();
-        int sheepSellCoefficient = tradePortParams.getSheep();
-        int wheatSellCoefficient = tradePortParams.getWheat();
-        int stoneSellCoefficient = tradePortParams.getStone();
-
-        int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
-                + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
-                + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
-                + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
-                + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
+        int tradingBalance = 0;
+        Map<HexType, Integer> resourcesToTradeMap = resourcesToTrade.resourcesToMap();
+        for (HexType hexType : resourcesToTradeMap.keySet()) {
+            int resQuantity = resourcesToTradeMap.get(hexType);
+            tradingBalance += resQuantity < 0 ? resQuantity / tradePortParams.paramOf(hexType) : resQuantity;
+        }
 
         if (tradingBalance != 0) {
             log.error("Trade balance is not zero: {}. Wrong resources quantity to trade", tradingBalance);

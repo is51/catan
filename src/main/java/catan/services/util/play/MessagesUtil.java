@@ -479,19 +479,13 @@ public class MessagesUtil {
 
     private static String resourcesToString(GameUserBean gameUser, Resources resources) {
         String resourcesList = "";
-        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.BRICK);
-        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.WOOD);
-        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.SHEEP);
-        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.WHEAT);
-        resourcesList = addResQuantityToList(gameUser, resources, resourcesList, HexType.STONE);
-        return resourcesList;
-    }
-
-    private static String addResQuantityToList(GameUserBean gameUser, Resources producedRes, String resourcesList, HexType resType) {
-        Integer producedResQuantity = producedRes.quantityOf(resType);
-        if (producedResQuantity > 0) {
-            resourcesList += resourcesList.equals("") ? "" : ", ";
-            resourcesList += String.valueOf(producedResQuantity) + " " + getMsgPattern(gameUser, resType.getPatternName()).format(new Object[] {producedResQuantity});
+        Map<HexType, Integer> resourcesMap = resources.resourcesToMap();
+        for (HexType hexType : resourcesMap.keySet()) {
+            Integer resQuantity = resourcesMap.get(hexType);
+            if (resQuantity > 0) {
+                resourcesList += resourcesList.equals("") ? "" : ", ";
+                resourcesList += String.valueOf(resQuantity) + " " + getMsgPattern(gameUser, hexType.getPatternName()).format(new Object[] {resQuantity});
+            }
         }
 
         return resourcesList;

@@ -5,6 +5,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Embeddable
@@ -155,6 +158,16 @@ public class Resources {
         this.sheep -= resources.sheep;
         this.wheat -= resources.wheat;
         this.stone -= resources.stone;
+    }
+
+    public Map<HexType, Integer> resourcesToMap() {
+        Map<HexType, Integer> resourcesMap = new HashMap<HexType, Integer>();
+        resourcesMap.put(HexType.BRICK, this.brick);
+        resourcesMap.put(HexType.WOOD, this.wood);
+        resourcesMap.put(HexType.SHEEP, this.sheep);
+        resourcesMap.put(HexType.WHEAT, this.wheat);
+        resourcesMap.put(HexType.STONE, this.stone);
+        return resourcesMap;
     }
 
     @Override
