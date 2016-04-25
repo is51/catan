@@ -14,9 +14,11 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 @Component
 public class MessagesUtil {
@@ -107,12 +109,6 @@ public class MessagesUtil {
                 setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveGameUser(displayedOnTop, game);
                 break;
 
-            case TRADE_PROPOSE:
-                setUserNameToPatternArgsForAllGameUsers(argsForMsgPattern, gameUser);
-                setPatternNameForAllUsers(patternNames, game, "log_msg_trade_propose");
-                setSameDisplayedOnTopLogToAllGameUsers(false, displayedOnTop, game);
-                break;
-
             case TRADE_DECLINE:
                 setArgsForPatternTradeDeclineForAllGameUsers(argsForMsgPattern, gameUser);
                 setPatternNameForAllUsers(patternNames, game, "log_msg_trade_decline");
@@ -142,7 +138,7 @@ public class MessagesUtil {
     }
 
     public static void addLogMsgForGameUsers(LogCodeType logCode, GameUserBean gameUser, Resources kickedOffResources) {
-        if (!LogCodeType.ROB_PLAYER.equals(logCode)) {
+        if (!LogCodeType.DROP_RESOURCES.equals(logCode)) {
             return;
         }
 
@@ -152,7 +148,7 @@ public class MessagesUtil {
         GameBean game = gameUser.getGame();
 
         setArgsForPatternRobPlayerForAllGameUsers(argsForMsgPattern, gameUser, kickedOffResources);
-        setPatternNameForAllUsers(patternNames, game, "log_msg_rob_player");
+        setPatternNameForAllUsers(patternNames, game, "log_msg_drop_resources");
         setTrueDisplayedOnTopLogToAllGameUsersButFalseForActiveAndThoseWhoMadeActionGameUsers(displayedOnTop, gameUser);
 
         addLogMsgForGameUsers(logCode, game, patternNames, argsForMsgPattern, displayedOnTop);
@@ -242,6 +238,12 @@ public class MessagesUtil {
                 setSameDisplayedOnTopLogToAllGameUsers(true, displayedOnTop, game);
                 break;
 
+            case TRADE_PROPOSE:
+                setArgsForPatternTradeProposeForAllGameUsers(argsForMsgPattern, gameUser, resourcesToSell, resourcesToBuy);
+                setPatternNameForAllUsers(patternNames, game, "log_msg_trade_propose");
+                setSameDisplayedOnTopLogToAllGameUsers(false, displayedOnTop, game);
+                break;
+
             default:
                 return;
         }
@@ -250,15 +252,27 @@ public class MessagesUtil {
     }
 
     private static void addLogMsgForGameUsers(LogCodeType logCode, GameBean game, Map<GameUserBean, String> patternNames, Map<GameUserBean, Object[]> argsForMsgPattern, Map<GameUserBean, Boolean> displayedOnTop) {
+        Set<GameLogBean> gameLogs = new HashSet<GameLogBean>();
         for (GameUserBean gameUser : game.getGameUsers()) {
-            addLogMsgForGameUser(logCode, gameUser, patternNames.get(gameUser), argsForMsgPattern.get(gameUser), displayedOnTop.get(gameUser));
-        }
-    }
+            String msgToShow = getMsgPattern(gameUser, patternNames.get(gameUser)).format(argsForMsgPattern.get(gameUser));
+            boolean gameLogAlreadyExist = false;
+            for (GameLogBean gameLog : gameLogs) {
+                if (gameLog.isDisplayedOnTop().equals(displayedOnTop.get(gameUser))
+                        && gameLog.getCode().equals(logCode)
+                        && gameLog.getMessage().equals(msgToShow)) {
+                    gameUser.getGameLogs().add(gameLog);
+                    gameLog.getGameUsers().add(gameUser);
+                    gameLogAlreadyExist = true;
+                    break;
+                }
+            }
 
-    private static void addLogMsgForGameUser(LogCodeType logCode, GameUserBean gameUser, String patternName, Object[] argsForMsgPattern, Boolean displayedOnTop) {
-        String msgToShow = getMsgPattern(gameUser, patternName).format(argsForMsgPattern);
-        GameLogBean gameLog = new GameLogBean(gameUser, new Date(), logCode, msgToShow, displayedOnTop);
-        gameUser.getGameLogs().add(gameLog);
+            if (!gameLogAlreadyExist) {
+                GameLogBean newGameLog = new GameLogBean(gameUser, logCode, msgToShow, displayedOnTop.get(gameUser));
+                gameUser.getGameLogs().add(newGameLog);
+                gameLogs.add(newGameLog);
+            }
+        }
     }
 
     private static MessageFormat getMsgPattern(GameUserBean gameUser, String key) {
@@ -430,6 +444,18 @@ public class MessagesUtil {
                 // {username of active trader; username of passive trader}
                 argsForMsgPattern.put(gameUserIterated, new Object[] {activeTraderGameUserName, passiveTraderGameUserName});
             }
+        }
+    }
+
+    private static void setArgsForPatternTradeProposeForAllGameUsers(Map<GameUserBean, Object[]> argsForMsgPattern, GameUserBean gameUser, Resources resourcesToSell, Resources resourcesToBuy) {
+        String gameUserName = gameUser.getUser().getUsername();
+        for (GameUserBean gameUserIterated : gameUser.getGame().getGameUsers()) {
+            boolean isActiveGameUser = gameUserIterated.equals(gameUser);
+            String sellResourcesList = resourcesToString(gameUserIterated, resourcesToSell);
+            String buyResourcesList = resourcesToString(gameUserIterated, resourcesToBuy);
+            // {list of resources to sell; list of resources to buy}
+            argsForMsgPattern.put(gameUserIterated, new Object[] {(isActiveGameUser ? 1 : 2), gameUserName, sellResourcesList, buyResourcesList});
+
         }
     }
 

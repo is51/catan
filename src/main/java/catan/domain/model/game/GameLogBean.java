@@ -9,9 +9,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "CT_GAME_LOG")
@@ -22,12 +25,12 @@ public class GameLogBean {
     @Column(name = "GAME_LOG_ID", unique = true, nullable = false)
     private Integer gameLogId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "ADDRESSEE", nullable = false)
-    private GameUserBean gameUser;
+    private Set<GameUserBean> gameUsers = new HashSet<GameUserBean>();
 
     @Column(name = "DATE", nullable = false)
-    private Date date;
+    private Date date = new Date();
 
     @Column(name = "CODE", nullable = false)
     private LogCodeType code;
@@ -41,9 +44,8 @@ public class GameLogBean {
     public GameLogBean() {
     }
 
-    public GameLogBean(GameUserBean gameUser, Date date, LogCodeType code, String message, boolean displayedOnTop) {
-        this.gameUser = gameUser;
-        this.date = date;
+    public GameLogBean(GameUserBean gameUser, LogCodeType code, String message, boolean displayedOnTop) {
+        this.gameUsers.add(gameUser);
         this.code = code;
         this.message = message;
         this.displayedOnTop = displayedOnTop;
@@ -57,12 +59,12 @@ public class GameLogBean {
         this.gameLogId = gameLogId;
     }
 
-    public GameUserBean getGameUser() {
-        return gameUser;
+    public Set<GameUserBean> getGameUsers() {
+        return gameUsers;
     }
 
-    public void setGameUser(GameUserBean gameUser) {
-        this.gameUser = gameUser;
+    public void setGameUsers(Set<GameUserBean> gameUsers) {
+        this.gameUsers = gameUsers;
     }
 
     public Date getDate() {

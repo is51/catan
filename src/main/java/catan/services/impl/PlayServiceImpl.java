@@ -164,9 +164,10 @@ public class PlayServiceImpl implements PlayService {
             gameUser.getResources().takeResources(1, 1, 0, 0, 0);
         }
         playUtil.updateRoadsToBuildMandatory(game);
-        achievementsUtil.updateLongestWayLength(gameUser);
 
         MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_ROAD, gameUser);
+
+        achievementsUtil.updateLongestWayLength(gameUser);
     }
 
     private void buildSettlement(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
@@ -179,9 +180,10 @@ public class PlayServiceImpl implements PlayService {
             gameUser.getResources().takeResources(1, 1, 1, 1, 0);
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
-        achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
 
         MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_SETTLEMENT, gameUser);
+
+        achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
     }
 
     private void buildCity(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
@@ -314,9 +316,10 @@ public class PlayServiceImpl implements PlayService {
         game.setDevelopmentCardUsed(true);
 
         achievementsUtil.increaseTotalUsedKnightsByOne(gameUser);
-        achievementsUtil.updateBiggestArmyOwner(gameUser);
 
         MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_KNIGHT, gameUser);
+
+        achievementsUtil.updateBiggestArmyOwner(gameUser);
     }
 
     private void moveRobber(GameUserBean gameUser, String hexAbsoluteId) throws PlayException, GameException {
@@ -391,7 +394,7 @@ public class PlayServiceImpl implements PlayService {
         gameUser.setKickingOffResourcesMandatory(false);
         robberUtil.checkRobberShouldBeMovedMandatory(gameUser.getGame());
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.ROB_PLAYER, gameUser, resourcesToKickOff);
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.DROP_RESOURCES, gameUser, resourcesToKickOff);
     }
 
     private void tradeResourcesInPort(GameUserBean gameUser, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
@@ -445,7 +448,18 @@ public class PlayServiceImpl implements PlayService {
         Integer newOfferId = randomUtil.generateRandomOfferId(10000);
         game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone, newOfferId));
 
-        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PROPOSE, gameUser);
+        Resources resourcesToBuy = new Resources((brick > 0 ? brick : 0),
+                                                 (wood > 0 ? wood : 0),
+                                                 (sheep > 0 ? sheep : 0),
+                                                 (wheat > 0 ? wheat : 0),
+                                                 (stone > 0 ? stone : 0));
+        Resources resourcesToSell = new Resources((brick < 0 ? -brick : 0),
+                                                  (wood < 0 ? -wood : 0),
+                                                  (sheep < 0 ? -sheep : 0),
+                                                  (wheat < 0 ? -wheat : 0),
+                                                  (stone < 0 ? -stone : 0));
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PROPOSE, gameUser, resourcesToSell, resourcesToBuy);
     }
 
     private void tradeReply(GameUserBean gameUser, String reply, String offerIdString) throws PlayException, GameException {
