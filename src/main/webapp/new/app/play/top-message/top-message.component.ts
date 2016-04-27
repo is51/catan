@@ -27,7 +27,13 @@ export class TopMessageComponent implements OnInit, OnDestroy {
     ngOnInit() {
         let currentPlayer = this.game.getCurrentPlayer(this._authUser.get());
 
-        if (currentPlayer.displayedMessage) {
+        let lastLog = (currentPlayer.log.length) ? currentPlayer.log[0] : null;
+        if (lastLog && lastLog.displayedOnTop) {
+            this._addMessageToQueue(lastLog.message);
+            if (currentPlayer.displayedMessage) {
+                this._displayedMessage = currentPlayer.displayedMessage;
+            }
+        } else if (currentPlayer.displayedMessage) {
             this._show(currentPlayer.displayedMessage);
         }
 
