@@ -30,7 +30,7 @@ import catan.services.util.play.PlayUtil;
 import catan.services.util.play.RobberUtil;
 import catan.services.util.play.TradeUtil;
 import catan.services.util.play.ValidationUtil;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     private GameDao gameDao;
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     private GameUtil gameUtil;
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
@@ -537,7 +537,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
+    public void setRandomUtil(RandomValueProvider randomUtil) {
         this.randomUtil = randomUtil;
     }
 

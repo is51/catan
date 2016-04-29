@@ -8,7 +8,7 @@ import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.types.DevelopmentCard;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class CardUtil {
     public static final String CARD_BOUGHT_IN_CURRENT_TURN_ERROR = "CARD_BOUGHT_IN_CURRENT_TURN";
     public static final String ROAD_CANNOT_BE_BUILT_ERROR = "ROAD_CANNOT_BE_BUILT";
 
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
 
     public DevelopmentCard chooseDevelopmentCard(GameBean game) throws PlayException {
         List<DevelopmentCard> availableDevelopmentCardsList = listAvailableDevCards(game);
@@ -118,7 +118,7 @@ public class CardUtil {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
+    public void setRandomUtil(RandomValueProvider randomUtil) {
         this.randomUtil = randomUtil;
     }
 }

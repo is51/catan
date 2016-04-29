@@ -1,10 +1,11 @@
 package catan.controllers.testcases.game;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
 import catan.controllers.util.GameTestUtil;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.transfer.output.game.GameDetails;
 import catan.services.impl.GameServiceImpl;
+import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,14 +18,22 @@ import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class ListGameTest extends GameTestUtil {
 
@@ -63,7 +72,7 @@ public class ListGameTest extends GameTestUtil {
 
         // without token
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .when()
                 .post(URL_CURRENT_GAMES_LIST)
@@ -74,7 +83,7 @@ public class ListGameTest extends GameTestUtil {
         logoutUser(userToken);
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken)
                 .when()
@@ -101,7 +110,7 @@ public class ListGameTest extends GameTestUtil {
 
         // Assert public games empty response
         int numberOfGamesInTheList = given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", secondUserToken)
                 .when()
@@ -118,7 +127,7 @@ public class ListGameTest extends GameTestUtil {
 
         // Assert public games response entities
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", secondUserToken)
                 .when()
@@ -145,7 +154,7 @@ public class ListGameTest extends GameTestUtil {
         // Assert public games response again but in another way
         List<GameDetails> games = Arrays.asList(
                 given()
-                        .port(SERVER_PORT)
+                        .port(RestAssured.port)
                         .header("Accept", ACCEPT_CONTENT_TYPE)
                         .parameters("token", secondUserToken)
                         .when()
@@ -186,7 +195,7 @@ public class ListGameTest extends GameTestUtil {
 
         // without token
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .when()
                 .post(URL_PUBLIC_GAMES_LIST)
@@ -197,7 +206,7 @@ public class ListGameTest extends GameTestUtil {
 
         // with old token
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken)
                 .when()
@@ -217,7 +226,7 @@ public class ListGameTest extends GameTestUtil {
         joinPublicGame(userToken2, gameId);
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken1)
                 .when()
@@ -227,7 +236,7 @@ public class ListGameTest extends GameTestUtil {
                 .body("findAll.size()", is(1));
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken2)
                 .when()

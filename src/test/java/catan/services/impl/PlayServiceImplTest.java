@@ -31,13 +31,12 @@ import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
-import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.play.RobberUtil;
 import catan.services.util.play.TradeUtil;
-import catan.services.util.random.RandomUtil;
 import catan.services.util.random.RandomValueGeneratorMock;
+import catan.services.util.random.RandomValueProvider;
 import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Before;
@@ -50,10 +49,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -81,7 +80,7 @@ public class PlayServiceImplTest {
     @InjectMocks
     private GameUtil gameUtil;
     @InjectMocks
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     @InjectMocks
     private PlayUtil playUtil;
     @InjectMocks
@@ -119,7 +118,7 @@ public class PlayServiceImplTest {
 
     @Before
     public void setUp() throws GameException {
-        RandomUtil randomUtil = new RandomUtil();
+        RandomValueProvider randomUtil = new RandomValueProvider();
         randomUtil.setRvg(rvg);
 
         playService.setRandomUtil(randomUtil);

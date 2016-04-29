@@ -8,14 +8,14 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 
 public class RandomUtilTest {
-    RandomUtil randomUtil;
+    RandomValueProvider randomUtil;
     RandomValueGeneratorMock rvg;
 
     @Before
     public void setUp() {
         rvg = new RandomValueGeneratorMock();
 
-        randomUtil = new RandomUtil();
+        randomUtil = new RandomValueProvider();
         randomUtil.setRvg(rvg);
     }
 

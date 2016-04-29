@@ -11,7 +11,7 @@ import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class GameUtil {
     private Logger log = LoggerFactory.getLogger(GameUtil.class);
 
     private GameDao gameDao;
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     private PlayUtil playUtil;
 
     private static final Gson GSON = new Gson();
@@ -258,7 +258,7 @@ public class GameUtil {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
+    public void setRandomUtil(RandomValueProvider randomUtil) {
         this.randomUtil = randomUtil;
     }
 

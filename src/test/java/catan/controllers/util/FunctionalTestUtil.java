@@ -1,19 +1,21 @@
 package catan.controllers.util;
 
-import static com.jayway.restassured.RestAssured.given;
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
+
+import static com.jayway.restassured.RestAssured.given;
 
 public abstract class FunctionalTestUtil {
     // TODO: remove checking of statusCode in each method. (Needs to be approved)
 
-    public static final int SERVER_PORT = 8091;
     public static final String ACCEPT_CONTENT_TYPE = "application/json";
+    public static final String GLOBAL_UNIQUE_USERNAME_SUFFIX = "_" + (long)(Math.random() * Long.MAX_VALUE);
 
     public static void registerUser(String username, String password) {
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("username", username, "password", password)
+                .parameters("username", username + GLOBAL_UNIQUE_USERNAME_SUFFIX, "password", password)
                 .when()
                 .post("/api/user/register")
                 .then()
@@ -22,9 +24,9 @@ public abstract class FunctionalTestUtil {
 
     public static String loginUser(String username, String password) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("username", username, "password", password)
+                .parameters("username", username + GLOBAL_UNIQUE_USERNAME_SUFFIX, "password", password)
                 .when()
                 .post("/api/user/login")
                 .then()
@@ -35,7 +37,7 @@ public abstract class FunctionalTestUtil {
 
     protected void logoutUser(String token) {
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token)
                 .when()
@@ -46,7 +48,7 @@ public abstract class FunctionalTestUtil {
 
     protected int getUserId(String token) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token)
                 .when()
@@ -59,16 +61,16 @@ public abstract class FunctionalTestUtil {
 
     protected Response registerAndLoginGuest(String username) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("username", username)
+                .parameters("username", username + GLOBAL_UNIQUE_USERNAME_SUFFIX)
                 .when()
                 .post("/api/user/register/guest");
     }
 
     protected Response getUserDetails(String token) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token)
                 .when()

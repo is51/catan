@@ -1,14 +1,13 @@
 package catan.controllers.testcases.play;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
+import catan.controllers.util.RandomValueTestUtil;
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,10 +19,15 @@ import java.util.List;
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class PreparationStageTest extends PlayTestUtil {
 
@@ -35,9 +39,6 @@ public class PreparationStageTest extends PlayTestUtil {
     public static final String USER_PASSWORD_3 = "password3";
 
     private static boolean initialized = false;
-
-    @Autowired
-    private RandomUtil randomUtil;
 
     @Before
     public void setup() {
@@ -348,7 +349,7 @@ public class PreparationStageTest extends PlayTestUtil {
                 .statusCode(200);
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken1)
                 .when()
@@ -482,7 +483,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[thirdGameUserNumber], 2, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId3ToBuildForThirdUser);
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken1)
                 .when()
@@ -494,7 +495,7 @@ public class PreparationStageTest extends PlayTestUtil {
 
     public void nextRandomDiceValues(List<Integer> nextRandomValues) {
         for (Integer nextRandomValue : nextRandomValues) {
-            ((RandomUtilMock)randomUtil).setNextDiceNumber(nextRandomValue);
+            RandomValueTestUtil.setNextDiceNumber(nextRandomValue);
         }
     }
 
