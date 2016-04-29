@@ -17,14 +17,15 @@ public class UseCardMonopolyUtil extends SmartBotUtil {
 
         return "stone";
     }
+
     public static Map<HexType, String> calculateTradePortResourceCombination(GameUserBean player, ActionDetails action) {
-        if(needResourcesForSettlement(player)){
+        if(needOneResourceForSettlement(player)){
             return combinationIfNeedResourcesForSettlement(player, action.getParams());
-        } else if(needResourcesForCity(player)){
+        } else if(needOneTypeResourceForCity(player)){
             return combinationIfNeedResourcesForCity(player, action.getParams());
-        } else if(needResourcesForRoad(player)){
+        } else if(needOneResourceForRoad(player)){
             return combinationIfNeedResourcesForRoad(player, action.getParams());
-        } else if(needResourcesForCard(player)){
+        } else if(needOneResourceForCard(player)){
             return combinationIfNeedResourcesForCard(player, action.getParams());
         } else {
             return combinationIfNeedRareResource(player, action.getParams());
@@ -147,7 +148,14 @@ public class UseCardMonopolyUtil extends SmartBotUtil {
         return requiredResources;
     }
 
-    private static boolean needResourcesForSettlement(GameUserBean player) {
+    private static boolean needOneResourceForSettlement(GameUserBean player)  {
+        if (player.getBuildingsCount().getSettlements() >= 5){
+           return false;
+        }
+
+        int resourcesNeeded = 0;
+        boolean hasPlaceForNewSettlement = false;
+
         for (NodeBean node : player.getGame().getNodes()) {
             if(node.couldBeUsedForBuildingSettlementByGameUserInMainStage(player)){
                 return true;
@@ -157,7 +165,11 @@ public class UseCardMonopolyUtil extends SmartBotUtil {
         return false;
     }
 
-    private static boolean needResourcesForCity(GameUserBean player) {
+    private static boolean needOneTypeResourceForCity(GameUserBean player) {
+        if (player.getBuildingsCount().getSettlements() >= 5){
+            return true;
+        }
+
         if((player.getBuildingsCount().getCities() < 3 && player.getBuildingsCount().getSettlements() < 4)
                 || requiredResourcesForCity(player).size() > 1){
             return false;
@@ -172,11 +184,11 @@ public class UseCardMonopolyUtil extends SmartBotUtil {
         return false;
     }
 
-    private static boolean needResourcesForCard(GameUserBean player) {
+    private static boolean needOneResourceForCard(GameUserBean player) {
         return false;
     }
 
-    private static boolean needResourcesForRoad(GameUserBean player) {
+    private static boolean needOneResourceForRoad(GameUserBean player) {
         return false;
     }
 }
