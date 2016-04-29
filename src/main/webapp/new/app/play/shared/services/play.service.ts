@@ -51,8 +51,8 @@ export class PlayService {
                     this._remote.request('play.buildSettlement', {
                         gameId: game.getId(),
                         nodeId
-                    }).then(() => {
-                        resolve();
+                    }).then(data => {
+                        resolve(data);
                         this._marking.clear('nodes');
                     }).catch(data => {
                         reject(data);

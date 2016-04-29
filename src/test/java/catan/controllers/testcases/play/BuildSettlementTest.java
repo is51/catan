@@ -70,8 +70,8 @@ public class BuildSettlementTest extends PlayTestUtil {
     public void should_successfully_take_resources_from_player_when_build_settlement_in_main_stage() {
         startNewGame();
         playPreparationStage();
-        giveResourcesToPlayerForRoadBuilding(1);
-        giveResourcesToPlayerForSettlementBuilding(1)
+        giveResourcesToPlayerForRoadBuilding(1, 1);
+        giveResourcesToPlayerForSettlementBuilding(1, 1)
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight")
@@ -97,8 +97,8 @@ public class BuildSettlementTest extends PlayTestUtil {
     public void should_successfully_build_settlement_if_user_has_enough_resources_in_main_stage() {
         startNewGame();
         playPreparationStage();
-        giveResourcesToPlayerForRoadBuilding(1);
-        giveResourcesToPlayerForSettlementBuilding(1)
+        giveResourcesToPlayerForRoadBuilding(1, 1);
+        giveResourcesToPlayerForSettlementBuilding(1, 1)
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight");
@@ -121,7 +121,7 @@ public class BuildSettlementTest extends PlayTestUtil {
     public void should_fail_when_build_settlement_if_user_does_not_have_enough_resources_in_main_stage() {
         startNewGame();
         playPreparationStage();
-        giveResourcesToPlayerForRoadBuilding(1)
+        giveResourcesToPlayerForRoadBuilding(1, 1)
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight")
@@ -203,7 +203,7 @@ public class BuildSettlementTest extends PlayTestUtil {
     public void should_fail_if_try_to_build_settlement_and_there_are_no_neighbour_roads_that_belongs_to_this_player_in_main_stage() {
         startNewGame();
         playPreparationStage();
-        giveResourcesToPlayerForSettlementBuilding(1)
+        giveResourcesToPlayerForSettlementBuilding(1, 1)
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(1)
 
@@ -238,7 +238,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(3).atNode(0, 0, "bottomRight")
                 .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 1, 1)
                 .BUILD_ROAD(3).atEdge(0, 0, "bottomRight")
                 .END_TURN(3)
 
@@ -261,7 +261,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .startTrackResourcesQuantity()
 
                 .BUILD_SETTLEMENT(1).atNode(0, 0, "bottomRight")
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 1, 0)
+                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 1, 1)
                 .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .END_TURN(1)
@@ -278,23 +278,81 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(1, 0, 0, 1, 1);
     }
 
-    private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder) {
-        return scenario
-                .nextRandomDiceValues(asList(moveOrder, moveOrder))
-                .THROW_DICE(moveOrder)
-                .END_TURN(moveOrder)
-
+    @Test
+    public void should_successfully_build_five_settlements_then_one_city_and_one_more_settlement_on_default_map() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForSettlementBuilding(1, 5);
+        giveResourcesToPlayerForCityBuilding(1, 1);
+        giveResourcesToPlayerForRoadBuilding(1, 8)
                 .nextRandomDiceValues(asList(6, 6))
-                .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
-                .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                .THROW_DICE(1)
+                .BUILD_ROAD(1).atEdge(2, -2, "topRight")
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").settlementsLimitNotReached()
+                .BUILD_ROAD(1).atEdge(-2, 0, "bottomLeft")
+                .BUILD_SETTLEMENT(1).atNode(-2, 0, "bottomLeft").settlementsLimitNotReached()
+                .BUILD_ROAD(1).atEdge(2, -2, "right")
+                .BUILD_ROAD(1).atEdge(2, -2, "bottomRight")
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "bottom").settlementsLimitReached()
+                .BUILD_CITY(1).atNode(2, -2, "bottom").successfully()
+                .BUILD_ROAD(1).atEdge(-2, 0, "left")
+                .BUILD_ROAD(1).atEdge(-2, 0, "topLeft")
+                .BUILD_SETTLEMENT(1).atNode(-2, 0, "top").settlementsLimitReached()
+                .BUILD_ROAD(1).atEdge(1, -2, "topRight")
+                .BUILD_ROAD(1).atEdge(1, -2, "topLeft")
+                .BUILD_SETTLEMENT(1).atNode(1, -2, "topLeft").failsWithError("SETTLEMENTS_LIMIT_IS_REACHED");
 
-                .nextRandomDiceValues(asList(6, 6))
-                .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
-                .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
     }
 
-    private Scenario giveResourcesToPlayerForSettlementBuilding(int moveOrder) {
-        return scenario
+    @Test
+    public void should_fail_to_build_sixth_settlement_on_default_map() {
+        startNewGame();
+        playPreparationStage();
+        giveResourcesToPlayerForSettlementBuilding(1, 4);
+        giveResourcesToPlayerForRoadBuilding(1, 6)
+                .nextRandomDiceValues(asList(6, 6))
+                .THROW_DICE(1)
+                .BUILD_ROAD(1).atEdge(2, -2, "topRight")
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").settlementsLimitNotReached()
+                .BUILD_ROAD(1).atEdge(-2, 0, "bottomLeft")
+                .BUILD_SETTLEMENT(1).atNode(-2, 0, "bottomLeft").settlementsLimitNotReached()
+                .BUILD_ROAD(1).atEdge(2, -2, "right")
+                .BUILD_ROAD(1).atEdge(2, -2, "bottomRight")
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "bottom").settlementsLimitReached()
+                .BUILD_ROAD(1).atEdge(-2, 0, "left")
+                .BUILD_ROAD(1).atEdge(-2, 0, "topLeft")
+                .BUILD_SETTLEMENT(1).atNode(-2, 0, "top").failsWithError("SETTLEMENTS_LIMIT_IS_REACHED");
+
+    }
+
+    private Scenario giveResourcesToPlayerForRoadBuilding(int moveOrder, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            scenario
+                    .nextRandomDiceValues(asList(moveOrder, moveOrder))
+                    .THROW_DICE(moveOrder)
+                    .END_TURN(moveOrder)
+
+                    .nextRandomDiceValues(asList(6, 6))
+                    .THROW_DICE(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+                    .END_TURN(moveOrder == 1 ? 2 : moveOrder == 2 ? 3 : 1)
+
+                    .nextRandomDiceValues(asList(6, 6))
+                    .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
+                    .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+        }
+        return scenario;
+    }
+
+    private Scenario giveResourcesToPlayerForCityBuilding(int moveOrder, int quantity) {
+        for (int i = 0; i < 3; i++) {
+            giveResourcesToPlayerForSettlementBuilding(moveOrder, quantity);
+        }
+        return scenario;
+    }
+
+    private Scenario giveResourcesToPlayerForSettlementBuilding(int moveOrder, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            scenario
                 .nextRandomDiceValues(asList(moveOrder, moveOrder))
                 .THROW_DICE(moveOrder)
                 .END_TURN(moveOrder)
@@ -306,6 +364,8 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .nextRandomDiceValues(asList(6, 6))
                 .THROW_DICE(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2)
                 .END_TURN(moveOrder == 1 ? 3 : moveOrder == 2 ? 1 : 2);
+        }
+        return scenario;
     }
 
     private Scenario startNewGame() {
@@ -318,28 +378,28 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .loginUser(USER_NAME_2, USER_PASSWORD_2)
                 .loginUser(USER_NAME_3, USER_PASSWORD_3)
 
-                .setHex(HexType.STONE, 11).atCoordinates(0, -2)
+                .setHex(HexType.STONE, 8).atCoordinates(0, -2)
                 .setHex(HexType.BRICK, 2).atCoordinates(1, -2)
                 .setHex(HexType.WOOD, 2).atCoordinates(2, -2)
 
-                .setHex(HexType.STONE, 11).atCoordinates(-1, -1)
-                .setHex(HexType.WHEAT, 3).atCoordinates(0, -1)
-                .setHex(HexType.SHEEP, 3).atCoordinates(1, -1)
+                .setHex(HexType.SHEEP, 8).atCoordinates(-1, -1)
+                .setHex(HexType.WHEAT, 8).atCoordinates(0, -1)
+                .setHex(HexType.SHEEP, 11).atCoordinates(1, -1)
                 .setHex(HexType.BRICK, 4).atCoordinates(2, -1)
 
-                .setHex(HexType.STONE, 11).atCoordinates(-2, 0)
-                .setHex(HexType.WHEAT, 5).atCoordinates(-1, 0)
+                .setHex(HexType.STONE, 3).atCoordinates(-2, 0)
+                .setHex(HexType.WHEAT, 3).atCoordinates(-1, 0)
                 .setHex(HexType.EMPTY, null).atCoordinates(0, 0)
-                .setHex(HexType.WHEAT, 8).atCoordinates(1, 0)
+                .setHex(HexType.WHEAT, 11).atCoordinates(1, 0)
                 .setHex(HexType.WOOD, 4).atCoordinates(2, 0)
 
-                .setHex(HexType.SHEEP, 9).atCoordinates(-2, 1)
+                .setHex(HexType.SHEEP, 3).atCoordinates(-2, 1)
                 .setHex(HexType.SHEEP, 5).atCoordinates(-1, 1)
-                .setHex(HexType.SHEEP, 8).atCoordinates(0, 1)
+                .setHex(HexType.STONE, 5).atCoordinates(0, 1)
                 .setHex(HexType.WOOD, 6).atCoordinates(1, 1)
 
                 .setHex(HexType.WOOD, 10).atCoordinates(-2, 2)
-                .setHex(HexType.WHEAT, 2).atCoordinates(-1, 2)
+                .setHex(HexType.WHEAT, 5).atCoordinates(-1, 2)
                 .setHex(HexType.BRICK, 6).atCoordinates(0, 2)
 
                 .createNewPublicGameByUser(USER_NAME_1, targetVictoryPoints, initialBuildingSet)
@@ -368,40 +428,40 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .BUILD_ROAD(3).atEdge(0, 2, "topRight")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(3).atNode(0, 0, "bottomRight")
-                .BUILD_ROAD(3).atEdge(0, 0, "bottomRight")
+                .BUILD_SETTLEMENT(3).atNode(0, -2, "bottom")
+                .BUILD_ROAD(3).atEdge(0, -2, "bottomRight")
                 .END_TURN(3)
 
-                .BUILD_SETTLEMENT(2).atNode(0, 0, "bottomLeft")
-                .BUILD_ROAD(2).atEdge(0, 0, "bottomLeft")
+                .BUILD_SETTLEMENT(2).atNode(0, 1, "bottomLeft")
+                .BUILD_ROAD(2).atEdge(0, 1, "bottomLeft")
                 .END_TURN(2)
 
-                .BUILD_SETTLEMENT(1).atNode(0, 0, "top")
-                .BUILD_ROAD(1).atEdge(0, 0, "topLeft")
+                .BUILD_SETTLEMENT(1).atNode(-2, 1, "top")
+                .BUILD_ROAD(1).atEdge(-2, 1, "topLeft")
                 .END_TURN(1);
     }
 
     /*
     *          (X, Y) coordinates of generated map:                          Node position at hex:
     *
-    *           *----*----*----*----*----*----*                                      top
-    *           |    11   |    2    |     2   |                          topLeft *----*----* topRight
+    *           *----*----*----*---(1)===*----*                                      top
+    *           |    8    |    2    |     2   |                          topLeft *----*----* topRight
     *           |  STONE  |  BRICK  |   WOOD  |                                  |         |
     *           | ( 0,-2) | ( 1,-2) | ( 2,-2) |                       bottomLeft *----*----* bottomRight
-    *      *----*----*----*----*----*----*----*----*                                bottom
-    *      |    11   |    3    |    3    |    4    |
-    *      |  STONE  |  WHEAT  |  SHEEP  |  BRICK  |
+    *      *----*---(3)===*----*----*----*----*----*                                bottom
+    *      |    8    |    8    |    11   |    4    |
+    *      |  SHEEP  |  WHEAT  |  SHEEP  |  BRICK  |
     *      | (-1,-1) | ( 0,-1) | ( 1,-1) | ( 2,-1) |                        Edge position at hex:
-    * *----*----*----*----*----*----*----*----*----*----*
-    * |    11   |    5    |         |    8    |    4    |                      topLeft topRight
+    * *----*----*----*----*----*----*----*----*===(2)---*
+    * |    3    |    3    |         |    11   |    4    |                      topLeft topRight
     * |  STONE  |  WHEAT  |  EMPTY  |  WHEAT  |   WOOD  |                        .====.====.
     * | (-2, 0) | (-1, 0) | ( 0, 0) | ( 1, 0) | ( 2, 0) |                  left ||         || right
-    * *----*----*----*----*----*----*----*----*----*----*                        .====.====.
-    *      |    9    |    5    |    8    |    6    |                        bottomLeft bottomRight
-    *      |  SHEEP  |  SHEEP  |  SHEEP  |   WOOD  |
+    * *----*===(1)---*----*----*----*----*----*----*----*                        .====.====.
+    *      |    3    |    5    |    5    |    6    |                        bottomLeft bottomRight
+    *      |  SHEEP  |  SHEEP  |  STONE  |   WOOD  |
     *      | (-2, 1) | (-1, 1) | ( 0, 1) | ( 1, 1) |
-    *      *----*----*----*----*----*----*----*----*
-    *           |    10   |    2    |    6    |
+    *      *----*----*----*---(2)===*----*===(3)---*
+    *           |    10   |    5    |    6    |
     *           |   WOOD  |  WHEAT  |  BRICK  |
     *           | (-2, 2) | (-1, 2) | ( 0, 2) |
     *           *----*----*----*----*----*----*
