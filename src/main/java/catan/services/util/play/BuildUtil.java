@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static catan.services.util.play.ValidationUtil.ERROR_CODE_ERROR;
+import static catan.services.util.play.ValidationUtil.SETTLEMENTS_LIMIT_IS_REACHED_ERROR;
 
 @Component
 public class BuildUtil {
@@ -171,5 +172,21 @@ public class BuildUtil {
             log.debug("Cannot build building close to other settlements");
             throw new PlayException(ERROR_CODE_ERROR);
         }
+    }
+
+    public void validateSettlementLimitExceeded(GameUserBean gameUser) throws PlayException {
+        log.debug("Validating if player exceed build settlement count limit");
+
+        int usersSettlementsCount = gameUser.getBuildingsCount().getSettlements();
+        int settlementCountLimit = gameUser.getGame().getSettlementCountLimit();
+
+        boolean settlementsCountLimitReached = usersSettlementsCount >= settlementCountLimit;
+        if(settlementsCountLimitReached){
+            log.debug("Build settlement count limit exceeded");
+            throw new PlayException(SETTLEMENTS_LIMIT_IS_REACHED_ERROR);
+        }
+
+        int settlementsLeftCount = settlementCountLimit - usersSettlementsCount;
+        log.debug("User currently has " + usersSettlementsCount + " settlements, " + settlementsLeftCount + " available settlements left");
     }
 }

@@ -57,12 +57,17 @@ export class ExecuteActionsService {
         },
         'BUILD_SETTLEMENT': (code: string, game: Game) => {
             this._play.buildSettlement(game)
-                .then(() => this._gameService.refresh(game))
-                .catch(errorCode => {
-                    if (errorCode === "NO_AVAILABLE_PLACES") {
+                .then(data => {
+                    if (data.limitReached) {
+                        this._alert.message("Settlements limit has just been reached. Build city to increase settlements count");
+                    }
+                    this._gameService.refresh(game)
+                })
+                .catch(error => {
+                    if (error === "NO_AVAILABLE_PLACES") {
                         this._alert.message("NO_AVAILABLE_PLACES");
-                    } else if (errorCode !== "CANCELED") {
-                        this._alert.message("Build road error!");
+                    } else if (error !== "CANCELED") {
+                        this._alert.message('Build settlement error: ' + ((error.errorCode) ? error.errorCode : 'unknown'))
                     }
                 });
         },

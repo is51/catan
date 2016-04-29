@@ -63,6 +63,7 @@ public class PlayServiceImpl implements PlayService {
     private ConcurrentMap<Long, Long> locks = new ConcurrentHashMap<Long, Long>();
 
     public static final String ERROR_CODE_ERROR = "ERROR";
+    public static final double BUILD_SETTLEMENT_COUNT_LIMIT_RATIO = 0.28;
 
     @Override
     public Map<String, String> processAction(GameUserActionCode action, UserBean user, String gameId) throws PlayException, GameException {
@@ -107,7 +108,7 @@ public class PlayServiceImpl implements PlayService {
                 buildRoad(gameUser, params.get("edgeId"));
                 break;
             case BUILD_SETTLEMENT:
-                buildSettlement(gameUser, params.get("nodeId"));
+                buildSettlement(gameUser, params.get("nodeId"), returnedParams);
                 break;
             case BUILD_CITY:
                 buildCity(gameUser, params.get("nodeId"));
@@ -170,9 +171,10 @@ public class PlayServiceImpl implements PlayService {
         achievementsUtil.updateLongestWayLength(gameUser);
     }
 
-    private void buildSettlement(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
+    private void buildSettlement(GameUserBean gameUser, String nodeId, Map<String, String> returnedParams) throws PlayException, GameException {
         GameBean game = gameUser.getGame();
         NodeBean nodeToBuildOn = (NodeBean) buildUtil.getValidMapElementByIdToBuildOn(nodeId, new ArrayList<MapElement>(game.getNodes()));
+        buildUtil.validateSettlementLimitExceeded(gameUser);
         buildUtil.validateUserCanBuildSettlementOnNode(nodeToBuildOn);
         buildUtil.buildOnNode(nodeToBuildOn, NodeBuiltType.SETTLEMENT);
 
@@ -184,6 +186,13 @@ public class PlayServiceImpl implements PlayService {
         MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_SETTLEMENT, gameUser);
 
         achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
+
+        boolean settlementsCountLimitReached = gameUser.getBuildingsCount().getSettlements() >= game.getSettlementCountLimit();
+        if(settlementsCountLimitReached){
+            log.debug("Build settlements count limit reached");
+        }
+
+        returnedParams.put("isLimitReached", String.valueOf(settlementsCountLimitReached));
     }
 
     private void buildCity(GameUserBean gameUser, String nodeId) throws PlayException, GameException {
