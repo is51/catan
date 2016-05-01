@@ -21,7 +21,7 @@ You can run it under any operating system.
 
 To run the application you should install the following tools:
 
-* Java 1.7
+* Java 1.7 (or newer)
 * Maven 3.2.3
 
 ####  Instructions
@@ -35,18 +35,40 @@ mvn clean install
 
 To start Server without running tests:
 ```
-mvn clean install tomcat7:run -D skipTests
+mvn clean install spring-boot:run -DskipTests -Dproperties.folder=dev
 ```
 Server is available under the following link:
 ```
 http://localhost:8091/
 ```
 
+
+To prepare build for deployment to Google Cloud, build JAR file:
+```
+mvn clean install -DskipTests
+```
+Check that build works fine:
+```
+java -Dproperties.folder=dev -jar ./target/IT-nizator.jar
+```
+Deploy build to gcloud via maven plugin:
+```
+mvn gcloud:deploy -DskipTests
+```
+
+
 ## How to deploy a new build to TEST server
 
+#### Windows
 Run the following batch file from command line:
 ```
 deploy.bat
 ```
 
+#### Linux & Mac
+Run the following batch file from command line:
+```
+chmod 777 deploy.sh
+./deploy.sh
+```
 
