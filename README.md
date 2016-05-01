@@ -39,7 +39,7 @@ mvn clean install spring-boot:run -DskipTests -Dproperties.folder=dev
 ```
 Server is available under the following link:
 ```
-http://localhost:8091/
+http://localhost:8080/
 ```
 
 
@@ -53,7 +53,7 @@ java -Dproperties.folder=dev -jar ./target/IT-nizator.jar
 ```
 Deploy build to gcloud via maven plugin:
 ```
-mvn gcloud:deploy -DskipTests
+mvn gcloud:deploy -DskipTests -Dgcloud.gcloud_directory=<path_to_gcloud_installed (e.g. /usr/local/google-cloud-sdk)>
 ```
 
 
