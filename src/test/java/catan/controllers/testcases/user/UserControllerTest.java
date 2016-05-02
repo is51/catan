@@ -1,7 +1,9 @@
 package catan.controllers.testcases.user;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.ctf.Scenario;
 import catan.controllers.util.FunctionalTestUtil;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -34,13 +36,24 @@ public class UserControllerTest extends FunctionalTestUtil {
     public static final String USER_NAME_GUEST_1 = "userGuest1_UserTest";
     public static final String USER_NAME_GUEST_2 = "userGuest2_UserTest";
 
+
+    private static boolean initialized = false;
+
+    @Before
+    public void setup() {
+        if (!initialized) {
+            new Scenario();     //setup RestAssured port and host
+            initialized = true;
+        }
+    }
+
     @Test
     public void shouldSuccessfullyRegisterNewUserAndFailRegistrationWithHttpCode400WhenSuchUserAlreadyExists() {
         //Registering new User
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
-                parameters("username", USER_NAME_1, "password", USER_PASSWORD_1).
+                parameters("username", USER_NAME_1 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX, "password", USER_PASSWORD_1).
                 when().
                 post("/api/user/register").
                 then().
@@ -58,7 +71,7 @@ public class UserControllerTest extends FunctionalTestUtil {
         given().
                 port(SERVER_PORT).
                 header("Accept-Encoding", "application/json").
-                parameters("username", USER_NAME_1, "password", USER_PASSWORD_1).
+                parameters("username", USER_NAME_1 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX, "password", USER_PASSWORD_1).
                 when().
                 post("/api/user/register").
                 then().

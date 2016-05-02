@@ -1,6 +1,7 @@
 package catan.controllers.testcases.game;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.ctf.Scenario;
 import catan.controllers.util.GameTestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,7 @@ public class CancelGameTest extends GameTestUtil {
     @Before
     public void setup() {
         if (!initialized) {
+            new Scenario();     //setup RestAssured port and host
             registerUser(USER_NAME_1, USER_PASSWORD_1);
             registerUser(USER_NAME_2, USER_PASSWORD_2);
             initialized = true;

@@ -111,4 +111,14 @@ public class RandomValueProvider extends RandomUtil {
     public Integer generateRandomOfferId(int limit) {
         return offerIdsToGenerate.size() > 0 ? offerIdsToGenerate.remove(0) : super.generateRandomOfferId(limit);
     }
+
+    public void resetNextRandomValues() {
+        privateCodesToGenerate.clear();
+        moveOrdersToGenerate.clear();
+        diceNumbersToGenerate.clear();
+        hexTypesToGenerate.clear();
+        hexDiceNumbersToGenerate.clear();
+        developmentCardsToGenerate.clear();
+        stolenResourcesToGenerate.clear();
+    }
 }

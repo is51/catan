@@ -3,6 +3,10 @@ package catan.controllers.util;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.types.DevelopmentCard;
 import com.jayway.restassured.RestAssured;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static com.jayway.restassured.RestAssured.given;
 
@@ -89,9 +93,19 @@ public class RandomValueTestUtil {
         given()
                 .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("resource", offerId.toString())
+                .parameters("offerId", offerId.toString())
                 .when()
                 .post("/api/management/random/set-next-offer-id")
+                .then()
+                .statusCode(200);
+    }
+
+    public static void resetNextRandomValues() {
+        given()
+                .port(RestAssured.port)
+                .header("Accept", ACCEPT_CONTENT_TYPE)
+                .when()
+                .post("/api/management/random/reset-next-random-values")
                 .then()
                 .statusCode(200);
     }

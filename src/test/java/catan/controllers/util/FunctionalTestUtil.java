@@ -63,7 +63,7 @@ public abstract class FunctionalTestUtil {
         return given()
                 .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
-                .parameters("username", username + GLOBAL_UNIQUE_USERNAME_SUFFIX)
+                .parameters("username", username.isEmpty() ? "" : username + GLOBAL_UNIQUE_USERNAME_SUFFIX)
                 .when()
                 .post("/api/user/register/guest");
     }

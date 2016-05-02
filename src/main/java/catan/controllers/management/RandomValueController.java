@@ -25,6 +25,13 @@ public class RandomValueController {
         randomValueProvider.setNextPrivateCode(privateCode);
     }
 
+    @RequestMapping(value = "reset-next-random-values",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void resetNextRandomValues() {
+        randomValueProvider.resetNextRandomValues();
+    }
+
     @RequestMapping(value = "set-next-move-order",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)

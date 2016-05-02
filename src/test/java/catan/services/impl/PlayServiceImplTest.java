@@ -3704,7 +3704,23 @@ public class PlayServiceImplTest {
         game.setPrivateGame(false);
         game.setTargetVictoryPoints(12);
         game.getHexes().addAll(Arrays.asList(
-                hex_0_0, hex_1_0, hex_0_1));
+                hex_0_0, hex_1_0, hex_0_1,
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, 1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, 2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, 0), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, 1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, 2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, 2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, 0), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, 1), HexType.BRICK, 2, false)));
         game.getNodes().addAll(Arrays.asList(
                 node_1_1, node_1_2, node_1_3, node_1_4, node_1_5, node_1_6,
                 node_2_2, node_2_3, node_2_4, node_2_5,

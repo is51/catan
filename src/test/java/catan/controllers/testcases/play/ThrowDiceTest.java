@@ -2,6 +2,7 @@ package catan.controllers.testcases.play;
 
 import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
+import catan.controllers.util.FunctionalTestUtil;
 import catan.controllers.util.PlayTestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -267,9 +268,9 @@ public class ThrowDiceTest extends PlayTestUtil {
 
                 //check that move orders are never changed and users have move orders according to joined order
                 .getGameDetails(1)
-                    .gameUser(3).check("user.username", is(USER_NAME_1))
-                    .gameUser(2).check("user.username", is(USER_NAME_2))
-                    .gameUser(1).check("user.username", is(USER_NAME_3))
+                    .gameUser(3).check("user.username", is(USER_NAME_1 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX))
+                    .gameUser(2).check("user.username", is(USER_NAME_2 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX))
+                    .gameUser(1).check("user.username", is(USER_NAME_3 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX))
 
                 .BUILD_SETTLEMENT(1).atNode(0, -1, "topRight")
                 .BUILD_ROAD(1).atEdge(0, -1, "right")

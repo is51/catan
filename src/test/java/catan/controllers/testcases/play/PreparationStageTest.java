@@ -1,6 +1,8 @@
 package catan.controllers.testcases.play;
 
 import catan.config.ApplicationConfig;
+import catan.controllers.ctf.Scenario;
+import catan.controllers.util.FunctionalTestUtil;
 import catan.controllers.util.PlayTestUtil;
 import catan.controllers.util.RandomValueTestUtil;
 import com.jayway.restassured.RestAssured;
@@ -43,6 +45,7 @@ public class PreparationStageTest extends PlayTestUtil {
     @Before
     public void setup() {
         if (!initialized) {
+            new Scenario();
             registerUser(USER_NAME_1, USER_PASSWORD_1);
             registerUser(USER_NAME_2, USER_PASSWORD_2);
             registerUser(USER_NAME_3, USER_PASSWORD_3);
@@ -108,7 +111,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, nodeBuildingAction);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
-        String message = activeUserName + ", build "
+        String message = activeUserName + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX + ", build "
                 + (numberOfBuilding == 1 ? "your first " : (numberOfBuilding == 2 ? "your second " : ""))
                 + (nodeBuildingAction.equals("BUILD_SETTLEMENT") ? "office" : "business centre");
         checkDisplayedMessage(userTokens, gameId, activeUserNumber, notActiveUserNumber1, notActiveUserNumber2, message);
@@ -122,7 +125,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, "BUILD_ROAD");
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
-        message = activeUserName + ", build network near your "
+        message = activeUserName + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX  + ", build network near your "
                 + (nodeBuildingAction.equals("BUILD_SETTLEMENT") ? "office" : "business centre");
         checkDisplayedMessage(userTokens, gameId, activeUserNumber, notActiveUserNumber1, notActiveUserNumber2, message);
 
@@ -274,7 +277,7 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("errorCode", equalTo("ERROR"));
 
         // check if message is correct
-        String message = userNames[thirdGameUserNumber] + ", build your second office";
+        String message = userNames[thirdGameUserNumber] + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX + ", build your second office";
         checkDisplayedMessage(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, message);
 
         // should_successfully_build_settlement_on_empty_node
@@ -325,7 +328,7 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("errorCode", equalTo("ERROR"));
 
         // check if message is correct
-        message = userNames[thirdGameUserNumber] + ", build network near your office";
+        message = userNames[thirdGameUserNumber] + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX + ", build network near your office";
         checkDisplayedMessage(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, message);
 
         // should_successfully_build_road_on_empty_edge_if_has_neighbour_road_that_belongs_to_this_player

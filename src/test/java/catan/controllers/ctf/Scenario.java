@@ -65,6 +65,8 @@ public class Scenario {
             RestAssured.baseURI = "http://localhost";
             RestAssured.port = 8091;
         }
+
+        RandomValueTestUtil.resetNextRandomValues();
     }
 
     public Set<Integer> getAllNodeIds() {
