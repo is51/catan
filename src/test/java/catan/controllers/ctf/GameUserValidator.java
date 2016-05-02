@@ -140,7 +140,7 @@ public class GameUserValidator {
             return this;
         }
 
-        public LogValidator displayedOnTop() {
+        public LogValidator isDisplayedOnTop() {
             check("log.find {it.code == '" + actionCode + "'}.displayedOnTop", equalTo(true));
             return this;
         }
