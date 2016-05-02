@@ -479,4 +479,8 @@ public class Scenario {
         trackCards = false;
         return this;
     }
+
+    public String getUsername(int moveOrder) {
+        return userNamesByMoveOrder.get(moveOrder);
+    }
 }

@@ -120,6 +120,37 @@ public class GameUserValidator {
         return scenario;
     }
 
+    public LogValidator logWithCode(String actionCode) {
+        check("log", notNullValue());
+        check("log.find {it.code == '" + actionCode + "'}", notNullValue());
+
+        return new LogValidator(scenario, actionCode);
+    }
+
+    public class LogValidator extends Scenario{
+        private String actionCode;
+
+        public LogValidator(Scenario scenario, String actionCode) {
+            cloneFrom(scenario);
+            this.actionCode = actionCode;
+        }
+
+        public LogValidator hasMessage(String message) {
+            check("log.find {it.code == '" + actionCode + "'}.message", equalTo(message));
+            return this;
+        }
+
+        public LogValidator displayedOnTop() {
+            check("log.find {it.code == '" + actionCode + "'}.displayedOnTop", equalTo(true));
+            return this;
+        }
+
+        public LogValidator isHidden() {
+            check("log.find {it.code == '" + actionCode + "'}.displayedOnTop", equalTo(false));
+            return this;
+        }
+    }
+
     public class ActionParameterValidator extends Scenario{
         private String action;
         public ActionParameterValidator(Scenario scenario, String action) {

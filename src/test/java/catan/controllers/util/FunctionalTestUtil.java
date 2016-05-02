@@ -77,4 +77,8 @@ public abstract class FunctionalTestUtil {
                 .post("/api/user/details");
     }
 
+    public static String toGlobalName(String name){
+        return name == null || name.isEmpty() ? "" : name + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX;
+    }
+
 }
