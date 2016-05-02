@@ -12,9 +12,13 @@ import catan.domain.model.user.UserBean;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -505,8 +509,18 @@ public class MessagesUtil {
 
     private static String resourcesToString(GameUserBean gameUser, Resources resources) {
         String resourcesList = "";
+        final List<HexType> definedHexTypeOrder = Arrays.asList(HexType.BRICK, HexType.WOOD, HexType.SHEEP, HexType.WHEAT, HexType.STONE);
+
         Map<HexType, Integer> resourcesMap = resources.resourcesToMap();
-        for (HexType hexType : resourcesMap.keySet()) {
+        List<HexType> hexTypes = new ArrayList<HexType>(resourcesMap.keySet());
+        Collections.sort(hexTypes, new Comparator<HexType>() {
+            @Override
+            public int compare(HexType hexType1, HexType hexType2) {
+                return Integer.valueOf(definedHexTypeOrder.indexOf(hexType1)).compareTo(definedHexTypeOrder.indexOf(hexType2));
+            }
+        });
+
+        for (HexType hexType : hexTypes) {
             Integer resQuantity = resourcesMap.get(hexType);
             if (resQuantity > 0) {
                 resourcesList += resourcesList.equals("") ? "" : ", ";

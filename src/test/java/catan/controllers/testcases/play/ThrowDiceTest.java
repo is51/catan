@@ -131,17 +131,43 @@ public class ThrowDiceTest extends PlayTestUtil {
                 .THROW_DICE(1)
                 .END_TURN(1)
 
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 4, 0, 0, 1)
-                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
-                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 4, 0, 0, 1)
+                .gameUser(1).logWithCode("THROW_DICE").hasMessage("You threw 6 and got 4 cables, 1 consultant").displayedOnTop()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .gameUser(2).logWithCode("THROW_DICE").hasMessage(scenario.getUsername(1) + " threw 6. You got 1 consultant").displayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .gameUser(3).logWithCode("THROW_DICE").hasMessage(scenario.getUsername(1) + " threw 6. You got 1 consultant").displayedOnTop()
 
-                .nextRandomDiceValues(asList(4, 6))
+                .nextRandomDiceValues(asList(2, 2))
                 .THROW_DICE(2)
                 .END_TURN(2)
 
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
-                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
-                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 2)
+                .gameUser(1).logWithCode("THROW_DICE").hasMessage(scenario.getUsername(2) + " threw 4. You got 2 consultants").displayedOnTop()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(2).logWithCode("THROW_DICE").hasMessage("You threw 4").displayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(3).logWithCode("THROW_DICE").hasMessage(scenario.getUsername(2) + " threw 4").displayedOnTop()
+
+                .nextRandomDiceValues(asList(2, 5))
+                .THROW_DICE(3)
+
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(1).logWithCode("THROW_DICE").hasMessage(scenario.getUsername(3) + " threw 7 and activate hacker").displayedOnTop()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(2).logWithCode("THROW_DICE").hasMessage(scenario.getUsername(3) + " threw 7 and activate hacker").displayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(3).logWithCode("THROW_DICE").hasMessage("You threw 7 and activate hacker").displayedOnTop()
+        ;
     }
 
 
