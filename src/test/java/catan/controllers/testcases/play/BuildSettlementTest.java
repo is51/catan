@@ -83,7 +83,14 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
                 .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
 
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully();
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).logWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
     }
 
     @Test
@@ -107,7 +114,14 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
                 .gameUser(1).check("resources.sheep", greaterThanOrEqualTo(1))
 
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully();
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).logWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();;
     }
 
     @Test
