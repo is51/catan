@@ -121,7 +121,7 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(2)
                 .gameUser(2).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();;
+                .gameUser(3).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
     }
 
     @Test
