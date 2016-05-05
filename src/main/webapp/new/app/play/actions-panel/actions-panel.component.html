@@ -1,55 +1,154 @@
-<!-- Before dice is thrown -->
-<div *ngIf="isActionEnabled('THROW_DICE')">
+<svg width="100%" height="100%" preserveAspectRatio="xMidYMax meet" [attr.viewBox]="'0 0 800 600'">
 
-    <button (click)="throwDice()">
-        <span class="glyphicon glyphicon-th-large"></span><br>
-        Throw
-    </button>
+    <defs>
+        <linearGradient id="grad-action-button-top" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0.2" style="stop-color:#4e90c0"/>
+            <stop offset="0.8" style="stop-color:#7aadd1"/>
+        </linearGradient>
 
-    <button (click)="showCards()" [disabled]="!isActionEnabled('USE_CARD_KNIGHT')">
-        <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
-        Cards
-    </button>
+        <linearGradient id="grad-action-button-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0" style="stop-color:#376b90"/>
+            <stop offset="0.75" style="stop-color:#376b90"/>
+            <stop offset="1" style="stop-color:#3d8dc2"/>
+        </linearGradient>
 
-</div>
+        <linearGradient id="grad-action-button-top-disabled" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0.2" style="stop-color:#9aa8b2"/>
+            <stop offset="0.8" style="stop-color:#abbac4"/>
+        </linearGradient>
 
-<!-- After dice is thrown -->
-<div *ngIf="isActionEnabled('END_TURN') && !isExecuting('END_TURN')">
+        <linearGradient id="grad-action-button-bottom-disabled" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0" style="stop-color:#7d8897"/>
+            <stop offset="0.75" style="stop-color:#7d8897"/>
+            <stop offset="1" style="stop-color:#9ea7b4"/>
+        </linearGradient>
+    </defs>
 
-    <button (click)="build()">
-        <span class="glyphicon glyphicon-shopping-cart"></span><br>
-        Buy
-    </button>
+    <g transform="translate(400,510)">
+        <g transform="scale(0.8)">
 
-    <button (click)="showCards()">
-        <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
-        Cards
-    </button>
+            <!-- Before dice is thrown -->
+            <g *ngIf="isActionEnabled('THROW_DICE')">
 
-    <button (click)="showTradePanel()">
-        <span class="glyphicon glyphicon-retweet"></span><br>
-        Trade
-    </button>
-
-    <button (click)="endTurn()">
-        <span class="glyphicon glyphicon-hourglass"></span><br>
-        End turn
-    </button>
-
-</div>
+                <g transform="translate(-58,0)">
+                    <rect (click)="throwDice()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                    <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                    <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                    <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                    <g transform="translate(0,91)">
+                        <g transform="scale(1,0.9)">
+                            <text font-size="11" text-anchor="middle" fill="#ffffff">THROW</text>
+                        </g>
+                    </g>
+                </g>
 
 
-<button (click)="showTradeReplyPanel()" *ngIf="isActionEnabled('TRADE_REPLY') && !isTradeReplyPanelVisible()">
-    <span class="glyphicon glyphicon-retweet"></span><br>
-    Reply
-</button>
+                <g transform="translate(58,0)" [class.disabled]="!isActionEnabled('USE_CARD_KNIGHT')">
+                    <rect (click)="showCards()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                    <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                    <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                    <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                    <g transform="translate(0,91)">
+                        <g transform="scale(1,0.9)">
+                            <text font-size="11" text-anchor="middle" fill="#ffffff">CONFERENCES</text>
+                        </g>
+                    </g>
+                </g>
 
-<button (click)="kickOffResources()" *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isExecuting('KICK_OFF_RESOURCES')">
-    <span class="glyphicon glyphicon-download-alt"></span><br>
-    Kick res
-</button>
+            </g>
 
-<button (click)="showGameResults()" *ngIf="game.isFinished() && !isGameResultsVisible()">
-    <span class="glyphicon glyphicon-th-list"></span><br>
-    Results
-</button>
+            <!-- After dice is thrown -->
+            <g *ngIf="isActionEnabled('END_TURN') && !isExecuting('END_TURN')">
+
+                <g transform="translate(-174,0)">
+                    <rect (click)="build()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                    <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                    <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                    <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                    <g transform="translate(0,91)">
+                        <g transform="scale(1,0.9)">
+                            <text font-size="11" text-anchor="middle" fill="#ffffff">BUY</text>
+                        </g>
+                    </g>
+                </g>
+
+                <g transform="translate(-58,0)">
+                    <rect (click)="showCards()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                    <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                    <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                    <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                    <g transform="translate(0,91)">
+                        <g transform="scale(1,0.9)">
+                            <text font-size="11" text-anchor="middle" fill="#ffffff">CONFERENCES</text>
+                        </g>
+                    </g>
+                </g>
+
+                <g transform="translate(58,0)">
+                    <rect (click)="showTradePanel()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                    <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                    <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                    <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                    <g transform="translate(0,91)">
+                        <g transform="scale(1,0.9)">
+                            <text font-size="11" text-anchor="middle" fill="#ffffff">TRADE</text>
+                        </g>
+                    </g>
+                </g>
+
+                <g transform="translate(174,0)">
+                    <rect (click)="endTurn()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                    <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                    <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                    <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                    <g transform="translate(0,91)">
+                        <g transform="scale(1,0.9)">
+                            <text font-size="11" text-anchor="middle" fill="#ffffff">END TURN</text>
+                        </g>
+                    </g>
+                </g>
+
+            </g>
+
+
+
+            <g *ngIf="isActionEnabled('TRADE_REPLY') && !isTradeReplyPanelVisible()">
+                <rect (click)="showTradeReplyPanel()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                <g transform="translate(0,91)">
+                    <g transform="scale(1,0.9)">
+                        <text font-size="11" text-anchor="middle" fill="#ffffff">REPLY</text>
+                    </g>
+                </g>
+            </g>
+
+            <g *ngIf="isActionEnabled('KICK_OFF_RESOURCES') && !isExecuting('KICK_OFF_RESOURCES')">
+                <rect (click)="kickOffResources()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                <g transform="translate(0,91)">
+                    <g transform="scale(1,0.9)">
+                        <text font-size="11" text-anchor="middle" fill="#ffffff">DROP</text>
+                    </g>
+                </g>
+            </g>
+
+            <g *ngIf="game.isFinished() && !isGameResultsVisible()">
+                <rect (click)="showGameResults()" class="button-bg" x="-50" y="0" width="100" height="100" rx="12" ry="12"></rect>
+                <rect class="button-bottom-bg" x="-50" y="0" width="100" height="75" rx="11" ry="11"></rect>
+                <circle r="20" cx="0" cy="38" fill="#ffffff"/>
+                <circle r="10" cx="0" cy="38" fill="#639dc8"/>
+                <g transform="translate(0,91)">
+                    <g transform="scale(1,0.9)">
+                        <text font-size="11" text-anchor="middle" fill="#ffffff">RESULTS</text>
+                    </g>
+                </g>
+            </g>
+
+        </g>
+    </g>
+
+</svg>
