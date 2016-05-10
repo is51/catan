@@ -1,3 +1,30 @@
+svg {
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+svg .button-bg {
+    pointer-events: all;
+    cursor: pointer;
+    fill: url(#grad-action-button-bottom);
+}
+
+svg .button-bottom-bg {
+    fill: url(#grad-action-button-top);
+}
+
+svg .disabled .button-bg {
+    fill: url(#grad-action-button-bottom-disabled);
+}
+
+svg .disabled .button-bottom-bg {
+    fill: url(#grad-action-button-top-disabled);
+}
+
+/*
 :host {
     position: absolute;
     bottom: 0;
@@ -31,3 +58,4 @@ button[disabled] {
 button span {
     font-size: 21px;
 }
+*/
