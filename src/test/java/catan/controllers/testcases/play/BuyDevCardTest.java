@@ -69,7 +69,7 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .getGameDetails(2)
                 .gameUser(2).logWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop();;
+                .gameUser(3).logWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop();
     }
 
     @Test

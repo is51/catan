@@ -78,7 +78,12 @@ public class LongestWayLengthTest extends PlayTestUtil {
                 getGameDetails(1).
                 game().hasLongestWayOwner(1).
                 gameUser(1).hasLongestWayLength(5).
-                gameUser(1).hasVictoryPoints(4);
+                gameUser(1).hasVictoryPoints(4).
+                gameUser(1).logWithCode("NEW_WIDEST_NETWORK").hasMessage("You are a new widest network owner").isDisplayedOnTop().
+                getGameDetails(2).
+                gameUser(2).logWithCode("NEW_WIDEST_NETWORK").hasMessage(scenario.getUsername(1) + " is a new widest network owner").isDisplayedOnTop().
+                getGameDetails(3).
+                gameUser(3).logWithCode("NEW_WIDEST_NETWORK").hasMessage(scenario.getUsername(1) + " is a new widest network owner").isDisplayedOnTop();
     }
 
     @Test
@@ -107,7 +112,12 @@ public class LongestWayLengthTest extends PlayTestUtil {
                 getGameDetails(2).
                 game().hasLongestWayOwner(2).
                 gameUser(1).hasVictoryPoints(2).
-                gameUser(2).hasVictoryPoints(4);
+                gameUser(2).hasVictoryPoints(4).
+                gameUser(2).logWithCode("NEW_WIDEST_NETWORK").hasMessage("You are a new widest network owner").isDisplayedOnTop().
+                getGameDetails(1).
+                gameUser(1).logWithCode("NEW_WIDEST_NETWORK").hasMessage(scenario.getUsername(2) + " is a new widest network owner").isDisplayedOnTop().
+                getGameDetails(3).
+                gameUser(3).logWithCode("NEW_WIDEST_NETWORK").hasMessage(scenario.getUsername(2) + " is a new widest network owner").isDisplayedOnTop();
     }
 
     @Test
@@ -230,7 +240,16 @@ public class LongestWayLengthTest extends PlayTestUtil {
                 gameUser(1).hasVictoryPoints(2).
                 gameUser(1).hasLongestWayLength(4).
                 gameUser(2).hasVictoryPoints(3).
-                gameUser(2).hasLongestWayLength(3);
+                gameUser(2).hasLongestWayLength(3).
+
+                gameUser(2).logWithCode("INTERRUPTED_WIDEST_NETWORK").
+                hasMessage("The widest network was interrupted! Currently there is no widest network owners").isHidden().
+                getGameDetails(1).
+                gameUser(1).logWithCode("INTERRUPTED_WIDEST_NETWORK").
+                hasMessage("The widest network was interrupted! Currently there is no widest network owners").isHidden().
+                getGameDetails(3).
+                gameUser(3).logWithCode("INTERRUPTED_WIDEST_NETWORK").
+                hasMessage("The widest network was interrupted! Currently there is no widest network owners").isHidden();
     }
 
     @Test

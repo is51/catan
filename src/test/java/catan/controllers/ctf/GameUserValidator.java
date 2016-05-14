@@ -122,7 +122,7 @@ public class GameUserValidator {
 
     public LogValidator logWithCode(String actionCode) {
         check("log", notNullValue());
-        check("log.max{it.id}.code", equalTo(actionCode));
+        check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}.find {it.code == '" + actionCode + "'}", notNullValue());
 
         return new LogValidator(scenario, actionCode);
     }
@@ -136,17 +136,20 @@ public class GameUserValidator {
         }
 
         public LogValidator hasMessage(String message) {
-            check("log.max{it.id}.message", equalTo(message));
+            check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}." +
+                    "find {it.code == '" + actionCode + "'}.message", equalTo(message));
             return this;
         }
 
         public LogValidator isDisplayedOnTop() {
-            check("log.max{it.id}.displayedOnTop", equalTo(true));
+            check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}." +
+                    "find {it.code == '" + actionCode + "'}.displayedOnTop", equalTo(true));
             return this;
         }
 
         public LogValidator isHidden() {
-            check("log.max{it.id}.displayedOnTop", equalTo(false));
+            check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}." +
+                    "find {it.code == '" + actionCode + "'}.displayedOnTop", equalTo(false));
             return this;
         }
     }
