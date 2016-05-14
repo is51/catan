@@ -120,6 +120,13 @@ public class GameUserValidator {
         return scenario;
     }
 
+    public Scenario doesNotHavelogWithCode(String actionCode) {
+        check("log", notNullValue());
+        check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}.find {it.code == '" + actionCode + "'}", nullValue());
+
+        return scenario;
+    }
+
     public LogValidator logWithCode(String actionCode) {
         check("log", notNullValue());
         check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}.find {it.code == '" + actionCode + "'}", notNullValue());

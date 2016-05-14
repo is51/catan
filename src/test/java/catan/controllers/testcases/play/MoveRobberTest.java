@@ -81,7 +81,18 @@ public class MoveRobberTest extends PlayTestUtil {
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
                     .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isHidden()
+                    .gameUser(1).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(2)
+                    .gameUser(2).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                    .gameUser(2).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(3)
+                    .gameUser(3).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                    .gameUser(3).doesNotHavelogWithCode("STEAL_RESOURCE")
+        ;
     }
 
     @Test
@@ -119,7 +130,17 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                 .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
-                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(1).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isHidden()
+                .gameUser(1).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(2)
+                .gameUser(2).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(2).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(3)
+                .gameUser(3).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(3).doesNotHavelogWithCode("STEAL_RESOURCE");
     }
 
     @Test
@@ -144,9 +165,17 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
                 .gameUser(1).hasAvailableAction("END_TURN")
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .gameUser(1).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isHidden()
+                .gameUser(1).logWithCode("STEAL_RESOURCE").hasMessage("Hacker stole " + scenario.getUsername(3) + "’s consultant and gave it to you").isHidden()
+
+                .getGameDetails(2)
+                .gameUser(2).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(2).logWithCode("STEAL_RESOURCE").hasMessage("Hacker stole " + scenario.getUsername(3) + "’s resource and gave it to " + scenario.getUsername(1)).isDisplayedOnTop()
 
                 .getGameDetails(3)
-                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -1);
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -1)
+                .gameUser(3).logWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(3).logWithCode("STEAL_RESOURCE").hasMessage("Hacker stole your consultant and gave it to " + scenario.getUsername(1)).isDisplayedOnTop();
     }
 
     @Test
