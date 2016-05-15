@@ -63,11 +63,11 @@ public class BuildRoadTest extends PlayTestUtil {
                 .BUILD_ROAD(1).atEdge(2, -2, "topLeft").successfully()
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                .gameUser(1).logWithCode("BUILD_ROAD").hasMessage("You built a network").isHidden()
+                .gameUser(1).hasLogWithCode("BUILD_ROAD").hasMessage("You built a network").isHidden()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop();
+                .gameUser(3).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop();
     }
 
     @Test
@@ -94,11 +94,11 @@ public class BuildRoadTest extends PlayTestUtil {
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight").successfully()
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(-1, -1, 0, 0, 0)
-                .gameUser(1).logWithCode("BUILD_ROAD").hasMessage("You built a network").isHidden()
+                .gameUser(1).hasLogWithCode("BUILD_ROAD").hasMessage("You built a network").isHidden()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop();;
+                .gameUser(3).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop();;
     }
 
     @Test

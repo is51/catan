@@ -62,7 +62,15 @@ public class UseCardYearOfPlentyTest extends PlayTestUtil {
                 .USE_CARD_YEAR_OF_PLENTY(1, "BRICK", "STONE").successfully()
                 .getGameDetails(1)
                     .gameUser(1).resourcesQuantityChangedBy(1, 0, 0, 0, 1)
-                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1);
+                    .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, 0, -1)
+                    .gameUser(1).hasLogWithCode("USE_CARD_YEAR_OF_PLENTY").hasMessage("You used startup bonus and took server, consultant").isHidden()
+
+                .getGameDetails(2)
+                    .gameUser(2).hasLogWithCode("USE_CARD_YEAR_OF_PLENTY").hasMessage(scenario.getUsername(1) + " used startup bonus").isDisplayedOnTop()
+
+                .getGameDetails(3)
+                    .gameUser(3).hasLogWithCode("USE_CARD_YEAR_OF_PLENTY").hasMessage(scenario.getUsername(1) + " used startup bonus").isDisplayedOnTop()
+        ;
     }
 
     @Test

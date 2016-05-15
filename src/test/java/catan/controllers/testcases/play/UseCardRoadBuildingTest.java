@@ -67,6 +67,13 @@ public class UseCardRoadBuildingTest extends PlayTestUtil {
                 .getGameDetails(1)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, -1, 0, 0)
                     .gameUser(1).hasAvailableAction("BUILD_ROAD")
+                    .gameUser(1).hasLogWithCode("USE_CARD_ROAD_BUILDING").hasMessage("You used free network building").isHidden()
+
+                .getGameDetails(2)
+                    .gameUser(2).hasLogWithCode("USE_CARD_ROAD_BUILDING").hasMessage(scenario.getUsername(1) + " used free network building").isDisplayedOnTop()
+
+                .getGameDetails(3)
+                    .gameUser(3).hasLogWithCode("USE_CARD_ROAD_BUILDING").hasMessage(scenario.getUsername(1) + " used free network building").isDisplayedOnTop()
 
                 .BUILD_ROAD(1).atEdge(2, -2, "topLeft")
                 .getGameDetails(1)

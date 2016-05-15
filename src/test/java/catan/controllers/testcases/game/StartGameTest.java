@@ -73,13 +73,13 @@ public class StartGameTest extends GameTestUtil {
                 .setUserReady(USER_NAME_3)
 
                 .getGameDetails(1).statusIsPlaying()
-                .gameUser(1).logWithCode("START_GAME").hasMessage("You start the game!").isDisplayedOnTop()
+                .gameUser(1).hasLogWithCode("START_GAME").hasMessage("You start the game!").isDisplayedOnTop()
 
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("START_GAME").hasMessage(scenario.getUsername(1) + " starts the game!").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("START_GAME").hasMessage(scenario.getUsername(1) + " starts the game!").isDisplayedOnTop()
 
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("START_GAME").hasMessage(scenario.getUsername(1) + " starts the game!").isDisplayedOnTop();
+                .gameUser(3).hasLogWithCode("START_GAME").hasMessage(scenario.getUsername(1) + " starts the game!").isDisplayedOnTop();
     }
 
     @Test

@@ -60,11 +60,11 @@ public class FinishGameTest extends PlayTestUtil {
 
                 //Then
                 .getGameDetails(1).statusIsFinished()
-                .gameUser(1).logWithCode("FINISH_GAME").hasMessage("Game finished. You are the winner").isDisplayedOnTop()
+                .gameUser(1).hasLogWithCode("FINISH_GAME").hasMessage("Game finished. You are the winner").isDisplayedOnTop()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("FINISH_GAME").hasMessage("Game finished. " + scenario.getUsername(1) + " is the winner").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("FINISH_GAME").hasMessage("Game finished. " + scenario.getUsername(1) + " is the winner").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("FINISH_GAME").hasMessage("Game finished. " + scenario.getUsername(1) + " is the winner").isDisplayedOnTop()
+                .gameUser(3).hasLogWithCode("FINISH_GAME").hasMessage("Game finished. " + scenario.getUsername(1) + " is the winner").isDisplayedOnTop()
         ;
     }
 

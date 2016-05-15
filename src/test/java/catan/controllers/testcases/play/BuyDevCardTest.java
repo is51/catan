@@ -65,11 +65,11 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .BUY_CARD(1).successfully()
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, -1, -1, -1)
-                .gameUser(1).logWithCode("BUY_CARD").hasMessage("You organised a conference. Your new ability: hacker").isHidden()
+                .gameUser(1).hasLogWithCode("BUY_CARD").hasMessage("You organised a conference. Your new ability: hacker").isHidden()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop();
+                .gameUser(3).hasLogWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop();
     }
 
     @Test

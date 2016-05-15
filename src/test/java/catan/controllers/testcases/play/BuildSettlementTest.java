@@ -86,11 +86,11 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully()
 
                 .getGameDetails(1)
-                .gameUser(1).logWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
+                .gameUser(1).hasLogWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
+                .gameUser(3).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
     }
 
     @Test
@@ -117,11 +117,11 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully()
 
                 .getGameDetails(1)
-                .gameUser(1).logWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
+                .gameUser(1).hasLogWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
+                .gameUser(3).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
     }
 
     @Test

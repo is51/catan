@@ -63,7 +63,14 @@ public class UseCardKnightTest extends PlayTestUtil {
                 .getGameDetails(1)
                     .gameUser(1).devCardsQuantityChangedBy(-1, 0, 0, 0, 0)
                     .gameUser(1).hasMandatoryAvailableAction("MOVE_ROBBER")
-                    .gameUser(1).hasUsedKnights(1);
+                    .gameUser(1).hasUsedKnights(1)
+                    .gameUser(1).hasLogWithCode("USE_CARD_KNIGHT").hasMessage("You used hacker").isHidden()
+
+                .getGameDetails(2)
+                    .gameUser(2).hasLogWithCode("USE_CARD_KNIGHT").hasMessage(scenario.getUsername(1) + " used hacker").isDisplayedOnTop()
+
+                .getGameDetails(3)
+                    .gameUser(3).hasLogWithCode("USE_CARD_KNIGHT").hasMessage(scenario.getUsername(1) + " used hacker").isDisplayedOnTop();
     }
 
     @Test

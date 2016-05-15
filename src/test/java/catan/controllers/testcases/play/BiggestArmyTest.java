@@ -107,11 +107,11 @@ public class BiggestArmyTest extends PlayTestUtil {
                 gameUser(1).hasUsedKnights(3).          //user 1 has 3 used knights
                 gameUser(1).hasVictoryPoints(4).        //user GOT 2 VP for biggest army
 
-                gameUser(1).logWithCode("NEW_SECURITY_LEADER").hasMessage("You are a new security leader").isDisplayedOnTop().
+                gameUser(1).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage("You are a new security leader").isDisplayedOnTop().
                 getGameDetails(2).
-                gameUser(2).logWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(1) + " is a new security leader").isDisplayedOnTop().
+                gameUser(2).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(1) + " is a new security leader").isDisplayedOnTop().
                 getGameDetails(3).
-                gameUser(3).logWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(1) + " is a new security leader").isDisplayedOnTop();
+                gameUser(3).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(1) + " is a new security leader").isDisplayedOnTop();
     }
 
     @Test
@@ -198,11 +198,11 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .game().hasBiggestArmyOwner(2).         //user 2 is the biggest army owner
 
 
-                gameUser(2).logWithCode("NEW_SECURITY_LEADER").hasMessage("You are a new security leader").isDisplayedOnTop().
+                gameUser(2).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage("You are a new security leader").isDisplayedOnTop().
                 getGameDetails(1).
-                gameUser(1).logWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(2) + " is a new security leader").isDisplayedOnTop().
+                gameUser(1).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(2) + " is a new security leader").isDisplayedOnTop().
                 getGameDetails(3).
-                gameUser(3).logWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(2) + " is a new security leader").isDisplayedOnTop();
+                gameUser(3).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(2) + " is a new security leader").isDisplayedOnTop();
     }
 
     private Scenario giveResourcesAndBuyKnightsAndPassCycle(int moveOrder, int quantity) {

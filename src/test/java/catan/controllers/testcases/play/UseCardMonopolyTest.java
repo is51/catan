@@ -64,12 +64,20 @@ public class UseCardMonopolyTest extends PlayTestUtil {
                 .getGameDetails(1)
                     .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 6)
                     .gameUser(1).devCardsQuantityChangedBy(0, 0, 0, -1, 0)
+                    .gameUser(1).hasLogWithCode("USE_CARD_MONOPOLY").hasMessage("You sued other players and got 6 consultants").isHidden()
+
                 .getGameDetails(2)
                     .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, -3)
                     .gameUser(2).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(2).hasLogWithCode("USE_CARD_MONOPOLY").hasMessage(scenario.getUsername(1) +
+                " sued other players and got all consultants").isDisplayedOnTop()
+
                 .getGameDetails(3)
                     .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -3)
-                    .gameUser(3).devCardsQuantityChangedBy(0, 0, 0, 0, 0);
+                    .gameUser(3).devCardsQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(3).hasLogWithCode("USE_CARD_MONOPOLY").hasMessage(scenario.getUsername(1) +
+                " sued other players and got all consultants").isDisplayedOnTop()
+        ;
     }
 
     @Test

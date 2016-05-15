@@ -74,11 +74,11 @@ public class BuildCityTest extends PlayTestUtil {
                 .BUILD_CITY(1).atNode(1, -1, "top").successfully()
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, -2, -3)
-                .gameUser(1).logWithCode("BUILD_CITY").hasMessage("You built business centre").isHidden()
+                .gameUser(1).hasLogWithCode("BUILD_CITY").hasMessage("You built business centre").isHidden()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("BUILD_CITY").hasMessage(scenario.getUsername(1) + " built business centre").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("BUILD_CITY").hasMessage(scenario.getUsername(1) + " built business centre").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUILD_CITY").hasMessage(scenario.getUsername(1) + " built business centre").isDisplayedOnTop();
+                .gameUser(3).hasLogWithCode("BUILD_CITY").hasMessage(scenario.getUsername(1) + " built business centre").isDisplayedOnTop();
     }
 
     @Test
@@ -135,11 +135,11 @@ public class BuildCityTest extends PlayTestUtil {
                 .BUILD_CITY(3).atNode(0, 0, "bottomRight").successfully()
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
-                .gameUser(1).logWithCode("BUILD_CITY").hasMessage(scenario.getUsername(3) + " built business centre").isDisplayedOnTop()
+                .gameUser(1).hasLogWithCode("BUILD_CITY").hasMessage(scenario.getUsername(3) + " built business centre").isDisplayedOnTop()
                 .getGameDetails(2)
-                .gameUser(2).logWithCode("BUILD_CITY").hasMessage(scenario.getUsername(3) + " built business centre").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("BUILD_CITY").hasMessage(scenario.getUsername(3) + " built business centre").isDisplayedOnTop()
                 .getGameDetails(3)
-                .gameUser(3).logWithCode("BUILD_CITY").hasMessage("You built business centre").isHidden();
+                .gameUser(3).hasLogWithCode("BUILD_CITY").hasMessage("You built business centre").isHidden();
     }
 
     @Test
