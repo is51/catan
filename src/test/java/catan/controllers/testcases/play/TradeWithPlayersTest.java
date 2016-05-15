@@ -138,6 +138,15 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
 
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("TRADE_PROPOSE").hasMessage("You made a new trade propose: 1 building to 1 cable").isHidden()
+
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("TRADE_PROPOSE").hasMessage(scenario.getUsername(1) + " made a new trade propose: 1 building to 1 cable").isHidden()
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_PROPOSE").hasMessage(scenario.getUsername(1) + " made a new trade propose: 1 building to 1 cable").isHidden()
+
                 .getGameDetails(2)
                 .gameUser(2).hasAvailableAction("TRADE_REPLY")
                 .withParameters("offerId=" + OFFER_ID)
@@ -145,12 +154,17 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .withNotification(NOTIFY_MESSAGE_TRADE_REPLY)
 
                 .TRADE_DECLINE(2).withOfferId(OFFER_ID).successfully()
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("TRADE_DECLINE").hasMessage(scenario.getUsername(2) + " declined your trade propose").isDisplayedOnTop()
 
                 .getGameDetails(2)
                 .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(2).doesntHaveAvailableAction("TRADE_REPLY")
+                .gameUser(2).hasLogWithCode("TRADE_DECLINE").hasMessage("You declined " + scenario.getUsername(1) + "’s trade propose").isHidden()
 
                 .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_DECLINE").hasMessage(scenario.getUsername(2) + " declined " +
+                scenario.getUsername(1) + "’s trade propose").isDisplayedOnTop()
                 .gameUser(3).hasAvailableAction("TRADE_REPLY")
                 .withParameters("offerId=" + OFFER_ID)
                 .and()
@@ -331,9 +345,15 @@ public class TradeWithPlayersTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -1, 0)
+                .gameUser(1).hasLogWithCode("TRADE_ACCEPT").hasMessage("You exchanged 1 building to 1 cable with " + scenario.getUsername(2)).isDisplayedOnTop()
 
                 .getGameDetails(2)
-                .gameUser(2).resourcesQuantityChangedBy(0, -1, 0, 1, 0);
+                .gameUser(2).resourcesQuantityChangedBy(0, -1, 0, 1, 0)
+                .gameUser(2).hasLogWithCode("TRADE_ACCEPT").hasMessage("You exchanged 1 cable to 1 building with " + scenario.getUsername(1)).isDisplayedOnTop()
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_ACCEPT").hasMessage(scenario.getUsername(1) + "’s trade propose was accepted by " + scenario.getUsername(2)).isDisplayedOnTop()
+        ;
     }
 
     @Test

@@ -98,7 +98,14 @@ public class TradePortTest extends PlayTestUtil {
                 .startTrackResourcesQuantity()
                 .TRADE_PORT(1).withResources(1, 1, 0, -3, -2).successfully()
                 .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(1, 1, 0, -3, -2);
+                .gameUser(1).resourcesQuantityChangedBy(1, 1, 0, -3, -2)
+                .gameUser(1).hasLogWithCode("TRADE_PORT").hasMessage("You exchanged 3 buildings, 2 consultants to 1 server, 1 cable via airport").isHidden()
+
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("TRADE_PORT").hasMessage(scenario.getUsername(1) + " made exchange via airport").isHidden()
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_PORT").hasMessage(scenario.getUsername(1) + " made exchange via airport").isHidden();
     }
 
     @Test
