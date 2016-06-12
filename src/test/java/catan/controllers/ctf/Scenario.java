@@ -59,7 +59,10 @@ public class Scenario {
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties");
             prop.load(inputStream);
             RestAssured.baseURI = prop.getProperty("test.host");
-            RestAssured.port = Integer.valueOf(prop.getProperty("test.port"));
+            String port = prop.getProperty("test.port");
+            if(port != null && !port.isEmpty()){
+                RestAssured.port = Integer.valueOf(port);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             RestAssured.baseURI = "http://localhost";
