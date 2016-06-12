@@ -19,7 +19,7 @@ import java.util.Properties;
 @EnableTransactionManagement
 @ComponentScan({"catan.dao"})
 @PropertySource(value = {
-        //"file:/var/lib/openshift/55fe79942d5271339400003a/jbossews/conf/catan/application-override.properties",
+        "file:/var/lib/openshift/55fe79942d5271339400003a/jbossews/conf/catan/application-override.properties",
         "classpath:dev/application.properties"},
 
         //reconfigure in the following way: deployment script should create properties file with appropriate credentials
