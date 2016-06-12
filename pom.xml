@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>catan</groupId>
     <artifactId>it</artifactId>
-    <!--<packaging>war</packaging>-->
+    <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>IT-nizator</name>
 
@@ -22,11 +22,6 @@
             <id>maven-repo</id>
             <url>https://repo1.maven.org/maven2</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>sonatype-snapshots</id>
-            <name>Sonatype Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </pluginRepository>
     </pluginRepositories>
 
     <properties>
@@ -42,6 +37,7 @@
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
+        <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
 
         <resources>
             <resource>
@@ -51,6 +47,21 @@
 
         <finalName>IT-nizator</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <warName>ROOT</warName>
+                    <archive>
+                        <manifest>
+                            <mainClass>${start-class}</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                    <attachClasses>true</attachClasses>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -62,11 +73,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.google.appengine</groupId>
-                <artifactId>gcloud-maven-plugin</artifactId>
-                <version>2.0.9.106.v20160420</version>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
