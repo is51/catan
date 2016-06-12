@@ -63,6 +63,20 @@
                 </configuration>
             </plugin>
             <plugin>
+               <groupId>org.apache.tomcat.maven</groupId>
+               <artifactId>tomcat7-maven-plugin</artifactId>
+               <version>2.2</version>
+               <configuration>
+                   <port>8091</port>
+                   <path>/</path>
+                   <!--     Can be removed if starting application using command:                   -->
+                   <!--     mvn clean install tomcat7:run -DskipTests -Dproperties.folder=dev       -->
+                   <systemProperties>
+                       <properties.folder>dev</properties.folder>
+                   </systemProperties>
+               </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>1.3.3.RELEASE</version>
