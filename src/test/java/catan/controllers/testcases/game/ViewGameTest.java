@@ -1,6 +1,6 @@
 package catan.controllers.testcases.game;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
 import catan.controllers.util.GameTestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,16 +16,16 @@ import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.hasSize;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class ViewGameTest extends GameTestUtil {
 

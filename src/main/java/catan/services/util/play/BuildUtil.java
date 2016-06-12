@@ -182,7 +182,7 @@ public class BuildUtil {
 
         boolean settlementsCountLimitReached = usersSettlementsCount >= settlementCountLimit;
         if(settlementsCountLimitReached){
-            log.debug("Build settlement count limit exceeded");
+            log.debug("Build settlement count limit exceeded, user currently has " + usersSettlementsCount + " settlements");
             throw new PlayException(SETTLEMENTS_LIMIT_IS_REACHED_ERROR);
         }
 

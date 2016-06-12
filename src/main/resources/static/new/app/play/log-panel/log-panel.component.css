@@ -1,0 +1,17 @@
+.content {
+    top: 5%;
+    left: 25%;
+    width: 50%;
+    height: 85%;
+    background: #fff;
+    text-align: center;
+}
+
+.content > div {
+    padding: 10px 20px;
+    text-align: left;
+}
+
+.content > div > div {
+    padding-bottom: 5px;
+}

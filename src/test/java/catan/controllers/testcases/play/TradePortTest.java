@@ -1,14 +1,11 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,8 +20,8 @@ import static java.util.Arrays.asList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class TradePortTest extends PlayTestUtil {
 
@@ -37,14 +34,11 @@ public class TradePortTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -104,7 +98,14 @@ public class TradePortTest extends PlayTestUtil {
                 .startTrackResourcesQuantity()
                 .TRADE_PORT(1).withResources(1, 1, 0, -3, -2).successfully()
                 .getGameDetails(1)
-                .gameUser(1).resourcesQuantityChangedBy(1, 1, 0, -3, -2);
+                .gameUser(1).resourcesQuantityChangedBy(1, 1, 0, -3, -2)
+                .gameUser(1).hasLogWithCode("TRADE_PORT").hasMessage("You exchanged 3 buildings, 2 consultants to 1 server, 1 cable via airport").isHidden()
+
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("TRADE_PORT").hasMessage(scenario.getUsername(1) + " made exchange via airport").isHidden()
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_PORT").hasMessage(scenario.getUsername(1) + " made exchange via airport").isHidden();
     }
 
     @Test

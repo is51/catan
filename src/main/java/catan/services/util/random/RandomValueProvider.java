@@ -4,13 +4,15 @@ import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.types.DevelopmentCard;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class RandomUtilMock extends RandomUtil {
+@Component
+public class RandomValueProvider extends RandomUtil {
 
     private List<String> privateCodesToGenerate = new LinkedList<String>();
     private List<Integer> moveOrdersToGenerate = new LinkedList<Integer>();
@@ -108,5 +110,15 @@ public class RandomUtilMock extends RandomUtil {
     @Override
     public Integer generateRandomOfferId(int limit) {
         return offerIdsToGenerate.size() > 0 ? offerIdsToGenerate.remove(0) : super.generateRandomOfferId(limit);
+    }
+
+    public void resetNextRandomValues() {
+        privateCodesToGenerate.clear();
+        moveOrdersToGenerate.clear();
+        diceNumbersToGenerate.clear();
+        hexTypesToGenerate.clear();
+        hexDiceNumbersToGenerate.clear();
+        developmentCardsToGenerate.clear();
+        stolenResourcesToGenerate.clear();
     }
 }

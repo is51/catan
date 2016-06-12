@@ -1,33 +1,26 @@
 package catan.controllers.testcases.play;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static catan.domain.model.game.types.DevelopmentCard.KNIGHT;
-import static catan.domain.model.game.types.DevelopmentCard.MONOPOLY;
-import static catan.domain.model.game.types.DevelopmentCard.ROAD_BUILDING;
 import static catan.domain.model.game.types.DevelopmentCard.VICTORY_POINT;
-import static catan.domain.model.game.types.DevelopmentCard.YEAR_OF_PLENTY;
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class VictoryPointsTest extends PlayTestUtil {
     public static final String USER_NAME_1 = "user1_VictoryPointsTest";
@@ -39,14 +32,11 @@ public class VictoryPointsTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario

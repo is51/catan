@@ -9,7 +9,7 @@ import catan.domain.model.user.UserBean;
 import catan.services.GameService;
 import catan.services.util.game.GameUtil;
 import catan.services.util.map.MapUtil;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class GameServiceImpl implements GameService {
 
     private GameDao gameDao;
     private GameUtil gameUtil;
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     private MapUtil mapUtil;
 
     private ConcurrentMap<Long, Long> locks = new ConcurrentHashMap<Long, Long>();
@@ -350,7 +350,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
+    public void setRandomUtil(RandomValueProvider randomUtil) {
         this.randomUtil = randomUtil;
     }
 

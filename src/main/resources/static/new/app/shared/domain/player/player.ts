@@ -17,8 +17,11 @@ export class Player {
 
     displayedMessage: string;
 
+    log: Log[];
+
     private _onShowDisplayedMessage: Function;
     private _onHideDisplayedMessage: Function;
+    private _onDisplayedLogUpdate: Function;
 
     constructor(params) {
         this.id = params.id;
@@ -39,6 +42,8 @@ export class Player {
             this.displayedMessage = params.displayedMessage;
             this.triggerDisplayedMessageShow(this.displayedMessage);
         }
+
+        this.log = <Log[]>params.log;
     }
 
     update(params) {
@@ -69,6 +74,15 @@ export class Player {
             this.triggerDisplayedMessageHide();
         }
         this.displayedMessage = params.displayedMessage;
+
+        if (params.log) {
+            let lastLogItem = (this.log) ? this.log[0] : null;
+            this.log = <Log[]>params.log;
+            let newLogItems = this._getNewDisplayedLogItems(lastLogItem);
+            if (newLogItems) {
+                this.triggerDisplayedLogUpdate(newLogItems);
+            }
+        }
     }
 
     //TODO: try to replace with Subscribable (it's used in game-page.component)
@@ -90,6 +104,32 @@ export class Player {
             this._onHideDisplayedMessage();
         }
     }
+
+    onDisplayedLogUpdate(onLogUpdate: Function) {
+        this._onDisplayedLogUpdate = onLogUpdate;
+    }
+    cancelOnDisplayedLogUpdate() {
+        this._onDisplayedLogUpdate = undefined;
+    }
+    triggerDisplayedLogUpdate(newLogItems: Log[]) {
+        if (this._onDisplayedLogUpdate) {
+            this._onDisplayedLogUpdate(newLogItems);
+        }
+    }
+
+    private _getNewDisplayedLogItems(lastLogItem: Log) {
+        let newLogItems = <Log[]>[];
+        for (let logItem of this.log) {
+            if (lastLogItem && lastLogItem.id !== logItem.id) {
+                if (logItem.displayedOnTop) {
+                    newLogItems.push(logItem);
+                }
+            } else {
+                break;
+            }
+        }
+        return (newLogItems.length) ? newLogItems.reverse() : null;
+    }
 }
 
 interface Achievements {
@@ -107,4 +147,12 @@ interface DevelopmentCards {
     roadBuilding: number;
     victoryPoint: number;
     yearOfPlenty: number;
+}
+
+interface Log {
+    id: number;
+    date: number;
+    code: string;
+    message: string;
+    displayedOnTop: boolean;
 }

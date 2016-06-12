@@ -1,14 +1,11 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,8 +21,8 @@ import static java.util.Collections.singletonList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class TradeWithPlayersTest extends PlayTestUtil {
 
@@ -38,9 +35,6 @@ public class TradeWithPlayersTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
     public static final int OFFER_ID = 555;
     public static final int INVALID_OFFER_ID = 21;
@@ -48,7 +42,7 @@ public class TradeWithPlayersTest extends PlayTestUtil {
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -144,6 +138,15 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .nextOfferIds(singletonList(OFFER_ID))
                 .TRADE_PROPOSE(1).withResources(0, 1, 0, -1, 0).successfully()
 
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("TRADE_PROPOSE").hasMessage("You made a new trade propose: 1 building to 1 cable").isHidden()
+
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("TRADE_PROPOSE").hasMessage(scenario.getUsername(1) + " made a new trade propose: 1 building to 1 cable").isHidden()
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_PROPOSE").hasMessage(scenario.getUsername(1) + " made a new trade propose: 1 building to 1 cable").isHidden()
+
                 .getGameDetails(2)
                 .gameUser(2).hasAvailableAction("TRADE_REPLY")
                 .withParameters("offerId=" + OFFER_ID)
@@ -151,12 +154,17 @@ public class TradeWithPlayersTest extends PlayTestUtil {
                 .withNotification(NOTIFY_MESSAGE_TRADE_REPLY)
 
                 .TRADE_DECLINE(2).withOfferId(OFFER_ID).successfully()
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("TRADE_DECLINE").hasMessage(scenario.getUsername(2) + " declined your trade propose").isDisplayedOnTop()
 
                 .getGameDetails(2)
                 .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
                 .gameUser(2).doesntHaveAvailableAction("TRADE_REPLY")
+                .gameUser(2).hasLogWithCode("TRADE_DECLINE").hasMessage("You declined " + scenario.getUsername(1) + "’s trade propose").isHidden()
 
                 .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_DECLINE").hasMessage(scenario.getUsername(2) + " declined " +
+                scenario.getUsername(1) + "’s trade propose").isDisplayedOnTop()
                 .gameUser(3).hasAvailableAction("TRADE_REPLY")
                 .withParameters("offerId=" + OFFER_ID)
                 .and()
@@ -337,9 +345,15 @@ public class TradeWithPlayersTest extends PlayTestUtil {
 
                 .getGameDetails(1)
                 .gameUser(1).resourcesQuantityChangedBy(0, 1, 0, -1, 0)
+                .gameUser(1).hasLogWithCode("TRADE_ACCEPT").hasMessage("You exchanged 1 building to 1 cable with " + scenario.getUsername(2)).isDisplayedOnTop()
 
                 .getGameDetails(2)
-                .gameUser(2).resourcesQuantityChangedBy(0, -1, 0, 1, 0);
+                .gameUser(2).resourcesQuantityChangedBy(0, -1, 0, 1, 0)
+                .gameUser(2).hasLogWithCode("TRADE_ACCEPT").hasMessage("You exchanged 1 cable to 1 building with " + scenario.getUsername(1)).isDisplayedOnTop()
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("TRADE_ACCEPT").hasMessage(scenario.getUsername(1) + "’s trade propose was accepted by " + scenario.getUsername(2)).isDisplayedOnTop()
+        ;
     }
 
     @Test

@@ -4,10 +4,12 @@ import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.user.UserBean;
+import catan.domain.transfer.output.game.GameLogDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +50,10 @@ public class GameUserBean {
 
     @Column(name = "DISPLAYED_MESSAGE")
     private String displayedMessage;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "gameUsers", cascade = CascadeType.ALL)
+    @OrderBy("gameLogId DESC")
+    private Set<GameLogBean> gameLogs = new HashSet<GameLogBean>();
 
     @Embedded
     private Achievements achievements;
@@ -210,6 +216,25 @@ public class GameUserBean {
 
     public void setDevelopmentCardsReadyForUsing(DevelopmentCards developmentCardsReadyForUsing) {
         this.developmentCardsReadyForUsing = developmentCardsReadyForUsing;
+    }
+
+    public Set<GameLogBean> getGameLogs() {
+        return gameLogs;
+    }
+
+    public void setGameLogs(Set<GameLogBean> gameLogs) {
+        this.gameLogs = gameLogs;
+    }
+
+    public List<GameLogDetails> getGameLogsDetails() {
+        Iterator<GameLogBean> gameLogsIterator = this.gameLogs.iterator();
+        List<GameLogDetails> gameLogs = new ArrayList<GameLogDetails>();
+        for (int i = 0; i < 10 && gameLogsIterator.hasNext(); i++) {
+            GameLogDetails gameLogDetails = new GameLogDetails(gameLogsIterator.next());
+            gameLogs.add(gameLogDetails);
+        }
+
+        return gameLogs;
     }
 
     public Set<NodePortType> fetchAvailablePorts() {

@@ -21,6 +21,8 @@ import java.util.Properties;
 @PropertySource(value = {
         "file:/var/lib/openshift/55fe79942d5271339400003a/jbossews/conf/catan/application-override.properties",
         "classpath:${properties.folder}/application.properties"},
+
+        //reconfigure in the following way: deployment script should create properties file with appropriate credentials
         ignoreResourceNotFound = true)
 public class HibernateConfig {
 

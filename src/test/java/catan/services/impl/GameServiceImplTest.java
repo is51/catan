@@ -1,21 +1,21 @@
 package catan.services.impl;
 
 import catan.dao.GameDao;
+import catan.domain.exception.GameException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.services.util.game.GameUtil;
+import catan.services.util.map.MapUtil;
 import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
-import catan.services.util.map.MapUtil;
 import catan.services.util.play.PreparationStageUtil;
-import catan.services.util.random.RandomUtil;
-import catan.domain.exception.GameException;
 import catan.services.util.random.RandomValueGeneratorMock;
+import catan.services.util.random.RandomValueProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class GameServiceImplTest {
 
     @Before
     public void setUp() {
-        RandomUtil randomUtil = new RandomUtil();
+        RandomValueProvider randomUtil = new RandomValueProvider();
         randomUtil.setRvg(rvg);
 
         preparationStageUtil.setActionParamsUtil(actionParamsUtil);

@@ -1,15 +1,15 @@
 package catan.services.util.play;
 
 import catan.domain.exception.PlayException;
-import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.types.HexType;
-import catan.domain.model.game.GameBean;
-import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.Resources;
 import catan.domain.model.game.TradeProposal;
+import catan.domain.model.game.actions.ResourcesParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 public class TradeUtil {
@@ -19,11 +19,14 @@ public class TradeUtil {
     public static final String OFFER_ALREADY_ACCEPTED_ERROR = "OFFER_ALREADY_ACCEPTED";
     public static final String OFFER_IS_NOT_ACTIVE_ERROR = "OFFER_IS_NOT_ACTIVE";
 
-    public void validateTradeIsNotEmpty(int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
-        if (brick == 0 && wood == 0 && sheep == 0 && wheat == 0 && stone == 0) {
-            log.error("Trading request is empty. All requested resources has zero quantity");
-            throw new PlayException(ERROR_CODE_ERROR);
+    public void validateTradeIsNotEmpty(Resources resourcesToTrade) throws PlayException {
+        for (int resQuantity : resourcesToTrade.resourcesToMap().values()) {
+            if (resQuantity != 0) {
+                return;
+            }
         }
+        log.error("Trading request is empty. All requested resources has zero quantity");
+        throw new PlayException(ERROR_CODE_ERROR);
     }
 
     public void validateThereIsNoNewOffers(Integer offerId, TradeProposal tradeProposal) throws PlayException {
@@ -40,15 +43,14 @@ public class TradeUtil {
         }
     }
 
-    public void validateUserHasRequestedResources(GameUserBean gameUser, int brick, int wood, int sheep, int wheat, int stone) throws PlayException {
-        Resources userResources = gameUser.getResources();
-        if (userResources.getBrick() < brick
-                || userResources.getWood() < wood
-                || userResources.getSheep() < sheep
-                || userResources.getWheat() < wheat
-                || userResources.getStone() < stone) {
-            log.debug("User has not enough resources ({}) to accept trade proposal: [{}, {}, {}, {}, {}]", userResources, brick, wood, sheep, wheat, stone);
-            throw new PlayException(ERROR_CODE_ERROR);
+    public void validateUserHasRequestedResources(Resources userResources, Resources resourcesToBuy) throws PlayException {
+        Map<HexType, Integer> userResourcesMap = userResources.resourcesToMap();
+        Map<HexType, Integer> resourcesToBuyMap = resourcesToBuy.resourcesToMap();
+        for (HexType hexType : userResourcesMap.keySet()) {
+            if (userResourcesMap.get(hexType) < resourcesToBuyMap.get(hexType)) {
+                log.debug("User has not enough resources ({}) to accept trade proposal. Required resources: {}]", userResources, resourcesToBuy);
+                throw new PlayException(ERROR_CODE_ERROR);
+            }
         }
     }
 
@@ -74,7 +76,14 @@ public class TradeUtil {
         }
     }
 
-    public void validateTradeBalanceIsZero(int tradingBalance) throws PlayException {
+    public void validateTradeBalanceIsZero(Resources resourcesToTrade, ResourcesParams tradePortParams) throws PlayException {
+        int tradingBalance = 0;
+        Map<HexType, Integer> resourcesToTradeMap = resourcesToTrade.resourcesToMap();
+        for (HexType hexType : resourcesToTradeMap.keySet()) {
+            int resQuantity = resourcesToTradeMap.get(hexType);
+            tradingBalance += resQuantity < 0 ? resQuantity / tradePortParams.paramOf(hexType) : resQuantity;
+        }
+
         if (tradingBalance != 0) {
             log.error("Trade balance is not zero: {}. Wrong resources quantity to trade", tradingBalance);
             throw new PlayException(ERROR_CODE_ERROR);

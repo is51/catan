@@ -1,14 +1,12 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.controllers.util.FunctionalTestUtil;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,9 +22,9 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class ThrowDiceTest extends PlayTestUtil {
 
@@ -39,15 +37,12 @@ public class ThrowDiceTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
     public static final String NOTIFY_MESSAGE_THROW_DICE = "Your turn!";
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -134,19 +129,55 @@ public class ThrowDiceTest extends PlayTestUtil {
         playPreparationStageAndBuildCity()
                 .nextRandomDiceValues(asList(2, 4))
                 .THROW_DICE(1)
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 4, 0, 0, 1)
+                .gameUser(1).hasLogWithCode("THROW_DICE").hasMessage("You threw 6 and got 4 cables, 1 consultant").isDisplayedOnTop()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .gameUser(2).hasLogWithCode("THROW_DICE").hasMessage(scenario.getUsername(1) + " threw 6. You got 1 consultant").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .gameUser(3).hasLogWithCode("THROW_DICE").hasMessage(scenario.getUsername(1) + " threw 6. You got 1 consultant").isDisplayedOnTop()
+
                 .END_TURN(1)
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("END_TURN").hasMessage("You ended turn").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("END_TURN").hasMessage(scenario.getUsername(1) + " ended turn").isHidden()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("END_TURN").hasMessage(scenario.getUsername(1) + " ended turn").isHidden()
 
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 4, 0, 0, 1)
-                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
-                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
-
-                .nextRandomDiceValues(asList(4, 6))
+                .nextRandomDiceValues(asList(2, 2))
                 .THROW_DICE(2)
-                .END_TURN(2)
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 2)
+                .gameUser(1).hasLogWithCode("THROW_DICE").hasMessage(scenario.getUsername(2) + " threw 4. You got 2 consultants").isDisplayedOnTop()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(2).hasLogWithCode("THROW_DICE").hasMessage("You threw 4").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(3).hasLogWithCode("THROW_DICE").hasMessage(scenario.getUsername(2) + " threw 4").isDisplayedOnTop()
 
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
-                .getGameDetails(2).gameUser(2).resourcesQuantityChangedBy(0, 0, 1, 0, 0)
-                .getGameDetails(3).gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .END_TURN(2)
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("END_TURN").hasMessage(scenario.getUsername(2) + " ended turn").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("END_TURN").hasMessage("You ended turn").isHidden()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("END_TURN").hasMessage(scenario.getUsername(2) + " ended turn").isHidden()
+
+                .nextRandomDiceValues(asList(2, 5))
+                .THROW_DICE(3)
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(1).hasLogWithCode("THROW_DICE").hasMessage(scenario.getUsername(3) + " threw 7 and activate hacker").isDisplayedOnTop()
+                .getGameDetails(2)
+                .gameUser(2).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(2).hasLogWithCode("THROW_DICE").hasMessage(scenario.getUsername(3) + " threw 7 and activate hacker").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(3).hasLogWithCode("THROW_DICE").hasMessage("You threw 7 and activate hacker").isDisplayedOnTop();
     }
 
 
@@ -273,9 +304,9 @@ public class ThrowDiceTest extends PlayTestUtil {
 
                 //check that move orders are never changed and users have move orders according to joined order
                 .getGameDetails(1)
-                    .gameUser(3).check("user.username", is(USER_NAME_1))
-                    .gameUser(2).check("user.username", is(USER_NAME_2))
-                    .gameUser(1).check("user.username", is(USER_NAME_3))
+                    .gameUser(3).check("user.username", is(USER_NAME_1 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX))
+                    .gameUser(2).check("user.username", is(USER_NAME_2 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX))
+                    .gameUser(1).check("user.username", is(USER_NAME_3 + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX))
 
                 .BUILD_SETTLEMENT(1).atNode(0, -1, "topRight")
                 .BUILD_ROAD(1).atEdge(0, -1, "right")

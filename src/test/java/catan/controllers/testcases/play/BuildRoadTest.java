@@ -1,16 +1,13 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,7 +23,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class BuildRoadTest extends PlayTestUtil {
 
@@ -39,14 +38,11 @@ public class BuildRoadTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -65,7 +61,13 @@ public class BuildRoadTest extends PlayTestUtil {
                 .startTrackResourcesQuantity()
 
                 .BUILD_ROAD(1).atEdge(2, -2, "topLeft").successfully()
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(1).hasLogWithCode("BUILD_ROAD").hasMessage("You built a network").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop();
     }
 
     @Test
@@ -90,7 +92,13 @@ public class BuildRoadTest extends PlayTestUtil {
         scenario
                 .getGameDetails(1).gameUser(1).hasAvailableAction("BUILD_ROAD").withParameters("edgeIds=" + allEdgeIds).and().withoutNotification()
                 .BUILD_ROAD(1).atEdge(2, -2, "topRight").successfully()
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(-1, -1, 0, 0, 0);
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(-1, -1, 0, 0, 0)
+                .gameUser(1).hasLogWithCode("BUILD_ROAD").hasMessage("You built a network").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("BUILD_ROAD").hasMessage(scenario.getUsername(1) + " built a network").isDisplayedOnTop();;
     }
 
     @Test

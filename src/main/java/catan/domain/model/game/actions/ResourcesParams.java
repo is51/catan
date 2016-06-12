@@ -1,5 +1,7 @@
 package catan.domain.model.game.actions;
 
+import catan.domain.model.dashboard.types.HexType;
+
 public class ResourcesParams extends ActionParams {
 
     private int brick;
@@ -57,5 +59,22 @@ public class ResourcesParams extends ActionParams {
 
     public void setStone(int stone) {
         this.stone = stone;
+    }
+
+    public Integer paramOf(HexType resourceType) {
+        switch (resourceType) {
+            case BRICK:
+                return this.brick;
+            case WOOD:
+                return this.wood;
+            case SHEEP:
+                return this.sheep;
+            case STONE:
+                return this.stone;
+            case WHEAT:
+                return this.wheat;
+            default:
+                return null;
+        }
     }
 }

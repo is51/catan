@@ -1,14 +1,11 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,9 +24,9 @@ import static java.util.Collections.singletonList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class MoveRobberTest extends PlayTestUtil {
 
@@ -42,14 +39,11 @@ public class MoveRobberTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -87,7 +81,18 @@ public class MoveRobberTest extends PlayTestUtil {
                     .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                     .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
                     .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
-                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                    .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                    .gameUser(1).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isHidden()
+                    .gameUser(1).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(2)
+                    .gameUser(2).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                    .gameUser(2).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(3)
+                    .gameUser(3).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                    .gameUser(3).doesNotHavelogWithCode("STEAL_RESOURCE")
+        ;
     }
 
     @Test
@@ -125,7 +130,17 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).doesntHaveAvailableAction("MOVE_ROBBER")
                 .gameUser(1).doesntHaveAvailableAction("CHOOSE_PLAYER_TO_ROB")
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
-                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0);
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 0)
+                .gameUser(1).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isHidden()
+                .gameUser(1).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(2).doesNotHavelogWithCode("STEAL_RESOURCE")
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(3).doesNotHavelogWithCode("STEAL_RESOURCE");
     }
 
     @Test
@@ -150,9 +165,17 @@ public class MoveRobberTest extends PlayTestUtil {
                 .gameUser(1).hasAvailableAction("TRADE_PROPOSE")
                 .gameUser(1).hasAvailableAction("END_TURN")
                 .gameUser(1).resourcesQuantityChangedBy(0, 0, 0, 0, 1)
+                .gameUser(1).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isHidden()
+                .gameUser(1).hasLogWithCode("STEAL_RESOURCE").hasMessage("Hacker stole " + scenario.getUsername(3) + "’s consultant and gave it to you").isHidden()
+
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(2).hasLogWithCode("STEAL_RESOURCE").hasMessage("Hacker stole " + scenario.getUsername(3) + "’s resource and gave it to " + scenario.getUsername(1)).isDisplayedOnTop()
 
                 .getGameDetails(3)
-                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -1);
+                .gameUser(3).resourcesQuantityChangedBy(0, 0, 0, 0, -1)
+                .gameUser(3).hasLogWithCode("MOVE_ROBBER").hasMessage("Hacker changed target").isDisplayedOnTop()
+                .gameUser(3).hasLogWithCode("STEAL_RESOURCE").hasMessage("Hacker stole your consultant and gave it to " + scenario.getUsername(1)).isDisplayedOnTop();
     }
 
     @Test

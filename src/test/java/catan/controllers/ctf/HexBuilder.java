@@ -1,6 +1,6 @@
 package catan.controllers.ctf;
 
-import catan.domain.model.dashboard.Coordinates;
+import catan.controllers.util.RandomValueTestUtil;
 import catan.domain.model.dashboard.types.HexType;
 
 public class HexBuilder {
@@ -16,8 +16,8 @@ public class HexBuilder {
     }
 
     public Scenario atCoordinates(int x, int y){
-        scenario.randomUtil.setNextHexType(new Coordinates(x, y), hexType);
-        scenario.randomUtil.setNextHexDiceNumber(new Coordinates(x, y), diceValue);
+        RandomValueTestUtil.setNextHexType(x, y, hexType.name());
+        RandomValueTestUtil.setNextHexDiceNumber(x, y, diceValue);
 
         return scenario;
     }

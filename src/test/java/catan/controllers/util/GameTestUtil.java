@@ -1,6 +1,6 @@
 package catan.controllers.util;
 
-import catan.controllers.util.FunctionalTestUtil;
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -33,7 +33,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     public static Response createNewGame(String token, boolean privateGame, int targetVictoryPoints, int initialBuildingsSetId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "privateGame", privateGame, "targetVictoryPoints", targetVictoryPoints, "initialBuildingsSetId", initialBuildingsSetId)
                 .when()
@@ -42,7 +42,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     public static Response joinPublicGame(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -51,7 +51,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     protected Response joinPrivateGame(String token, String privateCode) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "privateCode", privateCode)
                 .when()
@@ -60,7 +60,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     protected Response leaveGame(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -69,7 +69,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     protected Response cancelGame(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -78,7 +78,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     public static Response viewGame(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -87,7 +87,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     public static Response setUserReady(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -96,7 +96,7 @@ public abstract class GameTestUtil extends FunctionalTestUtil {
 
     protected Response setUserNotReady(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()

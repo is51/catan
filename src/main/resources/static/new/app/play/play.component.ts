@@ -25,6 +25,8 @@ import { KickOffResourcesPanelComponent } from './kick-off-resources-panel/kick-
 import { DiceComponent } from './dice/dice.component';
 import { TopMessageComponent } from './top-message/top-message.component';
 import { GameResultsComponent } from './game-results/game-results.component';
+import { LogPanelComponent } from './log-panel/log-panel.component';
+import { LogButtonComponent } from './log-button/log-button.component';
 
 //TODO: revise pointer-events of all map elements (set 'none' most of it)
 
@@ -45,7 +47,9 @@ import { GameResultsComponent } from './game-results/game-results.component';
         KickOffResourcesPanelComponent,
         DiceComponent,
         TopMessageComponent,
-        GameResultsComponent
+        GameResultsComponent,
+        LogPanelComponent,
+        LogButtonComponent
     ],
     providers: [
         PlayService,

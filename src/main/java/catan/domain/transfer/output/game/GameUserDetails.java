@@ -7,6 +7,8 @@ import catan.domain.transfer.output.user.UserDetails;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.gson.Gson;
 
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameUserDetails {
     private int id;
@@ -18,6 +20,7 @@ public class GameUserDetails {
     private AvailableActionsDetails availableActions;
     private ResourcesDetails resources;
     private DevelopmentCardsDetails developmentCards;
+    private List<GameLogDetails> log;
     private String displayedMessage;
 
     //TODO: move all GSON methods to util class
@@ -45,6 +48,7 @@ public class GameUserDetails {
             this.availableActions = GSON.fromJson(gameUserBean.getAvailableActions(), AvailableActionsDetails.class);
             this.resources = new ResourcesDetails(gameUserBean.getResources());
             this.developmentCards = new DevelopmentCardsDetails(gameUserBean.getDevelopmentCards());
+            this.log = gameUserBean.getGameLogsDetails();
             this.displayedMessage = gameUserBean.getDisplayedMessage();
         }
     }
@@ -119,6 +123,14 @@ public class GameUserDetails {
 
     public void setDevelopmentCards(DevelopmentCardsDetails developmentCards) {
         this.developmentCards = developmentCards;
+    }
+
+    public List<GameLogDetails> getLog() {
+        return log;
+    }
+
+    public void setLog(List<GameLogDetails> log) {
+        this.log = log;
     }
 
     public String getDisplayedMessage() {

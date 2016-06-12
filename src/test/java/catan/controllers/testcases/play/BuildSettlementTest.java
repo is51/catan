@@ -1,15 +1,12 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,10 +20,9 @@ import static org.hamcrest.Matchers.is;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class BuildSettlementTest extends PlayTestUtil {
 
@@ -39,14 +35,11 @@ public class BuildSettlementTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -90,7 +83,14 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .getGameDetails(1).gameUser(1).check("resources.wheat", is(0))
                 .getGameDetails(1).gameUser(1).check("resources.sheep", is(0))
 
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully();
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topLeft").successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
     }
 
     @Test
@@ -114,7 +114,14 @@ public class BuildSettlementTest extends PlayTestUtil {
                 .gameUser(1).check("resources.wheat", greaterThanOrEqualTo(1))
                 .gameUser(1).check("resources.sheep", greaterThanOrEqualTo(1))
 
-                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully();
+                .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight").successfully()
+
+                .getGameDetails(1)
+                .gameUser(1).hasLogWithCode("BUILD_SETTLEMENT").hasMessage("You built an office").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("BUILD_SETTLEMENT").hasMessage(scenario.getUsername(1) + " built an office").isDisplayedOnTop();
     }
 
     @Test

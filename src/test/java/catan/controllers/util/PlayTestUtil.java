@@ -1,5 +1,6 @@
 package catan.controllers.util;
 
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -26,7 +27,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response buildSettlement(String token, int gameId, int nodeId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "nodeId", nodeId)
                 .when()
@@ -35,7 +36,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response buildCity(String token, int gameId, int nodeId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "nodeId", nodeId)
                 .when()
@@ -44,7 +45,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response buildRoad(String token, int gameId, int edgeId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "edgeId", edgeId)
                 .when()
@@ -53,7 +54,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response endTurn(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -62,7 +63,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response throwDice(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -71,7 +72,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response buyCard(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -80,7 +81,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response useCardMonopoly(String token, int gameId, String resource) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "resource", resource)
                 .when()
@@ -89,7 +90,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response useCardYearOfPlenty(String token, int gameId, String firstResource, String secondResource) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "firstResource", firstResource, "secondResource", secondResource)
                 .when()
@@ -98,7 +99,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response useCardRoadBuilding(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -107,7 +108,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response useCardKnight(String token, int gameId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId)
                 .when()
@@ -116,7 +117,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response moveRobber(String token, int gameId, int hexId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "hexId", hexId)
                 .when()
@@ -125,7 +126,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response choosePlayerToRob(String token, int gameId, int gameUserId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "gameUserId", gameUserId)
                 .when()
@@ -134,7 +135,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response kickOffResources(String token, int gameId, int brick, int wood, int sheep, int wheat, int stone) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "brick", brick, "wood", wood, "sheep", sheep, "wheat", wheat, "stone", stone)
                 .when()
@@ -143,7 +144,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response tradePort(String token, int gameId, int brick, int wood, int sheep, int wheat, int stone) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "brick", brick, "wood", wood, "sheep", sheep, "wheat", wheat, "stone", stone)
                 .when()
@@ -152,7 +153,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response tradePropose(String token, int gameId, int brick, int wood, int sheep, int wheat, int stone) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "brick", brick, "wood", wood, "sheep", sheep, "wheat", wheat, "stone", stone)
                 .when()
@@ -161,7 +162,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response tradeAccept(String token, int gameId, int offerId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "offerId", offerId)
                 .when()
@@ -170,7 +171,7 @@ public abstract class PlayTestUtil extends GameTestUtil {
 
     public static Response tradeDecline(String token, int gameId, int offerId) {
         return given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", token, "gameId", gameId, "offerId", offerId)
                 .when()

@@ -1,28 +1,28 @@
 package catan.controllers.ctf;
 
+import catan.controllers.util.FunctionalTestUtil;
 import catan.controllers.util.GameTestUtil;
 import catan.controllers.util.PlayTestUtil;
+import catan.controllers.util.RandomValueTestUtil;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.game.types.DevelopmentCard;
-import catan.services.util.random.RandomUtilMock;
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Matcher;
 
-import java.util.Arrays;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class Scenario {
-
-    RandomUtilMock randomUtil;
 
     int gameId = -1;
     Map<String, String> userTokensByName = new HashMap<String, String>();
@@ -40,7 +40,6 @@ public class Scenario {
         DON'T FORGET TO ADD NEW FIELD TO THIS METHOD
      */
     public void cloneFrom(Scenario scenario) {
-        this.randomUtil = scenario.randomUtil;
         this.gameId = scenario.gameId;
         this.userTokensByName = scenario.userTokensByName;
         this.tokensByMoveOrder = scenario.tokensByMoveOrder;
@@ -55,14 +54,23 @@ public class Scenario {
     }
 
     public Scenario() {
+        try {
+            Properties prop = new Properties();
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties");
+            prop.load(inputStream);
+            RestAssured.baseURI = prop.getProperty("test.host");
+            String port = prop.getProperty("test.port");
+            if(port != null && !port.isEmpty()){
+                RestAssured.port = Integer.valueOf(port);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            RestAssured.baseURI = "http://localhost";
+            RestAssured.port = 8091;
+        }
 
+        RandomValueTestUtil.resetNextRandomValues();
     }
-
-    public Scenario(RandomUtilMock randomUtil) {
-        randomUtil.resetMock();
-        this.randomUtil = randomUtil;
-    }
-
 
     public Set<Integer> getAllNodeIds() {
         getGameDetails(1).gameUser(1);
@@ -142,7 +150,7 @@ public class Scenario {
             Integer currentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].moveOrder");
             Integer gameUserIdOfPlayerWithCurrentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].id");
             String userNameWithCurrentMoveOrder = currentGameDetails.extract().path("gameUsers[" + i + "].user.username");
-            String tokenOfUserWithCurrentMoveOrder = userTokensByName.get(userNameWithCurrentMoveOrder);
+            String tokenOfUserWithCurrentMoveOrder = userTokensByName.get(userNameWithCurrentMoveOrder.replace(FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX, ""));
             tokensByMoveOrder.put(currentMoveOrder, tokenOfUserWithCurrentMoveOrder);
             gameUserIdsByMoveOrder.put(currentMoveOrder, gameUserIdOfPlayerWithCurrentMoveOrder);
             userNamesByMoveOrder.put(currentMoveOrder, userNameWithCurrentMoveOrder);
@@ -371,7 +379,7 @@ public class Scenario {
 
     public Scenario nextRandomMoveOrderValues(List<Integer> nextRandomValues) {
         for (Integer nextRandomValue : nextRandomValues) {
-            randomUtil.setNextMoveOrder(nextRandomValue);
+            RandomValueTestUtil.setNextMoveOrder(nextRandomValue);
         }
 
         return this;
@@ -379,14 +387,15 @@ public class Scenario {
 
     public Scenario nextRandomDiceValues(List<Integer> nextRandomValues) {
         for (Integer nextRandomValue : nextRandomValues) {
-            randomUtil.setNextDiceNumber(nextRandomValue);
+            RandomValueTestUtil.setNextDiceNumber(nextRandomValue);
         }
 
         return this;
     }
+
     public Scenario nextRandomDevelopmentCards(List<DevelopmentCard> nextCards) {
         for (DevelopmentCard nextCard : nextCards) {
-            randomUtil.setNextDevelopmentCard(nextCard);
+            RandomValueTestUtil.setNextDevelopmentCard(nextCard);
         }
 
         return this;
@@ -394,7 +403,7 @@ public class Scenario {
 
     public Scenario nextRandomStolenResources(List<HexType> resources) {
         for (HexType resource : resources) {
-            randomUtil.setNextStolenResource(resource);
+            RandomValueTestUtil.setNextStolenResource(resource);
         }
 
         return this;
@@ -402,7 +411,7 @@ public class Scenario {
 
     public Scenario nextOfferIds(List<Integer> offerIds) {
         for (Integer offerId : offerIds) {
-            randomUtil.setNextOfferId(offerId);
+            RandomValueTestUtil.setNextOfferId(offerId);
         }
 
         return this;
@@ -417,7 +426,7 @@ public class Scenario {
             return;
         }
 
-        for(int i = 1; i <= tokensByMoveOrder.size(); i++){
+        for (int i = 1; i <= tokensByMoveOrder.size(); i++) {
             getGameDetails(i);
 
             if (trackResources) {
@@ -472,5 +481,9 @@ public class Scenario {
     public Scenario stopTrackDevCardsQuantity() {
         trackCards = false;
         return this;
+    }
+
+    public String getUsername(int moveOrder) {
+        return userNamesByMoveOrder.get(moveOrder);
     }
 }

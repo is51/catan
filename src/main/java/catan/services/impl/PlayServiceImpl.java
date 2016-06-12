@@ -8,6 +8,7 @@ import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.MapElement;
 import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
+import catan.domain.model.dashboard.types.LogCodeType;
 import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -29,7 +30,7 @@ import catan.services.util.play.PlayUtil;
 import catan.services.util.play.RobberUtil;
 import catan.services.util.play.TradeUtil;
 import catan.services.util.play.ValidationUtil;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class PlayServiceImpl implements PlayService {
     private Logger log = LoggerFactory.getLogger(PlayService.class);
 
     private GameDao gameDao;
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     private GameUtil gameUtil;
     private PlayUtil playUtil;
     private BuildUtil buildUtil;
@@ -88,7 +89,7 @@ public class PlayServiceImpl implements PlayService {
                 doAction(action, gameUser, params, returnedParams);
 
                 achievementsUtil.updateAchievements(game);
-                playUtil.finishGameIfTargetVictoryPointsReached(gameUser);
+                playUtil.finishGameIfTargetVictoryPointsReached(game);
                 playUtil.updateAvailableActionsForAllUsers(game);
 
                 gameDao.updateGame(game);
@@ -164,6 +165,9 @@ public class PlayServiceImpl implements PlayService {
             gameUser.getResources().takeResources(1, 1, 0, 0, 0);
         }
         playUtil.updateRoadsToBuildMandatory(game);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_ROAD, gameUser);
+
         achievementsUtil.updateLongestWayLength(gameUser);
     }
 
@@ -178,6 +182,9 @@ public class PlayServiceImpl implements PlayService {
             gameUser.getResources().takeResources(1, 1, 1, 1, 0);
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_SETTLEMENT, gameUser);
+
         achievementsUtil.updateLongestWayLengthIfInterrupted(nodeToBuildOn);
 
         boolean settlementsCountLimitReached = gameUser.getBuildingsCount().getSettlements() >= game.getSettlementCountLimit();
@@ -198,6 +205,8 @@ public class PlayServiceImpl implements PlayService {
             gameUser.getResources().takeResources(0, 0, 0, 2, 3);
         }
         playUtil.distributeResourcesForLastBuildingInPreparation(nodeToBuildOn);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUILD_CITY, gameUser);
     }
 
     private void endTurn(GameUserBean gameUser) throws GameException {
@@ -208,6 +217,8 @@ public class PlayServiceImpl implements PlayService {
         playUtil.resetTradeReplies(game);
         playUtil.updateNextMove(game);
         playUtil.updateGameStage(game);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.END_TURN, gameUser);
     }
 
     private void throwDice(GameUserBean gameUser) {
@@ -217,7 +228,23 @@ public class PlayServiceImpl implements PlayService {
 
         playUtil.setDiceValues(diceFirstValue, diceSecondValue, game);
         robberUtil.activateRobberIfNeeded(game);
+
+        Map<GameUserBean, Resources> producedResourcesForGameUsers = new HashMap<GameUserBean, Resources>();
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            Resources gameUsersResBeforeProducingNewRes = new Resources(gameUserIterated.getResources());
+            producedResourcesForGameUsers.put(gameUserIterated, gameUsersResBeforeProducingNewRes);
+        }
+
         playUtil.produceResourcesFromActiveDiceHexes(game);
+
+        for (GameUserBean gameUserIterated : game.getGameUsers()) {
+            Resources producedResourcesForGameUser = new Resources(gameUserIterated.getResources());
+            Resources gameUsersResBeforeProducingNewRes = producedResourcesForGameUsers.get(gameUserIterated);
+            producedResourcesForGameUser.takeResources(gameUsersResBeforeProducingNewRes);
+            producedResourcesForGameUsers.put(gameUserIterated, producedResourcesForGameUser);
+        }
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.THROW_DICE, game, producedResourcesForGameUsers);
     }
 
     private void buyCard(GameUserBean gameUser, Map<String, String> returnedParams) throws PlayException, GameException {
@@ -233,6 +260,8 @@ public class PlayServiceImpl implements PlayService {
         if (GameStage.MAIN.equals(game.getStage())) {
             gameUser.getResources().takeResources(0, 0, 1, 1, 1);
         }
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.BUY_CARD, gameUser, chosenDevelopmentCard);
     }
 
     private void useCardYearOfPlenty(GameUserBean gameUser, String firstResourceString, String secondResourceString) throws PlayException, GameException {
@@ -247,6 +276,8 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.YEAR_OF_PLENTY);
         gameUser.getGame().setDevelopmentCardUsed(true);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_YEAR_OF_PLENTY, gameUser, firstResource, secondResource);
     }
 
     private void useCardMonopoly(GameUserBean gameUser, String resourceString, Map<String, String> returnedParams) throws PlayException, GameException {
@@ -262,6 +293,8 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.MONOPOLY);
         gameUser.getGame().setDevelopmentCardUsed(true);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_MONOPOLY, gameUser, takenResourcesCount, resource);
     }
 
     private void useCardRoadBuilding(GameUserBean gameUser, Map<String, String> returnedParams) throws PlayException, GameException {
@@ -277,6 +310,8 @@ public class PlayServiceImpl implements PlayService {
 
         cardUtil.takeDevelopmentCardFromPlayer(gameUser, DevelopmentCard.ROAD_BUILDING);
         game.setDevelopmentCardUsed(true);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_ROAD_BUILDING, gameUser);
     }
 
     private void useCardKnight(GameUserBean gameUser) throws PlayException, GameException {
@@ -290,6 +325,9 @@ public class PlayServiceImpl implements PlayService {
         game.setDevelopmentCardUsed(true);
 
         achievementsUtil.increaseTotalUsedKnightsByOne(gameUser);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.USE_CARD_KNIGHT, gameUser);
+
         achievementsUtil.updateBiggestArmyOwner(gameUser);
     }
 
@@ -300,6 +338,8 @@ public class PlayServiceImpl implements PlayService {
 
         robberUtil.changeRobbedHex(hexToRob);
         game.setRobberShouldBeMovedMandatory(false);
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.MOVE_ROBBER, gameUser);
         MessagesUtil.clearUsersMsgs(game);
 
         List<GameUserBean> playersAtHex = new ArrayList<GameUserBean>(hexToRob.fetchGameUsersWithBuildingsAtNodes());
@@ -322,7 +362,7 @@ public class PlayServiceImpl implements PlayService {
 
     private void choosePlayerToRob(GameUserBean robbedGameUser) throws PlayException, GameException {
         GameBean game = robbedGameUser.getGame();
-        Resources currentUsersResources = robbedGameUser.getGame().fetchActiveGameUser().getResources();
+        Resources activeUsersResources = game.fetchActiveGameUser().getResources();
         log.info("Robbing {}", robbedGameUser);
 
         robberUtil.validateGameUserCouldBeRobbed(robbedGameUser);
@@ -334,8 +374,10 @@ public class PlayServiceImpl implements PlayService {
 
             int stolenResourceQuantity = robbedUsersResources.quantityOf(stolenResourceType);
             robbedUsersResources.updateResourceQuantity(stolenResourceType, stolenResourceQuantity - 1);
-            int obtainedResourceQuantity = currentUsersResources.quantityOf(stolenResourceType);
-            currentUsersResources.updateResourceQuantity(stolenResourceType, obtainedResourceQuantity + 1);
+            int obtainedResourceQuantity = activeUsersResources.quantityOf(stolenResourceType);
+            activeUsersResources.updateResourceQuantity(stolenResourceType, obtainedResourceQuantity + 1);
+
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.STEAL_RESOURCE, robbedGameUser, stolenResourceType);
         }
         game.setChoosePlayerToRobMandatory(false);
         MessagesUtil.clearUsersMsgs(game);
@@ -349,60 +391,50 @@ public class PlayServiceImpl implements PlayService {
         int usersWheatQuantity = usersResources.getWheat();
         int usersStoneQuantity = usersResources.getStone();
 
-        int brickQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(brickString, usersBrickQuantity);
-        int woodQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(woodString, usersWoodQuantity);
-        int sheepQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(sheepString, usersSheepQuantity);
-        int wheatQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(wheatString, usersWheatQuantity);
-        int stoneQuantityToKickOff = robberUtil.toValidResourceQuantityToKickOff(stoneString, usersStoneQuantity);
+        Resources resourcesToKickOff = new Resources(
+                robberUtil.toValidResourceQuantityToKickOff(brickString, usersBrickQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(woodString, usersWoodQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(sheepString, usersSheepQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(wheatString, usersWheatQuantity),
+                robberUtil.toValidResourceQuantityToKickOff(stoneString, usersStoneQuantity));
 
-        int sumOfResourcesKickingOff = brickQuantityToKickOff + woodQuantityToKickOff + sheepQuantityToKickOff + wheatQuantityToKickOff + stoneQuantityToKickOff;
-        int sumOfUsersResources = gameUser.getAchievements().getTotalResources();
-        robberUtil.validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(sumOfUsersResources, sumOfResourcesKickingOff);
-
-        usersResources.setBrick(usersBrickQuantity - brickQuantityToKickOff);
-        usersResources.setWood(usersWoodQuantity - woodQuantityToKickOff);
-        usersResources.setSheep(usersSheepQuantity - sheepQuantityToKickOff);
-        usersResources.setWheat(usersWheatQuantity - wheatQuantityToKickOff);
-        usersResources.setStone(usersStoneQuantity - stoneQuantityToKickOff);
-
+        robberUtil.validateSumOfResourcesToKickOffIsTheHalfOfTotalResources(usersResources.calculateSum(), resourcesToKickOff.calculateSum());
+        usersResources.takeResources(resourcesToKickOff);
         gameUser.setKickingOffResourcesMandatory(false);
         robberUtil.checkRobberShouldBeMovedMandatory(gameUser.getGame());
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.DROP_RESOURCES, gameUser, resourcesToKickOff);
     }
 
     private void tradeResourcesInPort(GameUserBean gameUser, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
         Resources usersResources = gameUser.getResources();
-        int usersBrickQuantity = usersResources.getBrick();
-        int usersWoodQuantity = usersResources.getWood();
-        int usersSheepQuantity = usersResources.getSheep();
-        int usersWheatQuantity = usersResources.getWheat();
-        int usersStoneQuantity = usersResources.getStone();
 
-        ResourcesParams resourcesParams = actionParamsUtil.calculateTradePortParams(gameUser);
-        int brickSellCoefficient = resourcesParams.getBrick();
-        int woodSellCoefficient = resourcesParams.getWood();
-        int sheepSellCoefficient = resourcesParams.getSheep();
-        int wheatSellCoefficient = resourcesParams.getWheat();
-        int stoneSellCoefficient = resourcesParams.getStone();
+        ResourcesParams tradePortParams = actionParamsUtil.calculateTradePortParams(gameUser);
 
-        int brickQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(brickString, usersBrickQuantity, brickSellCoefficient);
-        int woodQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(woodString, usersWoodQuantity, woodSellCoefficient);
-        int sheepQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(sheepString, usersSheepQuantity, sheepSellCoefficient);
-        int wheatQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(wheatString, usersWheatQuantity, wheatSellCoefficient);
-        int stoneQuantityToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(stoneString, usersStoneQuantity, stoneSellCoefficient);
+        int brickToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(brickString, usersResources.getBrick(), tradePortParams.getBrick());
+        int woodToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(woodString, usersResources.getWood(), tradePortParams.getWood());
+        int sheepToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(sheepString, usersResources.getSheep(), tradePortParams.getSheep());
+        int wheatToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(wheatString, usersResources.getWheat(), tradePortParams.getWheat());
+        int stoneToTrade = tradeUtil.toValidResourceQuantityToTradeInPort(stoneString, usersResources.getStone(), tradePortParams.getStone());
+        Resources resourcesToTrade = new Resources(brickToTrade, woodToTrade, sheepToTrade, wheatToTrade, stoneToTrade);
 
-        int tradingBalance = (brickQuantityToTrade < 0 ? brickQuantityToTrade / brickSellCoefficient : brickQuantityToTrade)
-                + (woodQuantityToTrade < 0 ? woodQuantityToTrade / woodSellCoefficient : woodQuantityToTrade)
-                + (sheepQuantityToTrade < 0 ? sheepQuantityToTrade / sheepSellCoefficient : sheepQuantityToTrade)
-                + (wheatQuantityToTrade < 0 ? wheatQuantityToTrade / wheatSellCoefficient : wheatQuantityToTrade)
-                + (stoneQuantityToTrade < 0 ? stoneQuantityToTrade / stoneSellCoefficient : stoneQuantityToTrade);
-        tradeUtil.validateTradeBalanceIsZero(tradingBalance);
-        tradeUtil.validateTradeIsNotEmpty(brickQuantityToTrade, woodQuantityToTrade, sheepQuantityToTrade, wheatQuantityToTrade, stoneQuantityToTrade);
+        tradeUtil.validateTradeBalanceIsZero(resourcesToTrade, tradePortParams);
+        tradeUtil.validateTradeIsNotEmpty(resourcesToTrade);
 
-        usersResources.setBrick(usersBrickQuantity + brickQuantityToTrade);
-        usersResources.setWood(usersWoodQuantity + woodQuantityToTrade);
-        usersResources.setSheep(usersSheepQuantity + sheepQuantityToTrade);
-        usersResources.setWheat(usersWheatQuantity + wheatQuantityToTrade);
-        usersResources.setStone(usersStoneQuantity + stoneQuantityToTrade);
+        usersResources.addResources(resourcesToTrade);
+
+        Resources resourcesToBuy = new Resources((brickToTrade > 0 ? brickToTrade : 0),
+                                                 (woodToTrade > 0 ? woodToTrade : 0),
+                                                 (sheepToTrade > 0 ? sheepToTrade : 0),
+                                                 (wheatToTrade > 0 ? wheatToTrade : 0),
+                                                 (stoneToTrade > 0 ? stoneToTrade : 0));
+        Resources resourcesToSell = new Resources((brickToTrade < 0 ? -brickToTrade : 0),
+                                                  (woodToTrade < 0 ? -woodToTrade : 0),
+                                                  (sheepToTrade < 0 ? -sheepToTrade : 0),
+                                                  (wheatToTrade < 0 ? -wheatToTrade : 0),
+                                                  (stoneToTrade < 0 ? -stoneToTrade : 0));
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PORT, gameUser, resourcesToSell, resourcesToBuy);
     }
 
     private void proposeTrade(GameUserBean gameUser, String brickString, String woodString, String sheepString, String wheatString, String stoneString) throws PlayException, GameException {
@@ -424,6 +456,19 @@ public class PlayServiceImpl implements PlayService {
 
         Integer newOfferId = randomUtil.generateRandomOfferId(10000);
         game.setTradeProposal(new TradeProposal(brick, wood, sheep, wheat, stone, newOfferId));
+
+        Resources resourcesToBuy = new Resources((brick > 0 ? brick : 0),
+                                                 (wood > 0 ? wood : 0),
+                                                 (sheep > 0 ? sheep : 0),
+                                                 (wheat > 0 ? wheat : 0),
+                                                 (stone > 0 ? stone : 0));
+        Resources resourcesToSell = new Resources((brick < 0 ? -brick : 0),
+                                                  (wood < 0 ? -wood : 0),
+                                                  (sheep < 0 ? -sheep : 0),
+                                                  (wheat < 0 ? -wheat : 0),
+                                                  (stone < 0 ? -stone : 0));
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_PROPOSE, gameUser, resourcesToSell, resourcesToBuy);
     }
 
     private void tradeReply(GameUserBean gameUser, String reply, String offerIdString) throws PlayException, GameException {
@@ -434,6 +479,10 @@ public class PlayServiceImpl implements PlayService {
         gameUser.setAvailableTradeReply(false);
 
         if (reply.equals("decline")) {
+            if (tradeProposal.getOfferId() != null) {
+                MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_DECLINE, gameUser);
+            }
+
             for (GameUserBean gameUserIterated : game.getGameUsers()) {
                 if (gameUserIterated.isAvailableTradeReply()) {
                     return;
@@ -444,15 +493,33 @@ public class PlayServiceImpl implements PlayService {
         if (reply.equals("accept")) {
             tradeUtil.validateOfferIsNotAcceptedBefore(tradeProposal);
 
-            int brick = tradeProposal.getBrick();
-            int wood = tradeProposal.getWood();
-            int sheep = tradeProposal.getSheep();
-            int wheat = tradeProposal.getWheat();
-            int stone = tradeProposal.getStone();
-            tradeUtil.validateUserHasRequestedResources(gameUser, brick, wood, sheep, wheat, stone);
+            int brickToTrade = tradeProposal.getBrick();
+            int woodToTrade = tradeProposal.getWood();
+            int sheepToTrade = tradeProposal.getSheep();
+            int wheatToTrade = tradeProposal.getWheat();
+            int stoneToTrade = tradeProposal.getStone();
 
-            game.fetchActiveGameUser().getResources().addResources(brick, wood, sheep, wheat, stone);
-            gameUser.getResources().addResources(-brick, -wood, -sheep, -wheat, -stone);
+            Resources resourcesToBuy = new Resources((brickToTrade > 0 ? brickToTrade : 0),
+                                                     (woodToTrade > 0 ? woodToTrade : 0),
+                                                     (sheepToTrade > 0 ? sheepToTrade : 0),
+                                                     (wheatToTrade > 0 ? wheatToTrade : 0),
+                                                     (stoneToTrade > 0 ? stoneToTrade : 0));
+            Resources resourcesToSell = new Resources((brickToTrade < 0 ? -brickToTrade : 0),
+                                                      (woodToTrade < 0 ? -woodToTrade : 0),
+                                                      (sheepToTrade < 0 ? -sheepToTrade : 0),
+                                                      (wheatToTrade < 0 ? -wheatToTrade : 0),
+                                                      (stoneToTrade < 0 ? -stoneToTrade : 0));
+
+            Resources usersResourcesWhoAcceptTheTrade = gameUser.getResources();
+            tradeUtil.validateUserHasRequestedResources(usersResourcesWhoAcceptTheTrade, resourcesToBuy);
+
+            Resources activeUsersResources = game.fetchActiveGameUser().getResources();
+            activeUsersResources.addResources(resourcesToBuy);
+            activeUsersResources.takeResources(resourcesToSell);
+            usersResourcesWhoAcceptTheTrade.addResources(resourcesToSell);
+            usersResourcesWhoAcceptTheTrade.takeResources(resourcesToBuy);
+
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.TRADE_ACCEPT, gameUser, resourcesToSell, resourcesToBuy);
         }
 
         tradeProposal.setOfferId(null);
@@ -470,7 +537,7 @@ public class PlayServiceImpl implements PlayService {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
+    public void setRandomUtil(RandomValueProvider randomUtil) {
         this.randomUtil = randomUtil;
     }
 

@@ -1,14 +1,11 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,9 +22,9 @@ import static java.util.Arrays.asList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})  // if needed initial request and JSON response logging:
+//@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class UseCardKnightTest extends PlayTestUtil {
 
@@ -40,14 +37,11 @@ public class UseCardKnightTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -69,7 +63,14 @@ public class UseCardKnightTest extends PlayTestUtil {
                 .getGameDetails(1)
                     .gameUser(1).devCardsQuantityChangedBy(-1, 0, 0, 0, 0)
                     .gameUser(1).hasMandatoryAvailableAction("MOVE_ROBBER")
-                    .gameUser(1).hasUsedKnights(1);
+                    .gameUser(1).hasUsedKnights(1)
+                    .gameUser(1).hasLogWithCode("USE_CARD_KNIGHT").hasMessage("You used hacker").isHidden()
+
+                .getGameDetails(2)
+                    .gameUser(2).hasLogWithCode("USE_CARD_KNIGHT").hasMessage(scenario.getUsername(1) + " used hacker").isDisplayedOnTop()
+
+                .getGameDetails(3)
+                    .gameUser(3).hasLogWithCode("USE_CARD_KNIGHT").hasMessage(scenario.getUsername(1) + " used hacker").isDisplayedOnTop();
     }
 
     @Test
