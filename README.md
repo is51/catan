@@ -6,6 +6,8 @@ It-catan
 ## API Documentation
 List of methods available via http with real examples can be found under the following link (you need to Start server before):
 ```
+http://localhost:8080/api
+or
 http://localhost:8091/api
 ```
 
@@ -40,6 +42,8 @@ mvn clean install spring-boot:run -DskipTests -Dproperties.folder=dev
 Server is available under the following link:
 ```
 http://localhost:8080/
+or
+http://localhost:8091/
 ```
 
 
