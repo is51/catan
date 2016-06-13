@@ -125,6 +125,14 @@ public class Resources {
         this.stone += stoneToAdd;
     }
 
+    public void takeResources(int brickToTake, int woodToTake, int sheepToTake, int wheatToTake, int stoneToTake) {
+        this.brick -= brickToTake;
+        this.wood -= woodToTake;
+        this.sheep -= sheepToTake;
+        this.wheat -= wheatToTake;
+        this.stone -= stoneToTake;
+    }
+
     @Override
     public String toString() {
         return "Resources{" +

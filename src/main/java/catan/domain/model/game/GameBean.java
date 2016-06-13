@@ -28,11 +28,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static catan.services.impl.PlayServiceImpl.BUILD_SETTLEMENT_COUNT_LIMIT_RATIO;
 
 @Entity
 @Table(name = "CT_GAME")
@@ -71,6 +74,9 @@ public class GameBean {
      */
     @Column(name = "PREPARATION_CYCLE", unique = false, nullable = true)
     private Integer preparationCycle;
+
+    @Transient
+    private boolean needToUpdatePreparationCycle = false;
 
     @Column(name = "MIN_PLAYERS", unique = false, nullable = false)
     private int minPlayers;
@@ -251,6 +257,14 @@ public class GameBean {
         this.preparationCycle = preparationCycle;
     }
 
+    public boolean isNeedToUpdatePreparationCycle() {
+        return needToUpdatePreparationCycle;
+    }
+
+    public void setNeedToUpdatePreparationCycle(boolean needToUpdatePreparationCycle) {
+        this.needToUpdatePreparationCycle = needToUpdatePreparationCycle;
+    }
+
     public int getMinPlayers() {
         return minPlayers;
     }
@@ -419,6 +433,10 @@ public class GameBean {
         this.nodes = nodes;
     }
 
+    public int getSettlementCountLimit(){
+      return (int) (BUILD_SETTLEMENT_COUNT_LIMIT_RATIO * getHexes().size());
+    }
+
     public GameUserBean fetchActiveGameUser() {
         for (GameUserBean gameUser : getGameUsers()) {
             if (this.currentMove == gameUser.getMoveOrder()) {
@@ -443,26 +461,6 @@ public class GameBean {
         }
 
         return hexesWithDiceNumber;
-    }
-
-    public List<EdgeBean> fetchEdgesWithBuildingsBelongsToGameUser(GameUserBean gameUser) {
-        List<EdgeBean> edgesWithBuildingsBelongsToGameUser = new ArrayList<EdgeBean>();
-        for (EdgeBean edge : this.edges) {
-            if (edge.getBuilding() != null && edge.getBuilding().getBuildingOwner().equals(gameUser)) {
-                edgesWithBuildingsBelongsToGameUser.add(edge);
-            }
-        }
-
-        return edgesWithBuildingsBelongsToGameUser;
-    }
-
-    public Set<EdgeBean> fetchEdgesAccessibleForBuildingRoadInMainStage(GameUserBean gameUser) {
-        Set<EdgeBean> edges = new HashSet<EdgeBean>();
-        for (EdgeBean edge : this.fetchEdgesWithBuildingsBelongsToGameUser(gameUser)) {
-            edges.addAll(edge.fetchNeighborEdgesAccessibleForBuildingRoad(gameUser));
-        }
-
-        return edges;
     }
 
     public Integer calculateDiceSumValue() {

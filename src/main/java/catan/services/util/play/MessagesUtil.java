@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 @Component
 public class MessagesUtil {
 
-    public void updateDisplayedMessage(GameUserBean gameUser, String msgCode) {
+    public static void updateDisplayedMsg(GameUserBean gameUser, String msgCode) {
         Object[] argsForMsgPattern = getArgsForMsgPattern(gameUser, msgCode);
         if (argsForMsgPattern == null) {
             return;
@@ -22,26 +22,26 @@ public class MessagesUtil {
         gameUser.setDisplayedMessage(msgToShow);
     }
 
-    public MessageFormat getMsgPattern(GameUserBean gameUser, String key) {
+    private static MessageFormat getMsgPattern(GameUserBean gameUser, String key) {
         return new MessageFormat(getMsgs(gameUser).getString(key));
     }
 
-    public ResourceBundle getMsgs(GameUserBean gameUser) {
+    public static ResourceBundle getMsgs(GameUserBean gameUser) {
         return getMsgs(gameUser.getUser());
     }
 
-    public ResourceBundle getMsgs(UserBean user) {
+    private static ResourceBundle getMsgs(UserBean user) {
         Locale currentLocale = new Locale(user.getLanguage() == null ? "en" : user.getLanguage(), user.getCountry() == null ? "US" : user.getCountry());
         return ResourceBundle.getBundle("i18n.library", currentLocale);
     }
 
-    public void clearUsersMsgs(GameBean game) {
+    public static void clearUsersMsgs(GameBean game) {
         for (GameUserBean gameUser : game.getGameUsers()) {
             gameUser.setDisplayedMessage(null);
         }
     }
 
-    private Object[] getArgsForMsgPattern(GameUserBean gameUser, String msgCode) {
+    private static Object[] getArgsForMsgPattern(GameUserBean gameUser, String msgCode) {
         if (msgCode.equals("help_msg_build_settlement")) {
             return getArgsForBuildSettlementMsgPattern(gameUser);
         }
@@ -69,32 +69,32 @@ public class MessagesUtil {
         throw new IllegalArgumentException("Invalid message code");
     }
 
-    private Object[] getArgsForBuildSettlementMsgPattern(GameUserBean gameUser) {
+    private static Object[] getArgsForBuildSettlementMsgPattern(GameUserBean gameUser) {
         //arguments: {number of already built offices; username}
         return new Object[] {gameUser.getBuildingsCount().getSettlements(), gameUser.getUser().getUsername()};
     }
 
-    private Object[] getArgsForBuildCityMsgPattern(GameUserBean gameUser) {
+    private static Object[] getArgsForBuildCityMsgPattern(GameUserBean gameUser) {
         //arguments: {number of already built business centres; username}
         return new Object[] {gameUser.getBuildingsCount().getCities(), gameUser.getUser().getUsername()};
     }
 
-    private Object[] getArgsForBuildRoadMsgPattern(GameUserBean gameUser) {
+    private static Object[] getArgsForBuildRoadMsgPattern(GameUserBean gameUser) {
         //arguments: {2 - if user should build network near business centre, 1 - near office; username}
         return new Object[] {("CITY".equals(getTypeOfBuildingWithoutRoadsInPreparation(gameUser)) ? 2 : 1), gameUser.getUser().getUsername()};
     }
 
-    private Object[] getArgsForMoveRobberMsgPattern(GameUserBean gameUser) {
+    private static Object[] getArgsForMoveRobberMsgPattern(GameUserBean gameUser) {
         //arguments: {username}
         return new Object[] {gameUser.getUser().getUsername()};
     }
 
-    private Object[] getArgsForChoosePlayerMsgPattern(GameUserBean gameUser) {
+    private static Object[] getArgsForChoosePlayerMsgPattern(GameUserBean gameUser) {
         //arguments: {username}
         return new Object[] {gameUser.getUser().getUsername()};
     }
 
-    private Object[] getArgsForWaitingForKickingOffResMsgPattern(GameUserBean gameUser) {
+    private static Object[] getArgsForWaitingForKickingOffResMsgPattern(GameUserBean gameUser) {
         //arguments: {list of users that should kick off their resources; number of users in this list}
         if (gameUser.isKickingOffResourcesMandatory()) {
             return null;
@@ -116,7 +116,7 @@ public class MessagesUtil {
         return new Object[] {waitingListString, waitingListSize};
     }
 
-    private String getTypeOfBuildingWithoutRoadsInPreparation(GameUserBean gameUser) {
+    private static String getTypeOfBuildingWithoutRoadsInPreparation(GameUserBean gameUser) {
         for (NodeBean node : gameUser.getGame().getNodes()) {
             if (node.hasBuildingBelongsToUser(gameUser) && !node.hasNeighbourRoadBelongsToGameUser(gameUser)) {
                 return node.getBuilding().getBuilt().toString();

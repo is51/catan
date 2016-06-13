@@ -92,6 +92,10 @@ public class GameUtil {
         }.getType());
     }
 
+    public GameBean getGameById(String gameIdString) throws GameException {
+        return getGameById(gameIdString, ERROR_CODE_ERROR);
+    }
+
     public GameBean getGameById(String gameIdString, String errorCodeToReturnIfNotFound) throws GameException {
         int gameId;
         try {
@@ -216,8 +220,6 @@ public class GameUtil {
         game.setCurrentMove(1);
         game.setStatus(GameStatus.PLAYING);
         game.setStage(GameStage.PREPARATION);
-        game.setPreparationCycle(1);
-        game.setCurrentCycleBuildingNumber(1);
         game.setRoadsToBuildMandatory(0);
         game.setRobberShouldBeMovedMandatory(false);
         game.setDateStarted(new Date());

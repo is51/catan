@@ -293,6 +293,20 @@ public class Scenario {
         return this;
     }
 
+    public Scenario settlementsLimitReached() {
+        lastApiResponse.then()
+                .statusCode(200)
+                .body("limitReached", equalTo(true));
+        return this;
+    }
+
+    public Scenario settlementsLimitNotReached() {
+        lastApiResponse.then()
+                .statusCode(200)
+                .body("limitReached", equalTo(false));
+        return this;
+    }
+
     public MapValidator node(int x, int y, String nodePosition) {
         return new MapValidator(this, x, y, nodePosition, "node");
     }

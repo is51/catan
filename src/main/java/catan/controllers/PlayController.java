@@ -6,6 +6,7 @@ import catan.domain.exception.PlayException;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.BoughtCardDetails;
+import catan.domain.transfer.output.game.BuildSettlementDetails;
 import catan.domain.transfer.output.game.MonopolyCardUsageDetails;
 import catan.domain.transfer.output.game.RoadBuildingCardUsageDetails;
 import catan.services.AuthenticationService;
@@ -46,15 +47,19 @@ public class PlayController {
     @RequestMapping(value = "build/settlement",
             method = POST,
             produces = APPLICATION_JSON_VALUE)
-    public void buildSettlement(@RequestParam(value = "token", required = false) String token,
-                                @RequestParam("gameId") String gameId,
-                                @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
+    public BuildSettlementDetails buildSettlement(@RequestParam(value = "token", required = false) String token,
+                                                  @RequestParam("gameId") String gameId,
+                                                  @RequestParam("nodeId") String nodeId) throws AuthenticationException, GameException, PlayException {
         UserBean user = authenticationService.authenticateUserByToken(token);
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("nodeId", nodeId);
 
-        playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, user, gameId, params);
+
+        Map<String, String> returnedParams = playService.processAction(GameUserActionCode.BUILD_SETTLEMENT, user, gameId, params);
+        String isLimitReached = returnedParams.get("isLimitReached");
+
+        return new BuildSettlementDetails(isLimitReached);
     }
 
     @RequestMapping(value = "build/city",
