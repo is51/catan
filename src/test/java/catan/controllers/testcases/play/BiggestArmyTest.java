@@ -1,27 +1,23 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static catan.domain.model.game.types.DevelopmentCard.KNIGHT;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class BiggestArmyTest extends PlayTestUtil {
 
@@ -34,14 +30,11 @@ public class BiggestArmyTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -60,17 +53,17 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(0)          //user 1 has no used knights
-                    .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
-                    .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
+                .gameUser(1).hasUsedKnights(0)          //user 1 has no used knights
+                .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
+                .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
 
                 .USE_CARD_KNIGHT(1)                         //got first used knight
                 .MOVE_ROBBER(1).toCoordinates(1, 1)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(1)          //user 1 has 1 used knight
-                    .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
-                    .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
+                .gameUser(1).hasUsedKnights(1)          //user 1 has 1 used knight
+                .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
+                .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
 
                 .END_TURN(1)
 
@@ -89,9 +82,9 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .MOVE_ROBBER(1).toCoordinates(2, 0)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(2)          //user 1 has 2 used knights
-                    .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
-                    .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
+                .gameUser(1).hasUsedKnights(2)          //user 1 has 2 used knights
+                .gameUser(1).hasVictoryPoints(2)        //user 1 did not get 2 VP for biggest army
+                .game().doesNotHaveBiggestArmyOwner()   //there is no biggest army owner in game
 
                 .END_TURN(1)
 
@@ -109,9 +102,16 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .USE_CARD_KNIGHT(1)                         //got third used knight
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
-                    .gameUser(1).hasVictoryPoints(4)        //user GOT 2 VP for biggest army
-                    .game().hasBiggestArmyOwner(1);         //user 1 is the biggest army owner
+
+                .game().hasBiggestArmyOwner(1).         //user 1 is the biggest army owner
+                gameUser(1).hasUsedKnights(3).          //user 1 has 3 used knights
+                gameUser(1).hasVictoryPoints(4).        //user GOT 2 VP for biggest army
+
+                gameUser(1).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage("You are a new security leader").isDisplayedOnTop().
+                getGameDetails(2).
+                gameUser(2).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(1) + " is a new security leader").isDisplayedOnTop().
+                getGameDetails(3).
+                gameUser(3).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(1) + " is a new security leader").isDisplayedOnTop();
     }
 
     @Test
@@ -158,9 +158,9 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .MOVE_ROBBER(1).toCoordinates(1, 1)
 
                 .getGameDetails(1)
-                    .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
-                    .gameUser(1).hasVictoryPoints(4)        //user 1 GOT 2 VP for biggest army
-                    .game().hasBiggestArmyOwner(1)          //user 1 is the biggest army owner
+                .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
+                .gameUser(1).hasVictoryPoints(4)        //user 1 GOT 2 VP for biggest army
+                .game().hasBiggestArmyOwner(1)          //user 1 is the biggest army owner
 
                 .END_TURN(1)
 
@@ -171,9 +171,9 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .MOVE_ROBBER(2).toCoordinates(2, 0)
 
                 .getGameDetails(2)
-                    .gameUser(2).hasUsedKnights(3)          //user 2 has 3 used knights
-                    .gameUser(2).hasVictoryPoints(2)        //user 2 did not get 2 VP for biggest army
-                    .game().hasBiggestArmyOwner(1)          //user 1 is the biggest army owner
+                .gameUser(2).hasUsedKnights(3)          //user 2 has 3 used knights
+                .gameUser(2).hasVictoryPoints(2)        //user 2 did not get 2 VP for biggest army
+                .game().hasBiggestArmyOwner(1)          //user 1 is the biggest army owner
 
                 .END_TURN(2)
 
@@ -191,11 +191,18 @@ public class BiggestArmyTest extends PlayTestUtil {
                 .USE_CARD_KNIGHT(2)                         //got forth used knight by user 2
 
                 .getGameDetails(2)
-                    .gameUser(2).hasUsedKnights(4)          //user 2 has 4 used knights
-                    .gameUser(2).hasVictoryPoints(4)        //user 2 GOT 2 VP for biggest army
-                    .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
-                    .gameUser(1).hasVictoryPoints(2)        //user 1 LOST 2 VP for biggest army
-                    .game().hasBiggestArmyOwner(2);         //user 2 is the biggest army owner
+                .gameUser(2).hasUsedKnights(4)          //user 2 has 4 used knights
+                .gameUser(2).hasVictoryPoints(4)        //user 2 GOT 2 VP for biggest army
+                .gameUser(1).hasUsedKnights(3)          //user 1 has 3 used knights
+                .gameUser(1).hasVictoryPoints(2)        //user 1 LOST 2 VP for biggest army
+                .game().hasBiggestArmyOwner(2).         //user 2 is the biggest army owner
+
+
+                gameUser(2).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage("You are a new security leader").isDisplayedOnTop().
+                getGameDetails(1).
+                gameUser(1).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(2) + " is a new security leader").isDisplayedOnTop().
+                getGameDetails(3).
+                gameUser(3).hasLogWithCode("NEW_SECURITY_LEADER").hasMessage(scenario.getUsername(2) + " is a new security leader").isDisplayedOnTop();
     }
 
     private Scenario giveResourcesAndBuyKnightsAndPassCycle(int moveOrder, int quantity) {

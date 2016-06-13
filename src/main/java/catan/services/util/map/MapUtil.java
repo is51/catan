@@ -7,7 +7,7 @@ import catan.domain.model.dashboard.NodeBean;
 import catan.domain.model.dashboard.types.HexType;
 import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameBean;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +30,7 @@ import static java.util.Arrays.asList;
 
 @Component
 public class MapUtil {
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     private int hexAbsoluteIdSequence;
     private int nodeAbsoluteIdSequence;
     private int edgeAbsoluteIdSequence;
@@ -406,7 +406,7 @@ public class MapUtil {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
+    public void setRandomUtil(RandomValueProvider randomUtil) {
         this.randomUtil = randomUtil;
     }
 }

@@ -4,7 +4,7 @@ import catan.domain.model.dashboard.Coordinates;
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
 import catan.services.util.random.RandomValueGeneratorMock;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class MapUtilTest {
     public void setUp() {
         rvg = new RandomValueGeneratorMock();
 
-        RandomUtil RandomUtil = new RandomUtil();
+        RandomValueProvider RandomUtil = new RandomValueProvider();
         RandomUtil.setRvg(rvg);
 
         mapUtil = new MapUtil();

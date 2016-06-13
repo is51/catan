@@ -1,27 +1,23 @@
 package catan.controllers.testcases.game;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static catan.domain.model.game.types.DevelopmentCard.VICTORY_POINT;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class FinishGameTest extends PlayTestUtil {
     public static final String USER_NAME_1 = "user1_FinishGameTest";
@@ -33,14 +29,11 @@ public class FinishGameTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -66,7 +59,13 @@ public class FinishGameTest extends PlayTestUtil {
                 .BUILD_SETTLEMENT(1).atNode(2, -2, "topRight")
 
                 //Then
-                .getGameDetails(1).statusIsFinished();
+                .getGameDetails(1).statusIsFinished()
+                .gameUser(1).hasLogWithCode("FINISH_GAME").hasMessage("Game finished. You are the winner").isDisplayedOnTop()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("FINISH_GAME").hasMessage("Game finished. " + scenario.getUsername(1) + " is the winner").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("FINISH_GAME").hasMessage("Game finished. " + scenario.getUsername(1) + " is the winner").isDisplayedOnTop()
+        ;
     }
 
     @Test

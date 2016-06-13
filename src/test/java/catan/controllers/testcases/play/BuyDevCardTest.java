@@ -1,15 +1,12 @@
 package catan.controllers.testcases.play;
 
+import catan.config.ApplicationConfig;
 import catan.controllers.ctf.Scenario;
-import catan.controllers.ctf.TestApplicationConfig;
 import catan.controllers.util.PlayTestUtil;
 import catan.domain.model.dashboard.types.HexType;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,8 +22,8 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class BuyDevCardTest extends PlayTestUtil {
 
@@ -39,14 +36,11 @@ public class BuyDevCardTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     private Scenario scenario;
 
     @Before
     public void setup() {
-        scenario = new Scenario((RandomUtilMock) randomUtil);
+        scenario = new Scenario();
 
         if (!initialized) {
             scenario
@@ -66,9 +60,16 @@ public class BuyDevCardTest extends PlayTestUtil {
                 .THROW_DICE(1)
 
                 .startTrackResourcesQuantity()
+                .nextRandomDevelopmentCards(asList(KNIGHT))
 
                 .BUY_CARD(1).successfully()
-                .getGameDetails(1).gameUser(1).resourcesQuantityChangedBy(0, 0, -1, -1, -1);
+                .getGameDetails(1)
+                .gameUser(1).resourcesQuantityChangedBy(0, 0, -1, -1, -1)
+                .gameUser(1).hasLogWithCode("BUY_CARD").hasMessage("You organised a conference. Your new ability: hacker").isHidden()
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop()
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("BUY_CARD").hasMessage(scenario.getUsername(1) + " organised a conference").isDisplayedOnTop();
     }
 
     @Test

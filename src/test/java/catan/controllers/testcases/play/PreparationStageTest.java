@@ -1,14 +1,15 @@
 package catan.controllers.testcases.play;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
+import catan.controllers.ctf.Scenario;
+import catan.controllers.util.FunctionalTestUtil;
 import catan.controllers.util.PlayTestUtil;
-import catan.services.util.random.RandomUtil;
-import catan.services.util.random.RandomUtilMock;
+import catan.controllers.util.RandomValueTestUtil;
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,10 +21,15 @@ import java.util.List;
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class PreparationStageTest extends PlayTestUtil {
 
@@ -36,12 +42,10 @@ public class PreparationStageTest extends PlayTestUtil {
 
     private static boolean initialized = false;
 
-    @Autowired
-    private RandomUtil randomUtil;
-
     @Before
     public void setup() {
         if (!initialized) {
+            new Scenario();
             registerUser(USER_NAME_1, USER_PASSWORD_1);
             registerUser(USER_NAME_2, USER_PASSWORD_2);
             registerUser(USER_NAME_3, USER_PASSWORD_3);
@@ -107,7 +111,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, nodeBuildingAction);
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
-        String message = activeUserName + ", build "
+        String message = activeUserName + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX + ", build "
                 + (numberOfBuilding == 1 ? "your first " : (numberOfBuilding == 2 ? "your second " : ""))
                 + (nodeBuildingAction.equals("BUILD_SETTLEMENT") ? "office" : "business centre");
         checkDisplayedMessage(userTokens, gameId, activeUserNumber, notActiveUserNumber1, notActiveUserNumber2, message);
@@ -121,7 +125,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableForUserAction(userTokens[activeUserNumber], gameId, activeUserNumber, "BUILD_ROAD");
         checkAvailableForUserAction(userTokens[notActiveUserNumber1], gameId, notActiveUserNumber1, "");
         checkAvailableForUserAction(userTokens[notActiveUserNumber2], gameId, notActiveUserNumber2, "");
-        message = activeUserName + ", build network near your "
+        message = activeUserName + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX  + ", build network near your "
                 + (nodeBuildingAction.equals("BUILD_SETTLEMENT") ? "office" : "business centre");
         checkDisplayedMessage(userTokens, gameId, activeUserNumber, notActiveUserNumber1, notActiveUserNumber2, message);
 
@@ -273,7 +277,7 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("errorCode", equalTo("ERROR"));
 
         // check if message is correct
-        String message = userNames[thirdGameUserNumber] + ", build your second office";
+        String message = userNames[thirdGameUserNumber] + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX + ", build your second office";
         checkDisplayedMessage(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, message);
 
         // should_successfully_build_settlement_on_empty_node
@@ -324,7 +328,7 @@ public class PreparationStageTest extends PlayTestUtil {
                 .body("errorCode", equalTo("ERROR"));
 
         // check if message is correct
-        message = userNames[thirdGameUserNumber] + ", build network near your office";
+        message = userNames[thirdGameUserNumber] + FunctionalTestUtil.GLOBAL_UNIQUE_USERNAME_SUFFIX + ", build network near your office";
         checkDisplayedMessage(userTokens, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, message);
 
         // should_successfully_build_road_on_empty_edge_if_has_neighbour_road_that_belongs_to_this_player
@@ -348,7 +352,7 @@ public class PreparationStageTest extends PlayTestUtil {
                 .statusCode(200);
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken1)
                 .when()
@@ -482,7 +486,7 @@ public class PreparationStageTest extends PlayTestUtil {
         checkAvailableActionsAndBuildDuringOneMove(userTokens, userNames[thirdGameUserNumber], 2, gameId, thirdGameUserNumber, secondGameUserNumber, firstGameUserNumber, nodeId3ToBuildForThirdUser, "BUILD_SETTLEMENT", edgeId3ToBuildForThirdUser);
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken1)
                 .when()
@@ -494,7 +498,7 @@ public class PreparationStageTest extends PlayTestUtil {
 
     public void nextRandomDiceValues(List<Integer> nextRandomValues) {
         for (Integer nextRandomValue : nextRandomValues) {
-            ((RandomUtilMock)randomUtil).setNextDiceNumber(nextRandomValue);
+            RandomValueTestUtil.setNextDiceNumber(nextRandomValue);
         }
     }
 

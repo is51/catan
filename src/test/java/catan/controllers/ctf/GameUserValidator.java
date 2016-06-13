@@ -120,6 +120,47 @@ public class GameUserValidator {
         return scenario;
     }
 
+    public Scenario doesNotHavelogWithCode(String actionCode) {
+        check("log", notNullValue());
+        check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}.find {it.code == '" + actionCode + "'}", nullValue());
+
+        return scenario;
+    }
+
+    public LogValidator hasLogWithCode(String actionCode) {
+        check("log", notNullValue());
+        check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}.find {it.code == '" + actionCode + "'}", notNullValue());
+
+        return new LogValidator(scenario, actionCode);
+    }
+
+    public class LogValidator extends Scenario{
+        private String actionCode;
+
+        public LogValidator(Scenario scenario, String actionCode) {
+            cloneFrom(scenario);
+            this.actionCode = actionCode;
+        }
+
+        public LogValidator hasMessage(String message) {
+            check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}." +
+                    "find {it.code == '" + actionCode + "'}.message", equalTo(message));
+            return this;
+        }
+
+        public LogValidator isDisplayedOnTop() {
+            check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}." +
+                    "find {it.code == '" + actionCode + "'}.displayedOnTop", equalTo(true));
+            return this;
+        }
+
+        public LogValidator isHidden() {
+            check("log.findAll{it.id > " + (getValueOf("log.max{it.id}.id") - 3) + "}." +
+                    "find {it.code == '" + actionCode + "'}.displayedOnTop", equalTo(false));
+            return this;
+        }
+    }
+
     public class ActionParameterValidator extends Scenario{
         private String action;
         public ActionParameterValidator(Scenario scenario, String action) {
