@@ -102,24 +102,24 @@
                 </configuration>
             </plugin>
 
-            <!-- GIT COMMIT ID PLUGIN CONFIGURATION from https://github.com/ktoso/maven-git-commit-id-plugin-->
-            <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                </executions>
+            <!--&lt;!&ndash; GIT COMMIT ID PLUGIN CONFIGURATION from https://github.com/ktoso/maven-git-commit-id-plugin&ndash;&gt;-->
+            <!--<plugin>-->
+                <!--<groupId>pl.project13.maven</groupId>-->
+                <!--<artifactId>git-commit-id-plugin</artifactId>-->
+                <!--<version>2.2.1</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>revision</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
 
-                <configuration>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-                </configuration>
-            </plugin>
+                <!--<configuration>-->
+                    <!--<generateGitPropertiesFile>true</generateGitPropertiesFile>-->
+                    <!--<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 

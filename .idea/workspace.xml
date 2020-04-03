@@ -22,14 +22,7 @@
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dd14bc43-3893-4520-8bf8-78de0aad27d0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/catan/services/impl/bots/smart/utils/UseCardYearOfPlentyUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/catan/controllers/PlayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/catan/controllers/PlayController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/catan/controllers/management/PlayerAutomationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/catan/controllers/management/PlayerAutomationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/catan/services/impl/AutomationProcessorImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/catan/services/impl/AutomationProcessorImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/catan/services/impl/bots/smart/SmartBot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/catan/services/impl/bots/smart/SmartBot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/catan/services/impl/bots/smart/utils/UseCardMonopolyUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/catan/services/impl/bots/smart/utils/UseCardMonopolyUtil.java" afterDir="false" />
-    </list>
+    <list default="true" id="dd14bc43-3893-4520-8bf8-78de0aad27d0" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/.idea/httpRequests/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -430,12 +423,12 @@
       <updated>1585344124436</updated>
       <workItem from="1585344128679" duration="1669000" />
       <workItem from="1585346002215" duration="848000" />
-      <workItem from="1585906012141" duration="188000" />
+      <workItem from="1585906012141" duration="461000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2705000" />
+    <option name="totallyTimeSpent" value="2978000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
