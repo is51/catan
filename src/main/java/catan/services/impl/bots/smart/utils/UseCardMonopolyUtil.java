@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class UseCardMonopolyUtil extends SmartBotUtil {
     public static String getRequiredResourceFromAllPlayers(GameUserBean player) {
-
+        //TODO: getRequiredResource
         return "stone";
     }
 

@@ -1,0 +1,46 @@
+<div class="out-of-game">
+
+    <div class="row">
+
+        <div class="col-xs-6">
+            <h1>Game #{{::game.getId()}}</h1>
+            <div style="font-size: 2rem;">Created by User #{{::game.creatorId}}</div>
+            <div style="font-size: 1.2rem; line-height: 2.4rem;">
+                <span ng-show="::game.privateGame"><span class="glyphicon glyphicon-eye-open"></span> Code: {{::game.privateCode}}</span>
+                <span ng-hide="::game.privateGame"><span class="glyphicon glyphicon-globe"></span> Public</span>
+            </div>
+            <div style="font-size: 1.2rem; line-height: 2.4rem;">{{::game.dateCreated | date : 'short'}}</div>
+            <div><span class="label label-warning">{{game.status}}</span></div>
+            <div>&nbsp;</div>
+            <div>Target Victory Points: {{::game.targetVictoryPoints}}</div>
+            <div>Number of players: {{::game.minPlayers}} &ndash; {{::game.maxPlayers}}</div>
+
+        </div>
+
+        <div class="col-xs-6">
+            <div>
+                <h1>Players:</h1>
+                <ct-players-list game="game" show-ready-status="true"></ct-players-list>
+            </div>
+
+            <div><br><br><br></div>
+
+            <div>
+
+                <a ng-if="::!game.isCurrentUserCreator()" href="" ct-leave-game-button game="game" class="btn btn-danger">Leave Game</a>
+                <a ng-if="::game.isCurrentUserCreator()" href="" ct-cancel-game-button game="game" class="btn btn-danger">Cancel Game</a>
+            </div>
+
+            <div>
+                <br>
+                <a href="" ct-ready-button game="game" class="btn btn-default">I'm Ready</a>
+            </div>
+
+            <ct-game-map-overview game="game"></ct-game-map-overview>
+        </div>
+
+    </div>
+
+    <a ui-sref="continueGame" class="btn btn-default btn-back">Back to my games</a>
+
+</div>

@@ -27,8 +27,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping("/api/play")
 public class PlayController {
 
-    PlayService playService;
-    AuthenticationService authenticationService;
+    private PlayService playService;
+    private AuthenticationService authenticationService;
 
     @RequestMapping(value = "build/road",
             method = POST,

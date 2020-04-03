@@ -1,0 +1,10 @@
+<ct-modal-window [modalWindowId]="modalWindowId">
+
+    <div class="ct-modal-window-bg" (click)="cancel()"></div>
+    <div class="ct-modal-window-content content">
+
+        <ct-choose-resources *ngIf="isModalWindowVisible()" [game]="game" [type]="modalWindowId"></ct-choose-resources>
+
+    </div>
+
+</ct-modal-window>

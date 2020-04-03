@@ -1,0 +1,44 @@
+.content {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.content svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.content svg text {
+    pointer-events: none;
+}
+
+.content svg > g {
+    pointer-events: all;
+}
+
+.content svg .button:not(.disabled) {
+    cursor: pointer;
+}
+
+.content svg .name {
+    fill: #444444;
+}
+
+.content svg .count-bg {
+    fill: url(#gradient-count);
+}
+
+.content svg .disabled .icon {
+    opacity: 0.5;
+}
+
+.content svg .disabled .name {
+    fill: #adadad;
+}
+
+.content svg .disabled .count-bg {
+    fill: url(#gradient-count-zero);
+}

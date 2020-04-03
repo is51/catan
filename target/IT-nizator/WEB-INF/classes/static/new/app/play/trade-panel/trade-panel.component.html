@@ -1,0 +1,17 @@
+<ct-modal-window [modalWindowId]="'TRADE_PANEL'" [onShow]="onShow" [onHide]="onHide">
+
+    <div class="ct-modal-window-bg" ct-choose-resources-cancel [type]="(isVisibleTradePortPanel)?'TRADE_PORT':'TRADE_PROPOSE'"></div>
+    <div class="ct-modal-window-content content">
+
+        <ul class="nav nav-tabs">
+            <li role="presentation" [class.active]="isVisibleTradePortPanel"><a (click)="showTradePort()" ct-choose-resources-cancel [type]="'TRADE_PROPOSE'">Port</a></li>
+            <li role="presentation" [class.active]="isVisibleTradePlayersPanel"><a (click)="showTradePlayers()" ct-choose-resources-cancel [type]="'TRADE_PORT'">Players</a></li>
+        </ul>
+
+        <ct-trade-port-panel *ngIf="isVisibleTradePortPanel" [game]="game"></ct-trade-port-panel>
+
+        <ct-trade-players-panel *ngIf="isVisibleTradePlayersPanel" [game]="game"></ct-trade-players-panel>
+
+    </div>
+
+</ct-modal-window>

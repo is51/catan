@@ -19,6 +19,7 @@ import catan.services.impl.bots.smart.utils.KickOffResourcesUtil;
 import catan.services.impl.bots.smart.utils.MoveRobberUtil;
 import catan.services.impl.bots.smart.utils.TradePortUtil;
 import catan.services.impl.bots.smart.utils.UseCardMonopolyUtil;
+import catan.services.impl.bots.smart.utils.UseCardYearOfPlentyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,8 @@ public class SmartBot extends AbstractBot {
 
         if (useCardKnightAction != null) {
             log.debug("{}: try use card KNIGHT, for player {} in game {}", botName, username, gameId);
-            boolean cardUsed = useCardKnight(player, gameId);
+            boolean diceThrown = throwDiceAction == null;
+            boolean cardUsed = useCardKnight(player, gameId, diceThrown);
             if (cardUsed) {
                 return;
             }
@@ -116,7 +118,6 @@ public class SmartBot extends AbstractBot {
 
         if (useCardMonopolyAction != null) {
             log.debug("{}: try use card MONOPOLY, for player {} in game {}", botName, username, gameId);
-            //TODO: use useCardMonopoly if possible
             boolean cardUsed = useCardMonopoly(player, gameId);
             if (cardUsed) {
                 return;
@@ -126,7 +127,6 @@ public class SmartBot extends AbstractBot {
 
         if (throwDiceAction != null) {
             log.debug("{}: throw dice, for player {} in game {}", botName, username, gameId);
-            //TODO: use knight if possible
             throwDice(player, gameId);
             return;
         }
@@ -201,6 +201,13 @@ public class SmartBot extends AbstractBot {
 
     private boolean useCardYearOfPlenty(GameUserBean player, String gameId) throws GameException {
         try {
+            List<String> resources = UseCardYearOfPlentyUtil.getTwoRequiredResources(player);
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("firstResource", resources.get(0));
+            params.put("secondResource", resources.get(1));
+
+            playService.processAction(USE_CARD_MONOPOLY, player.getUser(), gameId, params);
             playService.processAction(USE_CARD_YEAR_OF_PLENTY, player.getUser(), gameId);
             return true;
         } catch (PlayException e) {
@@ -220,7 +227,7 @@ public class SmartBot extends AbstractBot {
         return false;
     }
 
-    private boolean useCardKnight(GameUserBean player, String gameId) throws GameException {
+    private boolean useCardKnight(GameUserBean player, String gameId, boolean diceThrown) throws GameException {
         GameBean game = player.getGame();
         boolean shouldUseKnightCard = false;
         for (HexBean hex : game.getHexes()) {
@@ -236,7 +243,7 @@ public class SmartBot extends AbstractBot {
 
         }
 
-        if (shouldUseKnightCard || player.getDevelopmentCards().getKnight() > 1) {
+        if (shouldUseKnightCard || (player.getDevelopmentCards().getKnight() > 1 && diceThrown)) {
             try {
                 playService.processAction(USE_CARD_KNIGHT, player.getUser(), gameId);
                 return true;

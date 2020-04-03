@@ -30,7 +30,7 @@ public class AutomationProcessorImpl implements AutomationProcessor {
     private List<AbstractBot> bots = new ArrayList<AbstractBot>();
 
     @Override
-    @Scheduled(fixedDelay = 6000)
+    @Scheduled(fixedDelay = 2000)
     public void monitorPlayerAction() {
         for (GameUserBean oldStatePlayer : automatedPlayers.keySet()) {
             try {
