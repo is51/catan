@@ -6,6 +6,7 @@ import catan.domain.model.dashboard.types.NodeBuiltType;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
 import catan.domain.transfer.output.game.actions.ActionParamsDetails;
+import catan.services.impl.bots.smart.SmartBot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,32 +21,40 @@ public class TradePortUtil extends SmartBotUtil {
             return emptyResourceCombination;
         }
 
+        //TODO: reimplement to have list of required resources with each action and list of available resources after trade
+        // if have enough resources to buuld settlement, then can trade for other resources
+
         if(needResourcesForSettlement(player)){
             return combinationIfNeedResourcesForSettlement(player, action.getParams());
         } else if(needResourcesForCity(player)){
             return combinationIfNeedResourcesForCity(player, action.getParams());
-        } else {  //TODO: split logic if we should sell road or card resources
-            return combinationIfNeedToMakeLessResources(player, action.getParams(), cardsAreOver);
+        }  else if(needResourcesForRoad(player, cardsAreOver)){
+            return combinationIfNeedResourcesForRoad(player, action.getParams());
+        } else {
+            return combinationIfNeedResourcesForCard(player, action.getParams());
         }
     }
 
     private static boolean noResourcesToSell(GameUserBean player, ActionParamsDetails params) {
         return player.getResources().getBrick() < params.getBrick()
-                && player.getResources().getWood() < params.getWood()
-                && player.getResources().getSheep() < params.getSheep()
-                && player.getResources().getWheat() < params.getWheat()
-                && player.getResources().getStone() < params.getStone();
+            && player.getResources().getWood() < params.getWood()
+            && player.getResources().getSheep() < params.getSheep()
+            && player.getResources().getWheat() < params.getWheat()
+            && player.getResources().getStone() < params.getStone();
     }
 
     private static Map<HexType, String> combinationIfNeedResourcesForSettlement(GameUserBean player, ActionParamsDetails params) {
         List<HexType> requiredResources = requiredResourcesForSettlement(player);
+        if(requiredResources == null || requiredResources.isEmpty()){
+            return emptyResourceCombination;
+        }
         Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
 
         combinationForResource(requiredResources, tradeResourceCombination, HexType.STONE, 0, params.getStone(), player.getResources().getStone());
         combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 1, params.getBrick(), player.getResources().getBrick());
         combinationForResource(requiredResources, tradeResourceCombination, HexType.WOOD, 1, params.getWood(), player.getResources().getWood());
         combinationForResource(requiredResources, tradeResourceCombination, HexType.SHEEP, 1, params.getSheep(), player.getResources().getSheep());
-        combinationForResource(requiredResources, tradeResourceCombination, HexType.WHEAT, 1, params.getWheat(), player.getResources().getBrick());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WHEAT, 1, params.getWheat(), player.getResources().getWheat());
 
         return tradeResourceCombination;
     }
@@ -53,6 +62,9 @@ public class TradePortUtil extends SmartBotUtil {
 
     private static Map<HexType, String> combinationIfNeedResourcesForCity(GameUserBean player, ActionParamsDetails params) {
         List<HexType> requiredResources = requiredResourcesForCity(player);
+        if(requiredResources == null || requiredResources.isEmpty()){
+            return emptyResourceCombination;
+        }
         Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
 
         combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 0, params.getBrick(), player.getResources().getBrick());
@@ -64,8 +76,11 @@ public class TradePortUtil extends SmartBotUtil {
         return tradeResourceCombination;
     }
 
-    private static Map<HexType, String> combinationIfNeedToMakeLessResources(GameUserBean player, ActionParamsDetails params, boolean cardsAreOver) {
+    private static Map<HexType, String> combinationIfNeedResourcesForRoad(GameUserBean player, ActionParamsDetails params) {
         List<HexType> requiredResources = requiredResourcesForRoad(player);
+        if(requiredResources == null || requiredResources.isEmpty()){
+            return emptyResourceCombination;
+        }
         Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
 
         combinationForResource(requiredResources, tradeResourceCombination, HexType.SHEEP, 0, params.getSheep(), player.getResources().getSheep());
@@ -73,6 +88,22 @@ public class TradePortUtil extends SmartBotUtil {
         combinationForResource(requiredResources, tradeResourceCombination, HexType.STONE, 0, params.getStone(), player.getResources().getStone());
         combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 1, params.getBrick(), player.getResources().getBrick());
         combinationForResource(requiredResources, tradeResourceCombination, HexType.WOOD, 1, params.getWood(), player.getResources().getWood());
+
+        return tradeResourceCombination;
+    }
+
+    private static Map<HexType, String> combinationIfNeedResourcesForCard(GameUserBean player, ActionParamsDetails params) {
+        List<HexType> requiredResources = requiredResourcesForRoad(player);
+        if(requiredResources == null || requiredResources.isEmpty()){
+            return emptyResourceCombination;
+        }
+        Map<HexType, String> tradeResourceCombination = new HashMap<HexType, String>();
+
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.SHEEP, 1, params.getSheep(), player.getResources().getSheep());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WHEAT, 1, params.getWheat(), player.getResources().getWheat());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.STONE, 1, params.getStone(), player.getResources().getStone());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.BRICK, 0, params.getBrick(), player.getResources().getBrick());
+        combinationForResource(requiredResources, tradeResourceCombination, HexType.WOOD, 0, params.getWood(), player.getResources().getWood());
 
         return tradeResourceCombination;
     }
@@ -87,8 +118,8 @@ public class TradePortUtil extends SmartBotUtil {
         if (resourceToSellCurrentCount >= (resourceToSellRatio + resourceLeftLimit)) {
             int numberOrResourcesCanBuyForCurrentResource = resourceToSellCurrentCount / (resourceToSellRatio + resourceLeftLimit);
             int numberOfResourcesToBuyForCurrentResource = numberOrResourcesCanBuyForCurrentResource <= requiredResources.size()
-                    ? numberOrResourcesCanBuyForCurrentResource
-                    : requiredResources.size();
+                ? numberOrResourcesCanBuyForCurrentResource
+                : requiredResources.size();
             int numberOfResourcesToSell = resourceToSellRatio * numberOfResourcesToBuyForCurrentResource;
 
             tradeResourceCombination.put(resourceToSell, String.valueOf(-numberOfResourcesToSell));
@@ -156,6 +187,10 @@ public class TradePortUtil extends SmartBotUtil {
     }
 
     private static boolean needResourcesForSettlement(GameUserBean player) {
+        if(player.getBuildingsCount().getSettlements() >= 5){
+            return false;
+        }
+
         for (NodeBean node : player.getGame().getNodes()) {
             if(node.couldBeUsedForBuildingSettlementByGameUserInMainStage(player)){
                 return true;
@@ -167,7 +202,7 @@ public class TradePortUtil extends SmartBotUtil {
 
     private static boolean needResourcesForCity(GameUserBean player) {
         if((player.getBuildingsCount().getCities() < 3 && player.getBuildingsCount().getSettlements() < 4)
-                || requiredResourcesForCity(player).size() > 1){
+            || requiredResourcesForCity(player).size() > 2){
             return false;
         }
 
@@ -178,5 +213,20 @@ public class TradePortUtil extends SmartBotUtil {
         }
 
         return false;
+    }
+
+    private static boolean needResourcesForRoad(GameUserBean player, boolean cardsAreOver) {
+        if(cardsAreOver) {
+            // we can only build roads if there are no cards and we don't have resources to build settlements
+            return true;
+        }
+
+        if (SmartBot.needIncreaseLongestRoad(player)) {
+            // no need to build road if we are the longest way owner
+            return true;
+        }
+
+        return false;
+
     }
 }

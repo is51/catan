@@ -15,7 +15,7 @@ import java.util.Map;
 public class UseCardMonopolyUtil extends SmartBotUtil {
     public static String getRequiredResourceFromAllPlayers(GameUserBean player) {
         //TODO: getRequiredResource
-        return "stone";
+        return HexType.BRICK.getPatternName();
     }
 
     public static Map<HexType, String> calculateTradePortResourceCombination(GameUserBean player, ActionDetails action) {
@@ -80,8 +80,8 @@ public class UseCardMonopolyUtil extends SmartBotUtil {
         if (resourceToSellCurrentCount >= (resourceToSellRatio + resourceLeftLimit)) {
             int numberOrResourcesCanBuyForCurrentResource = resourceToSellCurrentCount / (resourceToSellRatio + resourceLeftLimit);
             int numberOfResourcesToBuyForCurrentResource = numberOrResourcesCanBuyForCurrentResource <= requiredResources.size()
-                    ? numberOrResourcesCanBuyForCurrentResource
-                    : requiredResources.size();
+                ? numberOrResourcesCanBuyForCurrentResource
+                : requiredResources.size();
             int numberOfResourcesToSell = resourceToSellRatio * numberOfResourcesToBuyForCurrentResource;
 
             tradeResourceCombination.put(resourceToSell, String.valueOf(-numberOfResourcesToSell));
@@ -150,7 +150,7 @@ public class UseCardMonopolyUtil extends SmartBotUtil {
 
     private static boolean needOneResourceForSettlement(GameUserBean player)  {
         if (player.getBuildingsCount().getSettlements() >= 5){
-           return false;
+            return false;
         }
 
         int resourcesNeeded = 0;
@@ -171,7 +171,7 @@ public class UseCardMonopolyUtil extends SmartBotUtil {
         }
 
         if((player.getBuildingsCount().getCities() < 3 && player.getBuildingsCount().getSettlements() < 4)
-                || requiredResourcesForCity(player).size() > 1){
+            || requiredResourcesForCity(player).size() > 2){
             return false;
         }
 

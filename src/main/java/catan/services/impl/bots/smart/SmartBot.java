@@ -97,6 +97,70 @@ public class SmartBot extends AbstractBot {
 
         }
 
+        if (throwDiceAction != null) {
+            log.debug("{}: throw dice, for player {} in game {}", botName, username, gameId);
+            throwDice(player, gameId);
+            return;
+        }
+
+        if (tradePortAction != null) {
+            log.debug("{}: try trade with port, for player {} in game {}", botName, username, gameId);
+            boolean tradeSuccessful = tradePort(player, gameId, tradePortAction, cardsAreOver);
+            if (tradeSuccessful) {
+                return;
+            }
+            log.debug("{}: trade was not performed, for player {} in game {}", botName, username, gameId);
+        }
+
+        if (buildCityAction != null) {
+            log.debug("{}: build city, for player {} in game {}", botName, username, gameId);
+            buildCity(player, gameId, buildCityAction);
+            return;
+        }
+
+        if (buildSettlementAction != null && (isMandatory || player.getBuildingsCount().getSettlements() < 5)) {
+            log.debug("{}: build settlement, for player {} in game {}", botName, username, gameId);
+            buildSettlement(player, gameId, buildSettlementAction);
+            return;
+        }
+
+        if (buildRoadAction != null) {
+            boolean needIncreaseLongestRoad = needIncreaseLongestRoad(player);
+
+            boolean needRoadForNewSettlement = true;
+            for (NodeBean node : player.getGame().getNodes()) {
+                if (node.couldBeUsedForBuildingSettlementByGameUserInMainStage(player)) {
+                    needRoadForNewSettlement = false;
+                    break;
+                }
+            }
+
+            boolean enoughResourcesForSettlement = false;
+            if(player.getResources().getWood() > 1 && player.getResources().getBrick() > 1){
+                enoughResourcesForSettlement = true;
+            }
+
+            if (isMandatory
+                || (player.getBuildingsCount().getSettlements() < 5 && needRoadForNewSettlement)
+                || (player.getBuildingsCount().getSettlements() < 5 && enoughResourcesForSettlement)
+                || (player.getBuildingsCount().getSettlements() >= 5 && needIncreaseLongestRoad)) {
+                log.debug("{}: try build road, for player {} in game {}", botName, username, gameId);
+                boolean roadBuilt = buildRoad(player, gameId, buildRoadAction, isMandatory);
+                if (roadBuilt) {
+                    return;
+                }
+
+                log.debug("{}: road was not build, for player {} in game {}", botName, username, gameId);
+            }
+        }
+
+        if (buyCardAction != null && !cardsAreOver) {
+            //TODO: Buy card only if I am not going to build settlement or city soon
+            log.debug("{}: buy card, for player {} in game {}", botName, username, gameId);
+            buyCard(player, gameId);
+            return;
+        }
+
         if (useCardRoadBuildingAction != null) {
             log.debug("{}: try use card ROAD_BUILDING, for player {} in game {}", botName, username, gameId);
             boolean cardUsed = useCardRoadBuilding(player, gameId);
@@ -125,49 +189,6 @@ public class SmartBot extends AbstractBot {
             log.debug("{}: card MONOPOLY was not used, for player {} in game {}", botName, username, gameId);
         }
 
-        if (throwDiceAction != null) {
-            log.debug("{}: throw dice, for player {} in game {}", botName, username, gameId);
-            throwDice(player, gameId);
-            return;
-        }
-
-        if (buildCityAction != null) {
-            log.debug("{}: build city, for player {} in game {}", botName, username, gameId);
-            buildCity(player, gameId, buildCityAction);
-            return;
-        }
-
-        if (buildSettlementAction != null) {
-            log.debug("{}: build settlement, for player {} in game {}", botName, username, gameId);
-            buildSettlement(player, gameId, buildSettlementAction);
-            return;
-        }
-
-        if (buildRoadAction != null) {
-            log.debug("{}: try build road, for player {} in game {}", botName, username, gameId);
-            boolean roadBuilt = buildRoad(player, gameId, buildRoadAction, isMandatory);
-            if (roadBuilt) {
-                return;
-            }
-            log.debug("{}: road was not build, for player {} in game {}", botName, username, gameId);
-        }
-
-        if (buyCardAction != null && !cardsAreOver) {
-            //TODO: Buy card if needed
-            log.debug("{}: buy card, for player {} in game {}", botName, username, gameId);
-            buyCard(player, gameId);
-            return;
-        }
-
-        if (tradePortAction != null) {
-            log.debug("{}: try trade with port, for player {} in game {}", botName, username, gameId);
-            boolean tradeSuccessful = tradePort(player, gameId, tradePortAction, cardsAreOver);
-            if (tradeSuccessful) {
-                return;
-            }
-            log.debug("{}: trade was not performed, for player {} in game {}", botName, username, gameId);
-        }
-
         if (tradeReplyAction != null) {
             //TODO: Accept trade if it is useful for player
             log.debug("{}: trade reply, for player {} in game {}", botName, username, gameId);
@@ -182,6 +203,30 @@ public class SmartBot extends AbstractBot {
             return;
         }
 
+    }
+
+    public static boolean needIncreaseLongestRoad(GameUserBean player) {
+        boolean needBuildRoad = true;
+
+        String myUsername = player.getUser().getUsername();
+        GameUserBean longestWayOwner = player.getGame().getLongestWayOwner();
+        if (longestWayOwner != null && myUsername.equals(longestWayOwner.getUser().getUsername())) {
+            int longestWayAfterMine = 0;
+            for (GameUserBean gameUser : player.getGame().getGameUsers()) {
+                int longestWayOfThisPlayer = gameUser.getAchievements().getLongestWayLength();
+                if (!gameUser.getUser().getUsername().equals(myUsername) && longestWayOfThisPlayer > longestWayAfterMine) {
+                    longestWayAfterMine = longestWayOfThisPlayer;
+                }
+            }
+
+            if (player.getAchievements().getLongestWayLength() > longestWayAfterMine + 2) {
+                // skip building longest road and focus on buying cards and trading if I am owner of longest road
+                // and it is long enough so that other players will not build longer road
+                needBuildRoad = false;
+            }
+        }
+
+        return needBuildRoad;
     }
 
     private boolean useCardMonopoly(GameUserBean player, String gameId) throws PlayException, GameException {
@@ -261,14 +306,9 @@ public class SmartBot extends AbstractBot {
 
     private boolean buildRoad(GameUserBean player, String gameId, ActionDetails buildRoadAction, boolean isMandatory) throws PlayException, GameException {
         log.debug("{}: build road, for player {} in game {}", getBotName(), player.getUser(), player.getGame().getGameId());
-        if (!isMandatory && BuildRoadUtil.hasPlaceForNextBuilding(player)) {
-            log.debug("{}: player already has place for next building, skip build road to save resources, for player {} in game {}",
-                    getBotName(), player.getUser(), player.getGame().getGameId());
-            return false;
-        }
 
         List<Integer> edgeIds = buildRoadAction.getParams().getEdgeIds();
-        String edgeIdToBuildRoad = BuildRoadUtil.getEdgeIdOfBestPlaceToBuildRoad(player, 2, edgeIds);
+        String edgeIdToBuildRoad = BuildRoadUtil.getEdgeIdOfBestPlaceToBuildRoad(player, 3, edgeIds);
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("edgeId", edgeIdToBuildRoad);

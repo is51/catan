@@ -1,9 +1,19 @@
 package catan.services.impl;
 
+import catan.dao.GameDao;
+import catan.dao.UserDao;
+import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
+import catan.domain.exception.UserException;
+import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStatus;
+import catan.domain.model.user.UserBean;
 import catan.services.AutomationProcessor;
+import catan.services.GameService;
+import catan.services.UserService;
 import catan.services.impl.bots.AbstractBot;
+import catan.services.util.game.GameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +39,76 @@ public class AutomationProcessorImpl implements AutomationProcessor {
 
     @Autowired
     private List<AbstractBot> bots = new ArrayList<AbstractBot>();
+
+    @Autowired
+    public UserService userService;
+
+    @Autowired
+    public GameService gameService;
+    @Autowired
+    private GameDao gameDao;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private GameUtil gameUtil;
+
+    private List<String> playerThatMayBeAutomated = new ArrayList<>();
+
+
+    @PostConstruct
+    public void registerBots(){
+        try {
+            userService.registerUser("bot1", "12345");
+            userService.loginUser("bot1", "12345");
+            playerThatMayBeAutomated.add("bot1");
+
+            userService.registerUser("bot2", "12345");
+            userService.loginUser("bot2", "12345");
+            playerThatMayBeAutomated.add("bot2");
+        } catch (UserException e) {
+            log.error("Failed to register bot", e);
+        }
+
+    }
+
+
+    @Scheduled(fixedDelay = 5000)
+    public void monitorNewGames() {
+        for (String playerBot : playerThatMayBeAutomated) {
+            try {
+                for (GameBean game : gameService.getListOfAllPublicGames()) {
+                    if (game.getStatus() != GameStatus.NEW) {
+                    } else {
+                        boolean alreadyJoined = false;
+                        for (GameUserBean gameUser : game.getGameUsers()) {
+                            if (gameUser.getUser().getUsername().equalsIgnoreCase(playerBot)) {
+                                alreadyJoined = true;
+                                break;
+                            }
+                        }
+
+                        if(!alreadyJoined){
+                            UserBean user = userDao.getUserByUsername(playerBot);
+                            if (user != null) {
+                                gameService.joinGameByIdentifier(user, String.valueOf(game.getGameId()), false);
+
+                                GameUserBean player = gameUtil.getGameUserJoinedToGame(user, game);
+                                if (player != null) {
+                                    automatedPlayers.put(player, "SMART_BOT");
+                                }
+
+                                gameService.updateGameUserStatus(user, String.valueOf(game.getGameId()), true);
+
+
+                            }
+                        }
+                    }
+                }
+            } catch (GameException e) {
+                log.error("failed to register at game", e);
+            }
+        }
+    }
 
     @Override
     @Scheduled(fixedDelay = 2000)

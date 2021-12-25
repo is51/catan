@@ -13,37 +13,19 @@ import java.util.Map;
 
 public class BuildRoadUtil extends SmartBotUtil{
 
-    public static boolean hasPlaceForNextBuilding(GameUserBean player) {
-        for (EdgeBean possibleRoad : player.getGame().getEdges()) {
-            if (possibleRoad.getBuilding() == null || !possibleRoad.getBuilding().getBuildingOwner().equals(player)) {
-                continue;
-            }
 
-            for (NodeBean possiblePlaceForBuilding : possibleRoad.getNodes().listAllNotNullItems()) {
-                if(possiblePlaceForBuilding.getBuilding() != null){
-                    continue;
-                }
-
-                if (possiblePlaceForBuilding.getBuilding() == null && !isNodeHasNeighbourBuilding(possiblePlaceForBuilding)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 
 
     public static String getEdgeIdOfBestPlaceToBuildRoad(GameUserBean player, int limitRoadLengthToNextBuilding, List<Integer> edgeIds) {
         EdgeBean edgeToBuildRoad = BuildRoadUtil.calculateNextNecessaryRoad(player, limitRoadLengthToNextBuilding, edgeIds);
 
         return edgeToBuildRoad != null
-                ? edgeToBuildRoad.getAbsoluteId().toString()
-                : edgeIds.get((int) (Math.random() * edgeIds.size())).toString();
+            ? edgeToBuildRoad.getAbsoluteId().toString()
+            : edgeIds.get((int) (Math.random() * edgeIds.size())).toString();
     }
 
     private static EdgeBean calculateNextNecessaryRoad(GameUserBean player, int limitRoadLengthToNextBuilding, List<Integer> possibleEdgeIds) {
-        Map<Double, LinkedList<EdgeBean>> nodeProbabilitiesOfRoadDestinations = new HashMap<Double, LinkedList<EdgeBean>>();
+        Map<Integer, Map<Double, LinkedList<EdgeBean>>> nodeProbabilitiesOfRoadDestinations = new HashMap<>();  // map of length to nodeProbabilitiesOfRoadDestinations
 
         List<NodeBean> possibleBeginRoadNodes = findNodesAvailableToStartBuildRoad(player, possibleEdgeIds);
         for (NodeBean possibleBeginRoadNode : possibleBeginRoadNodes) {
@@ -60,7 +42,7 @@ public class BuildRoadUtil extends SmartBotUtil{
                 List<LinkedList<EdgeBean>> ways = new ArrayList<LinkedList<EdgeBean>>();
                 calculateRoadsFromNodeToNode(player, possibleBeginRoadNode, possiblePlaceForBuilding, ways, null);
                 if (ways.size() == 0) {
-                    //not possible to build road of minimum length (10 hardcoded)
+                    //not possible to build road of minimum length (10 hardcoded) , ways.size() is 0 when all ways are more than length of 10
                     continue;
                 }
 
@@ -73,25 +55,25 @@ public class BuildRoadUtil extends SmartBotUtil{
 
                 if (minLengthWay.size() <= limitRoadLengthToNextBuilding) {
                     double sumProbabilityForPossiblePlaceForBuilding = calculateSumProbabilityForNode(possiblePlaceForBuilding);
-                    //TODO: nodeProbabilitiesOfRoadDestinations.get(sumProbabilityForPossiblePlaceForBuilding) put only if minLengthWay less than existing value in map - need to make 'double' key have the same value
-                    nodeProbabilitiesOfRoadDestinations.put(sumProbabilityForPossiblePlaceForBuilding, minLengthWay);
+
+                    Map<Double, LinkedList<EdgeBean>> allRoutesOfThisLength = nodeProbabilitiesOfRoadDestinations.getOrDefault(minLengthWay.size(), new HashMap<>());
+                    allRoutesOfThisLength.put(sumProbabilityForPossiblePlaceForBuilding, minLengthWay);
+
+                    nodeProbabilitiesOfRoadDestinations.put(minLengthWay.size(), allRoutesOfThisLength);
                 }
             }
         }
 
+        //TODO: calculate longest way after each possible road (or list of roads, so that if it significately!!! increases longest way, then use this way, even if it is not have best probability)
 
         int minLength = 1000;
         Map<Double, LinkedList<EdgeBean>> nodeProbabilitiesOfMinLengthRoadDestinations = new HashMap<Double, LinkedList<EdgeBean>>();
-        for (Map.Entry<Double, LinkedList<EdgeBean>> nodeProbabilityOfRoadDestination : nodeProbabilitiesOfRoadDestinations.entrySet()) {
-            Double probability = nodeProbabilityOfRoadDestination.getKey();
-            LinkedList<EdgeBean> pathToDestination = nodeProbabilityOfRoadDestination.getValue();
+        for (Map.Entry<Integer,Map<Double, LinkedList<EdgeBean>>> lengthToRoute : nodeProbabilitiesOfRoadDestinations.entrySet()) {
 
-            if (pathToDestination.size() < minLength) {
-                minLength = pathToDestination.size();
+            if (lengthToRoute.getKey() < minLength) {
+                minLength = lengthToRoute.getKey();
                 nodeProbabilitiesOfMinLengthRoadDestinations.clear();
-                nodeProbabilitiesOfMinLengthRoadDestinations.put(probability, pathToDestination);
-            } else if (pathToDestination.size() == minLength) {
-                nodeProbabilitiesOfMinLengthRoadDestinations.put(probability, pathToDestination);
+                nodeProbabilitiesOfMinLengthRoadDestinations = lengthToRoute.getValue();
             }
         }
 
@@ -107,8 +89,8 @@ public class BuildRoadUtil extends SmartBotUtil{
 
         //TODO: check best way calculation
         return bestWay == null || bestWay.size() == 0
-                ? null
-                : bestWay.get(0);
+            ? null
+            : bestWay.get(0);
     }
 
     private static boolean isNodeHasNeighbourBuilding(NodeBean possiblePlaceForBuilding) {
@@ -132,10 +114,10 @@ public class BuildRoadUtil extends SmartBotUtil{
         List<NodeBean> nodesAvailableToStartBuildRoad = new ArrayList<NodeBean>();
         for (NodeBean node : player.getGame().getNodes()) {
             if ((player.getGame().getStage() == GameStage.PREPARATION
-                    && !node.hasBuildingBelongsToUser(player))
-                    || (player.getGame().getStage() == GameStage.MAIN
-                    && !node.hasBuildingBelongsToUser(player)
-                    && !node.hasNeighbourRoadBelongsToGameUser(player))) {
+                && !node.hasBuildingBelongsToUser(player))
+                || (player.getGame().getStage() == GameStage.MAIN
+                && !node.hasBuildingBelongsToUser(player)
+                && !node.hasNeighbourRoadBelongsToGameUser(player))) {
                 continue;
             }
 

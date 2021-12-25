@@ -5,6 +5,8 @@ import catan.domain.exception.GameException;
 import catan.domain.exception.PlayException;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
+import catan.domain.model.game.types.GameStage;
+import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.user.UserBean;
 import catan.domain.transfer.output.game.actions.ActionDetails;
 import catan.domain.transfer.output.game.actions.AvailableActionsDetails;
@@ -49,7 +51,7 @@ public abstract class AbstractBot {
     }
 
     @Autowired
-    private GameDao gameDao;
+    protected GameDao gameDao;
 
     @Autowired
     protected PlayService playService;
@@ -68,6 +70,10 @@ public abstract class AbstractBot {
 
     public void automatePlayersActions(GameUserBean oldStatePlayer, boolean cardsAreOver) throws PlayException, GameException {
         GameUserBean player = refreshPlayerFields(oldStatePlayer);
+
+        if (player.getGame().getStatus() == GameStatus.NEW) {
+            return;
+        }
 
         AvailableActionsDetails availableActions = parseAvailableActions(player);
 
@@ -139,23 +145,23 @@ public abstract class AbstractBot {
         UserBean user = player.getUser();
 
         processActionsInOrder(player, user, gameId,
-                moveRobberAction,
-                choosePlayerToRobAction,
-                kickOffResourcesAction,
-                useCardKnightAction,
-                useCardRoadBuildingAction,
-                useCardYearOfPlentyAction,
-                useCardMonopolyAction,
-                throwDiceAction,
-                buildCityAction,
-                buildSettlementAction,
-                buildRoadAction,
-                buyCardAction,
-                tradePortAction,
-                tradeReplyAction,
-                endTurnAction,
-                availableActions.getIsMandatory(),
-                cardsAreOver);
+            moveRobberAction,
+            choosePlayerToRobAction,
+            kickOffResourcesAction,
+            useCardKnightAction,
+            useCardRoadBuildingAction,
+            useCardYearOfPlentyAction,
+            useCardMonopolyAction,
+            throwDiceAction,
+            buildCityAction,
+            buildSettlementAction,
+            buildRoadAction,
+            buyCardAction,
+            tradePortAction,
+            tradeReplyAction,
+            endTurnAction,
+            availableActions.getIsMandatory(),
+            cardsAreOver);
     }
 
     private GameUserBean refreshPlayerFields(GameUserBean oldStatePlayer) {

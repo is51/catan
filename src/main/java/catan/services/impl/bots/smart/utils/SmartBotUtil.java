@@ -2,6 +2,7 @@ package catan.services.impl.bots.smart.utils;
 
 import catan.domain.model.dashboard.HexBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.NodePortType;
 import catan.domain.model.game.GameUserBean;
 import catan.services.impl.bots.smart.SmartBot;
 
@@ -19,15 +20,15 @@ public class SmartBotUtil {
             }
 
             if (playerToRob == null
-                    || playerToRob.getAchievements().getDisplayVictoryPoints() < opponent.getAchievements().getDisplayVictoryPoints()
-                    || (playerToRob.getAchievements().getDisplayVictoryPoints() == opponent.getAchievements().getDisplayVictoryPoints()
-                    && playerToRob.getAchievements().getTotalResources() * 3
-                    + playerToRob.getAchievements().getLongestWayLength() * 2
-                    + playerToRob.getAchievements().getTotalUsedKnights() * 2
-                    + playerToRob.getAchievements().getTotalCards() < opponent.getAchievements().getTotalResources() * 3
-                    + opponent.getAchievements().getLongestWayLength() * 2
-                    + opponent.getAchievements().getTotalUsedKnights() * 2
-                    + opponent.getAchievements().getTotalCards())) {
+                || playerToRob.getAchievements().getDisplayVictoryPoints() < opponent.getAchievements().getDisplayVictoryPoints()
+                || (playerToRob.getAchievements().getDisplayVictoryPoints() == opponent.getAchievements().getDisplayVictoryPoints()
+                && playerToRob.getAchievements().getTotalResources() * 3
+                + playerToRob.getAchievements().getLongestWayLength() * 2
+                + playerToRob.getAchievements().getTotalUsedKnights() * 2
+                + playerToRob.getAchievements().getTotalCards() < opponent.getAchievements().getTotalResources() * 3
+                + opponent.getAchievements().getLongestWayLength() * 2
+                + opponent.getAchievements().getTotalUsedKnights() * 2
+                + opponent.getAchievements().getTotalCards())) {
                 playerToRob = opponent;
             }
         }
@@ -49,7 +50,7 @@ public class SmartBotUtil {
         NodeBean nodeWithMaxProbability = null;
         for (NodeBean currentNode : sumNodeProbabilities.keySet()) {
             if (nodeWithMaxProbability == null ||
-                    sumNodeProbabilities.get(nodeWithMaxProbability) <= sumNodeProbabilities.get(currentNode)) {
+                sumNodeProbabilities.get(nodeWithMaxProbability) <= sumNodeProbabilities.get(currentNode)) {
                 nodeWithMaxProbability = currentNode;
             }
         }
@@ -63,8 +64,15 @@ public class SmartBotUtil {
             if (hexAtNode.getDice() == null || hexAtNode.getDice() == 7) {
                 continue;
             }
-
             sumProbability += SmartBot.hexProbabilities.get(hexAtNode.getDice());
+
+            if(nodeToCalculate.getPort() == null || nodeToCalculate.getPort().equals(NodePortType.NONE)){
+                sumProbability += 0.001;
+            } else if(nodeToCalculate.getPort().equals(NodePortType.ANY)){
+                sumProbability += 0.009;
+            } else {
+                sumProbability += 0.005;
+            }
         }
 
         return sumProbability;
