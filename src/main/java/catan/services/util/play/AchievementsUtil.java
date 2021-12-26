@@ -3,6 +3,7 @@ package catan.services.util.play;
 import catan.domain.exception.GameException;
 import catan.domain.model.dashboard.EdgeBean;
 import catan.domain.model.dashboard.NodeBean;
+import catan.domain.model.dashboard.types.LogCodeType;
 import catan.domain.model.game.Achievements;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
@@ -81,7 +82,7 @@ public class AchievementsUtil {
         return null;
     }
 
-    private int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeAbsoluteIds, List<Integer> checkedNodeAbsoluteIds, EdgeBean edge, int currMaxWayLength) {
+    public static int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeAbsoluteIds, List<Integer> checkedNodeAbsoluteIds, EdgeBean edge, int currMaxWayLength) {
         int edgeAbsoluteId = edge.getAbsoluteId();
         if (checkedEdgeAbsoluteIds.contains(edgeAbsoluteId) || edgeDoesNotContainGameUsersRoad(gameUser, edge)) {
             return lastMaxWayLength;
@@ -104,15 +105,15 @@ public class AchievementsUtil {
         checkedEdgeAbsoluteIds.remove(new Integer(edgeAbsoluteId));
 
         return currMaxWayLength > lastMaxWayLength
-                ? currMaxWayLength
-                : lastMaxWayLength;
+            ? currMaxWayLength
+            : lastMaxWayLength;
     }
 
-    private boolean nodeContainsOpponentsBuilding(GameUserBean gameUser, NodeBean node) {
+    private static boolean nodeContainsOpponentsBuilding(GameUserBean gameUser, NodeBean node) {
         return node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser);
     }
 
-    private boolean edgeDoesNotContainGameUsersRoad(GameUserBean gameUser, EdgeBean edge) {
+    private static boolean edgeDoesNotContainGameUsersRoad(GameUserBean gameUser, EdgeBean edge) {
         return edge.getBuilding() == null || !edge.getBuilding().getBuildingOwner().equals(gameUser);
     }
 
@@ -134,22 +135,26 @@ public class AchievementsUtil {
 
             if (longestWayLength == maxLongestWayLength && (newLongestWayOwner == null || !newLongestWayOwner.equals(currentLongestWayOwner))) {
                 newLongestWayOwner = !gameUser.equals(currentLongestWayOwner)
-                        ? null
-                        : gameUser;
+                    ? null
+                    : gameUser;
             }
         }
 
-        if (newLongestWayOwner != null) {
-            newLongestWayOwner.assignLongestWayOwner();
-        } else {
+        if (newLongestWayOwner == null && currentLongestWayOwner != null) {
             game.setLongestWayOwner(null);
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.INTERRUPTED_WIDEST_NETWORK, currentLongestWayOwner);
+            return;
+        }
+        if (newLongestWayOwner != null && !newLongestWayOwner.equals(currentLongestWayOwner)) {
+            newLongestWayOwner.assignLongestWayOwner();
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.NEW_WIDEST_NETWORK, newLongestWayOwner);
         }
     }
 
     public void updateBiggestArmyOwner(GameUserBean gameUser) {
-        int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
-        if (totalUsedKnights >= 3 && gameUsersUsedKnightsIsTheBiggestArmy(totalUsedKnights, gameUser.getGame())) {
+        if (gameUserGotTheBiggestArmy(gameUser)) {
             gameUser.assignBiggestArmyOwner();
+            MessagesUtil.addLogMsgForGameUsers(LogCodeType.NEW_SECURITY_LEADER, gameUser);
         }
     }
 
@@ -159,8 +164,13 @@ public class AchievementsUtil {
         achievements.setTotalUsedKnights(totalUsedKnightsNew);
     }
 
-    private boolean gameUsersUsedKnightsIsTheBiggestArmy(int totalUsedKnights, GameBean game) {
-        GameUserBean currentBiggestArmyOwner = game.getBiggestArmyOwner();
+    private boolean gameUserGotTheBiggestArmy(GameUserBean gameUser) {
+        int totalUsedKnights = gameUser.getAchievements().getTotalUsedKnights();
+        GameUserBean currentBiggestArmyOwner = gameUser.getGame().getBiggestArmyOwner();
+        if (totalUsedKnights < 3 || gameUser.equals(currentBiggestArmyOwner)) {
+            return false;
+        }
+
         return currentBiggestArmyOwner == null || currentBiggestArmyOwner.getAchievements().getTotalUsedKnights() < totalUsedKnights;
     }
 }

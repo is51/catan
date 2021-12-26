@@ -1,0 +1,16 @@
+GET http://localhost:8080/api
+Accept: */*
+Cache-Control: no-cache
+
+<> 2020-03-27T113243.200.html
+
+###
+
+GET http://localhost:8080/resources
+Accept: */*
+Cache-Control: no-cache
+
+<> 2020-03-27T113238.404.html
+
+###
+

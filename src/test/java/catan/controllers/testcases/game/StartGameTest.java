@@ -1,6 +1,7 @@
 package catan.controllers.testcases.game;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
+import catan.controllers.ctf.Scenario;
 import catan.controllers.util.GameTestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,13 +10,22 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.*;
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isOneOf;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = {TestApplicationConfig.class})
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = {ApplicationConfig.class})
 @WebIntegrationTest("server.port:8091")
 public class StartGameTest extends GameTestUtil {
 
@@ -28,14 +38,48 @@ public class StartGameTest extends GameTestUtil {
 
     private static boolean initialized = false;
 
+    private Scenario scenario;
+
     @Before
     public void setup() {
+        scenario = new Scenario();
+
         if (!initialized) {
-            registerUser(USER_NAME_1, USER_PASSWORD_1);
-            registerUser(USER_NAME_2, USER_PASSWORD_2);
-            registerUser(USER_NAME_3, USER_PASSWORD_3);
+            scenario
+                    .registerUser(USER_NAME_1, USER_PASSWORD_1)
+                    .registerUser(USER_NAME_2, USER_PASSWORD_2)
+                    .registerUser(USER_NAME_3, USER_PASSWORD_3);
             initialized = true;
         }
+    }
+
+    @Test
+    public void should_show_log_message_when_game_started() {
+        scenario
+                .loginUser(USER_NAME_1, USER_PASSWORD_1)
+                .loginUser(USER_NAME_2, USER_PASSWORD_2)
+                .loginUser(USER_NAME_3, USER_PASSWORD_3)
+
+
+                .createNewPublicGameByUser(USER_NAME_1)
+                .joinPublicGame(USER_NAME_2)
+                .joinPublicGame(USER_NAME_3)
+
+                // take last player from the list each time, when pulling move order from the list to have order: 3, 2, 1
+                .nextRandomMoveOrderValues(asList(3, 2, 1))
+
+                .setUserReady(USER_NAME_1)
+                .setUserReady(USER_NAME_2)
+                .setUserReady(USER_NAME_3)
+
+                .getGameDetails(1).statusIsPlaying()
+                .gameUser(1).hasLogWithCode("START_GAME").hasMessage("You start the game!").isDisplayedOnTop()
+
+                .getGameDetails(2)
+                .gameUser(2).hasLogWithCode("START_GAME").hasMessage(scenario.getUsername(1) + " starts the game!").isDisplayedOnTop()
+
+                .getGameDetails(3)
+                .gameUser(3).hasLogWithCode("START_GAME").hasMessage(scenario.getUsername(1) + " starts the game!").isDisplayedOnTop();
     }
 
     @Test

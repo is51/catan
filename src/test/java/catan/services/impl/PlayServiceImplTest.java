@@ -31,13 +31,12 @@ import catan.services.util.play.ActionParamsUtil;
 import catan.services.util.play.BuildUtil;
 import catan.services.util.play.CardUtil;
 import catan.services.util.play.MainStageUtil;
-import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
 import catan.services.util.play.PreparationStageUtil;
 import catan.services.util.play.RobberUtil;
 import catan.services.util.play.TradeUtil;
-import catan.services.util.random.RandomUtil;
 import catan.services.util.random.RandomValueGeneratorMock;
+import catan.services.util.random.RandomValueProvider;
 import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Before;
@@ -50,10 +49,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -81,7 +80,7 @@ public class PlayServiceImplTest {
     @InjectMocks
     private GameUtil gameUtil;
     @InjectMocks
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     @InjectMocks
     private PlayUtil playUtil;
     @InjectMocks
@@ -119,7 +118,7 @@ public class PlayServiceImplTest {
 
     @Before
     public void setUp() throws GameException {
-        RandomUtil randomUtil = new RandomUtil();
+        RandomValueProvider randomUtil = new RandomValueProvider();
         randomUtil.setRvg(rvg);
 
         playService.setRandomUtil(randomUtil);
@@ -3705,7 +3704,23 @@ public class PlayServiceImplTest {
         game.setPrivateGame(false);
         game.setTargetVictoryPoints(12);
         game.getHexes().addAll(Arrays.asList(
-                hex_0_0, hex_1_0, hex_0_1));
+                hex_0_0, hex_1_0, hex_0_1,
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, 1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(1, 2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, 0), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, 1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(2, 2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(0, 2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, -2), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, -1), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, 0), HexType.BRICK, 2, false),
+                new HexBean(hexAbsoluteIdSequence++, game, new Coordinates(-1, 1), HexType.BRICK, 2, false)));
         game.getNodes().addAll(Arrays.asList(
                 node_1_1, node_1_2, node_1_3, node_1_4, node_1_5, node_1_6,
                 node_2_2, node_2_3, node_2_4, node_2_5,

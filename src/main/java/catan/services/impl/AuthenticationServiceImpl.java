@@ -13,9 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("authenticationService")
 @Transactional
 public class AuthenticationServiceImpl implements AuthenticationService {
+    public static final String ADMIN_SECRET_KEY = "ebiskonemsuka";
     private Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 
     UserDao userDao;
+
+    @Override
+    public void authenticateAdminBySecretKey(String secretKey) throws AuthenticationException {
+        if (!ADMIN_SECRET_KEY.equals(secretKey)) {
+            log.error("Secret key: '" + secretKey + "' is incorrect");
+            throw new AuthenticationException();
+        }
+    }
+
 
     @Override
     public UserBean authenticateUserByToken(String token) throws AuthenticationException {

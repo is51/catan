@@ -1,0 +1,12 @@
+ct-games-list > div {
+    margin-top: 20px;
+    font-size: 1.8rem;
+    color: #444;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+ct-games-list table th,
+ct-games-list table td {
+    font-size: 1.5rem;
+}

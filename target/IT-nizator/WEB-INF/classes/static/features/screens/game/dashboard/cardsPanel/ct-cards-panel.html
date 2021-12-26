@@ -1,0 +1,38 @@
+<ct-modal-window modal-window-id="CARDS_PANEL">
+
+    <div class="ct-modal-window-bg" ct-modal-window-close></div>
+    <div class="ct-modal-window-content content">
+
+        <button ng-click="useCardKnight()" ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_KNIGHT')">
+            <span class="glyphicon glyphicon-screenshot"></span><br>
+            Knight<br><br>
+            <span class="badge">{{cards().knight}}</span>
+        </button>
+
+        <button ng-click="useCardRoadBuilding()" ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_ROAD_BUILDING')">
+            <span class="glyphicon glyphicon-road"></span><br>
+            Road Building<br>
+            <span class="badge">{{cards().roadBuilding}}</span>
+        </button>
+
+        <button ng-click="useCardMonopoly()" ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_MONOPOLY')">
+            <span class="glyphicon glyphicon-globe"></span><br>
+            Monopoly<br><br>
+            <span class="badge">{{cards().monopoly}}</span>
+        </button>
+
+        <button ng-click="useCardYearOfPlenty()" ng-disabled="!game.isActionEnabledForCurrentUser('USE_CARD_YEAR_OF_PLENTY')">
+            <span class="glyphicon glyphicon-grain"></span><br>
+            Year Of Plenty<br>
+            <span class="badge">{{cards().yearOfPlenty}}</span>
+        </button>
+
+        <div class="button" ng-disabled="cards().victoryPoint===0">
+            <span class="glyphicon glyphicon-star"></span><br>
+            Victory Point<br>
+            <span class="badge">{{cards().victoryPoint}}</span>
+        </div>
+
+    </div>
+
+</ct-modal-window>

@@ -2,14 +2,16 @@ package catan.services.util.game;
 
 import catan.dao.GameDao;
 import catan.domain.exception.GameException;
+import catan.domain.model.dashboard.types.LogCodeType;
 import catan.domain.model.game.GameBean;
 import catan.domain.model.game.GameUserBean;
 import catan.domain.model.game.types.GameStage;
 import catan.domain.model.game.types.GameStatus;
 import catan.domain.model.game.types.GameUserActionCode;
 import catan.domain.model.user.UserBean;
+import catan.services.util.play.MessagesUtil;
 import catan.services.util.play.PlayUtil;
-import catan.services.util.random.RandomUtil;
+import catan.services.util.random.RandomValueProvider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
@@ -36,7 +38,7 @@ public class GameUtil {
     private Logger log = LoggerFactory.getLogger(GameUtil.class);
 
     private GameDao gameDao;
-    private RandomUtil randomUtil;
+    private RandomValueProvider randomUtil;
     private PlayUtil playUtil;
 
     private static final Gson GSON = new Gson();
@@ -223,6 +225,9 @@ public class GameUtil {
         game.setRoadsToBuildMandatory(0);
         game.setRobberShouldBeMovedMandatory(false);
         game.setDateStarted(new Date());
+
+        MessagesUtil.addLogMsgForGameUsers(LogCodeType.START_GAME, game.fetchActiveGameUser());
+
         playUtil.updateAvailableActionsForAllUsers(game);
 
         gameDao.updateGame(game);
@@ -253,7 +258,7 @@ public class GameUtil {
     }
 
     @Autowired
-    public void setRandomUtil(RandomUtil randomUtil) {
+    public void setRandomUtil(RandomValueProvider randomUtil) {
         this.randomUtil = randomUtil;
     }
 

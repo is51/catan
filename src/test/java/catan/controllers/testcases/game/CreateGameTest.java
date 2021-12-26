@@ -1,7 +1,9 @@
 package catan.controllers.testcases.game;
 
-import catan.controllers.ctf.TestApplicationConfig;
+import catan.config.ApplicationConfig;
+import catan.controllers.ctf.Scenario;
 import catan.controllers.util.GameTestUtil;
+import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +19,8 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //Add it if needed initial request and JSON response logging:
-//@SpringApplicationConfiguration(classes = {TestApplicationConfig.class, RequestResponseLogger.class})
-@SpringApplicationConfiguration(classes = TestApplicationConfig.class)
+//@SpringApplicationConfiguration(classes = {ApplicationConfig.class, RequestResponseLogger.class})
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port:8091")
 public class CreateGameTest extends GameTestUtil {
 
@@ -33,6 +35,7 @@ public class CreateGameTest extends GameTestUtil {
     @Before
     public void setup() {
         if (!initialized) {
+            new Scenario();     //setup RestAssured port and host
             registerUser(USER_NAME_1, USER_PASSWORD_1);
             initialized = true;
         }
@@ -85,7 +88,7 @@ public class CreateGameTest extends GameTestUtil {
         String userToken = loginUser(USER_NAME_1, USER_PASSWORD_1);
 
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("token", userToken)
                 .when()
@@ -100,7 +103,7 @@ public class CreateGameTest extends GameTestUtil {
 
         // without token
         given()
-                .port(SERVER_PORT)
+                .port(RestAssured.port)
                 .header("Accept", ACCEPT_CONTENT_TYPE)
                 .parameters("privateGame",    // 'privateGame' is mandatory, 'token' is not mandatory
                             true,

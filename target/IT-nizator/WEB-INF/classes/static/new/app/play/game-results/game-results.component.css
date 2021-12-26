@@ -1,0 +1,33 @@
+.content {
+    top: 5%;
+    left: 15%;
+    width: 70%;
+    height: 80%;
+    background: #fff;
+    text-align: center;
+}
+
+.badge {
+    width: 30px;
+}
+
+.badge.not-first-place {
+    background: none;
+    color: #333;
+}
+
+.result-place.color-1 {
+    background: #f50;
+}
+
+.result-place.color-2 {
+    background: #55f;
+}
+
+.result-place.color-3 {
+    background: #dc0;
+}
+
+.result-place.color-4 {
+    background: #0f5;
+}
