@@ -1,0 +1,42 @@
+<ct-modal-window [modalWindowId]="'TRADE_REPLY_PANEL'" [onShow]="onShow">
+
+    <div class="ct-modal-window-bg" ct-modal-window-close [modalWindowId]="'TRADE_REPLY_PANEL'"></div>
+    <div class="ct-modal-window-content content">
+
+        <div class="title">Trade proposition from <span>{{proposerName}}</span>:</div>
+
+        <div *ngIf="propositionGive && propositionGet" class="proposition">
+            <div>
+                <div>
+                    <span class="give glyphicon glyphicon-arrow-up"></span>
+                    You give:
+                </div>
+                <span class="brick" *ngIf="propositionGive.brick">{{propositionGive.brick}}</span>
+                <span class="wood" *ngIf="propositionGive.wood">{{propositionGive.wood}}</span>
+                <span class="sheep" *ngIf="propositionGive.sheep">{{propositionGive.sheep}}</span>
+                <span class="wheat" *ngIf="propositionGive.wheat">{{propositionGive.wheat}}</span>
+                <span class="stone" *ngIf="propositionGive.stone">{{propositionGive.stone}}</span>
+            </div>
+
+            <div>
+                <div>
+                    <span class="get glyphicon glyphicon-arrow-down"></span>
+                    You get:
+                </div>
+                <span class="brick" *ngIf="propositionGet.brick">{{propositionGet.brick}}</span>
+                <span class="wood" *ngIf="propositionGet.wood">{{propositionGet.wood}}</span>
+                <span class="sheep" *ngIf="propositionGet.sheep">{{propositionGet.sheep}}</span>
+                <span class="wheat" *ngIf="propositionGet.wheat">{{propositionGet.wheat}}</span>
+                <span class="stone" *ngIf="propositionGet.stone">{{propositionGet.stone}}</span>
+            </div>
+        </div>
+
+        <button *ngIf="offerIsActive" (click)="decline()" class="btn btn-default decline">Decline</button>
+        <button *ngIf="offerIsActive" (click)="accept()" [disabled]="acceptDisabled()" class="btn btn-primary accept">Accept</button>
+
+        <button *ngIf="!offerIsActive" ct-modal-window-close [modalWindowId]="'TRADE_REPLY_PANEL'" class="btn btn-default decline">Close</button>
+        <div *ngIf="!offerIsActive" class="no-longer-active">Offer is no longer active!</div>
+
+    </div>
+
+</ct-modal-window>

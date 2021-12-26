@@ -1,0 +1,23 @@
+ct-resources-panel > svg {
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+ct-resources-panel > svg > g {
+    pointer-events: all;
+}
+
+ct-resources-panel > svg .shadow {
+    pointer-events: none;
+}
+
+ct-resources-panel > svg .zero .background {
+    fill-opacity: 0.3;
+}
+
+ct-resources-panel > svg .zero .count {
+    fill-opacity: 0.2;
+}

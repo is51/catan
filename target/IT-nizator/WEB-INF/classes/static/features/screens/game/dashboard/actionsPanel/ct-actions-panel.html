@@ -1,0 +1,44 @@
+<button ng-click="throwDice()" ng-disabled="!game.isActionEnabledForCurrentUser('THROW_DICE')">
+    <span class="glyphicon glyphicon-th-large"></span><br>
+    Throw
+</button>
+
+<button ng-click="build()" ng-disabled="!game.isActionGroupEnabledForCurrentUser('BUILD')">
+    <span class="glyphicon glyphicon-shopping-cart"></span><br>
+    Buy
+</button>
+
+<button ng-click="showCards()">
+    <span class="glyphicon glyphicon glyphicon-credit-card"></span><br>
+    Cards
+</button>
+
+<button ng-click="showTradePanel()" ng-disabled="!game.isActionGroupEnabledForCurrentUser('TRADE')" ng-hide="game.isActionEnabledForCurrentUser('TRADE_REPLY')">
+    <span class="glyphicon glyphicon-retweet"></span><br>
+    Trade
+</button>
+
+<button ng-click="showTradeReplyPanel()" ng-disabled="!game.isActionEnabledForCurrentUser('TRADE_REPLY')" ng-show="game.isActionEnabledForCurrentUser('TRADE_REPLY')">
+    <span class="glyphicon glyphicon-retweet"></span><br>
+    Reply
+</button>
+
+<button ng-click="moveRobber()" ng-disabled="!game.isActionEnabledForCurrentUser('MOVE_ROBBER')" ng-show="game.isActionEnabledForCurrentUser('MOVE_ROBBER')">
+    <span class="glyphicon glyphicon-fire"></span><br>
+    Move rob
+</button>
+
+<button ng-click="choosePlayerToRob()" ng-disabled="!game.isActionEnabledForCurrentUser('CHOOSE_PLAYER_TO_ROB')" ng-show="game.isActionEnabledForCurrentUser('CHOOSE_PLAYER_TO_ROB')">
+    <span class="glyphicon glyphicon-map-marker"></span><br>
+    Choose
+</button>
+
+<button ng-click="kickOffResources()" ng-disabled="!game.isActionEnabledForCurrentUser('KICK_OFF_RESOURCES')" ng-show="game.isActionEnabledForCurrentUser('KICK_OFF_RESOURCES')">
+    <span class="glyphicon glyphicon-download-alt"></span><br>
+    Kick res
+</button>
+
+<button ng-click="endTurn()" ng-disabled="!game.isActionEnabledForCurrentUser('END_TURN')">
+    <span class="glyphicon glyphicon-hourglass"></span><br>
+    End turn
+</button>

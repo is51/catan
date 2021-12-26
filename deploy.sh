@@ -4,8 +4,8 @@
 #export M2_HOME=/usr/local/apache-maven
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home
 #export M2_HOME=/Applications/maven
-export M2=$M2_HOME/bin
-export PATH=$M2:$PATH
+#export M2=$M2_HOME/bin
+#export PATH=$M2:$PATH
 java -version
 mvn -v
 cd src/main/resources/static/new

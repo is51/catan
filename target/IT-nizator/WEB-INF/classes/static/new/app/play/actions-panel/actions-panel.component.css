@@ -1,0 +1,33 @@
+:host {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 45px;
+    width: 100%;
+    text-align: center;
+}
+
+button {
+    background-color: #999;
+    color: #fff;
+    border: none;
+    padding-top: 4px;
+    font-size: 11px;
+    width: 60px;
+    height: 45px;
+}
+
+button:hover {
+    background-color: #777;
+    color: #fff;
+}
+
+button[disabled] {
+    background-color: #999;
+    color: #fff;
+    opacity: 0.5;
+}
+
+button span {
+    font-size: 21px;
+}

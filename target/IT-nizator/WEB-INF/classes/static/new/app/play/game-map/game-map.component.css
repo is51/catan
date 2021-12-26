@@ -1,0 +1,119 @@
+ct-game-map svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+}
+
+ct-game-map .hex.hex-animated .resource-inner {
+    animation: blinking 1s linear infinite;
+}
+ct-game-map .robber.robber-animated {
+    animation: blinking 0.5s linear infinite;
+}
+@keyframes blinking { 50% { fill-opacity: 0.3; }, 100% { fill-opacity: 1; } }
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+
+
+/* TODO: remove from css, set in some config-services */
+ct-game-map [player-color="1"] {
+    fill: #f6663d;
+    stroke: #f6663d;
+}
+
+ct-game-map [player-color="2"] {
+    fill: #727df4;
+    stroke: #727df4;
+}
+
+ct-game-map [player-color="3"] {
+    fill: #ddcc00;
+    stroke: #ddcc00;
+}
+
+ct-game-map [player-color="4"] {
+    fill: #00ff55;
+    stroke: #00ff55;
+}
+
+ct-game-map .hex[marked] {
+    cursor: pointer;
+}
+
+ct-game-map .marking {
+    visibility: hidden;
+}
+
+ct-game-map [marked]:not([marked-many]) .marking {
+    visibility: visible;
+
+    -webkit-animation:spin 5s linear infinite;
+    -moz-animation:spin 5s linear infinite;
+    animation:spin 5s linear infinite;
+
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+}
+
+ct-game-map .node .blank-node {
+    visibility: hidden;
+}
+
+ct-game-map .hex[marked] .resource-inner {
+    fill-opacity: 0.5;
+}
+
+ct-game-map .hex[marked] .hex-border {
+    stroke: #fff;
+    stroke-width: 1;
+    stroke-dasharray: 1,1;
+}
+
+ct-game-map .hex[marked]:hover .resource-inner {
+    fill-opacity: 1;
+}
+
+ct-game-map .hex[marked]:hover .hex-border {
+    stroke-dasharray: none;
+}
+
+ct-game-map .node[marked] .blank-node,
+ct-game-map .node[marked] .settlement,
+ct-game-map .node[marked] .city {
+    visibility: visible;
+    cursor: pointer;
+    fill-opacity: 0.6;
+    stroke-width: 0;
+}
+
+ct-game-map .node[marked]:hover .blank-node {
+    stroke-opacity: 0.6;
+    stroke: #000000;
+    stroke-width: 0.5;
+    fill-opacity: 0.7;
+}
+
+ct-game-map .node[marked]:hover .settlement,
+ct-game-map .node[marked]:hover .city {
+    fill-opacity: 1;
+}
+
+ct-game-map .edge .blank-edge {
+    visibility: hidden;
+    cursor: pointer;
+}
+
+ct-game-map .edge[marked] .blank-edge {
+    visibility: visible;
+    opacity: 0.5;
+}
+
+ct-game-map .edge[marked]:hover .blank-edge {
+    opacity: 1;
+}

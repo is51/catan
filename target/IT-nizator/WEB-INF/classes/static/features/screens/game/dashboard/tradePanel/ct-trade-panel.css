@@ -1,0 +1,12 @@
+ct-trade-panel {
+
+}
+
+ct-trade-panel .content {
+    top: 4%;
+    left: 15%;
+    width: 71%;
+    height: 82%;
+    background: #fff;
+    padding: 5px;
+}

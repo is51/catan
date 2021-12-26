@@ -1,0 +1,215 @@
+<g>
+    <g transform="scale(1,0.57735)">
+        <g class="marking">
+            <circle r="10" stroke="#ffffff" stroke-width="2" stroke-opacity="1" opacity="0.8" fill="#ffffff" fill-opacity="0" stroke-dasharray="2,2" />
+        </g>
+    </g>
+    <g transform="scale(0.46)">
+        <g>
+            <g>
+                <polygon fill="#6E6E6E" points="-13.613,1.989 -11.608,0.795 -11.608,0.044 -13.624,-1.103 			"/>
+                <polygon fill="#969696" points="10.963,0.265 12.666,1.229 12.688,-1.949 10.963,-0.918 			"/>
+                <linearGradient id="settlement-grad-1_" gradientUnits="userSpaceOnUse" x1="-15.4478" y1="-13.7388" x2="15.3931" y2="-13.7388">
+                    <stop  offset="0" style="stop-color:#CDCED1"/>
+                    <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                    <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                    <stop  offset="0.1668" style="stop-color:#98999B"/>
+                    <stop  offset="0.2571" style="stop-color:#88898B"/>
+                    <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                    <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                    <stop  offset="0.7001" style="stop-color:#78797B"/>
+                    <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                    <stop  offset="1" style="stop-color:#606062"/>
+                </linearGradient>
+                <polygon fill="url(#settlement-grad-1_)" points="-1.056,-4.841 -15.448,-13.183 1.204,-22.636 15.393,-14.355 			"/>
+                <g>
+                    <linearGradient id="settlement-grad-2_" gradientUnits="userSpaceOnUse" x1="4.7261" y1="-10.7075" x2="10.7442" y2="9.4323">
+                        <stop  offset="0.1362" style="stop-color:#898A8D"/>
+                        <stop  offset="0.3224" style="stop-color:#858689"/>
+                        <stop  offset="0.514" style="stop-color:#797A7D"/>
+                        <stop  offset="0.708" style="stop-color:#646568"/>
+                        <stop  offset="0.9026" style="stop-color:#48494B"/>
+                        <stop  offset="1" style="stop-color:#37383A"/>
+                    </linearGradient>
+                    <polygon fill="url(#settlement-grad-2_)" points="15.393,-14.355 -1.091,-4.841 -1.091,9.176 1.435,7.717 1.423,4.518 12.688,-1.949 
+					12.666,1.229 15.393,-0.346 				"/>
+                </g>
+                <g>
+                    <linearGradient id="settlement-grad-3_" gradientUnits="userSpaceOnUse" x1="-11.1558" y1="-13.9053" x2="-3.8084" y2="16.5228">
+                        <stop  offset="0" style="stop-color:#EEEFF3"/>
+                        <stop  offset="0.105" style="stop-color:#D5D6D9"/>
+                        <stop  offset="0.2608" style="stop-color:#B7B7BA"/>
+                        <stop  offset="0.4237" style="stop-color:#9F9FA2"/>
+                        <stop  offset="0.5947" style="stop-color:#8E8E91"/>
+                        <stop  offset="0.7789" style="stop-color:#848486"/>
+                        <stop  offset="1" style="stop-color:#818183"/>
+                    </linearGradient>
+                    <polygon fill="url(#settlement-grad-3_)" points="-1.091,9.176 -2.761,8.211 -2.759,5.067 -13.657,-1.117 -13.646,1.975 -15.448,0.935 
+					-15.448,-13.183 -1.091,-4.841 				"/>
+                </g>
+            </g>
+            <g>
+                <linearGradient id="settlement-grad-4_" gradientUnits="userSpaceOnUse" x1="18.6221" y1="-16.375" x2="-25.3007" y2="-10.0193">
+                    <stop  offset="0.0056" style="stop-color:#B9B7B2"/>
+                    <stop  offset="0.1671" style="stop-color:#C2BFB9"/>
+                    <stop  offset="0.4353" style="stop-color:#DCD5CB"/>
+                    <stop  offset="0.5337" style="stop-color:#E7DFD3"/>
+                    <stop  offset="0.7592" style="stop-color:#F2E8DD"/>
+                    <stop  offset="1" style="stop-color:#F6EBE0"/>
+                </linearGradient>
+                <polygon fill="url(#settlement-grad-4_)" points="-0.836,-5.754 -13.883,-13.305 1.048,-21.636 14.072,-14.417 			"/>
+            </g>
+            <g>
+                <polygon fill="#63666B" points="13.444,-14.051 14.072,-14.417 1.067,-21.949 -13.883,-13.305 -13.279,-12.955 1.067,-21.224 			
+				"/>
+            </g>
+            <g>
+                <g>
+                    <linearGradient id="settlement-grad-5_" gradientUnits="userSpaceOnUse" x1="14.7666" y1="-15.167" x2="-3.054" y2="-11.3028">
+                        <stop  offset="0" style="stop-color:#CDCED1"/>
+                        <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                        <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                        <stop  offset="0.1668" style="stop-color:#98999B"/>
+                        <stop  offset="0.2571" style="stop-color:#88898B"/>
+                        <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                        <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                        <stop  offset="0.7001" style="stop-color:#78797B"/>
+                        <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                        <stop  offset="1" style="stop-color:#606062"/>
+                    </linearGradient>
+                    <polygon fill="url(#settlement-grad-5_)" points="5.729,-13.181 0.1,-9.931 0.1,-12.015 5.729,-15.263 				"/>
+                </g>
+                <g>
+                    <polygon fill="#C8C9CC" points="0.1,-9.931 -5.408,-13.11 -5.408,-15.193 0.1,-12.015 				"/>
+                </g>
+                <g>
+                    <linearGradient id="settlement-grad-6_" gradientUnits="userSpaceOnUse" x1="-5.4375" y1="-15.2285" x2="5.6992" y2="-15.2285">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.0064" style="stop-color:#FEFEFE"/>
+                        <stop  offset="0.1414" style="stop-color:#EEEEEF"/>
+                        <stop  offset="0.292" style="stop-color:#E4E5E7"/>
+                        <stop  offset="0.4888" style="stop-color:#E1E2E4"/>
+                        <stop  offset="0.7001" style="stop-color:#DEDFE1"/>
+                        <stop  offset="0.8622" style="stop-color:#D5D5D7"/>
+                        <stop  offset="1" style="stop-color:#C6C6C8"/>
+                    </linearGradient>
+                    <path fill="url(#settlement-grad-6_)" d="M0.192-18.443l-5.63,3.25l5.506,3.179l5.63-3.249L0.192-18.443z"/>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <linearGradient id="settlement-grad-7_" gradientUnits="userSpaceOnUse" x1="0.3267" y1="-14.9927" x2="3.4785" y2="-14.9927">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.0782" style="stop-color:#EFEFF0"/>
+                        <stop  offset="0.1931" style="stop-color:#DFDFE2"/>
+                        <stop  offset="0.3214" style="stop-color:#D5D6D9"/>
+                        <stop  offset="0.4888" style="stop-color:#D2D3D6"/>
+                        <stop  offset="0.7001" style="stop-color:#CFD0D3"/>
+                        <stop  offset="0.8622" style="stop-color:#C6C7C9"/>
+                        <stop  offset="1" style="stop-color:#B8B8BA"/>
+                    </linearGradient>
+                    <polygon fill="url(#settlement-grad-7_)" points="1.139,-14.083 0.327,-14.552 2.667,-15.902 3.479,-15.434 				"/>
+                </g>
+                <linearGradient id="settlement-grad-8_" gradientUnits="userSpaceOnUse" x1="0.3037" y1="-13.8486" x2="4.7116" y2="-14.8282">
+                    <stop  offset="0" style="stop-color:#CDCED1"/>
+                    <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                    <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                    <stop  offset="0.1668" style="stop-color:#98999B"/>
+                    <stop  offset="0.2571" style="stop-color:#88898B"/>
+                    <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                    <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                    <stop  offset="0.7001" style="stop-color:#78797B"/>
+                    <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                    <stop  offset="1" style="stop-color:#606062"/>
+                </linearGradient>
+                <polygon fill="url(#settlement-grad-8_)" points="3.479,-14.506 1.139,-13.155 1.139,-14.083 3.479,-15.434 			"/>
+                <g>
+                    <linearGradient id="settlement-grad-9_" gradientUnits="userSpaceOnUse" x1="-0.3452" y1="-14.5381" x2="1.8194" y2="-13.1635">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.1012" style="stop-color:#E8E8E9"/>
+                        <stop  offset="0.2096" style="stop-color:#D8D9DA"/>
+                        <stop  offset="0.3307" style="stop-color:#CECFD1"/>
+                        <stop  offset="0.4888" style="stop-color:#CBCCCE"/>
+                        <stop  offset="0.7001" style="stop-color:#C8C9CB"/>
+                        <stop  offset="0.8622" style="stop-color:#BFBFC1"/>
+                        <stop  offset="1" style="stop-color:#B0B0B2"/>
+                    </linearGradient>
+                    <polygon fill="url(#settlement-grad-9_)" points="1.139,-13.155 0.327,-13.624 0.327,-14.552 1.139,-14.083 				"/>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <linearGradient id="settlement-grad-10_" gradientUnits="userSpaceOnUse" x1="-2.6431" y1="-17.1143" x2="0.5088" y2="-17.1143">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.0782" style="stop-color:#EFEFF0"/>
+                        <stop  offset="0.1931" style="stop-color:#DFDFE2"/>
+                        <stop  offset="0.3214" style="stop-color:#D5D6D9"/>
+                        <stop  offset="0.4888" style="stop-color:#D2D3D6"/>
+                        <stop  offset="0.7001" style="stop-color:#CFD0D3"/>
+                        <stop  offset="0.8622" style="stop-color:#C6C7C9"/>
+                        <stop  offset="1" style="stop-color:#B8B8BA"/>
+                    </linearGradient>
+                    <polygon fill="url(#settlement-grad-10_)" points="-1.831,-16.205 -2.643,-16.674 -0.304,-18.024 0.509,-17.556 				"/>
+                </g>
+                <linearGradient id="settlement-grad-11_" gradientUnits="userSpaceOnUse" x1="-2.6665" y1="-15.9697" x2="1.7426" y2="-16.9495">
+                    <stop  offset="0" style="stop-color:#CDCED1"/>
+                    <stop  offset="0.0035" style="stop-color:#CCCDD0"/>
+                    <stop  offset="0.083" style="stop-color:#AEAFB2"/>
+                    <stop  offset="0.1668" style="stop-color:#98999B"/>
+                    <stop  offset="0.2571" style="stop-color:#88898B"/>
+                    <stop  offset="0.3576" style="stop-color:#7E7F81"/>
+                    <stop  offset="0.4888" style="stop-color:#7B7C7E"/>
+                    <stop  offset="0.7001" style="stop-color:#78797B"/>
+                    <stop  offset="0.8622" style="stop-color:#6F6F71"/>
+                    <stop  offset="1" style="stop-color:#606062"/>
+                </linearGradient>
+                <polygon fill="url(#settlement-grad-11_)" points="0.509,-16.627 -1.831,-15.276 -1.831,-16.205 0.509,-17.556 			"/>
+                <g>
+                    <linearGradient id="settlement-grad-12_" gradientUnits="userSpaceOnUse" x1="-3.3154" y1="-16.6602" x2="-1.1494" y2="-15.2846">
+                        <stop  offset="0" style="stop-color:#FFFFFF"/>
+                        <stop  offset="0.1012" style="stop-color:#E8E8E9"/>
+                        <stop  offset="0.2096" style="stop-color:#D8D9DA"/>
+                        <stop  offset="0.3307" style="stop-color:#CECFD1"/>
+                        <stop  offset="0.4888" style="stop-color:#CBCCCE"/>
+                        <stop  offset="0.7001" style="stop-color:#C8C9CB"/>
+                        <stop  offset="0.8622" style="stop-color:#BFBFC1"/>
+                        <stop  offset="1" style="stop-color:#B0B0B2"/>
+                    </linearGradient>
+                    <polygon fill="url(#settlement-grad-12_)" points="-1.831,-15.276 -2.643,-15.746 -2.643,-16.674 -1.831,-16.205 				"/>
+                </g>
+            </g>
+        </g>
+        <g>
+            <polygon fill="{color}" points="0.146,-4.339 14.072,-12.277 14.072,-4.402 0.147,3.505 		"/>
+            <g opacity="0.1">
+                <polygon points="11.109,-10.599 10.086,-9.964 10.086,-6.406 11.105,-6.989 			"/>
+                <polygon points="3.372,-4.841 3.372,-3.284 0.146,-1.434 0.146,-2.991 			"/>
+                <polygon points="4.478,-2.182 4.478,-0.625 0.147,1.859 0.146,0.302 			"/>
+                <polyline points="8.086,-3.137 8.086,-1.406 12.061,-3.677 12.061,-5.468 8.086,-3.137 			"/>
+            </g>
+            <g opacity="0.3" fill="#FFFFFF">
+                <polygon points="0.146,-3.555 0.146,-2.755 14.072,-10.697 14.072,-11.551 			"/>
+                <polygon points="0.146,-1.977 0.146,-1.177 14.072,-9.114 14.072,-9.931 			"/>
+                <polygon points="0.146,-0.471 0.146,0.329 14.072,-7.635 14.072,-8.405 			"/>
+                <polygon points="0.146,1.107 0.146,1.907 14.072,-6.052 14.072,-6.843 			"/>
+                <polygon points="0.146,2.705 0.146,3.505 14.072,-4.402 14.072,-5.218 			"/>
+            </g>
+        </g>
+        <g>
+            <polygon fill="{color}" points="-14.358,-11.261 -2.235,-4.364 -2.252,3.611 -14.358,-3.292 		"/>
+            <g opacity="0.1">
+                <polygon points="-13.5,-8.153 -10.983,-6.673 -10.984,-3.471 -13.5,-4.949 			"/>
+                <polygon points="-5.477,0.204 -2.252,2.053 -2.252,3.611 -5.479,1.76 			"/>
+                <polygon points="-7.774,-1.114 -6.669,-0.48 -6.67,1.076 -8.792,-0.141 -8.791,-4.991 -7.686,-4.356 -7.686,-6.003 
+				-2.251,-2.886 -2.251,-1.33 -6.669,-3.863 -6.669,-2.217 -7.774,-2.851 			"/>
+            </g>
+            <g opacity="0.3" fill="#FFFFFF">
+                <polygon points="-14.358,-9.657 -14.358,-10.449 -2.235,-3.496 -2.235,-2.707 			"/>
+                <polygon points="-14.358,-8.095 -14.358,-8.907 -2.239,-1.949 -2.239,-1.16 			"/>
+                <polygon points="-14.358,-6.47 -14.358,-7.282 -2.239,-0.34 -2.239,0.45 			"/>
+                <polygon points="-14.358,-4.928 -14.358,-5.754 -2.252,1.212 -2.252,2.001 			"/>
+                <polygon points="-14.358,-3.292 -14.358,-4.136 -2.252,2.821 -2.252,3.611 			"/>
+            </g>
+        </g>
+    </g>
+</g>

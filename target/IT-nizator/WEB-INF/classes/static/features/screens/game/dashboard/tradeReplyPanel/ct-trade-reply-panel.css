@@ -1,0 +1,88 @@
+ct-trade-reply-panel {
+
+}
+
+ct-trade-reply-panel .content {
+    top: 20%;
+    left: 17%;
+    width: 66%;
+    height: 52%;
+    background: #fff;
+    text-align: center;
+}
+
+ct-trade-reply-panel .btn.decline {
+    position: absolute;
+    bottom: 15px;
+    left: 17px;
+}
+
+ct-trade-reply-panel .btn.accept,
+ct-trade-reply-panel .no-longer-active {
+    position: absolute;
+    bottom: 15px;
+    right: 17px;
+}
+
+ct-trade-reply-panel .no-longer-active {
+    padding: 7px;
+    color: #d55;
+}
+
+ct-trade-reply-panel .title {
+    padding: 20px 0 10px;
+}
+
+ct-trade-reply-panel .title > span {
+    font-weight: bold;
+}
+
+ct-trade-reply-panel .proposition {
+    display: inline-block;
+    text-align: left;
+}
+
+ct-trade-reply-panel .proposition > div {
+    padding-top: 20px;
+}
+
+ct-trade-reply-panel .proposition > div > div {
+    display: inline-block;
+    width: 110px;
+    padding-left: 10px;
+}
+
+ct-trade-reply-panel .proposition > div > div > .give {
+    color: #c63;
+}
+
+ct-trade-reply-panel .proposition > div > div > .get {
+    color: #6c9;
+}
+
+ct-trade-reply-panel .proposition > div > span {
+    display: inline-block;
+    border-left: 20px solid #ccc;
+    padding-left: 5px;
+    width: 48px;
+}
+
+ct-trade-reply-panel .proposition > div > span.brick {
+    border-left-color: #e16a17;
+}
+
+ct-trade-reply-panel .proposition > div > span.wood {
+    border-left-color: #40b22f;
+}
+
+ct-trade-reply-panel .proposition > div > span.sheep {
+    border-left-color: #4bec38;
+}
+
+ct-trade-reply-panel .proposition > div > span.wheat {
+    border-left-color: #ecd320;
+}
+
+ct-trade-reply-panel .proposition > div > span.stone {
+    border-left-color: #8e6f36;
+}

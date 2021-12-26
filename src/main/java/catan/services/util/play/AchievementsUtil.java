@@ -82,7 +82,7 @@ public class AchievementsUtil {
         return null;
     }
 
-    private int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeAbsoluteIds, List<Integer> checkedNodeAbsoluteIds, EdgeBean edge, int currMaxWayLength) {
+    public static int calculateMaxWayLength(GameUserBean gameUser, int lastMaxWayLength, List<Integer> checkedEdgeAbsoluteIds, List<Integer> checkedNodeAbsoluteIds, EdgeBean edge, int currMaxWayLength) {
         int edgeAbsoluteId = edge.getAbsoluteId();
         if (checkedEdgeAbsoluteIds.contains(edgeAbsoluteId) || edgeDoesNotContainGameUsersRoad(gameUser, edge)) {
             return lastMaxWayLength;
@@ -105,15 +105,15 @@ public class AchievementsUtil {
         checkedEdgeAbsoluteIds.remove(new Integer(edgeAbsoluteId));
 
         return currMaxWayLength > lastMaxWayLength
-                ? currMaxWayLength
-                : lastMaxWayLength;
+            ? currMaxWayLength
+            : lastMaxWayLength;
     }
 
-    private boolean nodeContainsOpponentsBuilding(GameUserBean gameUser, NodeBean node) {
+    private static boolean nodeContainsOpponentsBuilding(GameUserBean gameUser, NodeBean node) {
         return node.getBuilding() != null && !node.getBuilding().getBuildingOwner().equals(gameUser);
     }
 
-    private boolean edgeDoesNotContainGameUsersRoad(GameUserBean gameUser, EdgeBean edge) {
+    private static boolean edgeDoesNotContainGameUsersRoad(GameUserBean gameUser, EdgeBean edge) {
         return edge.getBuilding() == null || !edge.getBuilding().getBuildingOwner().equals(gameUser);
     }
 
@@ -135,8 +135,8 @@ public class AchievementsUtil {
 
             if (longestWayLength == maxLongestWayLength && (newLongestWayOwner == null || !newLongestWayOwner.equals(currentLongestWayOwner))) {
                 newLongestWayOwner = !gameUser.equals(currentLongestWayOwner)
-                        ? null
-                        : gameUser;
+                    ? null
+                    : gameUser;
             }
         }
 

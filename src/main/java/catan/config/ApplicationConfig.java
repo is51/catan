@@ -7,10 +7,12 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @ComponentScan({"catan"})
-@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
+@EnableScheduling
+@EnableAutoConfiguration(exclude=ErrorMvcAutoConfiguration.class)
 public class ApplicationConfig extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
